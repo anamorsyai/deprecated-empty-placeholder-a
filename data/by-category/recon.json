@@ -33,6 +33,41 @@
     "score": 47
   },
   {
+    "id": "6c00a49174c8",
+    "title": "Attackers Stopped Phishing. They’re Hitting the App Directly Now — And SQL Injection Is Back.",
+    "url": "https://medium.com/@riyalimba/attackers-stopped-phishing-theyre-hitting-the-app-directly-now-and-sql-injection-is-back-5e2aa7019d55",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Riya Limba"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T13:23:32.000Z",
+    "added_at": "2026-09-22T21:50:21.691Z",
+    "categories": [
+      "sqli",
+      "rce",
+      "recon"
+    ],
+    "severity": "high",
+    "summary_en": "Cybersecurity beginner | Bug bounty learner | Writing about vulnerabilities, OSINT, recon & ethical hacking | Follow for security tips [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--5e2aa7019d55--------",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Cybersecurity beginner | Bug bounty learner | Writing about vulnerabilities, OSINT, recon & ethical hacking | Follow for security tips [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Bug Bounty](https://medium.com/tag/bug-bounty?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Ethical Hacking](https://medium.com/tag/ethical-hacking?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Bug Bounty Tips](https://medium.com/tag/bug-bo",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "1020bb92a9dd",
     "title": "How a single broken button got me £150 from a bug bounty program",
     "url": "https://infosecwriteups.com/how-a-single-broken-button-got-me-150-from-a-bug-bounty-program-81f203d7f733",

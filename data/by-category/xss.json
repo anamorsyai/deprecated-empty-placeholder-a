@@ -1,5 +1,39 @@
 [
   {
+    "id": "4462fb4fb454",
+    "title": "They Allowed Five Image Formats. Four Were Pictures.",
+    "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T11:31:01.000Z",
+    "added_at": "2026-09-22T21:50:31.045Z",
+    "categories": [
+      "xss",
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer [![Image 3: Nitin yadav](https://miro.medium.com/v2/resize:fill:40:40/1*46gfQYRZ6po8nWu68",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer [![Image 3: Nitin yadav](https://miro.medium.com/v2/resize:fill:40:40/1*46gfQYRZ6po8nWu68GB5LA.png)](https://kd-200.medium.com/?source=post_page---post_author_sidebar--5052c83f57e6-----------------353eb5c447fb------------------------) ## Nitin yadav Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer Member-only story [Bug Bounty](https://medium.co",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4e444461f81c",
     "title": "Just a moment...",
     "url": "https://script.hashnode.dev/self-xss-to-ato-via-site-features",

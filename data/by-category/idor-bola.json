@@ -96,6 +96,39 @@
     "score": 47
   },
   {
+    "id": "a7bd9a1333ea",
+    "title": "Zomatoooo! IDOR in Saved Payments",
+    "url": "https://prateeksrivastavaa.medium.com/zomatoooo-idor-in-saved-payments-f8c014879741",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Prateek Srivastava"
+    ],
+    "program": "Zomato",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-04T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:21.880Z",
+    "categories": [
+      "idor-bola"
+    ],
+    "severity": "medium",
+    "summary_en": "Zomatoooo! IDOR in Saved Payments",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "460aace6901c",
     "title": "Authorization bypass due to cache misconfiguration",
     "url": "https://rikeshbaniya.medium.com/authorization-bypass-due-to-cache-misconfiguration-fde8b2332d2d",

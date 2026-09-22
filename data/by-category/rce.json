@@ -66,6 +66,41 @@
     "score": 47
   },
   {
+    "id": "6c00a49174c8",
+    "title": "Attackers Stopped Phishing. They’re Hitting the App Directly Now — And SQL Injection Is Back.",
+    "url": "https://medium.com/@riyalimba/attackers-stopped-phishing-theyre-hitting-the-app-directly-now-and-sql-injection-is-back-5e2aa7019d55",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Riya Limba"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T13:23:32.000Z",
+    "added_at": "2026-09-22T21:50:21.691Z",
+    "categories": [
+      "sqli",
+      "rce",
+      "recon"
+    ],
+    "severity": "high",
+    "summary_en": "Cybersecurity beginner | Bug bounty learner | Writing about vulnerabilities, OSINT, recon & ethical hacking | Follow for security tips [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--5e2aa7019d55--------",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Cybersecurity beginner | Bug bounty learner | Writing about vulnerabilities, OSINT, recon & ethical hacking | Follow for security tips [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Bug Bounty](https://medium.com/tag/bug-bounty?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Ethical Hacking](https://medium.com/tag/ethical-hacking?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Bug Bounty Tips](https://medium.com/tag/bug-bo",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "049bd12bb969",
     "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
     "url": "https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
@@ -97,6 +132,73 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "4462fb4fb454",
+    "title": "They Allowed Five Image Formats. Four Were Pictures.",
+    "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T11:31:01.000Z",
+    "added_at": "2026-09-22T21:50:31.045Z",
+    "categories": [
+      "xss",
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer [![Image 3: Nitin yadav](https://miro.medium.com/v2/resize:fill:40:40/1*46gfQYRZ6po8nWu68",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer [![Image 3: Nitin yadav](https://miro.medium.com/v2/resize:fill:40:40/1*46gfQYRZ6po8nWu68GB5LA.png)](https://kd-200.medium.com/?source=post_page---post_author_sidebar--5052c83f57e6-----------------353eb5c447fb------------------------) ## Nitin yadav Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer Member-only story [Bug Bounty](https://medium.co",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "808dde2c5eba",
+    "title": "How I Started Getting Bug Bounties in Just My Second Month",
+    "url": "https://infosecwriteups.com/how-i-started-getting-bug-bounties-in-just-my-second-month-b80448dc9901",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Sairaj Thorat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T11:15:20.000Z",
+    "added_at": "2026-09-22T21:50:38.958Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Initially, I knew nothing about bug bounty hunting when I began it. Actually, I did not know anything about the way web applications work and the types of vulnerabilities. Therefore, I decided to begin from the basic stuff.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Initially, I knew nothing about bug bounty hunting when I began it. Actually, I did not know anything about the way web applications work and the types of vulnerabilities. Therefore, I decided to begin from the basic stuff. Several days were spent on learning Burp Suite, understanding requests and responses, intercepting, and modifying traffic. After that, I started working through the PortSwigger Web Security Academy to learn about common vulnerabilities and the way they work. Finally, I decided to submit reports. The first submission proved to be quite a successful one. It turned out that th",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
   },
   {
     "id": "6ba870477f9f",
@@ -197,6 +299,40 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "e54d1578cbdf",
+    "title": "The Report Nobody Read (And What I Learned From It)",
+    "url": "https://systemweakness.com/the-report-nobody-read-and-what-i-learned-from-it-88751313b2b7",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Yamini Yadav_369"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-20T19:51:01.000Z",
+    "added_at": "2026-09-22T21:50:48.272Z",
+    "categories": [
+      "rce",
+      "file-upload"
+    ],
+    "severity": "medium",
+    "summary_en": "A few years into my career as a security engineer, I finished what I thought was the best pentest of my life. I had chained three separate bugs together.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A few years into my career as a security engineer, I finished what I thought was the best pentest of my life. I had chained three separate bugs together. A weak session token, an exposed admin panel, and a file upload that let me drop a shell on the server. It took me four days. I was proud of it. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/0*C0cJpGB5DLzwFgyx) Photo by [Carlos Muza](https://unsplash.com/@kmuza?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral) I wrote it all",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
   },
   {
     "id": "940c4cb5aaf6",
@@ -1203,6 +1339,38 @@
       "fix_ar": null
     },
     "excerpt": "Server-Side Template Injection (SSTI) is one of my favorite vulnerabilities, but rarely do I see it outside of CTF competitions… The WPML Multilingual CMS Plugin for WordPress used by over 1 million sites is susceptible to an Authenticated (Contributor+) Remote Code Execution (RCE) vulnerability through a Twig server-side template injection. **Affected Versions:**<= 4.6.11 **CVSS Score:** 9.9 **CVE-ID**: CVE-2024-6386 **Links:**[Mitre](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-6386&ref=sec.stealthcopter.com), [NVD](https://nvd.nist.gov/vuln/detail/CVE-2024-6386?ref=sec.stealthcop",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "8088fa5dc7bd",
+    "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
+    "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
+    "source": {
+      "slug": "assetnote",
+      "name": "Assetnote"
+    },
+    "authors": [],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-01-18T13:00:00.000Z",
+    "added_at": "2026-09-22T21:51:52.472Z",
+    "categories": [
+      "auth-bypass",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-sec",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce) Share on social [](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce)[](https://twitter.com/intent/tweet?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce&text=High%20Signal%20Detection%20and%2",
     "ai_generated": false,
     "engagement": null,
     "score": 60

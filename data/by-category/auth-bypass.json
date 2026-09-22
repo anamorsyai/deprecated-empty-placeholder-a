@@ -89,5 +89,71 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "3679fa4d7680",
+    "title": "The Hunt for ALBeast: A Technical Walkthrough",
+    "url": "https://www.miggo.io/resources/uncovering-auth-vulnerability-in-aws-alb-albeast",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Liad Eliyahu (@liadeliyahu)"
+    ],
+    "program": "AWS",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-20T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:41.529Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Produ",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Product [Runtime Defense Platform for Applications, AI, and Agents Detect and respond to AI and agentic driven threats](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[**Miggo Know** Know your live applications inside-out](https://www.miggo.io/product/security-observability)[Miggo Prove Find and prevent the exploitable risks that mat",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "8088fa5dc7bd",
+    "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
+    "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
+    "source": {
+      "slug": "assetnote",
+      "name": "Assetnote"
+    },
+    "authors": [],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-01-18T13:00:00.000Z",
+    "added_at": "2026-09-22T21:51:52.472Z",
+    "categories": [
+      "auth-bypass",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-sec",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce) Share on social [](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce)[](https://twitter.com/intent/tweet?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce&text=High%20Signal%20Detection%20and%2",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]

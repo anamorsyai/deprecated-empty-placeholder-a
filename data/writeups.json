@@ -166,6 +166,74 @@
     "score": 60
   },
   {
+    "id": "6c00a49174c8",
+    "title": "Attackers Stopped Phishing. They’re Hitting the App Directly Now — And SQL Injection Is Back.",
+    "url": "https://medium.com/@riyalimba/attackers-stopped-phishing-theyre-hitting-the-app-directly-now-and-sql-injection-is-back-5e2aa7019d55",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Riya Limba"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T13:23:32.000Z",
+    "added_at": "2026-09-22T21:50:21.691Z",
+    "categories": [
+      "sqli",
+      "rce",
+      "recon"
+    ],
+    "severity": "high",
+    "summary_en": "Cybersecurity beginner | Bug bounty learner | Writing about vulnerabilities, OSINT, recon & ethical hacking | Follow for security tips [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--5e2aa7019d55--------",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Cybersecurity beginner | Bug bounty learner | Writing about vulnerabilities, OSINT, recon & ethical hacking | Follow for security tips [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Bug Bounty](https://medium.com/tag/bug-bounty?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Ethical Hacking](https://medium.com/tag/ethical-hacking?source=post_page---header_tags--5e2aa7019d55-----------------------------------------) [Bug Bounty Tips](https://medium.com/tag/bug-bo",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "d04d7e15e079",
+    "title": "Subfinder: Because Guessing Subdomains Manually Is a War Crime Against Your Time",
+    "url": "https://medium.com/@padhyepushkar/subfinder-because-guessing-subdomains-manually-is-a-war-crime-against-your-time-4b1dea12ec92",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Pushkar Padhye"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T13:03:12.000Z",
+    "added_at": "2026-09-22T21:50:25.934Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not. Let me paint you a picture. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*anM_F-sXl0r0Ed_fgr8RAQ.png) It’s 2 AM. You’re three energy drinks deep, eyeballing a target’s main domain like it owes you money. You fire up Subfinder with zero API keys and get 43 subdomains. You feel like a hacker god for about nine seconds unt",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "049bd12bb969",
     "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
     "url": "https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
@@ -197,6 +265,73 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "4462fb4fb454",
+    "title": "They Allowed Five Image Formats. Four Were Pictures.",
+    "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T11:31:01.000Z",
+    "added_at": "2026-09-22T21:50:31.045Z",
+    "categories": [
+      "xss",
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer [![Image 3: Nitin yadav](https://miro.medium.com/v2/resize:fill:40:40/1*46gfQYRZ6po8nWu68",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer [![Image 3: Nitin yadav](https://miro.medium.com/v2/resize:fill:40:40/1*46gfQYRZ6po8nWu68GB5LA.png)](https://kd-200.medium.com/?source=post_page---post_author_sidebar--5052c83f57e6-----------------353eb5c447fb------------------------) ## Nitin yadav Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer Member-only story [Bug Bounty](https://medium.co",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "808dde2c5eba",
+    "title": "How I Started Getting Bug Bounties in Just My Second Month",
+    "url": "https://infosecwriteups.com/how-i-started-getting-bug-bounties-in-just-my-second-month-b80448dc9901",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Sairaj Thorat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T11:15:20.000Z",
+    "added_at": "2026-09-22T21:50:38.958Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Initially, I knew nothing about bug bounty hunting when I began it. Actually, I did not know anything about the way web applications work and the types of vulnerabilities. Therefore, I decided to begin from the basic stuff.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Initially, I knew nothing about bug bounty hunting when I began it. Actually, I did not know anything about the way web applications work and the types of vulnerabilities. Therefore, I decided to begin from the basic stuff. Several days were spent on learning Burp Suite, understanding requests and responses, intercepting, and modifying traffic. After that, I started working through the PortSwigger Web Security Academy to learn about common vulnerabilities and the way they work. Finally, I decided to submit reports. The first submission proved to be quite a successful one. It turned out that th",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
   },
   {
     "id": "6ba870477f9f",
@@ -400,6 +535,106 @@
     "score": 53
   },
   {
+    "id": "e54d1578cbdf",
+    "title": "The Report Nobody Read (And What I Learned From It)",
+    "url": "https://systemweakness.com/the-report-nobody-read-and-what-i-learned-from-it-88751313b2b7",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Yamini Yadav_369"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-20T19:51:01.000Z",
+    "added_at": "2026-09-22T21:50:48.272Z",
+    "categories": [
+      "rce",
+      "file-upload"
+    ],
+    "severity": "medium",
+    "summary_en": "A few years into my career as a security engineer, I finished what I thought was the best pentest of my life. I had chained three separate bugs together.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A few years into my career as a security engineer, I finished what I thought was the best pentest of my life. I had chained three separate bugs together. A weak session token, an exposed admin panel, and a file upload that let me drop a shell on the server. It took me four days. I was proud of it. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/0*C0cJpGB5DLzwFgyx) Photo by [Carlos Muza](https://unsplash.com/@kmuza?utm_source=medium&utm_medium=referral) on [Unsplash](https://unsplash.com/?utm_source=medium&utm_medium=referral) I wrote it all",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "c54e5cd25849",
+    "title": "How a Silent Websocket Led Me to Unauthenticated Uploads on a University’s Exam Platform",
+    "url": "https://medium.com/@priyanshbhadoria5/the-anonymous-5-gb-file-host-that-almost-wasnt-how-a-silent-websocket-led-me-to-unauthenticated-c34120be1492",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Priyansh"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-20T17:55:46.000Z",
+    "added_at": "2026-09-22T21:50:53.416Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "I expected this one to be easy. A digital-exam platform — the kind that grades thousands of students, stores their submissions, their identities, their futures — running an acceptance (staging) instance on the university’s own domain.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I expected this one to be easy. A digital-exam platform — the kind that grades thousands of students, stores their submissions, their identities, their futures — running an acceptance (staging) instance on the university’s own domain. In my experience, staging instances are where production hygiene goes to die: debug endpoints, default credentials, forgotten admin panels. It wasn’t easy. For the better part of a day, every single route I touched threw `401` or a login redirect in my face. Two full OpenAPI specs — 481 operations across them — every single one demanding a bearer token. It was, b",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "2eb3f3070436",
+    "title": "How I Found an Undocumented GraphQL Endpoint Leaking Home Addresses of French Company Owners (EUR…",
+    "url": "https://medium.com/@anshbohra10/how-i-found-an-undocumented-graphql-endpoint-leaking-home-addresses-of-french-company-owners-eur-8536b9dd0ec1",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "anshh.bohara"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-20T16:10:55.000Z",
+    "added_at": "2026-09-22T21:50:58.590Z",
+    "categories": [
+      "graphql"
+    ],
+    "severity": "medium",
+    "summary_en": "The documented unauthenticated endpoint had 1 query. The undocumented one had 7 queries and 7 mutations. One of those queries returned residential addresses of company beneficial owners for any French company. No auth.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The documented unauthenticated endpoint had 1 query. The undocumented one had 7 queries and 7 mutations. One of those queries returned residential addresses of company beneficial owners for any French company. No auth. ## The Target The target was a European embedded banking-as-a-service platform. They provide APIs for companies to integrate banking features — accounts, cards, payments, KYC. Their bug bounty program is on a European vulnerability disclosure platform. The dashboard was a React SPA that connects to a backend GraphQL API. ## The Configuration Leak The dashboard serves an `env.js`",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "ad047470de31",
     "title": "How I Tricked OpenClaw Into Attacking Its Own Network: A NAT64 SSRF Bypass",
     "url": "https://infosecwriteups.com/how-i-tricked-openclaw-into-attacking-its-own-network-a-nat64-ssrf-bypass-9b93a7f11cd9",
@@ -588,6 +823,72 @@
     "summary_en": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test.",
     "summary_ar": null,
     "excerpt": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test. The target platform, endpoint domain, employee names, and all captured values below have been anonymized/fictionalized — none of the identifiers, credentials, or personal data shown are real. Reported to the client, remediation done/confirmed as of 08/24/26._ ### TL;DR During a gray-box pentest of a corporate SaaS platform (“TargetApp”), an internal HR/personnel endpoint accepted a plain sequential integer — `idPersonnal` — as the only identifier for which employee record to return, with no check th",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "e5adadfbe555",
+    "title": "Hacking AI customer service agents",
+    "url": "https://www.intigriti.com/researchers/blog/hacking-tools/hacking-ai-customer-service-agents",
+    "source": {
+      "slug": "intigriti-blog",
+      "name": "Intigriti Blog"
+    },
+    "authors": [
+      "Ayoub and Inti De Ceukelaire"
+    ],
+    "program": null,
+    "platform_slug": "intigriti",
+    "bounty_raw": null,
+    "published_at": "2026-09-02T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:10.168Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "As AI agents are deployed to automate more tasks, they become more capable. And as the famous quote goes: \"With great power comes great responsibility.\" Assuming that humans in the loop can mitigate that risk turns out to be.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "As AI agents are deployed to automate more tasks, they become more capable. And as the famous quote goes: \"With great power comes great responsibility.\" Assuming that humans in the loop can mitigate that risk turns out to be. At Bug Bounty Village during DEF CON 34, [Inti De Ceukelaire](https://www.linkedin.com/in/intidc/), Founding Member of Intigriti, delivered a talk on how attackers can abuse today's AI agents in ways most defenders haven't thought about yet, from tricking agents into spilling secrets to forcing them to carry out unauthorized actions on behalf of the victim. This resulted",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "e7fdfbebe795",
+    "title": "Exploiting web cache poisoning vulnerabilities",
+    "url": "https://www.intigriti.com/researchers/blog/hacking-tools/exploiting-web-cache-poisoning-vulnerabilities",
+    "source": {
+      "slug": "intigriti-blog",
+      "name": "Intigriti Blog"
+    },
+    "authors": [
+      "Ayoub and Rachid Allam"
+    ],
+    "program": null,
+    "platform_slug": "intigriti",
+    "bounty_raw": null,
+    "published_at": "2026-06-24T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:11.174Z",
+    "categories": [
+      "cache-smuggling"
+    ],
+    "severity": "medium",
+    "summary_en": "Web (or HTTP) caching is a highly adopted practice to effectively optimize web page loading times for clients.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Web (or HTTP) caching is a highly adopted practice to effectively optimize web page loading times for clients. However, as with most technologies, when incorrectly implemented, it may open up a new exploitable attack surface for us to look into. In this article, we'll cover what web cache poisoning vulnerabilities are, how they arise, a few effective ways to enumerate such vulnerabilities, and eventually move on to the practical exploitation part. Let's dive in! #### Special thanks to Zhero This article was co-authored by [Zhero](https://x.com/zhero___), a researcher who has published several",
     "ai_generated": false,
     "engagement": null,
     "score": 47
@@ -1113,6 +1414,39 @@
     "summary_en": "Hey, everybody! 🎉 I’m super excited to share this wild bug I recently found in a public bug bounty program. This one was a fun ride, so grab some popcorn and let me tell you all about it.",
     "summary_ar": null,
     "excerpt": "Hey, everybody! 🎉 I’m super excited to share this wild bug I recently found in a public bug bounty program. This one was a fun ride, so grab some popcorn and let me tell you all about it. So, the scope for this target was as wide as the ocean — `*.target.tld`. Naturally, I went into full detective mode and started hunting for subdomains. And what’s the first thing any seasoned bounty hunter does? That’s right, a good old-fashioned Google Dork: `site:*.target.tld -out_of_scope`. 🤓 After scrolling through a bunch of results, I stumbled upon a subdomain that piqued my curiosity. Let’s call it `",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "a7bd9a1333ea",
+    "title": "Zomatoooo! IDOR in Saved Payments",
+    "url": "https://prateeksrivastavaa.medium.com/zomatoooo-idor-in-saved-payments-f8c014879741",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Prateek Srivastava"
+    ],
+    "program": "Zomato",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-04T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:21.880Z",
+    "categories": [
+      "idor-bola"
+    ],
+    "severity": "medium",
+    "summary_en": "Zomatoooo! IDOR in Saved Payments",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
     "ai_generated": false,
     "engagement": null,
     "score": 47
@@ -1669,6 +2003,39 @@
     "score": 47
   },
   {
+    "id": "96b8db51b1ec",
+    "title": "[$500] How I was able to give verification badge to any YouTube channel and bypass needed requirements",
+    "url": "https://vojtechcekal.medium.com/how-i-was-able-to-give-verification-badge-to-any-youtube-channel-and-bypass-needed-requirements-b88855afe4b7",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Vojtech Cekal"
+    ],
+    "program": "Google (Youtube)",
+    "platform_slug": "other",
+    "bounty_raw": "500",
+    "published_at": "2024-08-27T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:26.682Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "[$500] How I was able to give verification badge to any YouTube channel and bypass needed requirements",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "46b29def550e",
     "title": "Back to School - Exploiting a Remote Code Execution Vulnerability in Moodle",
     "url": "https://blog.redteam-pentesting.de/2024/moodle-rce",
@@ -2069,6 +2436,39 @@
     "score": 60
   },
   {
+    "id": "9155c0c9a739",
+    "title": "\"Google AI Studio: LLM-Powered Data Exfiltration Hits Again! Quickly Fixed.\"",
+    "url": "https://embracethered.com/blog/posts/2024/google-ai-studio-data-exfiltration-now-fixed",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Johann Rehberger (wunderwuzzi23)"
+    ],
+    "program": "Google (AI Studio)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-21T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:36.214Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Recently, I found what appeared to be a regression or bypass that again allowed data exfiltration via image rendering during prompt injection.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Recently, I found what appeared to be a regression or bypass that again allowed data exfiltration via image rendering during prompt injection. See the previous post [here](https://embracethered.com/blog/posts/2024/google-aistudio-mass-data-exfil/) for reference. ## Data Exfiltration via Rendering HTML Image Tags During re-testing, I had sporadic success with markdown rendering tricks, but eventually, I was able to drastically simplify the exploit **by asking directly for an HTML image tag**. This behavior might actually have existed all along, as Google AI Studio hadn’t yet implemented any kin",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "6c8e8f92d816",
     "title": "WPML Multilingual CMS Authenticated Contributor+ Remote Code Execution (RCE) via Twig Server-Side Template Injection (SSTI)",
     "url": "https://sec.stealthcopter.com/wpml-rce-via-twig-ssti",
@@ -2136,5 +2536,71 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "3679fa4d7680",
+    "title": "The Hunt for ALBeast: A Technical Walkthrough",
+    "url": "https://www.miggo.io/resources/uncovering-auth-vulnerability-in-aws-alb-albeast",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Liad Eliyahu (@liadeliyahu)"
+    ],
+    "program": "AWS",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-20T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:41.529Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Produ",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Product [Runtime Defense Platform for Applications, AI, and Agents Detect and respond to AI and agentic driven threats](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[**Miggo Know** Know your live applications inside-out](https://www.miggo.io/product/security-observability)[Miggo Prove Find and prevent the exploitable risks that mat",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "8088fa5dc7bd",
+    "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
+    "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
+    "source": {
+      "slug": "assetnote",
+      "name": "Assetnote"
+    },
+    "authors": [],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-01-18T13:00:00.000Z",
+    "added_at": "2026-09-22T21:51:52.472Z",
+    "categories": [
+      "auth-bypass",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-sec",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce) Share on social [](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce)[](https://twitter.com/intent/tweet?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce&text=High%20Signal%20Detection%20and%2",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]

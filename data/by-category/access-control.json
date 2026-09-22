@@ -277,5 +277,39 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "3679fa4d7680",
+    "title": "The Hunt for ALBeast: A Technical Walkthrough",
+    "url": "https://www.miggo.io/resources/uncovering-auth-vulnerability-in-aws-alb-albeast",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Liad Eliyahu (@liadeliyahu)"
+    ],
+    "program": "AWS",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-20T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:41.529Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Produ",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Product [Runtime Defense Platform for Applications, AI, and Agents Detect and respond to AI and agentic driven threats](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[**Miggo Know** Know your live applications inside-out](https://www.miggo.io/product/security-observability)[Miggo Prove Find and prevent the exploitable risks that mat",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
   }
 ]

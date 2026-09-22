@@ -1,1 +1,35 @@
-[]
+[
+  {
+    "id": "e7fdfbebe795",
+    "title": "Exploiting web cache poisoning vulnerabilities",
+    "url": "https://www.intigriti.com/researchers/blog/hacking-tools/exploiting-web-cache-poisoning-vulnerabilities",
+    "source": {
+      "slug": "intigriti-blog",
+      "name": "Intigriti Blog"
+    },
+    "authors": [
+      "Ayoub and Rachid Allam"
+    ],
+    "program": null,
+    "platform_slug": "intigriti",
+    "bounty_raw": null,
+    "published_at": "2026-06-24T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:11.174Z",
+    "categories": [
+      "cache-smuggling"
+    ],
+    "severity": "medium",
+    "summary_en": "Web (or HTTP) caching is a highly adopted practice to effectively optimize web page loading times for clients.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Web (or HTTP) caching is a highly adopted practice to effectively optimize web page loading times for clients. However, as with most technologies, when incorrectly implemented, it may open up a new exploitable attack surface for us to look into. In this article, we'll cover what web cache poisoning vulnerabilities are, how they arise, a few effective ways to enumerate such vulnerabilities, and eventually move on to the practical exploitation part. Let's dive in! #### Special thanks to Zhero This article was co-authored by [Zhero](https://x.com/zhero___), a researcher who has published several",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  }
+]

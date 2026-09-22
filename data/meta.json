@@ -1,33 +1,36 @@
 {
-  "lastRun": "2026-09-22T21:35:16.094Z",
-  "totalItems": 70,
-  "newItemsThisRun": 17,
+  "lastRun": "2026-09-22T21:52:00.766Z",
+  "totalItems": 84,
+  "newItemsThisRun": 14,
   "aiProvider": "none",
   "bySource": {
-    "medium-tag-bug-bounty": 4,
-    "medium-tag-writeup": 5,
+    "medium-tag-bug-bounty": 8,
+    "medium-tag-writeup": 8,
     "reddit-netsec": 5,
     "infosec-writeups": 4,
-    "pentesterland": 52
+    "intigriti-blog": 2,
+    "pentesterland": 56,
+    "assetnote": 1
   },
   "byCategory": {
-    "recon": 3,
-    "rce": 39,
-    "access-control": 9,
+    "recon": 4,
+    "rce": 44,
+    "access-control": 10,
     "mass-assignment": 2,
-    "other": 9,
-    "idor-bola": 4,
+    "other": 14,
+    "sqli": 5,
+    "xss": 6,
+    "idor-bola": 5,
     "ssrf": 6,
-    "sqli": 4,
+    "file-upload": 8,
+    "graphql": 2,
     "csrf": 4,
-    "auth-bypass": 3,
+    "cache-smuggling": 1,
+    "auth-bypass": 5,
     "supply-chain": 2,
     "oauth-jwt": 2,
-    "file-upload": 7,
-    "xss": 5,
     "ssti": 2,
     "info-disclosure": 2,
-    "xxe": 1,
-    "graphql": 1
+    "xxe": 1
   }
 }

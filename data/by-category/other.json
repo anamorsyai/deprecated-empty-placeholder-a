@@ -33,6 +33,105 @@
     "score": 60
   },
   {
+    "id": "d04d7e15e079",
+    "title": "Subfinder: Because Guessing Subdomains Manually Is a War Crime Against Your Time",
+    "url": "https://medium.com/@padhyepushkar/subfinder-because-guessing-subdomains-manually-is-a-war-crime-against-your-time-4b1dea12ec92",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Pushkar Padhye"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T13:03:12.000Z",
+    "added_at": "2026-09-22T21:50:25.934Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not. Let me paint you a picture. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*anM_F-sXl0r0Ed_fgr8RAQ.png) It’s 2 AM. You’re three energy drinks deep, eyeballing a target’s main domain like it owes you money. You fire up Subfinder with zero API keys and get 43 subdomains. You feel like a hacker god for about nine seconds unt",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "c54e5cd25849",
+    "title": "How a Silent Websocket Led Me to Unauthenticated Uploads on a University’s Exam Platform",
+    "url": "https://medium.com/@priyanshbhadoria5/the-anonymous-5-gb-file-host-that-almost-wasnt-how-a-silent-websocket-led-me-to-unauthenticated-c34120be1492",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Priyansh"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-20T17:55:46.000Z",
+    "added_at": "2026-09-22T21:50:53.416Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "I expected this one to be easy. A digital-exam platform — the kind that grades thousands of students, stores their submissions, their identities, their futures — running an acceptance (staging) instance on the university’s own domain.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I expected this one to be easy. A digital-exam platform — the kind that grades thousands of students, stores their submissions, their identities, their futures — running an acceptance (staging) instance on the university’s own domain. In my experience, staging instances are where production hygiene goes to die: debug endpoints, default credentials, forgotten admin panels. It wasn’t easy. For the better part of a day, every single route I touched threw `401` or a login redirect in my face. Two full OpenAPI specs — 481 operations across them — every single one demanding a bearer token. It was, b",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "e5adadfbe555",
+    "title": "Hacking AI customer service agents",
+    "url": "https://www.intigriti.com/researchers/blog/hacking-tools/hacking-ai-customer-service-agents",
+    "source": {
+      "slug": "intigriti-blog",
+      "name": "Intigriti Blog"
+    },
+    "authors": [
+      "Ayoub and Inti De Ceukelaire"
+    ],
+    "program": null,
+    "platform_slug": "intigriti",
+    "bounty_raw": null,
+    "published_at": "2026-09-02T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:10.168Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "As AI agents are deployed to automate more tasks, they become more capable. And as the famous quote goes: \"With great power comes great responsibility.\" Assuming that humans in the loop can mitigate that risk turns out to be.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "As AI agents are deployed to automate more tasks, they become more capable. And as the famous quote goes: \"With great power comes great responsibility.\" Assuming that humans in the loop can mitigate that risk turns out to be. At Bug Bounty Village during DEF CON 34, [Inti De Ceukelaire](https://www.linkedin.com/in/intidc/), Founding Member of Intigriti, delivered a talk on how attackers can abuse today's AI agents in ways most defenders haven't thought about yet, from tricking agents into spilling secrets to forcing them to carry out unauthorized actions on behalf of the victim. This resulted",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "e771846711f8",
     "title": "Logic Flaw: I Can Block You from Accessing Your Own Account",
     "url": "https://medium.com/@hashimamin/logic-flaw-i-can-block-you-from-accessing-your-own-account-63fc2a88bb72",
@@ -195,6 +294,39 @@
     "score": 40
   },
   {
+    "id": "96b8db51b1ec",
+    "title": "[$500] How I was able to give verification badge to any YouTube channel and bypass needed requirements",
+    "url": "https://vojtechcekal.medium.com/how-i-was-able-to-give-verification-badge-to-any-youtube-channel-and-bypass-needed-requirements-b88855afe4b7",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Vojtech Cekal"
+    ],
+    "program": "Google (Youtube)",
+    "platform_slug": "other",
+    "bounty_raw": "500",
+    "published_at": "2024-08-27T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:26.682Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "[$500] How I was able to give verification badge to any YouTube channel and bypass needed requirements",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "94d0fc119f84",
     "title": "\"Microsoft Copilot: From Prompt Injection to Exfiltration of Personal Information\"",
     "url": "https://embracethered.com/blog/posts/2024/m365-copilot-prompt-injection-tool-invocation-and-data-exfil-using-ascii-smuggling",
@@ -256,6 +388,39 @@
       "fix_ar": null
     },
     "excerpt": "Hello! I’m Ashar Mahmood, a 22-year-old cybersecurity enthusiast with a passion for uncovering hidden vulnerabilities. I’m excited to share the news of my latest security write-up, where I discovered a significant vulnerability that not only brought me immense satisfaction but also earned me a rewarding bounty of €500 💶🫰. ![Image 4](https://miro.medium.com/v2/resize:fit:480/1*-7Q_dShrRrxsYw_tAXovEw.jpeg) ## How I Discovered a “Like” Bypass on Customer Reviews I recently stumbled upon an interesting vulnerability on a popular automobiles platform that allows users to leave reviews for dealers",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "9155c0c9a739",
+    "title": "\"Google AI Studio: LLM-Powered Data Exfiltration Hits Again! Quickly Fixed.\"",
+    "url": "https://embracethered.com/blog/posts/2024/google-ai-studio-data-exfiltration-now-fixed",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Johann Rehberger (wunderwuzzi23)"
+    ],
+    "program": "Google (AI Studio)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-21T00:00:00.000Z",
+    "added_at": "2026-09-22T21:51:36.214Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Recently, I found what appeared to be a regression or bypass that again allowed data exfiltration via image rendering during prompt injection.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Recently, I found what appeared to be a regression or bypass that again allowed data exfiltration via image rendering during prompt injection. See the previous post [here](https://embracethered.com/blog/posts/2024/google-aistudio-mass-data-exfil/) for reference. ## Data Exfiltration via Rendering HTML Image Tags During re-testing, I had sporadic success with markdown rendering tricks, but eventually, I was able to drastically simplify the exploit **by asking directly for an HTML image tag**. This behavior might actually have existed all along, as Google AI Studio hadn’t yet implemented any kin",
     "ai_generated": false,
     "engagement": null,
     "score": 40
