@@ -1,28 +1,28 @@
 {
-  "lastRun": "2026-09-22T20:37:49.830Z",
-  "totalItems": 36,
+  "lastRun": "2026-09-22T21:13:22.977Z",
+  "totalItems": 46,
   "newItemsThisRun": 10,
   "aiProvider": "none",
   "bySource": {
     "infosec-writeups": 1,
-    "pentesterland": 35
+    "pentesterland": 45
   },
   "byCategory": {
     "idor-bola": 2,
     "auth-bypass": 2,
-    "access-control": 5,
-    "rce": 19,
+    "access-control": 6,
+    "rce": 27,
     "supply-chain": 2,
     "oauth-jwt": 2,
-    "other": 6,
-    "file-upload": 4,
+    "other": 8,
+    "file-upload": 5,
     "ssrf": 2,
     "sqli": 3,
     "xss": 5,
     "recon": 1,
     "ssti": 1,
     "info-disclosure": 1,
-    "csrf": 1,
+    "csrf": 2,
     "xxe": 1
   }
 }
