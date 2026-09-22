@@ -7,8 +7,8 @@ export default function CategoriesPage() {
   const sorted = [...categories].sort((a, b) => categoryCount(b.slug) - categoryCount(a.slug));
   return (
     <div>
-      <h1 className="mb-5 text-2xl font-extrabold">التصنيفات</h1>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <h1 className="mb-5 text-2xl font-extrabold sm:text-3xl">التصنيفات</h1>
+      <div className="grid gap-3 xs:grid-cols-2 lg:grid-cols-3">
         {sorted.map((c) => (
           <Link
             key={c.slug}

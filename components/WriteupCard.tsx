@@ -1,41 +1,46 @@
 import Link from "next/link";
 import type { Writeup } from "@/lib/types";
 import { getCategory, getPlatform } from "@/lib/data";
-import { SeverityBadge, Tag } from "@/components/Badge";
+import { SEVERITY_BORDER, SeverityBadge, Tag } from "@/components/Badge";
 import { timeAgoAr } from "@/lib/format";
 
 export default function WriteupCard({ writeup, compact = false }: { writeup: Writeup; compact?: boolean }) {
   const platform = getPlatform(writeup.platform_slug);
   const summary = writeup.summary_ar || writeup.summary_en || writeup.excerpt;
+  const borderColor = writeup.severity ? SEVERITY_BORDER[writeup.severity] : "border-s-border";
 
   return (
-    <article className="card-hover flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
-      <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
-        <span>{writeup.source.name}</span>
+    <article className={`card-hover flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-4 border-s-4 sm:p-5 ${borderColor}`}>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
+        <span className="truncate">{writeup.source.name}</span>
         <span aria-hidden>·</span>
-        <span>{timeAgoAr(writeup.published_at)}</span>
+        <span className="shrink-0">{timeAgoAr(writeup.published_at)}</span>
         {writeup.bounty_raw && (
           <>
             <span aria-hidden>·</span>
-            <span className="font-semibold text-primary">${writeup.bounty_raw}</span>
+            <span className="shrink-0 font-semibold text-primary">${writeup.bounty_raw}</span>
           </>
         )}
         <SeverityBadge severity={writeup.severity} />
       </div>
 
-      <Link href={`/writeup/${writeup.id}`} className="text-base font-bold leading-snug text-[#e6edf3] hover:text-primary" dir="ltr">
+      <Link
+        href={`/writeup/${writeup.id}`}
+        className="text-[15px] font-bold leading-snug text-[#e6edf3] hover:text-primary sm:text-base"
+        dir="ltr"
+      >
         <span className="block text-right" dir="rtl">
           {writeup.title}
         </span>
       </Link>
 
       {!compact && summary && (
-        <p className="line-clamp-2 text-sm text-muted" dir={writeup.summary_ar ? "rtl" : "ltr"}>
+        <p className="line-clamp-2 text-sm leading-relaxed text-muted" dir={writeup.summary_ar ? "rtl" : "ltr"}>
           {summary}
         </p>
       )}
 
-      <div className="mt-1 flex flex-wrap gap-1.5">
+      <div className="mt-0.5 flex flex-wrap gap-1.5">
         {platform && <Tag href={`/platform/${platform.slug}`}>{platform.label}</Tag>}
         {writeup.categories.map((slug) => {
           const cat = getCategory(slug);
@@ -48,14 +53,22 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
         })}
       </div>
 
-      <a
-        href={writeup.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-1 w-fit text-xs font-semibold text-primary hover:underline"
-      >
-        اقرأ الـ writeup الأصلي ↗
-      </a>
+      <div className="mt-1 flex items-center gap-3">
+        <Link
+          href={`/writeup/${writeup.id}`}
+          className="rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary/20"
+        >
+          اقرأ الشرح الكامل
+        </Link>
+        <a
+          href={writeup.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-semibold text-muted transition hover:text-primary"
+        >
+          المصدر الأصلي ↗
+        </a>
+      </div>
     </article>
   );
 }

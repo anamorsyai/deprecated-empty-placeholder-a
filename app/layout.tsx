@@ -19,9 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar" dir="rtl" className={cairo.variable}>
       <body className="min-h-screen bg-bg font-sans antialiased">
-        <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4">
+        <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 sm:px-6 lg:px-8">
           <Header />
-          <main className="flex-1 py-6">{children}</main>
+          <main className="flex-1 py-5 sm:py-8">{children}</main>
           <Footer />
         </div>
       </body>

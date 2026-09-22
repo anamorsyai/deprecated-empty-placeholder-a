@@ -41,14 +41,16 @@ export default function SearchPage() {
   }, [fuse, q, index]);
 
   return (
-    <div>
-      <h1 className="mb-4 text-2xl font-extrabold">بحث</h1>
+    <div className="mx-auto max-w-2xl">
+      <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">بحث</h1>
+      <p className="mb-5 text-sm text-muted">بحث فوري في العنوان، الملخص، والمصدر — من غير سيرفر.</p>
+
       <input
         autoFocus
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="دوّر بالعنوان، النوع، أو المصدر... (مثال: IDOR, HackerOne, SSRF)"
-        className="mb-6 w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm outline-none focus:border-primary"
+        className="mb-6 w-full rounded-xl border border-border bg-surface px-4 py-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
       />
 
       {!index && <p className="text-muted">جاري تحميل الفهرس...</p>}
@@ -58,12 +60,12 @@ export default function SearchPage() {
           <li key={r.id}>
             <Link
               href={`/writeup/${r.id}`}
-              className="card-hover block rounded-lg border border-border bg-surface p-3 text-sm hover:text-primary"
+              className="card-hover flex items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 text-sm hover:text-primary"
             >
-              <span className="font-bold" dir="ltr">
+              <span className="min-w-0 flex-1 truncate font-bold" dir="ltr">
                 {r.title}
               </span>
-              <span className="ms-2 text-xs text-muted">{r.source}</span>
+              <span className="shrink-0 text-xs text-muted">{r.source}</span>
             </Link>
           </li>
         ))}

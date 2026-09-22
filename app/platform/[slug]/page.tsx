@@ -18,12 +18,12 @@ export default function PlatformPage({ params }: { params: { slug: string } }) {
 
   return (
     <div>
-      <h1 className="mb-1 text-2xl font-extrabold">{platform.label}</h1>
+      <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">{platform.label}</h1>
       <p className="mb-5 text-xs text-muted">{writeups.length} writeup</p>
       {writeups.length === 0 ? (
         <p className="text-muted">لسه معندناش writeups من المنصة دي.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {writeups.map((w) => (
             <WriteupCard key={w.id} writeup={w} />
           ))}

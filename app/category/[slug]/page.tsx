@@ -18,12 +18,12 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
   return (
     <div>
-      <h1 className="mb-1 text-2xl font-extrabold">{cat.label_ar}</h1>
+      <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">{cat.label_ar}</h1>
       <p className="mb-5 font-mono text-xs text-muted">{cat.label_en} · {writeups.length} writeup</p>
       {writeups.length === 0 ? (
         <p className="text-muted">لسه معندناش writeups في التصنيف ده.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {writeups.map((w) => (
             <WriteupCard key={w.id} writeup={w} />
           ))}

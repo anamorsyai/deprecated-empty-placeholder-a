@@ -10,18 +10,20 @@ const NAV = [
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-20 -mx-4 border-b border-border bg-bg/90 px-4 py-3 backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/" className="flex items-baseline gap-2">
-          <span className="text-xl font-extrabold text-primary">Bug Bounty Radar</span>
-          <span className="text-xs text-muted">رادار كتابات البج باونتي</span>
+    <header className="sticky top-0 z-20 -mx-4 border-b border-border bg-bg/85 px-4 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <Link href="/" className="flex items-baseline gap-2 shrink-0">
+          <span className="bg-gradient-to-l from-primary to-emerald-300 bg-clip-text text-lg font-extrabold text-transparent sm:text-xl">
+            Bug Bounty Radar
+          </span>
+          <span className="hidden text-xs text-muted xs:inline sm:inline">رادار كتابات البج باونتي</span>
         </Link>
-        <nav className="flex flex-wrap items-center gap-1 text-sm">
+        <nav className="no-scrollbar -mx-4 flex items-center gap-1 overflow-x-auto px-4 text-sm sm:mx-0 sm:px-0">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-md px-3 py-1.5 text-muted transition hover:bg-surface hover:text-primary"
+              className="shrink-0 rounded-md px-3 py-1.5 text-muted transition hover:bg-surface hover:text-primary"
             >
               {item.label}
             </Link>

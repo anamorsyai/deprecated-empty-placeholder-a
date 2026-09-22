@@ -36,12 +36,17 @@ Rules:
 - severity: your best judgement of real-world impact ("critical" for RCE/full account takeover/mass data breach, "high" for auth bypass/significant data exposure, "medium"/"low" otherwise, null if you truly cannot tell).
 - summary_en: 1-2 punchy sentences in English describing the vulnerability and impact (no fluff, no "this writeup discusses"). Used on list/card views.
 - summary_ar: the same 1-2 sentences in natural Modern Standard Arabic, technical terms (XSS, IDOR, RCE...) kept in Latin script. Used on list/card views.
-- The four lesson_*_ar fields are the full teaching content shown on the writeup's own page — write them as a real teacher would, in Arabic, technical terms in Latin script, each 3-6 sentences, concrete and specific to THIS writeup (never generic filler):
-  - lesson_cause_ar: الـ root cause — إزاي الثغرة دي حصلت أصلاً في تصميم أو تنفيذ النظام؟ ما الافتراض الخاطئ أو الفجوة في الـ logic اللي فتحت الباب؟
-  - lesson_walkthrough_ar: خطوة بخطوة إزاي الباحث اكتشف ثم استغل الثغرة — من الملاحظة الأولى (إيه اللي لفت نظره) لحد الـ payload/التقنية النهائية اللي أثبتت الثغرة، بأكبر تفاصيل تقنية متاحة من المحتوى (endpoints، parameters، الفرق بين المتوقع والفعلي).
-  - lesson_takeaway_ar: الدرس العملي لصياد ثغرات بيقرا الكتابة دي — إمتى يدور على النمط ده تاني، وإيه العلامات (signals) اللي تدله إن نفس الفئة من الثغرات ممكن تكون موجودة في هدف تاني.
-  - lesson_fix_ar: إزاي المطور كان/لازم يصلح المشكلة دي بشكل صحيح (مش بس "أصلحوها" — التفاصيل التقنية للحل الصح).
-- If the extracted content is too thin to teach any of the four lesson fields honestly, write "" for that field rather than inventing detail not supported by the source.`;
+- The four lesson_*_ar fields are the full teaching content shown on the writeup's own page — write them as a real teacher would, in Arabic, technical terms in Latin script, concrete and specific to THIS writeup (never generic filler that could apply to any writeup of the same vuln class):
+  - lesson_cause_ar (3-5 sentences): الـ root cause — إزاي الثغرة دي حصلت أصلاً في تصميم أو تنفيذ النظام؟ ما الافتراض الخاطئ أو الفجوة في الـ logic اللي فتحت الباب؟
+  - lesson_walkthrough_ar (THE MAIN EVENT — write this as an actual story, 8-14 sentences, not a dry list): احكي قصة اكتشاف واستغلال الثغرة بالترتيب الزمني بالظبط زي ما حصلت مع الباحث، بصوت راوي، وليس تعريف نظري. غطّي:
+      1) السياق: إيه اللي كان الباحث بيعمله وقت ما لاحظ حاجة غريبة (أي جزء من التطبيق كان بيفحص، وليه).
+      2) الملاحظة الأولى: إيه بالظبط اللي لفت نظره (سلوك غير متوقع، رسالة خطأ، فرق في الـ response، endpoint غريب).
+      3) التجربة: إيه اللي جرّبه بعد كده خطوة بخطوة — واقتبس كل تفصيلة حرفية موجودة في المقال (اسم الـ endpoint/الـ parameter، الـ payload أو الكود بالظبط، أي طلب/استجابة HTTP مذكورة، أي رسالة خطأ أو رقم status code).
+      4) النتيجة: الـ payload أو التقنية النهائية اللي أثبتت الثغرة، ونص إثبات الأثر (إيه اللي قدر يوصله/يشوفه/يعمله).
+      إذا المقال فيه مثال تقني محدد (URL، snippet كود، JSON، header)، لازم يتذكر حرفيًا جوه القصة مش يتلخّص لعبارة عامة — ده اللي بيفرق بين شرح حقيقي وملخص فاضي.
+  - lesson_takeaway_ar (3-5 sentences): الدرس العملي لصياد ثغرات بيقرا الكتابة دي — إمتى يدور على النمط ده تاني، وإيه العلامات (signals) اللي تدله إن نفس الفئة من الثغرات ممكن تكون موجودة في هدف تاني.
+  - lesson_fix_ar (3-5 sentences): إزاي المطور كان/لازم يصلح المشكلة دي بشكل صحيح (مش بس "أصلحوها" — التفاصيل التقنية للحل الصح).
+- If the extracted content is too thin to teach any of the four lesson fields honestly, write "" for that field rather than inventing detail not supported by the source. This applies especially to lesson_walkthrough_ar: a short, honest walkthrough using only what's really in the article beats a long one padded with invented specifics.`;
 
 export async function classifyAndSummarize(item) {
   if (PROVIDER === "none") return heuristicClassify(item);
@@ -105,10 +110,10 @@ async function callGemini(userPrompt) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    signal: AbortSignal.timeout(20000),
+    signal: AbortSignal.timeout(30000),
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: `${PROMPT_INSTRUCTIONS}\n\n${userPrompt}` }] }],
-      generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: 2048 },
+      generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: 3072 },
     }),
   });
   if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`);
@@ -120,11 +125,11 @@ async function callOpenAiCompatible(userPrompt, { base, key, model }) {
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
-    signal: AbortSignal.timeout(20000),
+    signal: AbortSignal.timeout(30000),
     body: JSON.stringify({
       model,
       temperature: 0.2,
-      max_tokens: 2048,
+      max_tokens: 3072,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: PROMPT_INSTRUCTIONS },

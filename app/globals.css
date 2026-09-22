@@ -8,7 +8,12 @@ html {
 
 body {
   background-color: #0b0f14;
+  background-image:
+    radial-gradient(60rem 40rem at 100% -10%, rgba(61, 220, 151, 0.08), transparent),
+    radial-gradient(50rem 30rem at -10% 20%, rgba(255, 107, 107, 0.05), transparent);
+  background-attachment: fixed;
   color: #e6edf3;
+  overflow-x: hidden;
 }
 
 ::selection {
@@ -16,12 +21,27 @@ body {
   color: #0b0f14;
 }
 
+:focus-visible {
+  outline: 2px solid #3ddc97;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .card-hover {
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 .card-hover:hover {
-  border-color: #3ddc97;
-  transform: translateY(-1px);
+  border-color: rgba(61, 220, 151, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgba(61, 220, 151, 0.15), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .line-clamp-2 {

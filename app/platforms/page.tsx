@@ -7,8 +7,8 @@ export default function PlatformsPage() {
   const sorted = [...platforms].sort((a, b) => platformCount(b.slug) - platformCount(a.slug));
   return (
     <div>
-      <h1 className="mb-5 text-2xl font-extrabold">المنصات</h1>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <h1 className="mb-5 text-2xl font-extrabold sm:text-3xl">المنصات</h1>
+      <div className="grid gap-3 xs:grid-cols-2 lg:grid-cols-3">
         {sorted.map((p) => (
           <Link
             key={p.slug}

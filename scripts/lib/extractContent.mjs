@@ -39,7 +39,7 @@ function parseJinaResponse(text) {
   return {
     cleanTitle: pickBestTitle(titleMatch ? titleMatch[1].trim() : null, rawBody),
     excerpt: body.replace(/\s+/g, " ").slice(0, 600).trim(),
-    fullTextForClassification: body.slice(0, 6000),
+    fullTextForClassification: body.slice(0, 9000),
   };
 }
 
