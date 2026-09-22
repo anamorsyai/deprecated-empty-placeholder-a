@@ -1,5 +1,75 @@
 [
   {
+    "id": "997a0069b2df",
+    "title": "52 Request Smuggling Reports. Two Rules Decide the Payout.",
+    "url": "https://infosecwriteups.com/52-request-smuggling-reports-two-rules-decide-the-payout-901479562df9",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Raj Namdev"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T22:42:06.000Z",
+    "added_at": "2026-09-22T23:31:17.450Z",
+    "categories": [
+      "other",
+      "cache-smuggling",
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "An analysis of all 52 disclosed HTTP request smuggling reports on HackerOne (21 paid, $53,040 total) reveals two payout rules — the storefront sets the floor, the proven attack chain sets the ceiling — and shows how CRLF-powered desync turns header injection into full request smuggling.",
+    "summary_ar": "تحليل لـ 52 تقرير HTTP Request Smuggling منشور على HackerOne (21 تقرير مدفوع بإجمالي $53,040) يكشف قاعدتين تحكمان قيمة المكافآت — الـ storefront يحدد الحد الأدنى وسلسلة الاستغلال المثبتة تحدد الحد الأقصى — ويوضح كيف تحوّل هجمات CRLF-powered desync حقن الهيدر إلى Request Smuggling كامل.",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي هو اختلاف تفسير حدود الطلبات بين الـ front-end والـ back-end. المقال بيوضح إن إعدادات Nginx زي `proxy_pass http://backend$uri;` بتعمل URL-decode للمسار، فـ `%0d%0a` في الـ URL بتبقى سطرين جديدين حقيقيين (CRLF). ولما ييجي سطرين CRLF متتاليين، الـ hop اللي بعده بيشوفهم كحدود طلب جديد — يعني المهاجم يقدر يحقن طلب كامل جوه طلب تاني. الافتراض الغلط اللي فتح الباب هو إن الـ URL-encoding في الـ path مجرد ترميز غير ضار، بينما في الحقيقة بيتم فك ترميزه قبل ما يوصل للـ backend فيتحول لسلوك خطير.",
+      "walkthrough_ar": "المقال بيحكي إن الكاتب قرر يرجع للمصدر الأصلي: كل الـ 52 تقرير Request Smuggling المنشور على HackerOne — 21 منهم اتدفعوا بإجمالي $53,040. السياق إن PortSwigger نشرت في 5 أغسطس بحث \"CRLF-Powered Desync Attacks\" وقدّموه في Black Hat USA و DEF CON، والادعاء إن header injection أقل من قيمته بكتير. التقنية الأساسية: إعدادات Nginx زي `proxy_pass http://backend$uri;` بتفك ترميز المسار، فحقن `%0d%0a` في الـ URL بيبقى سطرين CRLF حقيقيين، وسطرين CRLF متتاليين بالنسبة للـ hop اللي بعده هما مجرد حدود طلب جديد. من هنا بيبدأ الـ desync: response queue poisoning، و request tunnelling يعدّي على الـ access controls، و cache poisoning، و cookie tossing. بعدها الكاتب حلل المكافآت وطلع بقاعدتين: الـ storefront بيحدد الحد الأدنى — نفس فئة الـ parser-quirk جابت $4,660 عن طريق Internet Bug Bounty و $250 بس عن طريق برنامج الـ vendor نفسه. والـ proven chain بيحدد السقف — الـ desync لوحده ما عدّاش $750، لكن سرقة كلمات المرور والـ tokens وتجاوز الـ access controls وصلت من $3,000 لـ $7,500. وفي النهاية: خمسة أنماط (patterns) بتغطي كل التقرير، وواحد من النتائج كان bounty بقيمة $20,000 على اكتشاف في شركة اتصالات.",
+      "takeaway_ar": "الدرس العملي: لما تلاقي أي header injection أو CRLF في مسار الـ URL، متستهونش بيه — جرّب تحوله لـ desync كامل. علامات الخطر: proxy بيعمل URL-decode للمسار زي `proxy_pass http://backend$uri;`، أو أي اختلاف بين طريقة تفسير الـ front-end والـ back-end لحدود الطلبات. جرّب حقن `%0d%0a` متتاليين ولاحظ لو في طلب تاني بيتنفذ أو الـ response بيتسمم. وكمان افتكر إن قيمة الـ report مش بس في الـ bug نفسه — الـ impact المثبت (سرقة tokens، تجاوز access controls) هو اللي بيحدد السقف، فدايمًا اشتغل على إثبات سلسلة استغلال كاملة مش مجرد desync معزول.",
+      "fix_ar": "الإصلاح الصح بيبدأ من إعدادات الـ proxy: متخليش Nginx يفك ترميز المسار قبل ما يبعت للـ backend — أو على الأقل ارفض أو عطّل أي `%0d%0a` في الـ path قبل الـ proxy_pass. كمان لازم يكون فيه تطبيع (normalization) للـ input عند الـ edge، وفحص إن الـ CRLF مبيوصلش للـ backend كحدود طلب. والأهم: الـ front-end والـ back-end لازم يتفقوا على نفس قواعد تحديد نهاية الطلب (Content-Length vs Transfer-Encoding)، عشان مفيش فراغ بينهم يقدر المهاجم يستغله. ولو في header injection في أي مكان، عالج الـ root cause نفسه بدل ما تسد ثغرة واحدة."
+    },
+    "excerpt": "Cybersecurity Writer · Breaking down real vulnerabilities, exploits & attack surfaces · Hands-on labs, real code, no fluff Follow writer [![Image 3: Raj Namdev](https://miro.medium.com/v2/resize:fill:40:40/1*qKc3NlEudBR8LvTVmc0eBA.jpeg)](https://infosecwriteups.com/?source=post_page---post_author_sidebar--901479562df9-----------------8ef0432b7221------------------------) ## Raj Namdev Cybersecurity Writer · Breaking down real vulnerabilities, exploits & attack surfaces · Hands-on labs, real code, no fluff Follow writer Member-only story [Bug Bounty](https://medium.com/tag/bug-bounty?source=pos",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "e5c4d34f1e4a",
+    "title": "Insecure Authorization on *** Android — mobile application",
+    "url": "https://medium.com/@jokodfir/insecure-authorization-on-android-mobile-application-89472e4f468b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Joko Purwanto"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T22:16:43.000Z",
+    "added_at": "2026-09-22T23:31:48.088Z",
+    "categories": [
+      "oauth-jwt",
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "The Android app's exported CustomTabFlowActivity accepts any OAuth/SSO redirect URI without verifying state, nonce, or PKCE, so an attacker can inject a forged redirect and hijack browser-based OAuth flows such as third-party Marketplace (Google Drive) account linking.",
+    "summary_ar": "في تطبيق Android، الـ Activity المصدّرة CustomTabFlowActivity بتستقبل أي URI redirect من تدفقات OAuth/SSO من غير ما تتحقق من state أو nonce أو PKCE، فالمهاجم يقدر يحقن redirect مزيف ويختطف تدفق OAuth زي ربط تطبيقات Marketplace (Google Drive) ويحصل على صلاحيات غير مصرح بها.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن الـ Activity اسمها CustomTabFlowActivity مكتوبة في الـ manifest بـ android:exported=\"true\" ومسجّلة كـ redirect target لعدة تدفقات OAuth/SSO حساسة مبنية على المتصفح، زي com.canva.editor://oauth (مستخدم في ربط تطبيقات Marketplace تبع طرف تالت زي Google Drive) و canva://sso وكمان App Links على canva.com. الباحث فكّك التطبيق وتتبّع مسار معالجة الـ redirect: CustomTabFlowActivity -> CustomTabFlowViewModel.f(Uri) -> BrowserFlowResultManager.a(Uri). في أي نقطة في المسار ده مفيش تحقق إن الـ state أو code أو token اللي جايين في الـ URI مربوطين بتدفق بدأه نفس الـ instance من التطبيق — مفيش مقارنة nonce/state، مفيش فحص PKCE verifier، ومفيش تحقق من هوية الـ caller. النتيجة إن أي URI بيتوصّل للـ Activity بيتعاد نشره كأنه \"flow completed\" لأي business logic شغّالة في اللحظة دي، من غير أي إثبات إنه فعلاً نتيجة تدفق شرعي.",
+      "walkthrough_ar": "الباحث كان بيفحص تطبيق Android لهدف bug bounty، وبدأ بمراجعة الـ manifest عشان يلاقي الـ Activities المصدّرة والـ deep links. لفت نظره إن CustomTabFlowActivity مكتوبة بـ android:exported=\"true\" ومسجّلة كـ redirect target لتدفقات OAuth/SSO حساسة: com.canva.editor://oauth (مستخدم في ربط تطبيقات Marketplace تبع طرف تالت زي Google Drive)، com.canva.editor://external-app-config، canva://sso، وكمان App Links على https://www.canva.com/oauth/transfer و /login/sso/transfer و /apps/oauth/authorized/app و /apps/configured/app مع autoVerify=\"true\". عشان يفهم اللي بيحصل فعلاً، فكّك التطبيق وتتبّع الكود الأصلي اللي بيعالج الـ redirect الوارد: CustomTabFlowActivity -> CustomTabFlowViewModel.f(Uri) -> BrowserFlowResultManager.a(Uri). في المسار ده كلّه ملقاش أي نقطة بتتحقق إن الـ state أو code أو token اللي جايين في الـ URI مربوطين بتدفق بدأه نفس الـ instance من التطبيق — مفيش مقارنة nonce/state، مفيش فحص PKCE verifier، ومفيش تحقق من هوية الـ caller. الطريقة ببساطة بتعيد نشر أي Uri بتوصّل له كأنه \"flow completed\" لأي business logic مستمعة في اللحظة دي. النتيجة إن أي تطبيق أو صفحة ضارة تقدر تفتح الـ deep link ده بـ URI مفبرك، والتطبيق هيتعامل معاه كأنه نتيجة تدفق OAuth شرعي — وده بيفتح باب لاختطاف تدفق OAuth/SSO وربط حسابات بطرف تالت بشكل غير مصرح به.",
+      "takeaway_ar": "أي تطبيق Android فيه OAuth/SSO مبني على المتصفح لازم تبدأ فحصك من الـ manifest: دوّر على Activities مكتوبة بـ android:exported=\"true\" ومسجّلة كـ redirect target لـ custom schemes أو App Links. بعدها فكّك التطبيق وتتبّع مسار معالجة الـ Uri من الـ Activity للـ ViewModel للـ Manager، وافحص كل نقطة على الطريق: هل في مقارنة state/nonce؟ هل في PKCE verifier؟ هل في تحقق من هوية الـ caller؟ غياب أي واحدة من دول علامة قوية على ثغرة Insecure Authorization. نفس النمط بيتكرر في أي تطبيق بيعتمد على OAuth redirects — مش بس الهدف ده.",
+      "fix_ar": "الحل الصح إن معالجة الـ redirect لازم تتحقق إن الـ state أو nonce اللي راجع في الـ URI هو نفس اللي التطبيق ولّده وربطه بالتدفق اللي بدأه — مقارنة صارمة قبل ما تنشر أي نتيجة لأي business logic. كمان لازم يتفعّل PKCE مع تخزين الـ verifier في جلسة التدفق نفسها والتحقق منه عند الـ callback. الـ Activity نفسها لازم تبقى مش exported، أو لو لازمة exported يبقى في permission مخصصة وفحص هوية الـ caller قبل معالجة الـ Uri. ويفضل الاعتماد على App Links مع autoVerify بدل custom schemes، مع التحقق الصارم من الـ host والـ path لكل redirect وارد."
+    },
+    "excerpt": "com.***.browserflow.feature.CustomTabFlowActivity is exported (android:exported=”true”) and registered as the redirect target for several sensitive browser-based OAuth/SSO flows, including: * com.***.editor://oauth (used by 3rd-party Marketplace app connections, e.g. Google Drive) * com.***.editor://external-app-config * ***editor://sso * [https://www.***.com/oauth/transfer,](https://www.canva.com/oauth/transfer,) /login/sso/transfer, /apps/oauth/authorized/app, /apps/configured/app (App Links, autoVerify=”true”) I decompiled the app and traced the native code that handles an incoming redirect",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c623ee07e137",
     "title": "Bug Bounty শুরু করার আগে যা বুঝতে হবে",
     "url": "https://medium.com/@cyber.mehedi.13/bug-bounty-%E0%A6%B6%E0%A7%81%E0%A6%B0%E0%A7%81-%E0%A6%95%E0%A6%B0%E0%A6%BE%E0%A6%B0-%E0%A6%86%E0%A6%97%E0%A7%87-%E0%A6%AF%E0%A6%BE-%E0%A6%AC%E0%A7%81%E0%A6%9D%E0%A6%A4%E0%A7%87-%E0%A6%B9%E0%A6%AC%E0%A7%87-c53ab87a911b",
@@ -2151,6 +2221,39 @@
     "score": 60
   },
   {
+    "id": "e18be301196c",
+    "title": "Another 1500$: CR/LF Injection",
+    "url": "https://medium.com/@a13h1/1500-cr-lf-injection-59152daaf413",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Abhi Sharma (@a13h1_)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "1,500",
+    "published_at": "2024-08-18T00:00:00.000Z",
+    "added_at": "2026-09-22T23:32:48.105Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "high",
+    "summary_en": "A CRLF injection in HuliaHub's authentication flow let an attacker inject %0D%0A into the redirect URL parameter to manipulate HTTP headers and perform malicious actions post-authentication. Reported to the private bug bounty program for a $1,500 payout — the researcher's second CRLF finding there in a month.",
+    "summary_ar": "ثغرة CRLF injection في آلية الـ authentication بمنصة HuliaHub سمحت للمهاجم بحقن %0D%0A في الـ redirect URL parameter للتلاعب بـ HTTP headers وتنفيذ إجراءات خبيثة بعد تسجيل الدخول. اتقبلت في برنامج bug bounty خاص بمكافأة $1,500 — وهي تاني ثغرة CRLF يلاقيها الباحث في نفس البرنامج خلال شهر.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن تطبيق HuliaHub كان بياخد قيمة الـ redirect URL parameter من المستخدم أثناء عملية الـ authentication وبيعكسها في HTTP headers من غير أي sanitization أو encoding. المطور افترض إن الـ parameter ده هيحتوي على URL عادي بس، فمفيش validation على المحتوى، وده خلّى إمكانية حقن حروف الـ CR/LF (%0D%0A) اللي بتترجم كسطر جديد في الـ header. النتيجة إن المهاجم يقدر يضيف headers جديدة أو يعدّل سلوك الـ response بعد تسجيل الدخول، وده بيفتح باب لسلسلة هجمات تانية. حقيقة إن الباحث لقى نفس الثغرة مرتين في نفس البرنامج خلال شهر بتأكد إن المشكلة كانت منهجية في طريقة التعامل مع المدخلات دي مش خطأ فردي.",
+      "walkthrough_ar": "الباحث كان بيعمل تقييم أمني على منصة HuliaHub (اسم مستعار لبرنامج bug bounty خاص)، وده كان تاني اكتشاف لثغرة CR/LF في نفس البرنامج خلال شهر واحد — يعني كان عنده خبرة سابقة بنفس النمط. وقت فحص آلية الـ authentication، لفت نظره إن في parameter مسؤول عن الـ redirect بعد تسجيل الدخول، وده النوع اللي بيترجم غالبًا لـ HTTP header في الـ response. جرّب يحقن حروف الـ CR/LF المشفرة %0D%0A جوه قيمة الـ parameter بدل ما يبعت URL عادي. التطبيق ما عملش أي filter أو encoding للحروف دي، فاتعامل معاها كسطر جديد في الـ header وسمح للباحث يتحكم في الـ headers اللي بترجع للمستخدم. النتيجة إن المهاجم يقدر ينفذ إجراءات خبيثة بعد الـ authentication عن طريق التلاعب بالـ response. الثغرة اتقبلت واتصنفت critical واتدفع عنها $1500.",
+      "takeaway_ar": "أي parameter بيظهر في تدفق الـ login/SSO واسمه من عيلة redirect (زي redirect، returnUrl، next، callback) يستاهل اختبار CRLF فورًا — جرّب تحقن %0D%0A في قيمته وشوف لو ظهر header جديد في الـ response. العلامة الأقوى إنك لو لقيت CRLF في endpoint واحد، دوّر على نفس النمط في باقي الـ endpoints اللي بتعكس مدخلات في headers، لأن المشكلة غالبًا متكررة في نفس الكود (زي ما حصل هنا: ثغرتين في شهر). كمان راقب الـ response في Burp على مستوى الـ raw headers مش بس الـ browser، لأن أثر الحقن بيبان هناك. ولو الـ redirect بيحصل بعد الـ authentication، اختبر السيناريو كامل لأن الأثر ممكن يكون أعلى من مجرد open redirect.",
+      "fix_ar": "الحل الصح إن أي قيمة بتترجم لـ HTTP header لازم تعدي على validation صارمة: ارفض أو strip أي حروف تحكم زي \\r و \\n (أو %0D و %0A) قبل ما تدخل الـ header. الأفضل كمان إن الـ redirect parameter يبقى whitelist للـ URLs المسموحة بدل ما يستقبل أي قيمة من المستخدم. لو التطبيق محتاج يدعم redirects ديناميكية، استخدم encoding آمن أو دوال جاهزة في الـ framework بترفض القيم غير الصالحة للـ headers. والأهم إن الـ fix يتطبق على كل الـ endpoints اللي بتعكس مدخلات في headers، مش بس اللي اتلاقت فيه الثغرة، عشان نفس النمط متكرر."
+    },
+    "excerpt": "**Hi Everyone**, How you all doing. Recently, while assessing the security of HuliaHub(Pseudonym of a private bbp), I found a critical CR/LF vulnerability. This marks my second CR/LF injection vulnerability found in this particular program within a month, highlighting the importance of rigorous security testing and patching. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*qNaRR5ZuJg-dBy5TKngkBA.png) > **_Understanding CR/LF (Carriage Return/Line Feed) Injection_** CR/LF (Carriage Return/Line Feed) injection is a type of security vulnerabil",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "deb9cf380c18",
     "title": "$1600 Bounty on a Main Domain",
     "url": "https://medium.com/@debu8er/1600-bounty-on-a-main-domain-8c30557c0f64",
@@ -2186,6 +2289,40 @@
     "score": 53
   },
   {
+    "id": "0a1bb956fdf9",
+    "title": "Spip Preauth RCE 2024: Part 1, The Feather",
+    "url": "https://thinkloveshare.com/hacking/spip_preauth_rce_2024_part_1_the_feather",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Laluka (@TheLaluka)"
+    ],
+    "program": "SPIP",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-16T00:00:00.000Z",
+    "added_at": "2026-09-22T23:33:33.827Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "Unauthenticated RCE in SPIP's porte_plume plugin: chaining the previsualization IDOR (document ID to link resolution) with a template eval sink lets an attacker run arbitrary PHP (system('id')) with zero authentication. Patched in SPIP 4.2.13 / 4.1.16 / 4.3.0-alpha2.",
+    "summary_ar": "ثغرة RCE بدون تسجيل دخول في SPIP عبر إضافة porte_plume: ربط ثغرة IDOR في خاصية المعاينة (تحويل معرف المستند إلى رابط) مع eval في محرك القوالب يسمح للمهاجم بتنفيذ أوامر PHP عشوائية (system('id')) بدون أي مصادقة. تم إصلاحها في SPIP 4.2.13 / 4.1.16 / 4.3.0-alpha2.",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي قرار تصميمي في إضافة porte_plume: الكود بيقول صراحةً إن أي PHP جاي من قالب لازم يتنفّذ عبر eval لأنه مش صفحة عادية — وده مكتوب حرفيًا في تعليق في الـ code. الفكرة كانت إن sanitization هتمنع أي PHP خبيث قبل ما يوصل للـ eval، لكن محرك القوالب في SPIP معقّد جدًا (spaghetti) وبيسمح بتمرير محتوى من خلال الـ url slugs و text formats بطريقة بتكسر الـ sanitization. كمان خاصية المعاينة porte_plume_previsu كانت بتسمح لأي حد من غير حساب بحلّ معرفات المستندات والصور لروابط كاملة (IDOR)، وده فتح الطريق للوصول للـ eval. الافتراض الخاطئ إن الفلاتر هتلتقط أي محتوى ضار، لكن تركيب الفلاتر مع بعضه هو اللي كان بيكسر الحماية.",
+      "walkthrough_ar": "الباحث كان شغّال على SPIP من فترة، وبقاله سنتين عامل cron task بيجيب تغييرات الـ core والـ plugins يوميًا الساعة 9 بالليل، بيقسّم الـ diffs لقطع صغيرة ويرسلها على Discord خاص بيه. في يوم من الأيام طلع commit في إضافة porte_plume (3ca4cf78b96d927121c767a720203845071b7fda) فيه سطر لفت نظره: أي PHP جاي من قالب لازم يتنفّذ بـ eval. الباحث كان عارف إن الكود ده عايش في porte_plume وإنه ممكن يوصل له من غير حساب، فبدأ يسأل: نقدر نوصل للـ eval؟ أول خطوة كانت استغلال خاصية معروفة في الـ previsualization: إرسال طلب POST للـ endpoint بتاعها بيحلّ معرفات المستندات والصور لروابط كاملة، وده IDOR بحد ذاته بيسمح بتسريب محتوى الموقع كله. الطلب كان: curl -sSkiL 'http://0.0.0.0:8000/index.php?action=porte_plume_previsu' -X POST -d 'data=AA<doc1>BB'. بعدين حاول يحط PHP code في نفس المسار، لكن الـ sanitization كانت بتقبض عليه وتحيط الـ payload بتحذيرات وتكسرها. بدل ما يستسلم، راح يقرأ الكود: grep على '>->' كشف إن الروابط بتتعرّف بشكل خاص، وإن الـ url slugs و text formats ممكن تتحكم في طريقة المعالجة. كتب fuzzer بسيط بيبعت كل أنواع الـ URLs والـ formats ويسجّل المحتوى اللي بيوصل للـ eval، وهنا اشتعلت الأمور. النتيجة كانت payload شغالة: [<img111111>->URL`<?php system(\"id\");?>`] — يعني link من مستند غير موجود (img111111) والـ slug بتاعه فيه payload PHP عريض (bold) بينفّذ أمر id. الاستغلال النهائي كان عبر نفس الـ endpoint: curl -sSkiL 'http://0.0.0.0:8000/index.php?action=porte_plume_previsu' -X POST -d 'da...' — وده خلّى الـ eval ينفّذ الكود من غير أي تسجيل دخول.",
+      "takeaway_ar": "الدرس الأول: راقب تغييرات الـ code في الهدف — الباحث مسك الثغرة من commit واحد في الـ plugins قبل ما تتعرف، وده أسلوب قوي جدًا في الـ 0-day research. تاني حاجة: لما تلاقي eval أو sink خطير في كود ممكن يوصل له من غير auth، متسلمش بالـ sanitization — جرّب تركيب فلاتر مختلفة مع بعض، لأن الـ sanitization غالبًا بتتكسّر بتركيبات معينة. ثالثًا: الـ IDOR في ميزة زي الـ previsualization ممكن يكون أول حلقة في سلسلة توصلك لـ RCE، فبلاش تستهون بأي ميزة بسيطة. وأخيرًا: الـ fuzzing مع logging للمحتوى اللي بيوصل للـ sink هو أسرع طريقة تكتشف إن في bypass.",
+      "fix_ar": "الإصلاح الجذري هو إزالة الـ eval نهائيًا من مسار معالجة القوالب — مفيش أي مبرر لتنفيذ PHP جاي من محتوى ممكن يكون user-controlled. لو الـ eval لازم يفضل، لازم sanitization صارمة جدًا بتشيل أي PHP tags قبل أي معالجة، ومش بس فلاتر سطحية بتتكسّر بتركيبات الـ formatting. كمان لازم يتقفل الـ IDOR في porte_plume_previsu اللي بيسمح بحلّ معرفات المستندات من غير مصادقة، لأنها كانت أول حلقة في السلسلة. SPIP عملت patch في 4-3-0-alpha2 و4-2-13 و4.1.16، لكن المهم إن الثغرة كانت في إضافة porte_plume، فلو حد حدّث الـ core من غير ما يحدّث الـ plugins لسه معرّض — فالإصلاح لازم يشمل الـ plugin نفسه."
+    },
+    "excerpt": "Hi dear Sir, Madam. Please be informed that this is the **third** article dedicated to [Spip](https://www.spip.net/) 0-day research, if you haven’t read the first ones, I’d recommend reading them first! * [RCE on Spip and Root-Me](https://thinkloveshare.com/hacking/rce_on_spip_and_root_me/) * [RCE on Spip and Root-Me, v2!](https://thinkloveshare.com/hacking/rce_on_spip_and_root_me_v2/) This article will cover the `issue and exploit` for an `Unauthenticated Remote Code Execution` found on `Spip`, it has been patched in the releases for [4-3-0-alpha2, 4-2-13, and 4.1.16](https://blog.spip.net/Mi",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "78f0a6a9d6bc",
     "title": "500$ From Meta by reporting a HTMLi(Accidental Bug)",
     "url": "https://armx64.medium.com/500-from-meta-by-reporting-a-htmli-accidental-bug-fef2e5a0f4c4",
@@ -2218,6 +2355,73 @@
     "ai_generated": true,
     "engagement": null,
     "score": 43
+  },
+  {
+    "id": "35cccfd073c8",
+    "title": "Addressed AWS defaults risks: OIDC, Terraform and Anonymous to AdministratorAccess",
+    "url": "https://hacktodef.com/addressed-aws-defaults-risks-oidc-terraform-and-anonymous-to-administratoraccess",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Eduard Agavriloae (@saw_your_packet)"
+    ],
+    "program": "AWS",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-22T23:34:16.944Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "summary_en": "A misconfigured AWS IAM role trust policy for Terraform Cloud OIDC (missing the \"sub\" condition) let anyone assume an AdministratorAccess role, opening the door to mass exploitation of random AWS accounts. AWS improved the default trust policy and contacted affected customers after disclosure.",
+    "summary_ar": "ثغرة في إعدادات AWS الافتراضية: trust policy لدور IAM مرتبط بـ Terraform Cloud عبر OIDC كان ينقصها شرط الـ sub، فسمحت لأي شخص بافتراض دور عليه AdministratorAccess — ما فتح باب استغلال جماعي لحسابات AWS عشوائية. أبلغ الباحث AWS فحسّنت الـ trust policy الافتراضية وتواصلت مع العملاء المتأثرين.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن trust policy لدور IAM خاص بـ Terraform Cloud كانت فيها شرط واحد بس — الـ aud (audience) — من غير شرط الـ sub (subject) اللي بيحدد مين بالظبط يقدر يفترض الدور. الافتراض الغلط إن وجود OIDC provider وحده كفاية لتقييد الوصول، لكن الحقيقة إن أي حد عنده حساب على Terraform Cloud (أو أي IdP تاني) يقدر يستدعي sts:AssumeRoleWithWebIdentity ويفترض الدور. المشكلة اتضاعفت لأن الدور ده كان مربوط بسياسة AdministratorAccess، يعني أي شخص يقدر ياخد صلاحيات أدمن كاملة على الحساب. كمان غياب الـ sub بيخلي الـ trust policy مفتوحة لأي منظمة بره سيطرة صاحب الحساب، وده اللي بيحوّلها من مشكلة محلية لخطر استغلال جماعي.",
+      "walkthrough_ar": "الباحث كان بيعمل AWS security configuration review ضمن تعاون مع Syn Cubes، وبيبحث عن IAM roles تقدر تفترضها service accounts من EKS cluster. كان بيدور على trust policies فيها شرطين: الـ aud والـ sub، زي اللي بتسمح بس لـ my-service-account في namespace معيّن. في آخر الأدوار اللي فحصها، لقي trust policy مختلفة — مش لـ EKS لكن لـ Terraform Cloud — وفيها شرط واحد بس للـ audience من غير أي قيد على الـ subject. لما راح يشوف صلاحيات الدور، لقاها AdministratorAccess، وده خلاه يسأل: من غير شرط الـ sub، هل الدور ده يقدر يفترضه أي حد؟ وإزاي؟ الإجابة إن أي حد عنده حساب على Terraform Cloud يقدر يستخدم sts:AssumeRoleWithWebIdentity ويفترض الدور وياخد صلاحيات الأدمن. الباحث قارنها بالـ trust policy الآمنة اللي HashiCorp بتوثقها، واللي بتضيف شرط StringLike على app.terraform.io:sub بصيغة organization:<your-terraform-organization>:project:*:workspace:*:run_phase:* — عشان تقيّد الافتراض بمنظمة معينة. المشكلة إن غياب الشرط ده بيخلي أي منظمة بره سيطرة صاحب الحساب تقدر تفترض الدور، وده بيفتح باب mass exploitation لحسابات AWS عشوائية. الباحث بلّغ AWS، وAWS حسّنت الـ default Terraform OIDC Trust Policy وتواصلت مع العملاء اللي كانوا في الإعداد ده.",
+      "takeaway_ar": "أي مراجعة أمان لحساب AWS لازم تبدأ بفحص trust policies لكل أدوار IAM المرتبطة بـ OIDC providers (Terraform Cloud، GitHub Actions، GitLab، EKS...). العلامة الحمراء إنك تلاقي شرط aud بس من غير sub، أو sub فيها wildcard (*) في الـ namespace أو اسم الـ service account. دايماً اربط الـ trust policy بالصلاحيات المرفقة بالدور: لو الدور عليه AdministratorAccess والـ trust policy مفتوحة، دي critical فوراً. نفس النمط بيتكرر مع أي IdP تاني، فالأسلوب واحد: اسأل نفسك مين يقدر يستدعي AssumeRoleWithWebIdentity على الدور ده من بره سيطرتك.",
+      "fix_ar": "الحل الصح إنك تضيف شرط الـ sub للـ trust policy وتقيّده بمنظمة Terraform Cloud المحددة بتاعتك، باستخدام StringLike على app.terraform.io:sub بصيغة organization:<org>:project:*:workspace:*:run_phase:*. AWS نفسها حسّنت الـ default Terraform OIDC Trust Policy بعد البلاغ، ونصحت العملاء يحدّوا condition key الـ sub عشان يمنعوا أي منظمات بره سيطرتهم من افتراض الأدوار. كمان لازم تختبر أي configuration قبل ما تنزّلها على production، وتراجع إن مفيش wildcard واسع في الـ sub، وتتأكد إن least privilege مطبق على الدور نفسه مش بس على الـ trust policy."
+    },
+    "excerpt": "![Image 5: Addressed AWS defaults risks: OIDC, Terraform and Anonymous to AdministratorAccess](https://cdn.hashnode.com/res/hashnode/image/upload/v1717956282978/05f68c36-8be3-4b36-8933-588643870223.png) [E](https://hashnode.com/@sawyourpacket) [Eduard Agavriloae](https://hashnode.com/@sawyourpacket) [](https://twitter.com/saw_your_packet)[](https://www.linkedin.com/in/eduard-k-agavriloae/) Cybersecurity Researcher, AWS Offensive Security Expert, experienced penetration tester and ex web developer. On this page [Introduction](https://hacktodef.com/addressed-aws-defaults-risks-oidc-terraform-and",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "731d0307b298",
+    "title": "Oops I UDL'd it Again",
+    "url": "https://trustedsec.com/blog/oops-i-udld-it-again",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Oddvar Moe (@Oddvarmoe)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-22T23:34:23.539Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Phishing. We all love phishing. This post is about a new phishing technique based on some legacy knowledge I had that can be used to get past email filters and such.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Phishing. We all love phishing. This post is about a new phishing technique based on some legacy knowledge I had that can be used to get past email filters and such. I would expect that after publication, this method will be identified and addressed by most vendors. ## The Discovery As usual, the discovery was made during an engagement where I actually did something completely different. I was in a scenario where I needed to find the databases servers through a locked down Citrix session. Based on some old notes I had from 2017, I knew that there is a native way to enumerate database servers i",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
   },
   {
     "id": "8088fa5dc7bd",

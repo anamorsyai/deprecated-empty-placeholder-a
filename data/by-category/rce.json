@@ -984,6 +984,40 @@
     "score": 60
   },
   {
+    "id": "0a1bb956fdf9",
+    "title": "Spip Preauth RCE 2024: Part 1, The Feather",
+    "url": "https://thinkloveshare.com/hacking/spip_preauth_rce_2024_part_1_the_feather",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Laluka (@TheLaluka)"
+    ],
+    "program": "SPIP",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-16T00:00:00.000Z",
+    "added_at": "2026-09-22T23:33:33.827Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "Unauthenticated RCE in SPIP's porte_plume plugin: chaining the previsualization IDOR (document ID to link resolution) with a template eval sink lets an attacker run arbitrary PHP (system('id')) with zero authentication. Patched in SPIP 4.2.13 / 4.1.16 / 4.3.0-alpha2.",
+    "summary_ar": "ثغرة RCE بدون تسجيل دخول في SPIP عبر إضافة porte_plume: ربط ثغرة IDOR في خاصية المعاينة (تحويل معرف المستند إلى رابط) مع eval في محرك القوالب يسمح للمهاجم بتنفيذ أوامر PHP عشوائية (system('id')) بدون أي مصادقة. تم إصلاحها في SPIP 4.2.13 / 4.1.16 / 4.3.0-alpha2.",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي قرار تصميمي في إضافة porte_plume: الكود بيقول صراحةً إن أي PHP جاي من قالب لازم يتنفّذ عبر eval لأنه مش صفحة عادية — وده مكتوب حرفيًا في تعليق في الـ code. الفكرة كانت إن sanitization هتمنع أي PHP خبيث قبل ما يوصل للـ eval، لكن محرك القوالب في SPIP معقّد جدًا (spaghetti) وبيسمح بتمرير محتوى من خلال الـ url slugs و text formats بطريقة بتكسر الـ sanitization. كمان خاصية المعاينة porte_plume_previsu كانت بتسمح لأي حد من غير حساب بحلّ معرفات المستندات والصور لروابط كاملة (IDOR)، وده فتح الطريق للوصول للـ eval. الافتراض الخاطئ إن الفلاتر هتلتقط أي محتوى ضار، لكن تركيب الفلاتر مع بعضه هو اللي كان بيكسر الحماية.",
+      "walkthrough_ar": "الباحث كان شغّال على SPIP من فترة، وبقاله سنتين عامل cron task بيجيب تغييرات الـ core والـ plugins يوميًا الساعة 9 بالليل، بيقسّم الـ diffs لقطع صغيرة ويرسلها على Discord خاص بيه. في يوم من الأيام طلع commit في إضافة porte_plume (3ca4cf78b96d927121c767a720203845071b7fda) فيه سطر لفت نظره: أي PHP جاي من قالب لازم يتنفّذ بـ eval. الباحث كان عارف إن الكود ده عايش في porte_plume وإنه ممكن يوصل له من غير حساب، فبدأ يسأل: نقدر نوصل للـ eval؟ أول خطوة كانت استغلال خاصية معروفة في الـ previsualization: إرسال طلب POST للـ endpoint بتاعها بيحلّ معرفات المستندات والصور لروابط كاملة، وده IDOR بحد ذاته بيسمح بتسريب محتوى الموقع كله. الطلب كان: curl -sSkiL 'http://0.0.0.0:8000/index.php?action=porte_plume_previsu' -X POST -d 'data=AA<doc1>BB'. بعدين حاول يحط PHP code في نفس المسار، لكن الـ sanitization كانت بتقبض عليه وتحيط الـ payload بتحذيرات وتكسرها. بدل ما يستسلم، راح يقرأ الكود: grep على '>->' كشف إن الروابط بتتعرّف بشكل خاص، وإن الـ url slugs و text formats ممكن تتحكم في طريقة المعالجة. كتب fuzzer بسيط بيبعت كل أنواع الـ URLs والـ formats ويسجّل المحتوى اللي بيوصل للـ eval، وهنا اشتعلت الأمور. النتيجة كانت payload شغالة: [<img111111>->URL`<?php system(\"id\");?>`] — يعني link من مستند غير موجود (img111111) والـ slug بتاعه فيه payload PHP عريض (bold) بينفّذ أمر id. الاستغلال النهائي كان عبر نفس الـ endpoint: curl -sSkiL 'http://0.0.0.0:8000/index.php?action=porte_plume_previsu' -X POST -d 'da...' — وده خلّى الـ eval ينفّذ الكود من غير أي تسجيل دخول.",
+      "takeaway_ar": "الدرس الأول: راقب تغييرات الـ code في الهدف — الباحث مسك الثغرة من commit واحد في الـ plugins قبل ما تتعرف، وده أسلوب قوي جدًا في الـ 0-day research. تاني حاجة: لما تلاقي eval أو sink خطير في كود ممكن يوصل له من غير auth، متسلمش بالـ sanitization — جرّب تركيب فلاتر مختلفة مع بعض، لأن الـ sanitization غالبًا بتتكسّر بتركيبات معينة. ثالثًا: الـ IDOR في ميزة زي الـ previsualization ممكن يكون أول حلقة في سلسلة توصلك لـ RCE، فبلاش تستهون بأي ميزة بسيطة. وأخيرًا: الـ fuzzing مع logging للمحتوى اللي بيوصل للـ sink هو أسرع طريقة تكتشف إن في bypass.",
+      "fix_ar": "الإصلاح الجذري هو إزالة الـ eval نهائيًا من مسار معالجة القوالب — مفيش أي مبرر لتنفيذ PHP جاي من محتوى ممكن يكون user-controlled. لو الـ eval لازم يفضل، لازم sanitization صارمة جدًا بتشيل أي PHP tags قبل أي معالجة، ومش بس فلاتر سطحية بتتكسّر بتركيبات الـ formatting. كمان لازم يتقفل الـ IDOR في porte_plume_previsu اللي بيسمح بحلّ معرفات المستندات من غير مصادقة، لأنها كانت أول حلقة في السلسلة. SPIP عملت patch في 4-3-0-alpha2 و4-2-13 و4.1.16، لكن المهم إن الثغرة كانت في إضافة porte_plume، فلو حد حدّث الـ core من غير ما يحدّث الـ plugins لسه معرّض — فالإصلاح لازم يشمل الـ plugin نفسه."
+    },
+    "excerpt": "Hi dear Sir, Madam. Please be informed that this is the **third** article dedicated to [Spip](https://www.spip.net/) 0-day research, if you haven’t read the first ones, I’d recommend reading them first! * [RCE on Spip and Root-Me](https://thinkloveshare.com/hacking/rce_on_spip_and_root_me/) * [RCE on Spip and Root-Me, v2!](https://thinkloveshare.com/hacking/rce_on_spip_and_root_me_v2/) This article will cover the `issue and exploit` for an `Unauthenticated Remote Code Execution` found on `Spip`, it has been patched in the releases for [4-3-0-alpha2, 4-2-13, and 4.1.16](https://blog.spip.net/Mi",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "8088fa5dc7bd",
     "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
     "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",

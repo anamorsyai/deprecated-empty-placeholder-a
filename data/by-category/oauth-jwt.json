@@ -1,5 +1,40 @@
 [
   {
+    "id": "e5c4d34f1e4a",
+    "title": "Insecure Authorization on *** Android — mobile application",
+    "url": "https://medium.com/@jokodfir/insecure-authorization-on-android-mobile-application-89472e4f468b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Joko Purwanto"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T22:16:43.000Z",
+    "added_at": "2026-09-22T23:31:48.088Z",
+    "categories": [
+      "oauth-jwt",
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "The Android app's exported CustomTabFlowActivity accepts any OAuth/SSO redirect URI without verifying state, nonce, or PKCE, so an attacker can inject a forged redirect and hijack browser-based OAuth flows such as third-party Marketplace (Google Drive) account linking.",
+    "summary_ar": "في تطبيق Android، الـ Activity المصدّرة CustomTabFlowActivity بتستقبل أي URI redirect من تدفقات OAuth/SSO من غير ما تتحقق من state أو nonce أو PKCE، فالمهاجم يقدر يحقن redirect مزيف ويختطف تدفق OAuth زي ربط تطبيقات Marketplace (Google Drive) ويحصل على صلاحيات غير مصرح بها.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن الـ Activity اسمها CustomTabFlowActivity مكتوبة في الـ manifest بـ android:exported=\"true\" ومسجّلة كـ redirect target لعدة تدفقات OAuth/SSO حساسة مبنية على المتصفح، زي com.canva.editor://oauth (مستخدم في ربط تطبيقات Marketplace تبع طرف تالت زي Google Drive) و canva://sso وكمان App Links على canva.com. الباحث فكّك التطبيق وتتبّع مسار معالجة الـ redirect: CustomTabFlowActivity -> CustomTabFlowViewModel.f(Uri) -> BrowserFlowResultManager.a(Uri). في أي نقطة في المسار ده مفيش تحقق إن الـ state أو code أو token اللي جايين في الـ URI مربوطين بتدفق بدأه نفس الـ instance من التطبيق — مفيش مقارنة nonce/state، مفيش فحص PKCE verifier، ومفيش تحقق من هوية الـ caller. النتيجة إن أي URI بيتوصّل للـ Activity بيتعاد نشره كأنه \"flow completed\" لأي business logic شغّالة في اللحظة دي، من غير أي إثبات إنه فعلاً نتيجة تدفق شرعي.",
+      "walkthrough_ar": "الباحث كان بيفحص تطبيق Android لهدف bug bounty، وبدأ بمراجعة الـ manifest عشان يلاقي الـ Activities المصدّرة والـ deep links. لفت نظره إن CustomTabFlowActivity مكتوبة بـ android:exported=\"true\" ومسجّلة كـ redirect target لتدفقات OAuth/SSO حساسة: com.canva.editor://oauth (مستخدم في ربط تطبيقات Marketplace تبع طرف تالت زي Google Drive)، com.canva.editor://external-app-config، canva://sso، وكمان App Links على https://www.canva.com/oauth/transfer و /login/sso/transfer و /apps/oauth/authorized/app و /apps/configured/app مع autoVerify=\"true\". عشان يفهم اللي بيحصل فعلاً، فكّك التطبيق وتتبّع الكود الأصلي اللي بيعالج الـ redirect الوارد: CustomTabFlowActivity -> CustomTabFlowViewModel.f(Uri) -> BrowserFlowResultManager.a(Uri). في المسار ده كلّه ملقاش أي نقطة بتتحقق إن الـ state أو code أو token اللي جايين في الـ URI مربوطين بتدفق بدأه نفس الـ instance من التطبيق — مفيش مقارنة nonce/state، مفيش فحص PKCE verifier، ومفيش تحقق من هوية الـ caller. الطريقة ببساطة بتعيد نشر أي Uri بتوصّل له كأنه \"flow completed\" لأي business logic مستمعة في اللحظة دي. النتيجة إن أي تطبيق أو صفحة ضارة تقدر تفتح الـ deep link ده بـ URI مفبرك، والتطبيق هيتعامل معاه كأنه نتيجة تدفق OAuth شرعي — وده بيفتح باب لاختطاف تدفق OAuth/SSO وربط حسابات بطرف تالت بشكل غير مصرح به.",
+      "takeaway_ar": "أي تطبيق Android فيه OAuth/SSO مبني على المتصفح لازم تبدأ فحصك من الـ manifest: دوّر على Activities مكتوبة بـ android:exported=\"true\" ومسجّلة كـ redirect target لـ custom schemes أو App Links. بعدها فكّك التطبيق وتتبّع مسار معالجة الـ Uri من الـ Activity للـ ViewModel للـ Manager، وافحص كل نقطة على الطريق: هل في مقارنة state/nonce؟ هل في PKCE verifier؟ هل في تحقق من هوية الـ caller؟ غياب أي واحدة من دول علامة قوية على ثغرة Insecure Authorization. نفس النمط بيتكرر في أي تطبيق بيعتمد على OAuth redirects — مش بس الهدف ده.",
+      "fix_ar": "الحل الصح إن معالجة الـ redirect لازم تتحقق إن الـ state أو nonce اللي راجع في الـ URI هو نفس اللي التطبيق ولّده وربطه بالتدفق اللي بدأه — مقارنة صارمة قبل ما تنشر أي نتيجة لأي business logic. كمان لازم يتفعّل PKCE مع تخزين الـ verifier في جلسة التدفق نفسها والتحقق منه عند الـ callback. الـ Activity نفسها لازم تبقى مش exported، أو لو لازمة exported يبقى في permission مخصصة وفحص هوية الـ caller قبل معالجة الـ Uri. ويفضل الاعتماد على App Links مع autoVerify بدل custom schemes، مع التحقق الصارم من الـ host والـ path لكل redirect وارد."
+    },
+    "excerpt": "com.***.browserflow.feature.CustomTabFlowActivity is exported (android:exported=”true”) and registered as the redirect target for several sensitive browser-based OAuth/SSO flows, including: * com.***.editor://oauth (used by 3rd-party Marketplace app connections, e.g. Google Drive) * com.***.editor://external-app-config * ***editor://sso * [https://www.***.com/oauth/transfer,](https://www.canva.com/oauth/transfer,) /login/sso/transfer, /apps/oauth/authorized/app, /apps/configured/app (App Links, autoVerify=”true”) I decompiled the app and traced the native code that handles an incoming redirect",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "2a58b79404f7",
     "title": "Attacking PowerShell CLIXML Deserialization",
     "url": "https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization",

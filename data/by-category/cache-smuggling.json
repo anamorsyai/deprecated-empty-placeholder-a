@@ -1,5 +1,40 @@
 [
   {
+    "id": "997a0069b2df",
+    "title": "52 Request Smuggling Reports. Two Rules Decide the Payout.",
+    "url": "https://infosecwriteups.com/52-request-smuggling-reports-two-rules-decide-the-payout-901479562df9",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Raj Namdev"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T22:42:06.000Z",
+    "added_at": "2026-09-22T23:31:17.450Z",
+    "categories": [
+      "other",
+      "cache-smuggling",
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "An analysis of all 52 disclosed HTTP request smuggling reports on HackerOne (21 paid, $53,040 total) reveals two payout rules — the storefront sets the floor, the proven attack chain sets the ceiling — and shows how CRLF-powered desync turns header injection into full request smuggling.",
+    "summary_ar": "تحليل لـ 52 تقرير HTTP Request Smuggling منشور على HackerOne (21 تقرير مدفوع بإجمالي $53,040) يكشف قاعدتين تحكمان قيمة المكافآت — الـ storefront يحدد الحد الأدنى وسلسلة الاستغلال المثبتة تحدد الحد الأقصى — ويوضح كيف تحوّل هجمات CRLF-powered desync حقن الهيدر إلى Request Smuggling كامل.",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي هو اختلاف تفسير حدود الطلبات بين الـ front-end والـ back-end. المقال بيوضح إن إعدادات Nginx زي `proxy_pass http://backend$uri;` بتعمل URL-decode للمسار، فـ `%0d%0a` في الـ URL بتبقى سطرين جديدين حقيقيين (CRLF). ولما ييجي سطرين CRLF متتاليين، الـ hop اللي بعده بيشوفهم كحدود طلب جديد — يعني المهاجم يقدر يحقن طلب كامل جوه طلب تاني. الافتراض الغلط اللي فتح الباب هو إن الـ URL-encoding في الـ path مجرد ترميز غير ضار، بينما في الحقيقة بيتم فك ترميزه قبل ما يوصل للـ backend فيتحول لسلوك خطير.",
+      "walkthrough_ar": "المقال بيحكي إن الكاتب قرر يرجع للمصدر الأصلي: كل الـ 52 تقرير Request Smuggling المنشور على HackerOne — 21 منهم اتدفعوا بإجمالي $53,040. السياق إن PortSwigger نشرت في 5 أغسطس بحث \"CRLF-Powered Desync Attacks\" وقدّموه في Black Hat USA و DEF CON، والادعاء إن header injection أقل من قيمته بكتير. التقنية الأساسية: إعدادات Nginx زي `proxy_pass http://backend$uri;` بتفك ترميز المسار، فحقن `%0d%0a` في الـ URL بيبقى سطرين CRLF حقيقيين، وسطرين CRLF متتاليين بالنسبة للـ hop اللي بعده هما مجرد حدود طلب جديد. من هنا بيبدأ الـ desync: response queue poisoning، و request tunnelling يعدّي على الـ access controls، و cache poisoning، و cookie tossing. بعدها الكاتب حلل المكافآت وطلع بقاعدتين: الـ storefront بيحدد الحد الأدنى — نفس فئة الـ parser-quirk جابت $4,660 عن طريق Internet Bug Bounty و $250 بس عن طريق برنامج الـ vendor نفسه. والـ proven chain بيحدد السقف — الـ desync لوحده ما عدّاش $750، لكن سرقة كلمات المرور والـ tokens وتجاوز الـ access controls وصلت من $3,000 لـ $7,500. وفي النهاية: خمسة أنماط (patterns) بتغطي كل التقرير، وواحد من النتائج كان bounty بقيمة $20,000 على اكتشاف في شركة اتصالات.",
+      "takeaway_ar": "الدرس العملي: لما تلاقي أي header injection أو CRLF في مسار الـ URL، متستهونش بيه — جرّب تحوله لـ desync كامل. علامات الخطر: proxy بيعمل URL-decode للمسار زي `proxy_pass http://backend$uri;`، أو أي اختلاف بين طريقة تفسير الـ front-end والـ back-end لحدود الطلبات. جرّب حقن `%0d%0a` متتاليين ولاحظ لو في طلب تاني بيتنفذ أو الـ response بيتسمم. وكمان افتكر إن قيمة الـ report مش بس في الـ bug نفسه — الـ impact المثبت (سرقة tokens، تجاوز access controls) هو اللي بيحدد السقف، فدايمًا اشتغل على إثبات سلسلة استغلال كاملة مش مجرد desync معزول.",
+      "fix_ar": "الإصلاح الصح بيبدأ من إعدادات الـ proxy: متخليش Nginx يفك ترميز المسار قبل ما يبعت للـ backend — أو على الأقل ارفض أو عطّل أي `%0d%0a` في الـ path قبل الـ proxy_pass. كمان لازم يكون فيه تطبيع (normalization) للـ input عند الـ edge، وفحص إن الـ CRLF مبيوصلش للـ backend كحدود طلب. والأهم: الـ front-end والـ back-end لازم يتفقوا على نفس قواعد تحديد نهاية الطلب (Content-Length vs Transfer-Encoding)، عشان مفيش فراغ بينهم يقدر المهاجم يستغله. ولو في header injection في أي مكان، عالج الـ root cause نفسه بدل ما تسد ثغرة واحدة."
+    },
+    "excerpt": "Cybersecurity Writer · Breaking down real vulnerabilities, exploits & attack surfaces · Hands-on labs, real code, no fluff Follow writer [![Image 3: Raj Namdev](https://miro.medium.com/v2/resize:fill:40:40/1*qKc3NlEudBR8LvTVmc0eBA.jpeg)](https://infosecwriteups.com/?source=post_page---post_author_sidebar--901479562df9-----------------8ef0432b7221------------------------) ## Raj Namdev Cybersecurity Writer · Breaking down real vulnerabilities, exploits & attack surfaces · Hands-on labs, real code, no fluff Follow writer Member-only story [Bug Bounty](https://medium.com/tag/bug-bounty?source=pos",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "e7fdfbebe795",
     "title": "Exploiting web cache poisoning vulnerabilities",
     "url": "https://www.intigriti.com/researchers/blog/hacking-tools/exploiting-web-cache-poisoning-vulnerabilities",
