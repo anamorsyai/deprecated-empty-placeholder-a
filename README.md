@@ -81,11 +81,15 @@ CVE advisories مالهاش علاقة ببرنامج bounty. الفلترة ب�
 
 `scripts/lib/ai.mjs` بيختار provider تلقائيًا حسب أول secret متاح:
 
-1. `GEMINI_API_KEY` — Google AI Studio، `gemini-2.0-flash`، free tier سخي جدًا (**موصى بيه**)
-2. `GROQ_API_KEY` — Groq، `llama-3.1-8b-instant`، مجاني وسريع
-3. `OPENROUTER_API_KEY` — OpenRouter، موديل `:free`
-4. من غير أي مفتاح → **heuristic fallback**: تصنيف بالكلمات المفتاحية + severity من قيمة المكافأة،
+1. `CUSTOM_API_BASE` — أي موديل متوافق مع OpenAI API (شوف "موديل مخصص" تحت) — بياخد أولوية لو موجود، لإنه اختيار متعمّد
+2. `GEMINI_API_KEY` — Google AI Studio، `gemini-2.0-flash`، free tier سخي جدًا (**موصى بيه لو معندكش موديل خاص**)
+3. `GROQ_API_KEY` — Groq، `llama-3.1-8b-instant`، مجاني وسريع
+4. `OPENROUTER_API_KEY` — OpenRouter، موديل `:free`
+5. من غير أي حاجة من دول → **heuristic fallback**: تصنيف بالكلمات المفتاحية + severity من قيمة المكافأة،
    من غير شرح تفصيلي (بس الموقع بيوضّح ده في صفحة كل writeup).
+
+تقدر تجبر provider معيّن بمتغيّر `AI_PROVIDER` (`gemini` | `groq` | `openrouter` | `custom` | `none`)
+لو عندك أكتر من واحد متاح وعاوز تحدد أنهي واحد يستخدم.
 
 لما يبقى فيه مفتاح، كل writeup بياخد غير الملخص السطرين، شرح تعليمي كامل بالعربي على صفحته الخاصة
 (مش موجود على قائمة الكروت عشان الأداء) اتقسّم 4 أقسام:
@@ -104,6 +108,22 @@ CVE advisories مالهاش علاقة ببرنامج bounty. الفلترة ب�
 الشرح الكامل.
 
 اختياري: `JINA_API_KEY` من https://jina.ai/reader لرفع حد الطلبات لو المصادر كتيرة.
+
+### موديل مخصص (أي endpoint متوافق مع OpenAI)
+
+عندك سيرفر خاص، Azure OpenAI، LiteLLM proxy، موديل شغّال على جهازك، أو أي provider تاني مش في
+القايمة فوق؟ ضيف الأربع secrets دول وهيتفعّل تلقائيًا (أولوية أعلى من أي provider تاني):
+
+| Secret | إلزامي؟ | مثال |
+|---|---|---|
+| `CUSTOM_API_BASE` | **أيوه** | `https://api.example.com/v1` (من غير `/` في الآخر، ومن غير `/chat/completions` — بيتضاف لوحده) |
+| `CUSTOM_MODEL` | **أيوه** | `llama-3.3-70b-instruct` أو أي model id السيرفر بتاعك بياخده |
+| `CUSTOM_API_KEY` | لأ | `sk-...` — سيبه فاضي لو السيرفر (زي موديل محلي على جهازك) مش محتاج مصادقة، والـ pipeline مش هيبعت `Authorization` header خالص في الحالة دي |
+| `CUSTOM_API_HEADERS` | لأ | `{"api-key":"..."}` — أي JSON object بـ headers إضافية بتتحط فوق الأساسيين (مفيد لـ Azure OpenAI اللي بياخد `api-key` بدل `Authorization: Bearer`) |
+
+المتطلب الوحيد: الـ endpoint يفهم `POST {base}/chat/completions` بنفس شكل طلب/رد OpenAI Chat
+Completions (بما فيهم `response_format: {"type":"json_object"}`) — ده اللي كل الـ inference servers
+المشهورة (vLLM، LM Studio، llama.cpp server، LiteLLM، Azure OpenAI، إلخ) بتدعمه فعليًا.
 
 ## عدم التكرار
 
@@ -157,6 +177,7 @@ Settings → Secrets and variables → Actions:
 - `GEMINI_API_KEY` (موصى بيه)
 - `GROQ_API_KEY`
 - `OPENROUTER_API_KEY`
+- `CUSTOM_API_BASE` / `CUSTOM_API_KEY` / `CUSTOM_MODEL` / `CUSTOM_API_HEADERS` (موديل مخصص — تفاصيل فوق)
 - `JINA_API_KEY`
 
 ## حقوق النشر

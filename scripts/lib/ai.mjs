@@ -5,7 +5,18 @@ import taxonomy from "../../taxonomy.json" with { type: "json" };
 //   GEMINI_API_KEY     -> Google AI Studio, gemini-2.0-flash (generous free quota)
 //   GROQ_API_KEY        -> Groq, llama-3.1-8b-instant (fast, free)
 //   OPENROUTER_API_KEY  -> OpenRouter, a ":free" model
-// AI_PROVIDER can force one of "gemini" | "groq" | "openrouter" | "none".
+// ...or bring your own OpenAI-compatible endpoint (self-hosted, Azure OpenAI,
+// a local server, any provider not listed above) via:
+//   CUSTOM_API_BASE     -> required to activate this provider, e.g.
+//                          "https://api.example.com/v1" (no trailing slash,
+//                          no "/chat/completions" — that's appended for you)
+//   CUSTOM_MODEL         -> required, the model id the endpoint expects
+//   CUSTOM_API_KEY        -> optional — omitted entirely (no Authorization
+//                          header sent) if the endpoint needs no auth
+//   CUSTOM_API_HEADERS     -> optional JSON object string of extra headers,
+//                          e.g. '{"api-key":"..."}' for Azure OpenAI, merged
+//                          in on top of content-type/authorization
+// AI_PROVIDER can force one of "gemini" | "groq" | "openrouter" | "custom" | "none".
 // With no key configured at all, classifyAndSummarize() falls back to a
 // deterministic keyword heuristic so the pipeline still runs end-to-end for free.
 
@@ -14,10 +25,25 @@ const PROVIDER = resolveProvider();
 function resolveProvider() {
   const forced = process.env.AI_PROVIDER;
   if (forced) return forced;
+  // Checked first: setting a base URL is a deliberate, specific choice, so it
+  // wins over a merely-present key for one of the built-in providers.
+  if (process.env.CUSTOM_API_BASE) return "custom";
   if (process.env.GEMINI_API_KEY) return "gemini";
   if (process.env.GROQ_API_KEY) return "groq";
   if (process.env.OPENROUTER_API_KEY) return "openrouter";
   return "none";
+}
+
+function parseCustomHeaders() {
+  const raw = process.env.CUSTOM_API_HEADERS;
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    console.warn("  CUSTOM_API_HEADERS is not valid JSON — ignoring it");
+    return {};
+  }
 }
 
 const CATEGORY_SLUGS = taxonomy.categories.map((c) => c.slug);
@@ -68,7 +94,14 @@ export async function classifyAndSummarize(item) {
                 key: process.env.OPENROUTER_API_KEY,
                 model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free",
               })
-            : null;
+            : PROVIDER === "custom"
+              ? await callOpenAiCompatible(userPrompt, {
+                  base: (process.env.CUSTOM_API_BASE || "").replace(/\/+$/, ""),
+                  key: process.env.CUSTOM_API_KEY,
+                  model: process.env.CUSTOM_MODEL,
+                  extraHeaders: parseCustomHeaders(),
+                })
+              : null;
 
     const parsed = raw ? parseModelJson(raw) : null;
     if (!parsed) return heuristicClassify(item);
@@ -121,10 +154,18 @@ async function callGemini(userPrompt) {
   return data.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "";
 }
 
-async function callOpenAiCompatible(userPrompt, { base, key, model }) {
+async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders }) {
+  if (!base) throw new Error("no base URL configured for this provider");
+  if (!model) throw new Error("no model id configured for this provider");
+
+  const headers = { "content-type": "application/json", ...extraHeaders };
+  // Optional: a self-hosted/local endpoint may need no auth at all — only
+  // send Authorization when a key was actually given.
+  if (key) headers.authorization = `Bearer ${key}`;
+
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+    headers,
     signal: AbortSignal.timeout(30000),
     body: JSON.stringify({
       model,
