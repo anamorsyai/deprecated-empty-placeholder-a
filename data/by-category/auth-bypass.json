@@ -91,6 +91,44 @@
     "score": 60
   },
   {
+    "id": "8b4de87aa365",
+    "title": "From MLOps to MLOops: Exposing the Attack Surface of Machine Learning Platforms",
+    "url": "https://jfrog.com/blog/from-mlops-to-mloops-exposing-the-attack-surface-of-machine-learning-platforms",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ori Hollander",
+      "Shachar Menashe",
+      "Natan Nehorai",
+      "Uriya Yavnieli"
+    ],
+    "program": "Jupyter, Hugging Face, MLflow, KServe, Seldon",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-20T00:00:00.000Z",
+    "added_at": "2026-09-22T22:11:35.271Z",
+    "categories": [
+      "rce",
+      "xss",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "summary_en": "JFrog security research maps the attack surface of ML platforms (Jupyter, Hugging Face, MLflow, KServe, Seldon), demonstrating RCE, XSS, missing authentication, and container escape achievable through malicious AI models and datasets.",
+    "summary_ar": "بحث JFrog الأمني يكشف سطح هجوم واسع في منصات تعلّم الآلة (Jupyter, Hugging Face, MLflow, KServe, Seldon)، ويُظهر ثغرات RCE وXSS وغياب المصادقة والهروب من الحاوية (container escape) عبر نماذج ومجموعات بيانات AI خبيثة.",
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce. This is AgentSecOps. [Learn More](https://jfrog.com/ai/) Trusted AI [![Image 12](https://speedmedia2.jfrog.com/08612fe1-9391-4cf3-ac1a-6dd49c36b276/jfrog.com/wp-content/uploads/2026/03/Logo-AI-Catalog.svg) JFrog AI Catalog Trust Your Agentic Workforce](https://jfrog.com/ai-catalog/) [Agent Guard](https://jfrog.com/blog/agent-guard-control-ai-assets-before-they-become-s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "3679fa4d7680",
     "title": "The Hunt for ALBeast: A Technical Walkthrough",
     "url": "https://www.miggo.io/resources/uncovering-auth-vulnerability-in-aws-alb-albeast",

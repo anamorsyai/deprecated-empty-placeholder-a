@@ -1344,6 +1344,112 @@
     "score": 60
   },
   {
+    "id": "8b4de87aa365",
+    "title": "From MLOps to MLOops: Exposing the Attack Surface of Machine Learning Platforms",
+    "url": "https://jfrog.com/blog/from-mlops-to-mloops-exposing-the-attack-surface-of-machine-learning-platforms",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ori Hollander",
+      "Shachar Menashe",
+      "Natan Nehorai",
+      "Uriya Yavnieli"
+    ],
+    "program": "Jupyter, Hugging Face, MLflow, KServe, Seldon",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-20T00:00:00.000Z",
+    "added_at": "2026-09-22T22:11:35.271Z",
+    "categories": [
+      "rce",
+      "xss",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "summary_en": "JFrog security research maps the attack surface of ML platforms (Jupyter, Hugging Face, MLflow, KServe, Seldon), demonstrating RCE, XSS, missing authentication, and container escape achievable through malicious AI models and datasets.",
+    "summary_ar": "بحث JFrog الأمني يكشف سطح هجوم واسع في منصات تعلّم الآلة (Jupyter, Hugging Face, MLflow, KServe, Seldon)، ويُظهر ثغرات RCE وXSS وغياب المصادقة والهروب من الحاوية (container escape) عبر نماذج ومجموعات بيانات AI خبيثة.",
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce. This is AgentSecOps. [Learn More](https://jfrog.com/ai/) Trusted AI [![Image 12](https://speedmedia2.jfrog.com/08612fe1-9391-4cf3-ac1a-6dd49c36b276/jfrog.com/wp-content/uploads/2026/03/Logo-AI-Catalog.svg) JFrog AI Catalog Trust Your Agentic Workforce](https://jfrog.com/ai-catalog/) [Agent Guard](https://jfrog.com/blog/agent-guard-control-ai-assets-before-they-become-s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "b7e80ec0929d",
+    "title": "$4,998 Bounty Awarded and 100,000 WordPress Sites Protected Against Unauthenticated Remote Code Execution Vulnerability Patched in GiveWP WordPress Plugin",
+    "url": "https://www.wordfence.com/blog/2024/08/4998-bounty-awarded-and-100000-wordpress-sites-protected-against-unauthenticated-remote-code-execution-vulnerability-patched-in-givewp-wordpress-plugin",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Villu Orav (@villu164)"
+    ],
+    "program": "Wordfence",
+    "platform_slug": "other",
+    "bounty_raw": "4,998",
+    "published_at": "2024-08-19T00:00:00.000Z",
+    "added_at": "2026-09-22T22:12:48.799Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "Have you been hacked?[Get Help](https://www.wordfence.com/wordfence-site-cleanings/?promo_id=top-get-help&promo_name=get-site-clean&promo_creative=yellow-txt&promo_position=sw-top) [Create Account](https://www.wordfence.com/wp-login.php?act",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Have you been hacked?[Get Help](https://www.wordfence.com/wordfence-site-cleanings/?promo_id=top-get-help&promo_name=get-site-clean&promo_creative=yellow-txt&promo_position=sw-top) [Create Account](https://www.wordfence.com/wp-login.php?action=register) [Sign In](https://www.wordfence.com/wp-login.php) [](https://www.wordfence.com/cart/) [](https://www.wordfence.com/) * [Products](https://www.wordfence.com/products/) * [Our Products](https://www.wordfence.com/products/) * [Wordfence Free](https://www.wordfence.com/products/wordfence-free/) * [Wordfence Premium](https://www.wordfence.com/produc",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "ce1c6ec49f85",
+    "title": "Traceable - Blog: How 1 Exposed Honeywell API Gave us Control Over an Internal Engineering System",
+    "url": "https://www.traceable.ai/blog-post/how-1-exposed-honeywell-api-gave-us-control-over-an-internal-engineering-system",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Eaton Z. (@XeEaton)"
+    ],
+    "program": "Honeywell",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-19T00:00:00.000Z",
+    "added_at": "2026-09-22T22:13:25.498Z",
+    "categories": [
+      "access-control",
+      "rce",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "summary_en": "[AI For DevSecOps: Securing Applications From Within | Watch On-Demand](https://www.harness.io/event/security-software-summit?utm_source=traceable_io&utm_medium=referral&utm_campaign=devsecops&utm_content=sticky_banner) [![Image 1](https://",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[AI For DevSecOps: Securing Applications From Within | Watch On-Demand](https://www.harness.io/event/security-software-summit?utm_source=traceable_io&utm_medium=referral&utm_campaign=devsecops&utm_content=sticky_banner) [![Image 1](https://cdn.prod.website-files.com/65c483f725156eae6eed4056/680c06a5aaf7a245dffb6200_logo%20by%20harness%20(1).avif)](https://www.traceable.ai/) [![Image 2](https://cdn.prod.website-files.com/65c483f725156eae6eed4056/680c06a5aaf7a245dffb6200_logo%20by%20harness%20(1).avif)](https://www.traceable.ai/) ![Image 3](https://cdn.prod.website-files.com/65c483f725156eae6eed",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "8088fa5dc7bd",
     "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
     "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",

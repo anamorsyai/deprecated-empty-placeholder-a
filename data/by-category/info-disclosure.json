@@ -58,5 +58,74 @@
     "ai_generated": false,
     "engagement": null,
     "score": 47
+  },
+  {
+    "id": "099a23e65882",
+    "title": "How I can easily get four P1 at NASA using Simple Google Dorking.",
+    "url": "https://k4tedu.medium.com/how-i-can-easily-get-four-p1-at-nasa-using-simple-google-dorking-d4457bec1971",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Francesco Topol / k4tedu"
+    ],
+    "program": "NASA",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-23T00:00:00.000Z",
+    "added_at": "2026-09-22T22:11:11.857Z",
+    "categories": [
+      "info-disclosure",
+      "recon"
+    ],
+    "severity": "critical",
+    "summary_en": "Using simple Google dorking queries, the researcher uncovered four P1 information-disclosure vulnerabilities at NASA, exposing sensitive data across multiple NASA systems.",
+    "summary_ar": "باستخدام استعلامات Google Dorking بسيطة، عثر الباحث على أربع ثغرات من نوع Information Disclosure بتصنيف P1 في NASA، كشفت بيانات حساسة في أنظمة متعددة تابعة للوكالة.",
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "ce1c6ec49f85",
+    "title": "Traceable - Blog: How 1 Exposed Honeywell API Gave us Control Over an Internal Engineering System",
+    "url": "https://www.traceable.ai/blog-post/how-1-exposed-honeywell-api-gave-us-control-over-an-internal-engineering-system",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Eaton Z. (@XeEaton)"
+    ],
+    "program": "Honeywell",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-19T00:00:00.000Z",
+    "added_at": "2026-09-22T22:13:25.498Z",
+    "categories": [
+      "access-control",
+      "rce",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "summary_en": "[AI For DevSecOps: Securing Applications From Within | Watch On-Demand](https://www.harness.io/event/security-software-summit?utm_source=traceable_io&utm_medium=referral&utm_campaign=devsecops&utm_content=sticky_banner) [![Image 1](https://",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[AI For DevSecOps: Securing Applications From Within | Watch On-Demand](https://www.harness.io/event/security-software-summit?utm_source=traceable_io&utm_medium=referral&utm_campaign=devsecops&utm_content=sticky_banner) [![Image 1](https://cdn.prod.website-files.com/65c483f725156eae6eed4056/680c06a5aaf7a245dffb6200_logo%20by%20harness%20(1).avif)](https://www.traceable.ai/) [![Image 2](https://cdn.prod.website-files.com/65c483f725156eae6eed4056/680c06a5aaf7a245dffb6200_logo%20by%20harness%20(1).avif)](https://www.traceable.ai/) ![Image 3](https://cdn.prod.website-files.com/65c483f725156eae6eed",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]

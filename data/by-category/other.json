@@ -66,6 +66,39 @@
     "score": 40
   },
   {
+    "id": "c0ae30f18434",
+    "title": "How a public javascript file led me to a phone verification bypass on a social media website",
+    "url": "https://infosecwriteups.com/how-a-public-javascript-file-led-me-to-a-phone-verification-bypass-on-a-social-media-website-a7ecdd6df9b8",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Sairaj Thorat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-20T22:07:55.000Z",
+    "added_at": "2026-09-22T22:10:53.057Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "So on another random day, I was hunting on a social media target and once my friend mentioned about javascript files that they can have hidden endpoints which got my interest.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "So on another random day, I was hunting on a social media target and once my friend mentioned about javascript files that they can have hidden endpoints which got my interest. So I thought about giving it a shot and after scrolling through endless lines of js files — I finally found a forgotten dev/admin endpoint which probably was made for testing purposes, which looked something like this _/api/twilio/sms/verify/_ but there was no domain mentioned in the js file which I had to figure it out on my own, so I had to look for it in the ongoing API requests in that social media web application. A",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "c54e5cd25849",
     "title": "How a Silent Websocket Led Me to Unauthenticated Uploads on a University’s Exam Platform",
     "url": "https://medium.com/@priyanshbhadoria5/the-anonymous-5-gb-file-host-that-almost-wasnt-how-a-silent-websocket-led-me-to-unauthenticated-c34120be1492",
