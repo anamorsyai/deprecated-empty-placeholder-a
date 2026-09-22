@@ -143,7 +143,7 @@ async function callGemini(userPrompt) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(60000),
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: `${PROMPT_INSTRUCTIONS}\n\n${userPrompt}` }] }],
       generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: 3072 },
@@ -166,7 +166,7 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
     headers,
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(60000),
     body: JSON.stringify({
       model,
       temperature: 0.2,
