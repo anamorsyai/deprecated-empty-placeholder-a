@@ -1,5 +1,12 @@
 export type Severity = "critical" | "high" | "medium" | "low" | null;
 
+export interface Lesson {
+  cause_ar: string | null;
+  walkthrough_ar: string | null;
+  takeaway_ar: string | null;
+  fix_ar: string | null;
+}
+
 export interface Writeup {
   id: string;
   title: string;
@@ -15,6 +22,7 @@ export interface Writeup {
   severity: Severity;
   summary_en: string;
   summary_ar: string | null;
+  lesson: Lesson | null;
   excerpt: string | null;
   ai_generated: boolean;
   engagement: { ups?: number; comments?: number } | null;

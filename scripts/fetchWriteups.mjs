@@ -173,6 +173,7 @@ async function processCandidate(candidate) {
     severity: ai.severity,
     summary_en: ai.summary_en,
     summary_ar: ai.summary_ar,
+    lesson: ai.lesson || null,
     excerpt: enriched.excerpt,
     ai_generated: ai.aiGenerated,
     engagement: candidate.engagement || null,

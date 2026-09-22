@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getAllWriteups, getCategory, getPlatform, getWriteup } from "@/lib/data";
 import { SeverityBadge, Tag } from "@/components/Badge";
 import { timeAgoAr } from "@/lib/format";
+import type { Lesson } from "@/lib/types";
 
 export function generateStaticParams() {
   return getAllWriteups().map((w) => ({ id: w.id }));
@@ -66,14 +67,10 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
               {w.summary_en}
             </p>
           )}
-          {!w.ai_generated && (
-            <p className="mt-2 text-[11px] text-muted/70">
-              ملخص تلقائي بسيط (heuristic) — الموقع لسه من غير مفتاح AI مفعّل، فالملخصات الدقيقة والترجمة العربية هتتفعّل
-              تلقائيًا لما يتضاف مفتاح مجاني (Gemini/Groq).
-            </p>
-          )}
         </div>
       )}
+
+      <LessonSection lesson={w.lesson} aiGenerated={w.ai_generated} />
 
       <a
         href={w.url}
@@ -84,5 +81,49 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
         اقرأ الـ writeup كاملاً في المصدر الأصلي ↗
       </a>
     </article>
+  );
+}
+
+const LESSON_SECTIONS: { key: keyof Lesson; icon: string; title: string }[] = [
+  { key: "cause_ar", icon: "🧬", title: "السبب الجذري" },
+  { key: "walkthrough_ar", icon: "🛠️", title: "خطوة بخطوة: الاكتشاف والاستغلال" },
+  { key: "takeaway_ar", icon: "🎯", title: "الدرس المستفاد" },
+  { key: "fix_ar", icon: "🩹", title: "الإصلاح الصحيح" },
+];
+
+function LessonSection({ lesson, aiGenerated }: { lesson: Lesson | null; aiGenerated: boolean }) {
+  const sections = LESSON_SECTIONS.filter((s) => lesson?.[s.key]);
+
+  if (sections.length === 0) {
+    return (
+      <div className="mb-6 rounded-xl border border-dashed border-border bg-surface/50 p-4 text-sm text-muted">
+        <h2 className="mb-1 text-sm font-bold">📚 الدرس الكامل</h2>
+        <p>
+          الشرح التفصيلي (السبب الجذري، خطوات الاستغلال، الدرس المستفاد، طريقة الإصلاح) بيتولّد بالـ AI ولسه الموقع من
+          غير مفتاح مفعّل. ضيف مفتاح Gemini مجاني (شرح في README) وهيظهر تلقائيًا من غير ما تعمل حاجة تانية.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-6 rounded-xl border border-primary/30 bg-surface p-4">
+      <h2 className="mb-4 text-base font-extrabold text-primary">📚 الدرس الكامل</h2>
+      <div className="flex flex-col gap-4">
+        {sections.map((s) => (
+          <div key={s.key}>
+            <h3 className="mb-1.5 text-sm font-bold">
+              {s.icon} {s.title}
+            </h3>
+            <p className="leading-relaxed text-[#e6edf3]">{lesson![s.key]}</p>
+          </div>
+        ))}
+      </div>
+      {!aiGenerated && (
+        <p className="mt-4 border-t border-border pt-3 text-[11px] text-muted/70">
+          ده شرح تلقائي بسيط — لسه من غير مفتاح AI مفعّل.
+        </p>
+      )}
+    </div>
   );
 }

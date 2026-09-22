@@ -23,16 +23,25 @@ function resolveProvider() {
 const CATEGORY_SLUGS = taxonomy.categories.map((c) => c.slug);
 const PLATFORM_SLUGS = taxonomy.platforms.map((p) => p.slug);
 
-const PROMPT_INSTRUCTIONS = `You are gatekeeping and tagging content for a bug bounty writeup aggregator read daily by hackers. The site must stay strictly bug-bounty-only — no CTF/training-lab writeups, no vendor CVE advisories unrelated to a bounty program, no interviews/news/business posts.
+const PROMPT_INSTRUCTIONS = `You are two things at once for a bug bounty writeup aggregator read daily by hackers:
+(1) a strict gatekeeper — the site must stay bug-bounty-only, no CTF/training-lab writeups, no vendor CVE advisories unrelated to a bounty program, no interviews/news/business posts; and
+(2) a hands-on mentor who has read the full writeup and now teaches it to a hunter in Arabic — not a summary, a real walkthrough that lets someone learn the technique without opening the original link.
+
 Return ONLY minified JSON, no markdown fences, matching exactly:
-{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"summary_en":string,"summary_ar":string}
+{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"summary_en":string,"summary_ar":string,"lesson_cause_ar":string,"lesson_walkthrough_ar":string,"lesson_takeaway_ar":string,"lesson_fix_ar":string}
 
 Rules:
-- is_bug_bounty: true ONLY if this describes a real vulnerability found and reported against a specific target/program (bug bounty platform report, responsible disclosure, or an independent researcher's disclosed finding with a named target). false for CTF/TryHackMe/HackTheBox writeups, generic tutorials, interviews, news, opinion/career pieces, or vendor advisories with no bounty/disclosure context.
+- is_bug_bounty: true ONLY if this describes a real vulnerability found and reported against a specific target/program (bug bounty platform report, responsible disclosure, or an independent researcher's disclosed finding with a named target). false for CTF/TryHackMe/HackTheBox writeups, generic tutorials, interviews, news, opinion/career pieces, or vendor advisories with no bounty/disclosure context. When false, every field below is an empty string except categories/severity (best-effort).
 - categories must be chosen from this exact list: ${CATEGORY_SLUGS.join(", ")}
-- severity: your best judgement of real-world impact from the content ("critical" for RCE/full account takeover/mass data breach, "high" for auth bypass/significant data exposure, "medium"/"low" otherwise, null if you truly cannot tell).
-- summary_en: exactly 1-2 punchy sentences in English describing the vulnerability and impact (no fluff, no "this writeup discusses"). Empty string if is_bug_bounty is false.
-- summary_ar: the same 1-2 sentences translated into natural Modern Standard Arabic, same length/tone, technical terms (XSS, IDOR, RCE...) kept in Latin script. Empty string if is_bug_bounty is false.`;
+- severity: your best judgement of real-world impact ("critical" for RCE/full account takeover/mass data breach, "high" for auth bypass/significant data exposure, "medium"/"low" otherwise, null if you truly cannot tell).
+- summary_en: 1-2 punchy sentences in English describing the vulnerability and impact (no fluff, no "this writeup discusses"). Used on list/card views.
+- summary_ar: the same 1-2 sentences in natural Modern Standard Arabic, technical terms (XSS, IDOR, RCE...) kept in Latin script. Used on list/card views.
+- The four lesson_*_ar fields are the full teaching content shown on the writeup's own page — write them as a real teacher would, in Arabic, technical terms in Latin script, each 3-6 sentences, concrete and specific to THIS writeup (never generic filler):
+  - lesson_cause_ar: الـ root cause — إزاي الثغرة دي حصلت أصلاً في تصميم أو تنفيذ النظام؟ ما الافتراض الخاطئ أو الفجوة في الـ logic اللي فتحت الباب؟
+  - lesson_walkthrough_ar: خطوة بخطوة إزاي الباحث اكتشف ثم استغل الثغرة — من الملاحظة الأولى (إيه اللي لفت نظره) لحد الـ payload/التقنية النهائية اللي أثبتت الثغرة، بأكبر تفاصيل تقنية متاحة من المحتوى (endpoints، parameters، الفرق بين المتوقع والفعلي).
+  - lesson_takeaway_ar: الدرس العملي لصياد ثغرات بيقرا الكتابة دي — إمتى يدور على النمط ده تاني، وإيه العلامات (signals) اللي تدله إن نفس الفئة من الثغرات ممكن تكون موجودة في هدف تاني.
+  - lesson_fix_ar: إزاي المطور كان/لازم يصلح المشكلة دي بشكل صحيح (مش بس "أصلحوها" — التفاصيل التقنية للحل الصح).
+- If the extracted content is too thin to teach any of the four lesson fields honestly, write "" for that field rather than inventing detail not supported by the source.`;
 
 export async function classifyAndSummarize(item) {
   if (PROVIDER === "none") return heuristicClassify(item);
@@ -65,6 +74,12 @@ export async function classifyAndSummarize(item) {
       severity: sanitizeSeverity(parsed.severity),
       summary_en: (parsed.summary_en || "").trim() || heuristicSummary(item),
       summary_ar: (parsed.summary_ar || "").trim() || null,
+      lesson: {
+        cause_ar: (parsed.lesson_cause_ar || "").trim() || null,
+        walkthrough_ar: (parsed.lesson_walkthrough_ar || "").trim() || null,
+        takeaway_ar: (parsed.lesson_takeaway_ar || "").trim() || null,
+        fix_ar: (parsed.lesson_fix_ar || "").trim() || null,
+      },
       aiGenerated: true,
     };
   } catch (err) {
@@ -78,7 +93,7 @@ function buildUserPrompt(item) {
     `Title: ${item.cleanTitle || item.title}`,
     item.program ? `Program/target: ${item.program}` : null,
     item.tagHints?.length ? `Source tags: ${item.tagHints.join(", ")}` : null,
-    `Content excerpt:\n${item.fullTextForClassification || item.excerpt || "(no content extracted, use title only)"}`,
+    `Full extracted article content (this is what you must teach from — do not invent details beyond it):\n${item.fullTextForClassification || item.excerpt || "(no content extracted, use title only — in this case the lesson_*_ar fields should be empty strings)"}`,
   ]
     .filter(Boolean)
     .join("\n");
@@ -93,7 +108,7 @@ async function callGemini(userPrompt) {
     signal: AbortSignal.timeout(20000),
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: `${PROMPT_INSTRUCTIONS}\n\n${userPrompt}` }] }],
-      generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
+      generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: 2048 },
     }),
   });
   if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`);
@@ -109,6 +124,7 @@ async function callOpenAiCompatible(userPrompt, { base, key, model }) {
     body: JSON.stringify({
       model,
       temperature: 0.2,
+      max_tokens: 2048,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: PROMPT_INSTRUCTIONS },
@@ -173,6 +189,10 @@ export function heuristicClassify(item) {
     severity,
     summary_en: heuristicSummary(item),
     summary_ar: null,
+    // No AI key configured -> can't honestly generate a teaching walkthrough
+    // without inventing detail. The writeup page shows a "add a free key" note
+    // instead of fabricated content.
+    lesson: { cause_ar: null, walkthrough_ar: null, takeaway_ar: null, fix_ar: null },
     aiGenerated: false,
   };
 }
