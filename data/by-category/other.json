@@ -1,5 +1,38 @@
 [
   {
+    "id": "65698b6cdca3",
+    "title": "The Incomplete Fix: How a Critical Auth Vulnerability’s Patch Left a Second Door Open",
+    "url": "https://cyphernova1337.medium.com/the-incomplete-fix-how-a-critical-auth-vulnerabilitys-patch-left-a-second-door-open-7ba6e2a08ad0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "CypherNova1337"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T16:24:12.000Z",
+    "added_at": "2026-09-22T21:34:55.113Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "> Patching one code path while its sibling stays unguarded is the most reliable way to ship a second critical — here’s how it happened, and how to find it in your own code.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> Patching one code path while its sibling stays unguarded is the most reliable way to ship a second critical — here’s how it happened, and how to find it in your own code. Every security team knows the feeling: a critical advisory lands, the fix ships in days, everyone exhales. The vulnerability gets a CVE, a score, a write-up. Done. Except sometimes it isn’t. I recently worked on a case where the fix for a critical authentication vulnerability — a ten-out-of-ten on the severity scale — left a second critical behind. Not a new bug. The same bug, wearing a new key format. This is the pattern I",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "e771846711f8",
     "title": "Logic Flaw: I Can Block You from Accessing Your Own Account",
     "url": "https://medium.com/@hashimamin/logic-flaw-i-can-block-you-from-accessing-your-own-account-63fc2a88bb72",

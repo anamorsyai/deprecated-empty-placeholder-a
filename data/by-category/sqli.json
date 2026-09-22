@@ -1,5 +1,38 @@
 [
   {
+    "id": "9669ef2efafa",
+    "title": "From Bug to Schema: Exploring Error-Based SQL Injection on an Authenticating Portal",
+    "url": "https://infosecwriteups.com/from-bug-to-schema-exploring-error-based-sql-injection-on-an-authenticating-portal-be905548ada2",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "0x7ipher"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-17T04:41:02.000Z",
+    "added_at": "2026-09-22T21:35:07.888Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "summary_en": "> Case Study Analysis of how I identified an Error-Based SQL Injection vulnerability in a production environment via (VDP).",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> Case Study Analysis of how I identified an Error-Based SQL Injection vulnerability in a production environment via (VDP). Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*WfgAmol7IxkLnyCEZ0gMMA.png) > **Disclaimer:** This paper is only intended for informative and educational use. The vulnerability described here in has been identified by a Vulnerability Disclosure Program (VDP) during a designated testing period. All sensitive information that includes identifiers, domain names, and any other organization-related information has been pro",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "7e686c15388a",
     "title": "Directory Traversal, SQL Injection and Server-Side Request Forgery",
     "url": "https://research.aurainfosec.io/disclosure/sagecrm2",

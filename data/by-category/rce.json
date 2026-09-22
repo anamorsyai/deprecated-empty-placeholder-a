@@ -1,5 +1,304 @@
 [
   {
+    "id": "c623ee07e137",
+    "title": "Bug Bounty শুরু করার আগে যা বুঝতে হবে",
+    "url": "https://medium.com/@cyber.mehedi.13/bug-bounty-%E0%A6%B6%E0%A7%81%E0%A6%B0%E0%A7%81-%E0%A6%95%E0%A6%B0%E0%A6%BE%E0%A6%B0-%E0%A6%86%E0%A6%97%E0%A7%87-%E0%A6%AF%E0%A6%BE-%E0%A6%AC%E0%A7%81%E0%A6%9D%E0%A6%A4%E0%A7%87-%E0%A6%B9%E0%A6%AC%E0%A7%87-c53ab87a911b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Md. Mehedi  hasan Babu"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T20:23:03.000Z",
+    "added_at": "2026-09-22T21:34:52.473Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "[Md. Mehedi hasan Babu](https://medium.com/@cyber.mehedi.13?source=post_page---byline--c53ab87a911b-----------------------------------------) Follow 6 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[Md. Mehedi hasan Babu](https://medium.com/@cyber.mehedi.13?source=post_page---byline--c53ab87a911b-----------------------------------------) Follow 6 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fc53ab87a911b&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40cyber.mehedi.13%2Fbug-bounty-%25E0%25A6%25B6%25E0%25A7%2581%25E0%25A6%25B0%25E0%25A7%2581-%25E0%25A6%2595%25E0%25A6%25B0%25E0%25A6%25BE%25E0%25A6%25B0-%25E0%25A6%2586%25E0%25A6%2597%25E0%25A7%2587-%25E0%25A6%25AF%25E0%25A6%25BE-%25E0%25A6%25AC%25E0%25A7%2581%25E0%25A6%259D",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "5485da6140ad",
+    "title": "100 Days of Bug Bounty — Day 1 🐞",
+    "url": "https://zubairahm3d.medium.com/100-days-of-bug-bounty-day-1-b077dd4f9655",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Zubair Ahmed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T18:10:59.000Z",
+    "added_at": "2026-09-22T21:34:54.218Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security. Follow writer [![Image 3: Zubair Ahmed](https://miro.medium.com/v2/resize:fill:40:40/1*sXCIPlM9Cb1uiUmS8_xwDg.jpeg)](https://zubairahm3d.medium.com/?source=post_page---post_author_sidebar--b077dd4f9655-----------------a405baa72d33------------------------) ## Zubair Ahmed Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security. Follow writer [Bug Hunting](https:",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "049bd12bb969",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
+    "url": "https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/No-View3333"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T12:28:26.000Z",
+    "added_at": "2026-09-22T21:34:58.077Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "6ba870477f9f",
+    "title": "🛡️ Finding a vulnerability is only half the job.",
+    "url": "https://medium.com/@RaminAghabeigi/from-vulnerability-to-report-how-security-researchers-communicate-impact-cf4fe56c67c1",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "RaminAghabeigi"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T10:14:16.000Z",
+    "added_at": "2026-09-22T21:34:58.976Z",
+    "categories": [
+      "idor-bola",
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "AI can also be useful for grammar, formatting, and readability, but the technical analysis and evidence should always be understood and verified by the researcher. **Clear. Reproducible. Evidence-based.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "AI can also be useful for grammar, formatting, and readability, but the technical analysis and evidence should always be understood and verified by the researcher. **Clear. Reproducible. Evidence-based. Concise.** I wrote a short guide about my approach to writing security vulnerability reports. #CyberSecurity #BugBounty #SecurityResearch #WebSecurity #AppSec #VulnerabilityResearch #EthicalHacking #InfoSec #IDOR #irHackerShow [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---footer_tags--cf4fe56c67c1-----------------------------------------) [Bug Bounty](https://medium.co",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "36922ca22566",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
+    "url": "https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/MobetaSec"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T07:58:09.000Z",
+    "added_at": "2026-09-22T21:35:02.238Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "8928bc0c4e35",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
+    "url": "https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/TheReedemer69"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-21T16:30:48.000Z",
+    "added_at": "2026-09-22T21:35:05.090Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "940c4cb5aaf6",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+    "url": "https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/bajk"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-16T13:52:01.000Z",
+    "added_at": "2026-09-22T21:35:10.402Z",
+    "categories": [
+      "rce",
+      "csrf"
+    ],
+    "severity": "medium",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "621024e258ca",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
+    "url": "https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/buherator"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-14T13:20:24.000Z",
+    "added_at": "2026-09-22T21:35:12.631Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "3ea2f62f6789",
+    "title": "Improper OTP Implementation to Full Account Takeover",
+    "url": "https://infosecwriteups.com/improper-otp-implementation-to-full-account-takeover-df21e126f10f",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Sid"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-08T15:03:08.000Z",
+    "added_at": "2026-09-22T21:35:14.438Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test. The target platform’s domain, endpoints, employee identities, tokens, and session values below have been anonymized/fictionalized to protect the client — none of the identifiers or values shown are real._ ## TL;DR A one-time password (OTP) meant to act as a second authentication factor was returned directly in the body of the HTTP response that triggered its own generation. No interception, no phishing, no SIM-swap — just reading the API’s own response told you the code needed to log in as someone e",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "0431aea8087a",
     "title": "Vulnerabilities in Open Source C2 Frameworks",
     "url": "https://blog.includesecurity.com/2024/09/vulnerabilities-in-open-source-c2-frameworks",

@@ -1,5 +1,571 @@
 [
   {
+    "id": "dc21bb527df7",
+    "title": "How I Went from Zero Experience to Finding Valid Bugs on HackerOne",
+    "url": "https://medium.com/@tomsayers88/how-i-went-from-zero-experience-to-finding-valid-bugs-on-hackerone-5c4edc9b8bc0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "h1ddn"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T20:48:35.000Z",
+    "added_at": "2026-09-22T21:34:50.677Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": "medium",
+    "summary_en": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon. Like many beginners, I relied heavily on passive recon and third-party tools like Wayback Machine and VirusTotal. Most of my early reports weren’t great, they usually ended up closed as **Informative** or **Duplicate** because they lacked a clear, demonstrable business impact. ## Get h1ddn’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster si",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "c623ee07e137",
+    "title": "Bug Bounty শুরু করার আগে যা বুঝতে হবে",
+    "url": "https://medium.com/@cyber.mehedi.13/bug-bounty-%E0%A6%B6%E0%A7%81%E0%A6%B0%E0%A7%81-%E0%A6%95%E0%A6%B0%E0%A6%BE%E0%A6%B0-%E0%A6%86%E0%A6%97%E0%A7%87-%E0%A6%AF%E0%A6%BE-%E0%A6%AC%E0%A7%81%E0%A6%9D%E0%A6%A4%E0%A7%87-%E0%A6%B9%E0%A6%AC%E0%A7%87-c53ab87a911b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Md. Mehedi  hasan Babu"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T20:23:03.000Z",
+    "added_at": "2026-09-22T21:34:52.473Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "[Md. Mehedi hasan Babu](https://medium.com/@cyber.mehedi.13?source=post_page---byline--c53ab87a911b-----------------------------------------) Follow 6 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[Md. Mehedi hasan Babu](https://medium.com/@cyber.mehedi.13?source=post_page---byline--c53ab87a911b-----------------------------------------) Follow 6 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fc53ab87a911b&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40cyber.mehedi.13%2Fbug-bounty-%25E0%25A6%25B6%25E0%25A7%2581%25E0%25A6%25B0%25E0%25A7%2581-%25E0%25A6%2595%25E0%25A6%25B0%25E0%25A6%25BE%25E0%25A6%25B0-%25E0%25A6%2586%25E0%25A6%2597%25E0%25A7%2587-%25E0%25A6%25AF%25E0%25A6%25BE-%25E0%25A6%25AC%25E0%25A7%2581%25E0%25A6%259D",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "7f60146e1de6",
+    "title": "$6,800 for Sending Fields Nobody Asked Me To Send: A Mass Assignment Privilege Escalation",
+    "url": "https://medium.com/@t4nv1/6-800-for-sending-fields-nobody-asked-me-to-send-a-mass-assignment-privilege-escalation-f04982df5e5e",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T19:06:01.000Z",
+    "added_at": "2026-09-22T21:34:53.353Z",
+    "categories": [
+      "access-control",
+      "mass-assignment"
+    ],
+    "severity": "high",
+    "summary_en": "This is the bug I’m most tempted to describe as “free,” because building the payload took about four minutes once I understood the shape of the problem.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This is the bug I’m most tempted to describe as “free,” because building the payload took about four minutes once I understood the shape of the problem. Everything before that — figuring out which field name to even guess — was the actual work, and it came from somewhere most people testing an API never bother to look: the mobile app’s decompiled network layer instead of the website. The target, which I’ll call **Driftpoint** here per their program’s anonymization terms, is a B2B project-management platform with the usual role structure — members, admins, and workspace owners, each with progre",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "5485da6140ad",
+    "title": "100 Days of Bug Bounty — Day 1 🐞",
+    "url": "https://zubairahm3d.medium.com/100-days-of-bug-bounty-day-1-b077dd4f9655",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Zubair Ahmed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T18:10:59.000Z",
+    "added_at": "2026-09-22T21:34:54.218Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security. Follow writer [![Image 3: Zubair Ahmed](https://miro.medium.com/v2/resize:fill:40:40/1*sXCIPlM9Cb1uiUmS8_xwDg.jpeg)](https://zubairahm3d.medium.com/?source=post_page---post_author_sidebar--b077dd4f9655-----------------a405baa72d33------------------------) ## Zubair Ahmed Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security. Follow writer [Bug Hunting](https:",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "65698b6cdca3",
+    "title": "The Incomplete Fix: How a Critical Auth Vulnerability’s Patch Left a Second Door Open",
+    "url": "https://cyphernova1337.medium.com/the-incomplete-fix-how-a-critical-auth-vulnerabilitys-patch-left-a-second-door-open-7ba6e2a08ad0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "CypherNova1337"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T16:24:12.000Z",
+    "added_at": "2026-09-22T21:34:55.113Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "> Patching one code path while its sibling stays unguarded is the most reliable way to ship a second critical — here’s how it happened, and how to find it in your own code.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> Patching one code path while its sibling stays unguarded is the most reliable way to ship a second critical — here’s how it happened, and how to find it in your own code. Every security team knows the feeling: a critical advisory lands, the fix ships in days, everyone exhales. The vulnerability gets a CVE, a score, a write-up. Done. Except sometimes it isn’t. I recently worked on a case where the fix for a critical authentication vulnerability — a ten-out-of-ten on the severity scale — left a second critical behind. Not a new bug. The same bug, wearing a new key format. This is the pattern I",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "049bd12bb969",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
+    "url": "https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/No-View3333"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T12:28:26.000Z",
+    "added_at": "2026-09-22T21:34:58.077Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "6ba870477f9f",
+    "title": "🛡️ Finding a vulnerability is only half the job.",
+    "url": "https://medium.com/@RaminAghabeigi/from-vulnerability-to-report-how-security-researchers-communicate-impact-cf4fe56c67c1",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "RaminAghabeigi"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T10:14:16.000Z",
+    "added_at": "2026-09-22T21:34:58.976Z",
+    "categories": [
+      "idor-bola",
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "AI can also be useful for grammar, formatting, and readability, but the technical analysis and evidence should always be understood and verified by the researcher. **Clear. Reproducible. Evidence-based.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "AI can also be useful for grammar, formatting, and readability, but the technical analysis and evidence should always be understood and verified by the researcher. **Clear. Reproducible. Evidence-based. Concise.** I wrote a short guide about my approach to writing security vulnerability reports. #CyberSecurity #BugBounty #SecurityResearch #WebSecurity #AppSec #VulnerabilityResearch #EthicalHacking #InfoSec #IDOR #irHackerShow [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---footer_tags--cf4fe56c67c1-----------------------------------------) [Bug Bounty](https://medium.co",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "9f3750138914",
+    "title": "One Hidden JSON Field Turned My User Ticket into an Admin Ticket 🚨",
+    "url": "https://medium.com/@ArshiaHex/one-hidden-json-field-turned-my-user-ticket-into-an-admin-ticket-5b019cb6489f",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "arshiahex"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T09:03:43.000Z",
+    "added_at": "2026-09-22T21:34:59.860Z",
+    "categories": [
+      "mass-assignment"
+    ],
+    "severity": "medium",
+    "summary_en": "While testing a ticket creation endpoint, I wasn’t actively looking for a Mass Assignment vulnerability. I simply created a ticket as a normal user and carefully reviewed the API response.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing a ticket creation endpoint, I wasn’t actively looking for a Mass Assignment vulnerability. I simply created a ticket as a normal user and carefully reviewed the API response. Among the returned fields, one immediately caught my attention: { \"UserID\":\"123\", \"TicketID\":\"2222\", \"Title\":\"Test\", \"Description\":\"Hello From HEX\", \"IsOperatorCreate\": false } At first glance, it looked like an informational flag indicating whether the ticket had been created by an operator (administrator). However, I started wondering: _What if the server actually trusts this value instead of generating it",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "36922ca22566",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
+    "url": "https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/MobetaSec"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T07:58:09.000Z",
+    "added_at": "2026-09-22T21:35:02.238Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "1020bb92a9dd",
+    "title": "How a single broken button got me £150 from a bug bounty program",
+    "url": "https://infosecwriteups.com/how-a-single-broken-button-got-me-150-from-a-bug-bounty-program-81f203d7f733",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Sairaj Thorat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-21T23:00:36.000Z",
+    "added_at": "2026-09-22T21:35:03.120Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": "medium",
+    "summary_en": "The first step in this story was recon as well. While I was reconning one of my bug bounty targets, I found a domain that I was not sure whether it falls under the scope of the program or not.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The first step in this story was recon as well. While I was reconning one of my bug bounty targets, I found a domain that I was not sure whether it falls under the scope of the program or not. Since I didn’t want to make any assumptions, I decided to ask the security team via email if the domain was within scope. Fortunately, it was. And so, I decided to start testing it. I launched Burp Suite, captured all the requests, looked around the application, and tried to understand its logic. Nothing interesting caught my eye. Then, I noticed a button: **“Start My Claim.”** I clicked it, but there wa",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "8928bc0c4e35",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
+    "url": "https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/TheReedemer69"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-21T16:30:48.000Z",
+    "added_at": "2026-09-22T21:35:05.090Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "1343f5bb324c",
+    "title": "BAC: Unauthorized Email Sending.",
+    "url": "https://medium.com/@kiwi.bounty22/bac-unauthorized-email-sending-a38a07bd74f0",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Saad"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-21T05:04:18.000Z",
+    "added_at": "2026-09-22T21:35:06.098Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "ssrf"
+    ],
+    "severity": "high",
+    "summary_en": "Bug bounty hunter focused on web security, logic flaws, access control, IDOR, and SSRF.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Bug bounty hunter focused on web security, logic flaws, access control, IDOR, and SSRF. Writing about vulnerabilities, research, and practical security findings Follow writer [Bug Bounty](https://medium.com/tag/bug-bounty?source=post_page---header_tags--a38a07bd74f0-----------------------------------------) [Bug Bounty Writeup](https://medium.com/tag/bug-bounty-writeup?source=post_page---header_tags--a38a07bd74f0-----------------------------------------) [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--a38a07bd74f0-----------------------------------------) #",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "ad047470de31",
+    "title": "How I Tricked OpenClaw Into Attacking Its Own Network: A NAT64 SSRF Bypass",
+    "url": "https://infosecwriteups.com/how-i-tricked-openclaw-into-attacking-its-own-network-a-nat64-ssrf-bypass-9b93a7f11cd9",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Anurag Mewar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-17T04:44:33.000Z",
+    "added_at": "2026-09-22T21:35:06.972Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "summary_en": "[OpenClaw](https://openclaw.ai/) (previously known as Clawdbot and Moltbot) runs on your devices, answers you on the channels you already use, speaks and listens on your phone and your computer, and grows with you over time.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[OpenClaw](https://openclaw.ai/) (previously known as Clawdbot and Moltbot) runs on your devices, answers you on the channels you already use, speaks and listens on your phone and your computer, and grows with you over time. With millions of active users, and thousands of endpoints running it as an always-on gateway. Read that again with a security hat on. “Always-on,” “runs on your devices,” “answers on the channels you already use”. That means OpenClaw’s gateway is a long-lived process sitting inside your trust boundary (on your laptop, on a home server, or on a cloud box next to your other",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "9669ef2efafa",
+    "title": "From Bug to Schema: Exploring Error-Based SQL Injection on an Authenticating Portal",
+    "url": "https://infosecwriteups.com/from-bug-to-schema-exploring-error-based-sql-injection-on-an-authenticating-portal-be905548ada2",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "0x7ipher"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-17T04:41:02.000Z",
+    "added_at": "2026-09-22T21:35:07.888Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "summary_en": "> Case Study Analysis of how I identified an Error-Based SQL Injection vulnerability in a production environment via (VDP).",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> Case Study Analysis of how I identified an Error-Based SQL Injection vulnerability in a production environment via (VDP). Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*WfgAmol7IxkLnyCEZ0gMMA.png) > **Disclaimer:** This paper is only intended for informative and educational use. The vulnerability described here in has been identified by a Vulnerability Disclosure Program (VDP) during a designated testing period. All sensitive information that includes identifiers, domain names, and any other organization-related information has been pro",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "940c4cb5aaf6",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+    "url": "https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/bajk"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-16T13:52:01.000Z",
+    "added_at": "2026-09-22T21:35:10.402Z",
+    "categories": [
+      "rce",
+      "csrf"
+    ],
+    "severity": "medium",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "621024e258ca",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
+    "url": "https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/buherator"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-14T13:20:24.000Z",
+    "added_at": "2026-09-22T21:35:12.631Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "3ea2f62f6789",
+    "title": "Improper OTP Implementation to Full Account Takeover",
+    "url": "https://infosecwriteups.com/improper-otp-implementation-to-full-account-takeover-df21e126f10f",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Sid"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-08T15:03:08.000Z",
+    "added_at": "2026-09-22T21:35:14.438Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test. The target platform’s domain, endpoints, employee identities, tokens, and session values below have been anonymized/fictionalized to protect the client — none of the identifiers or values shown are real._ ## TL;DR A one-time password (OTP) meant to act as a second authentication factor was returned directly in the body of the HTTP response that triggered its own generation. No interception, no phishing, no SIM-swap — just reading the API’s own response told you the code needed to log in as someone e",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "b0dfc32a1239",
     "title": "BOLA: Enumerating an Entire Employee Directory Through a Predictable ID",
     "url": "https://infosecwriteups.com/bola-enumerating-an-entire-employee-directory-through-a-predictable-id-2fa11370e919",

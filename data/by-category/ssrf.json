@@ -1,5 +1,73 @@
 [
   {
+    "id": "1343f5bb324c",
+    "title": "BAC: Unauthorized Email Sending.",
+    "url": "https://medium.com/@kiwi.bounty22/bac-unauthorized-email-sending-a38a07bd74f0",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Saad"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-21T05:04:18.000Z",
+    "added_at": "2026-09-22T21:35:06.098Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "ssrf"
+    ],
+    "severity": "high",
+    "summary_en": "Bug bounty hunter focused on web security, logic flaws, access control, IDOR, and SSRF.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Bug bounty hunter focused on web security, logic flaws, access control, IDOR, and SSRF. Writing about vulnerabilities, research, and practical security findings Follow writer [Bug Bounty](https://medium.com/tag/bug-bounty?source=post_page---header_tags--a38a07bd74f0-----------------------------------------) [Bug Bounty Writeup](https://medium.com/tag/bug-bounty-writeup?source=post_page---header_tags--a38a07bd74f0-----------------------------------------) [Cybersecurity](https://medium.com/tag/cybersecurity?source=post_page---header_tags--a38a07bd74f0-----------------------------------------) #",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "ad047470de31",
+    "title": "How I Tricked OpenClaw Into Attacking Its Own Network: A NAT64 SSRF Bypass",
+    "url": "https://infosecwriteups.com/how-i-tricked-openclaw-into-attacking-its-own-network-a-nat64-ssrf-bypass-9b93a7f11cd9",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Anurag Mewar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-17T04:44:33.000Z",
+    "added_at": "2026-09-22T21:35:06.972Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "summary_en": "[OpenClaw](https://openclaw.ai/) (previously known as Clawdbot and Moltbot) runs on your devices, answers you on the channels you already use, speaks and listens on your phone and your computer, and grows with you over time.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[OpenClaw](https://openclaw.ai/) (previously known as Clawdbot and Moltbot) runs on your devices, answers you on the channels you already use, speaks and listens on your phone and your computer, and grows with you over time. With millions of active users, and thousands of endpoints running it as an always-on gateway. Read that again with a security hat on. “Always-on,” “runs on your devices,” “answers on the channels you already use”. That means OpenClaw’s gateway is a long-lived process sitting inside your trust boundary (on your laptop, on a home server, or on a cloud box next to your other",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "7e686c15388a",
     "title": "Directory Traversal, SQL Injection and Server-Side Request Forgery",
     "url": "https://research.aurainfosec.io/disclosure/sagecrm2",

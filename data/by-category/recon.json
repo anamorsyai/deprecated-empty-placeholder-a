@@ -1,5 +1,71 @@
 [
   {
+    "id": "dc21bb527df7",
+    "title": "How I Went from Zero Experience to Finding Valid Bugs on HackerOne",
+    "url": "https://medium.com/@tomsayers88/how-i-went-from-zero-experience-to-finding-valid-bugs-on-hackerone-5c4edc9b8bc0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "h1ddn"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": null,
+    "published_at": "2026-09-22T20:48:35.000Z",
+    "added_at": "2026-09-22T21:34:50.677Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": "medium",
+    "summary_en": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon. Like many beginners, I relied heavily on passive recon and third-party tools like Wayback Machine and VirusTotal. Most of my early reports weren’t great, they usually ended up closed as **Informative** or **Duplicate** because they lacked a clear, demonstrable business impact. ## Get h1ddn’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster si",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "1020bb92a9dd",
+    "title": "How a single broken button got me £150 from a bug bounty program",
+    "url": "https://infosecwriteups.com/how-a-single-broken-button-got-me-150-from-a-bug-bounty-program-81f203d7f733",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Sairaj Thorat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-21T23:00:36.000Z",
+    "added_at": "2026-09-22T21:35:03.120Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": "medium",
+    "summary_en": "The first step in this story was recon as well. While I was reconning one of my bug bounty targets, I found a domain that I was not sure whether it falls under the scope of the program or not.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The first step in this story was recon as well. While I was reconning one of my bug bounty targets, I found a domain that I was not sure whether it falls under the scope of the program or not. Since I didn’t want to make any assumptions, I decided to ask the security team via email if the domain was within scope. Fortunately, it was. And so, I decided to start testing it. I launched Burp Suite, captured all the requests, looked around the application, and tried to understand its logic. Nothing interesting caught my eye. Then, I noticed a button: **“Start My Claim.”** I clicked it, but there wa",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "265e8c2d17c5",
     "title": "How 100% Manual Hacking (Without Even Kali And Burp) Led To 2 Medium Vulnerabilities On YesWeHack",
     "url": "https://medium.com/@manan_sanghvi/how-100-manual-hacking-without-even-kali-and-burp-led-to-2-medium-vulnerabilities-on-yeswehack-bbda00fcd84e",

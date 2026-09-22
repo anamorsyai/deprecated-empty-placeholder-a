@@ -1,5 +1,39 @@
 [
   {
+    "id": "940c4cb5aaf6",
+    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+    "url": "https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/bajk"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-16T13:52:01.000Z",
+    "added_at": "2026-09-22T21:35:10.402Z",
+    "categories": [
+      "rce",
+      "csrf"
+    ],
+    "severity": "medium",
+    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "66023ab3eed7",
     "title": "Basic HTTP Authentication Risk: Uncovering pyspider Vulnerabilities",
     "url": "https://www.sonarsource.com/blog/basic-http-authentication-risk-uncovering-pyspider-vulnerabilities",
