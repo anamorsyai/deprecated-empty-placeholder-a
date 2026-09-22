@@ -717,5 +717,281 @@
     "ai_generated": false,
     "engagement": null,
     "score": 40
+  },
+  {
+    "id": "3454530ecc1c",
+    "title": "IIS welcome page to source code review to LFI!",
+    "url": "https://medium.com/@omarahmed_13016/iis-welcome-page-to-source-code-review-to-lfi-23ec581049f5",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Omar Ahmed (@spaceboy2O)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-01T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:39.730Z",
+    "categories": [
+      "ssrf",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "found an IIS welcome page, enumerated directories& files using IIS Short name scanner and FFUF, found an open source webchat software, source code review led to LFI and blind SSRF.",
+    "summary_ar": null,
+    "excerpt": "found an IIS welcome page, enumerated directories& files using IIS Short name scanner and FFUF, found an open source webchat software, source code review led to LFI and blind SSRF. So, I had this subdomain that returned the IIS welcome page -> Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*WwB0QCizvKJx0bHKBnqKCQ.png) then I used [https://github.com/irsdl/IIS-ShortName-Scanner](https://github.com/irsdl/IIS-ShortName-Scanner) before fuzzing and It showed that this target was vulnerable to [IIS Short File Name Disclosure](https://github.com/",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "a4983d116df3",
+    "title": "Bypassing CSP via URL Parser Confusions : XSS on Netlify’s Image CDN",
+    "url": "https://sudhanshur705.medium.com/bypassing-csp-via-url-parser-confusions-xss-on-netlifys-image-cdn-755a27065fd9",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sudhanshu Rajbhar (@sudhanshur705)"
+    ],
+    "program": "Netlify",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-01T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:40.711Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "In this blogpost I am going to talk about my finding which was a XSS on Netlify’s Image CDN used in [https://app.netlify.com](https://app.netlify.com/) and how I managed to bypass this CSP `Content-Security-Policy: script-src ‘none’` (for t",
+    "summary_ar": null,
+    "excerpt": "In this blogpost I am going to talk about my finding which was a XSS on Netlify’s Image CDN used in [https://app.netlify.com](https://app.netlify.com/) and how I managed to bypass this CSP `Content-Security-Policy: script-src ‘none’` (for those of you who aren’t much familiar with this CSP , in simple terms it means no script execution will be there in any case) along with that some other things which can be applied on other sites also which are using Netlify’s Image CDN , for those of you unfamiliar with what it is would recommend reading this article: ## [Netlify Image CDN ### Transform imag",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "0b6360cd5c93",
+    "title": "A Story About How I Found XSS in ASUS",
+    "url": "https://infosecwriteups.com/a-story-about-how-i-found-xss-in-asus-cb233ce3bb9c",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Karthikeyan.V (@karthithehacker)"
+    ],
+    "program": "Asus",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-01T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:41.733Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "A few months ago, during a routine security assessment, I uncovered a significant cross-site scripting (XSS) vulnerability in the ASUS Laravel Ignition debugging tool.",
+    "summary_ar": null,
+    "excerpt": "A few months ago, during a routine security assessment, I uncovered a significant cross-site scripting (XSS) vulnerability in the ASUS Laravel Ignition debugging tool. This vulnerability, identified as R-XSS, posed a high risk due to the potential for unauthorized script execution in users’ browsers. Here’s how I discovered and explored this vulnerability. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:1000/1*Dx3iowTStEWjlOTnYhjrPA.png) ## The Discovery While examining the target, I noticed that the Laravel Ignition debug mode was enabled on `a",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "4a0683176f85",
+    "title": "How I Got $250 For My Second Bug on HackerOne",
+    "url": "https://medium.com/@likithteki76/how-i-got-250-for-my-second-bug-in-hackerone-35c75cbd84bd",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Likith Teki"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": "250",
+    "published_at": "2024-09-01T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:42.731Z",
+    "categories": [
+      "rce",
+      "oauth-jwt"
+    ],
+    "severity": "medium",
+    "summary_en": "Hello everyone, I hope you all are doing Great! Today’s writeup explains how I earned $250 from my second bug report on HackerOne.",
+    "summary_ar": null,
+    "excerpt": "Hello everyone, I hope you all are doing Great! Today’s writeup explains how I earned $250 from my second bug report on HackerOne. If you haven’t read my first article, please check it out by clicking the link below: ## [How I Got $150 on HackerOne for My First Bug ### Hello everyone, I’m Likith Teki A bug bounty Hunter and Ethical Hacker medium.com](https://medium.com/@likithteki76/how-i-got-150-on-hackerone-for-my-first-bug-8af0ed515e79?source=post_page-----35c75cbd84bd-----------------------------------------) ## **_Title : Removing linked identity does not invalidate associated sessions_**",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "a8d2afba9086",
+    "title": "The Hunt for XXE to LFI: How I Uncovered CVE-2019–9670 in a Bug Bounty Program",
+    "url": "https://infosecwriteups.com/the-hunt-for-xxe-to-lfi-how-i-uncovered-cve-2019-9670-in-a-bug-bounty-program-5668e4afa806",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Karthikeyan.V (@karthithehacker)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-31T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:43.894Z",
+    "categories": [
+      "xxe"
+    ],
+    "severity": "critical",
+    "summary_en": "A few months ago, during one of my late-night bug bounty hunting sessions, I stumbled upon a critical vulnerability that could lead to a full server takeover. The target was a well-known program, and I was determined to dig deep.",
+    "summary_ar": null,
+    "excerpt": "A few months ago, during one of my late-night bug bounty hunting sessions, I stumbled upon a critical vulnerability that could lead to a full server takeover. The target was a well-known program, and I was determined to dig deep. This is the story of how I discovered the XXE to LFI vulnerability (CVE-2019–9670) in my target program. ### The Discovery While probing the target, I noticed something peculiar about the way their server handled XML inputs. My initial scans revealed that the server was running Synacor Zimbra Collaboration Suite version 8.7.x, which I knew had some known vulnerabiliti",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "a0554adcda28",
+    "title": "Breaking Down Barriers: Exploiting Pre-Auth SQL Injection in WhatsUp Gold",
+    "url": "https://summoning.team/blog/progress-whatsup-gold-sqli-cve-2024-6670",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sina Kheirkhah (@SinSinology)"
+    ],
+    "program": "Progress (WhatsUp Gold)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-30T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:44.858Z",
+    "categories": [
+      "auth-bypass",
+      "sqli",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk abo",
+    "summary_ar": null,
+    "excerpt": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk about how this was possible ![Image 3: ZDI](https://summoning.team/images/blog/whatsupgold-haserrors/poc-CVE-2024-6670-poc.png) # Manish Kishan Tanwar If it wasn’t because of the motivation and lessons that my dear friend [Manish](https://x.com/indishell1046) has taught me over the years I have known him, I wouldn’t be able to exploit this bug, thank you my fri",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "405049a1fe91",
+    "title": "4 exploits, 1 bug: exploiting CVE-2024-20017 4 different ways",
+    "url": "https://blog.coffinsec.com/0day/2024/08/30/exploiting-CVE-2024-20017-four-different-ways.html",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "hyper (@hyprdude)"
+    ],
+    "program": "MediaTek",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-30T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:45.870Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "Well, here we are. This post was meant to be finished around March of this year to coincide with the publication of the vulnerability I’m going to be writing about, [CVE-2024-20017](https://nvd.nist.gov/vuln/detail/CVE-2024-20017).",
+    "summary_ar": null,
+    "excerpt": "Well, here we are. This post was meant to be finished around March of this year to coincide with the publication of the vulnerability I’m going to be writing about, [CVE-2024-20017](https://nvd.nist.gov/vuln/detail/CVE-2024-20017). Unfortunately, this also ended up coinciding with me moving, starting a new job, and getting really busy at said job, so here we are nearly 6 months later. This post is probably going to be one of my longest, so strap in. At the end of last year I discovered and reported a vulnerability in ```plaintext wappd ``` , a network daemon that is a part of the MediaTek MT76",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "c6cec4e1871e",
+    "title": "24/7 managed detection, response, and expert cybersecurity services - GoSecure",
+    "url": "https://gosecure.ai/blog/2024/08/30/key-and-e-a-pentesters-tale-on-how-a-photo-opened-real-doors",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Patricia Gagnon-Renaud"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-30T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:46.958Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "For most people, keys are simple yet magical objects: They grant access to places you belong and keep you out of places you don't.",
+    "summary_ar": null,
+    "excerpt": "For most people, keys are simple yet magical objects: They grant access to places you belong and keep you out of places you don't. But did you know that anyone could easily make a copy of a key from a simple picture? Suddenly, something as ordinary as a key becomes a security risk. Through the eyes of a penetration tester, keys represent more than just access; they are vulnerabilities waiting to be exploited. In today's blog, we will explain how a malicious actor could physically intrude one of your offices undetected and how you should protect yourself against this unexpected attack vector. T",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "ccbd823d1a82",
+    "title": "Bypassing airport security via SQL injection",
+    "url": "https://ian.sh/tsa",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ian Carroll (@iangcarroll)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-29T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:48.000Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "summary_en": "![Image 1: Bypassing airport security via SQL injection](https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/727c7878-4188-46dd-a7ff-52f28720199b/lucia-serone--0DVsjv1AHc-unsplash/w=1920,quality=90,fit=scale-down) # Bypassing",
+    "summary_ar": null,
+    "excerpt": "![Image 1: Bypassing airport security via SQL injection](https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/727c7878-4188-46dd-a7ff-52f28720199b/lucia-serone--0DVsjv1AHc-unsplash/w=1920,quality=90,fit=scale-down) # Bypassing airport security via SQL injection 08/29/2024 # Introduction Like many, [Sam Curry](https://twitter.com/samwcyo) and I spend a lot of time waiting in airport security lines. If you do this enough, you might sometimes see a special lane at airport security called **Known Crewmember** (KCM). KCM is a TSA program that allows pilots and flight attendants to byp",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "9c4151111e3f",
+    "title": "Analysis of CVE-2024-43044 – Conviso AppSec",
+    "url": "https://blog.convisoappsec.com/en/analysis-of-cve-2024-43044",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Gabriel Quadros (@gqsilva)",
+      "Ricardo Silva (@rick2600)"
+    ],
+    "program": "Jenkins",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-29T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:49.129Z",
+    "categories": [
+      "rce",
+      "file-upload"
+    ],
+    "severity": "critical",
+    "summary_en": "Jenkins is a widely used tool for automating tasks like building, testing, and deploying software. It’s a key part of the development process in many organizations.",
+    "summary_ar": null,
+    "excerpt": "Jenkins is a widely used tool for automating tasks like building, testing, and deploying software. It’s a key part of the development process in many organizations. If an attacker gains access to a Jenkins server, they can do serious damage like stealing credentials, messing with code, or even disrupting deployments. With access to Jenkins, an attacker could tamper with the software pipeline, potentially causing chaos in the development process and compromising sensitive data. In this blog post we are going to analyze the advisory for the CVE-2024-43044, an arbitrary file read vulnerability in",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]
