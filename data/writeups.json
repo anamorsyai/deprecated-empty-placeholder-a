@@ -1296,6 +1296,73 @@
     "score": 40
   },
   {
+    "id": "58f987bdbd9f",
+    "title": "Hitting the jackpot with RCE!",
+    "url": "https://medium.com/@gokulsspace/hitting-the-jackpot-with-rce-43755cac1415",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Gokulsspace (@GokTest)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "1,500",
+    "published_at": "2024-08-25T00:00:00.000Z",
+    "added_at": "2026-09-22T21:21:39.017Z",
+    "categories": [
+      "rce",
+      "file-upload"
+    ],
+    "severity": "critical",
+    "summary_en": "Just another bug bounty hunter! Connect me on Linkedin: [https://www.linkedin.com/in/gokul-sudhakar-72a93923a/](https://www.linkedin.com/in/gokul-sudhakar-72a93923a/) Follow writer [![Image 3: Gokulsspace](https://miro.medium.com/v2/resize:",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Just another bug bounty hunter! Connect me on Linkedin: [https://www.linkedin.com/in/gokul-sudhakar-72a93923a/](https://www.linkedin.com/in/gokul-sudhakar-72a93923a/) Follow writer [![Image 3: Gokulsspace](https://miro.medium.com/v2/resize:fill:40:40/1*YXC6_lp3j4Mwf9Tcel5skQ@2x.jpeg)](https://medium.com/@gokulsspace?source=post_page---post_author_sidebar--43755cac1415-----------------27aa69144207------------------------) ## Gokulsspace Just another bug bounty hunter! Connect me on Linkedin: [https://www.linkedin.com/in/gokul-sudhakar-72a93923a/](https://www.linkedin.com/in/gokul-sudhakar-72a93",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "4d630ca496e5",
+    "title": "How I Got Sensitive Directory Using Google Dorks",
+    "url": "https://ch44nd.medium.com/find-bugs-from-google-dorks-ec574c01471b",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Chandan das"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-25T00:00:00.000Z",
+    "added_at": "2026-09-22T21:21:44.470Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "summary_en": "**This** is my first article. This article will talk about how to find information disclosure bug via google dorks. Let’s me introduce myself I’m Chandan das from India and I’m a web penetration tester.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**This** is my first article. This article will talk about how to find information disclosure bug via google dorks. Let’s me introduce myself I’m Chandan das from India and I’m a web penetration tester. ## **Lets start !** **The** company didn’t want me to publish their name. For this reason, I’ll call it “**redacted.com**”. Let’s begin! I started hunting with some google dorks. ( site:redacted.com intitle:index.of) I found interesting directories. ## Get Ch4ndan das’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster s",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "e2ca2dbb463c",
     "title": "How I got $24000 Bounty from a Log4j RCE in Apple App Store.",
     "url": "https://medium.com/@meharhuzaifa777/exploiting-log4j-rce-in-apple-app-store-ca99a549de1f",
@@ -1327,5 +1394,276 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "55ec39ac905a",
+    "title": "Hidden in Plain Sight: Uncovering RCE on a Forgotten Axis2 Instance",
+    "url": "https://medium.com/@domenicoveneziano/hidden-in-plain-sight-uncovering-rce-on-a-forgotten-axis2-instance-86ddc91f1415",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Domenico Veneziano"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-23T00:00:00.000Z",
+    "added_at": "2026-09-22T21:21:49.552Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "While looking for interesting assets on one of [**Tryber**](https://www.tryber.me/ethical-hacking-community)’s bug bounty programs, I identified a simple yet impactful vulnerability.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While looking for interesting assets on one of [**Tryber**](https://www.tryber.me/ethical-hacking-community)’s bug bounty programs, I identified a simple yet impactful vulnerability. The affected asset, which could not be located via other well known methods like **Google Dorking**or **Wayback Machine**logs, was discovered using the **SecurityTrails API**. This hidden asset was hosting an Apache **Axis2**instance, which, when accessed, revealed an admin login page. The login page was vulnerable due to **default credentials**being left in place, that allowed me to access the **administration pa",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "099a23e65882",
+    "title": "410 Deleted by author — Medium",
+    "url": "https://k4tedu.medium.com/how-i-can-easily-get-four-p1-at-nasa-using-simple-google-dorking-d4457bec1971",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Francesco Topol / k4tedu"
+    ],
+    "program": "NASA",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-23T00:00:00.000Z",
+    "added_at": "2026-09-22T21:21:52.572Z",
+    "categories": [
+      "rce",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "summary_en": "[Sitemap](https://k4tedu.medium.com/sitemap/sitemap.xml) [Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav------------------------------------------",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[Sitemap](https://k4tedu.medium.com/sitemap/sitemap.xml) [Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------) Sign up [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fk4tedu.medium.com%2Fhow-i-can-easily-get-four-p1-at-nasa-using-simple-google-dorking-d4457bec1971&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------) [](https://medium.com/?source=---top_nav_layout_nav-------------------------------",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "025b2f80c145",
+    "title": "https://match.adsrvr.org/track/cmf/google",
+    "url": "https://www.horizon3.ai/attack-research/disclosures/traccar-5-remote-code-execution-vulnerabilities",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Naveen Sunkavally"
+    ],
+    "program": "Traccar",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-23T00:00:00.000Z",
+    "added_at": "2026-09-22T21:21:57.561Z",
+    "categories": [
+      "rce",
+      "file-upload"
+    ],
+    "severity": "critical",
+    "summary_en": "A 1x1 image, likely be a tacker probe",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A 1x1 image, likely be a tacker probe",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "24c68a471531",
+    "title": "https://match.adsrvr.org/track/cmf/google",
+    "url": "https://www.horizon3.ai/attack-research/disclosures/ntlm-credential-theft-in-python-windows-applications",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Naveen Sunkavally"
+    ],
+    "program": "Python, Hugging Face (Gradio), Werkzeug, Jupyter, Snowflake (Streamlit)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-23T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:02.277Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "summary_en": "A 1x1 image, likely be a tacker probe",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A 1x1 image, likely be a tacker probe",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "aab8b175c6b3",
+    "title": "Instagram and Meta 2FA Bypass by Unprotected Backup Code Retrieval in Accounts Center",
+    "url": "https://medium.com/@scriptshuva/instagram-and-meta-2fa-bypass-by-unprotected-backup-code-retrieval-in-accounts-center-c735ff650f10",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Shuva Saha (@scriptshuva)"
+    ],
+    "program": "Meta / Facebook",
+    "platform_slug": "other",
+    "bounty_raw": "10,000",
+    "published_at": "2024-08-22T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:06.888Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "summary_en": "Hello, I'm Shuva Saha (scriptshuva). Today, I will be discussing a vulnerability I discovered: bypass of two-factor authentication (2FA) mechanisms in Meta and Instagram.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hello, I'm Shuva Saha (scriptshuva). Today, I will be discussing a vulnerability I discovered: bypass of two-factor authentication (2FA) mechanisms in Meta and Instagram. **Bounty**: $10,000 Awarded for bypassing two-factor authentication (2FA) mechanisms in Meta and Instagram ### Meta 2FA Bypass A hacker who gains access to a victim Facebook or Instagram account can retrieve Meta 2FA backup codes from account center, bypassing Meta two-factor authentication (2FA) and gaining full access to victim Meta account. ### Step 1: Login Initiation 1. Go to [Meta Auth](https://auth.meta.com/). 2. Log i",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "a8d68812520e",
+    "title": "Vulnerabilities in Homepage Dashboard",
+    "url": "https://www.anvilsecure.com/blog/vulnerabilities-in-homepage-dashboard.html",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Daniel Kachakil"
+    ],
+    "program": "Homepage",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-22T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:12.691Z",
+    "categories": [
+      "ssrf",
+      "rce",
+      "csrf"
+    ],
+    "severity": "critical",
+    "summary_en": "Homepage is an open-source customizable web application dashboard with integrations for over 100 services.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Homepage is an open-source customizable web application dashboard with integrations for over 100 services. This blog post explains how I could exploit the vulnerabilities I found in the latest version of Homepage at that time (v0.8.13) to fully compromise a Jellyfin server achieving remote code execution by deploying a custom plugin, among other vulnerabilities. The same vulnerabilities and techniques described here could also be leveraged to exploit a variety of integrations. ![Image 7: Homepage dashboard](https://www.anvilsecure.com/wp-content/uploads/2024/08/homepage_dashboard.jpg) ## What",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "6c8e8f92d816",
+    "title": "WPML Multilingual CMS Authenticated Contributor+ Remote Code Execution (RCE) via Twig Server-Side Template Injection (SSTI)",
+    "url": "https://sec.stealthcopter.com/wpml-rce-via-twig-ssti",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Matthew Rollings (@stealthcopter)"
+    ],
+    "program": "Wordfence",
+    "platform_slug": "other",
+    "bounty_raw": "1,639",
+    "published_at": "2024-08-21T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:16.828Z",
+    "categories": [
+      "rce",
+      "ssti"
+    ],
+    "severity": "critical",
+    "summary_en": "Server-Side Template Injection (SSTI) is one of my favorite vulnerabilities, but rarely do I see it outside of CTF competitions… The WPML Multilingual CMS Plugin for WordPress used by over 1 million sites is susceptible to an Authenticated",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Server-Side Template Injection (SSTI) is one of my favorite vulnerabilities, but rarely do I see it outside of CTF competitions… The WPML Multilingual CMS Plugin for WordPress used by over 1 million sites is susceptible to an Authenticated (Contributor+) Remote Code Execution (RCE) vulnerability through a Twig server-side template injection. **Affected Versions:**<= 4.6.11 **CVSS Score:** 9.9 **CVE-ID**: CVE-2024-6386 **Links:**[Mitre](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-6386&ref=sec.stealthcopter.com), [NVD](https://nvd.nist.gov/vuln/detail/CVE-2024-6386?ref=sec.stealthcop",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "460aace6901c",
+    "title": "Authorization bypass due to cache misconfiguration",
+    "url": "https://rikeshbaniya.medium.com/authorization-bypass-due-to-cache-misconfiguration-fde8b2332d2d",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Rikesh Baniya (@rikeshbaniya)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "2,000",
+    "published_at": "2024-08-21T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:23.882Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "graphql"
+    ],
+    "severity": "high",
+    "summary_en": "`target.com` was the user facing portal where users could go and buy items. `admin.target.com` was basically the admin portal for sellers where they could list their items, track orders, customer info and so on.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "`target.com` was the user facing portal where users could go and buy items. `admin.target.com` was basically the admin portal for sellers where they could list their items, track orders, customer info and so on. I was testing for idors and access controls. I generally use Autorize for it. If a lower privilege user is able to hit the admin endpoint Autorize will flag it as “bypassed” . ![Image 4](https://miro.medium.com/v2/resize:fit:668/1*4teG_skh-IEYO4In-02kwg.png) With the normal user cookie from `target.com` placed into Autorize , i was using the `admin.target.com` to check if a normal user",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
   }
 ]
