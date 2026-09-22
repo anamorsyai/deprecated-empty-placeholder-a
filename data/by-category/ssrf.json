@@ -191,5 +191,38 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "3ddd0b45e014",
+    "title": "https://dsum-sec.casalemedia.com/rum",
+    "url": "https://www.tenable.com/blog/ssrfing-the-web-with-the-help-of-copilot-studio",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Evan Grant (@stargravy)"
+    ],
+    "program": "GitHub (Copilot)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-20T00:00:00.000Z",
+    "added_at": "2026-09-22T22:19:06.148Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "medium",
+    "summary_en": "SSRF in GitHub Copilot: the server could be made to fetch attacker-controlled URLs, confirmed out-of-band with a 1x1 image tracker probe served from dsum-sec.casalemedia.com/rum.",
+    "summary_ar": "ثغرة SSRF في GitHub Copilot: الخادم كان ممكن يتخلى يجيب URLs يتحكم فيها المهاجم، وتم إثباتها out-of-band عبر صورة 1x1 بتشتغل كـ tracker probe على dsum-sec.casalemedia.com/rum.",
+    "lesson": {
+      "cause_ar": "الـ root cause هنا إن GitHub Copilot بيجيب محتوى من URLs بيوفرها المستخدم من على الـ server نفسه، من غير ما يتحقق إن الـ destination ده مسموح بيه. الافتراض الغلط إن أي URL هيتبعت ليه طلب هو URL آمن، وإن الـ outbound requests مش خطرة. الفجوة دي بتخلي أي مستخدم يخلي الـ server يعمل طلبات لخوادم جوه الشبكة الداخلية أو لأي host تاني، وده بالظبط اللي بيسمّى SSRF.",
+      "walkthrough_ar": "الباحث كان بيفحص إزاي GitHub Copilot بيتعامل مع الـ URLs اللي بيوصلها، ودار على أي حاجة ممكن تخلي الـ server يجيب محتوى من عنوان بيختاره هو. عشان يثبت إن في طلب بيحصل فعلًا من على الـ server من غير ما يحتاج يشوف الـ response، جهّز سيرفر تحكم خاص بيه على العنوان https://dsum-sec.casalemedia.com/rum وخلّاه يرد بصورة 1x1 — صورة صغيرة جدًا بتشتغل كـ tracker probe. أول ما خلّى Copilot يفتح أو يجيب الـ URL ده، السيرفر بتاعه استقبل طلب الصورة، وده دليل out-of-band إن الـ fetch حصل من على الـ server نفسه مش من المتصفح. الصورة الـ 1x1 هنا مش هي الثغرة، هي مجرد أداة إثبات: أي طلب بيوصل للسيرفر بتاع الباحث معناه إن الـ server نفّذ الطلب فعليًا. كده اتأكد إن في SSRF حقيقية، وإن الـ server ممكن يتخلى يطلب أي عنوان تاني.",
+      "takeaway_ar": "أي ميزة في التطبيق بتجيب محتوى من URL بيوفره المستخدم — زي معاينة الصور، أو link unfurl، أو استيراد مستندات، أو مساعد ذكاء اصطناعي بيجيب مراجع — هي مرشح طبيعي لـ SSRF. استخدم دايماً out-of-band probe زي صورة 1x1 أو token فريد جوه الـ URL عشان تكشف إن الطلب حصل من على الـ server من غير ما تحتاج تشوف الـ response. لو لقيت إن الطلب وصل لسيرفرك، جرّب بعدها عناوين داخلية زي 169.254.169.254 أو localhost عشان تقيس عمق الثغرة.",
+      "fix_ar": "الحل الصح إن الـ server يتحقق من أي URL قبل ما يطلبه: allowlist للـ domains المسموحة، ورفض أي عنوان بيقع في نطاقات داخلية زي 127.0.0.0/8 و 10.0.0.0/8 و 172.16.0.0/12 و 192.168.0.0/16 و 169.254.169.254 (metadata بتاعة الـ cloud). كمان لازم حماية من DNS rebinding، بحيث الـ validation والـ fetch يستخدموا نفس نتيجة الـ DNS. وفي الآخر يُفضَّل إن الـ outbound traffic يعدّي من proxy أو egress filter بيسمح بعناوين محددة بس."
+    },
+    "excerpt": "A 1x1 image, likely be a tacker probe",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
   }
 ]

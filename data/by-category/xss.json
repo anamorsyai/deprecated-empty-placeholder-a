@@ -209,5 +209,39 @@
     "ai_generated": true,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "78f0a6a9d6bc",
+    "title": "500$ From Meta by reporting a HTMLi(Accidental Bug)",
+    "url": "https://armx64.medium.com/500-from-meta-by-reporting-a-htmli-accidental-bug-fef2e5a0f4c4",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "A.R Maheer"
+    ],
+    "program": "Meta / Facebook",
+    "platform_slug": "other",
+    "bounty_raw": "500",
+    "published_at": "2024-08-16T00:00:00.000Z",
+    "added_at": "2026-09-22T22:21:23.761Z",
+    "categories": [
+      "xss",
+      "other"
+    ],
+    "severity": "low",
+    "summary_en": "A stored HTML injection in Messenger group nicknames let the researcher render an H1 tag inside the message 'seen by' list, earning a $500 bounty from Meta. Impact was limited to one-way HTML execution with restrictions.",
+    "summary_ar": "ثغرة HTML injection مخزّنة في أسماء النيك في جروبات Messenger خلّت الباحث يقدر يعرض وسم H1 جوه قائمة 'شاهد الرسالة' (seen by)، وكسب منها $500 من Meta. التأثير كان محدودًا بتنفيذ HTML في اتجاه واحد مع بعض القيود.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن حقل الـ nickname في جروبات Messenger كان بيسمح بإدخال HTML tags من غير sanitization أو escaping، ولما التطبيق بيعرض الأسماء في قائمة الـ 'seen by' كان بيرندر المحتوى كـ HTML بدل ما يتعامل معاه كنص عادي. الافتراض الغلط هنا إن الـ nickname مجرد نص بسيط مش هيبقى له تأثير على الـ rendering، فمفيش validation كافية على الإدخال ولا output encoding على العرض. النتيجة إن أي حد يقدر يعدّل النيك بتاعه لوسم H1، والـ tag ده كان بيتنفذ فعلًا في مكان غير متوقع خالص — قائمة الناس اللي شافت الرسالة.",
+      "walkthrough_ar": "الباحث كان بيعمل حاجة عادية جدًا: بيتصفح جروب كوميونيتي على Messenger، ومن غير ما يقصد ضغط على رسالة. زي ما Messenger بيعمل دايماً، طلعت له قائمة الـ 'seen' — الأسماء اللي شافت الرسالة. في القائمة دي لاحظ حاجة غريبة: اسم واحد كان حجمه أكبر بشكل ملحوظ من باقي الأسماء. في الأول اعتبرها glitch أو مشكلة عرض مؤقتة وعدّى. لكن فضل عنده فضول، فراح يتأكد من الـ nicknames المعرّفة في الجروب. هناك اكتشف إن الاسم اللي ظهر بحجم كبير في قائمة الـ seen كان مكتوب جواه وسم H1 — يعني مش glitch، ده HTML code حقيقي كان بيتنفذ جوه قائمة الـ seen. الباحث حاول يثبت impact أكبر، لكن لقى إن التنفيذ كان one-way فقط وبيقف قدامه بعض القيود، فمقدرش يوصّل لـ script execution أو تأثير أوسع. بلّغ Meta بالثغرة، وMeta خدت 14 يوم عشان تحل المشكلة، وفي الآخر اتصرف بـ $500 bounty.",
+      "takeaway_ar": "الدرس هنا إن أغرب الثغرات ممكن تبان قدامك وأنت مش بتدور عليها — الباحث كان بيتصفح عادي ولقى الـ bug بالصدفة. خليك منتبه لأي rendering غير طبيعي في التطبيق: خط أكبر من الطبيعي، تنسيق غريب، ألوان أو أحجام مش مظبوطة — دي غالبًا علامة إن في HTML أو markup بيتنفذ مكان ما المفروض يبقى نص عادي. الأماكن اللي بتعرض بيانات يتحكم فيها المستخدمين (nicknames, display names, bios) في سياقات غير متوقعة زي قوائم الـ seen أو الـ notifications هي أرض خصبة للـ HTML injection. لو لقيت HTML بيتنفذ، جرّب على طول ترفع الـ impact بـ script tags أو event handlers، لكن حتى لو مقدرتش، HTMLi لوحدها ممكن تتبقي وتتصرف.",
+      "fix_ar": "الحل الصح بيبدأ من الـ input validation: حقل الـ nickname لازم يرفض أو يستقبل أي HTML tags من الأساس، أو على الأقل يتعمل له sanitization صارم على الـ server. والأهم من كده الـ output encoding: أي بيانات يتحكم فيها المستخدم لازم تتعرض كنص عادي (text) مش كـ HTML — يعني استخدام textContent بدل innerHTML، وcontext-aware escaping حسب مكان العرض. كمان لازم يكون في policy موحدة للـ rendering: لو في feature بتدعم تنسيق معين (زي bold أو italic)، يبقى لازم whitelist للـ tags المسموحة بس، وأي tag برة الـ whitelist يتعامل كنص. وده بالظبط اللي Meta عملته لما خدت 14 يوم تصلّح المشكلة."
+    },
+    "excerpt": "This is maybe the shortest article on my medium blog, this is all about a simple “**HTMLi on Messenger Group (Nickname)”.** While casually looking through our community group, I unintentionally tapped on a message. Like always, Messenger revealed the names of those who had read it. One name in the ‘seen’ list stood out as it was noticeably larger than the rest. Initially, I dismissed it as a glitch. However, when I checked the nicknames in the group chat, I discovered that the name displayed in an unusually large font on the ‘seen’ list was actually written in an H1 HTML tag. It wasn’t a glitc",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
   }
 ]

@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": "deb9cf380c18",
+    "title": "$1600 Bounty on a Main Domain",
+    "url": "https://medium.com/@debu8er/1600-bounty-on-a-main-domain-8c30557c0f64",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "debug (@debug50)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "1,600",
+    "published_at": "2024-08-18T00:00:00.000Z",
+    "added_at": "2026-09-22T22:20:49.358Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "high",
+    "summary_en": "Four bugs on a VDP main domain: an open redirect via CRLF injection, a 2FA bypass that accepts email OTPs for phone verification, sensitive account data leaked in the login response before 2FA completes, and a session fixation flaw letting a captured _sc_session cookie skip 2FA on other accounts — $1600 total.",
+    "summary_ar": "باحث في برنامج VDP خاص اكتشف 4 ثغرات في الدومين الرئيسي: Open Redirect عبر CRLF injection، وثغرة بتسمح باستخدام كود تأكيد الإيميل للتحقق من رقم الهاتف (2FA bypass)، وتسريب بيانات الحساب في الـ login response قبل إتمام الـ 2FA، وSession Fixation بتمكّن من إعادة استخدام كوكي _sc_session لتجاوز الـ 2FA على حسابات تانية — بمجموع جوائز $1600.",
+    "lesson": {
+      "cause_ar": "الـ root cause الأساسي إن التطبيق بيفصلش بين قنوات التحقق: نفس الـ API (verify_two_factor_auth) بيستقبل كود الـ OTP سواء جاي من الإيميل أو من الهاتف من غير ما يربط الكود بالقناة اللي اتبعت عليها، فكود الإيميل بيشتغل لتأكيد رقم الهاتف. كمان كوكي _sc_session اللي بتتضبط بعد إتمام الـ 2FA مش مربوطة بالحساب نفسه، فأي حد معاه الكوكي يقدر يستخدمها على حساب تاني من غير 2FA. وفي تسجيل الدخول، الـ response بيرجع بيانات حساسة كاملة (اسم، username، secret token، PIN، عنوان) قبل ما الـ 2FA يخلص أصلاً. والـ redirectTo بيتحقق منه بشكل ناقص سمح بـ CRLF injection عبر /%0d/.",
+      "walkthrough_ar": "الباحث debu8er كان بيشتغل على برنامج VDP خاص بيهدف إنه يـ triage 20 bug، واتعلم من فيديوهات zseano على يوتيوب. بعد ما اتعملت له دعوة خاصة لبرنامج scope بتاعه wildcard (_.redacted.com)، قرر يركّز على الدومين الرئيسي بس من غير subdomain discovery، وفضل يختبر function ورا function لـ 3 أسابيع من غير أي نتيجة. أول حاجة لفتت نظره إن بعد الـ logout المستخدم بيتحوّل لـ /login?redirectTo=/account، فلما جرّب يغيّر القيمة لـ https://evil.com و //evil.com ما اشتغلش، لكن لما جرّب /%0d/evil.com اتعمل redirect لـ evil.com — بس اتشال كـ duplicate لأن حد تاني بلغها قبله بيوم. بعدها لاحظ إن التطبيق بيستخدم نفس الـ API للتحقق من كود الإيميل وكود الهاتف: POST /api/v1/users/two_factor_auth?email=... للتحقق بالإيميل و POST /api/v1/users/two_factor_auth?phone=... للهاتف، والتحقق النهائي بيحصل عبر POST /api/v1/users/verify_two_factor_auth بجسم JSON زي {\"otp_attempt\":\"116293\"}. فافترض إنه يقدر يبدأ phone verification وبعدين يرسل كود الإيميل الجديد مكان كود الهاتف — وطلعت الفرضية صح، فاتقبل النظام كود الإيميل لتأكيد رقم الهاتف، واتصنّفت Medium (6.1) بـ $300. وفي subdomain تابع للدومين الرئيسي (few.redacted.com)، لاحظ إن الـ login response قبل ما يدخل كود الـ 2FA بيرجع بيانات الحساب كاملة: الاسم، اللقب، username، secret token، رقم الهاتف، PIN، والعنوان — من غير ما يكمّل الـ 2FA، واتصنّفت Medium (4.4) بـ $300. آخر حاجة كانت Session Fixation: بعد إتمام الـ 2FA بيتبعت كوكي _sc_session، واكتشف إن الكوكي دي بتتشاف على حسابات تانية، فسجّل الدخول بحساب A وكمّل الـ 2FA والتقط الكوكي، وبعدين استخدمها على حساب B من غير 2FA — اتشالت duplicate على الويب، لكن لما دوّر في تطبيق Android لقى نفس الثغرة في API تاني، واتصنّفت High (7.7) بـ $1000.",
+      "takeaway_ar": "أي flow فيه 2FA يستاهل تختبره من زاوية \"هل الكود مربوط بالقناة اللي اتبعت عليها؟\" — جرّب تبدأ تحقق بالإيميل وبعدين تقدم كود من قناة تانية، ولاحظ لو الـ verify endpoint واحد لكل القنوات. كمان أي كوكي بتتضبط بعد خطوة حساسة (زي الـ 2FA) لازم تتأكد إنها مربوطة بالحساب: اعمل account A و account B واعبر الكوكي بينهم. ولاحظ دايماً الـ response بتاع الـ login قبل إتمام الـ 2FA — لو فيه بيانات حساسة بتتسرب، دي ثغرة مستقلة. ولو لقيت duplicate على الويب، دوّر على نفس الـ endpoint في تطبيقات الموبايل أو APIs تانية — غالباً نفس الـ bug بيتكرر في مكان تاني.",
+      "fix_ar": "الحل الصح إن كود الـ OTP يتبقى مربوط بالقناة اللي اتبعت عليها (email أو phone) وبالجلسة اللي بدأت الطلب، والـ verify endpoint لازم يتحقق إن الكود اتبعت للقناة المطلوبة فعلاً مش أي كود صالح. وكوكي _sc_session لازم تكون مربوطة بالحساب والجلسة، وتتبطل (invalidate) لو اتعاد استخدامها أو اتحاول على حساب تاني. والـ login response لازم يرجّع البيانات الحساسة بس بعد إتمام كل خطوات المصادقة، ومتنساش إن الـ redirectTo لازم يتحقق منه بـ allowlist للدومينات الداخلية مع رفض أي CRLF أو protocol-relative URLs زي //evil.com."
+    },
+    "excerpt": "3. [Bug 3: Premature Information Disclosure Post-Email and Password Authentication ($300)](https://medium.com/?source=post_page-----8c30557c0f64-----------------------------------------#0f83 \"Bug 3: Premature Information Disclosure Post-Email and Password Authentication ($300)\") 1. [Steps to Reproduce](https://medium.com/?source=post_page-----8c30557c0f64-----------------------------------------#983e \"Steps to Reproduce\") 4. [Bug 4: Session Fixation in Website 2FA Flow Allows Bypassing 2FA for Sensitive Actions ($1000)](https://medium.com/?source=post_page-----8c30557c0f64---------------------",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  }
+]

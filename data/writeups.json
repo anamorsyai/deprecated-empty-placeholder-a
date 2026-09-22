@@ -2605,6 +2605,39 @@
     "score": 53
   },
   {
+    "id": "3ddd0b45e014",
+    "title": "https://dsum-sec.casalemedia.com/rum",
+    "url": "https://www.tenable.com/blog/ssrfing-the-web-with-the-help-of-copilot-studio",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Evan Grant (@stargravy)"
+    ],
+    "program": "GitHub (Copilot)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-20T00:00:00.000Z",
+    "added_at": "2026-09-22T22:19:06.148Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "medium",
+    "summary_en": "SSRF in GitHub Copilot: the server could be made to fetch attacker-controlled URLs, confirmed out-of-band with a 1x1 image tracker probe served from dsum-sec.casalemedia.com/rum.",
+    "summary_ar": "ثغرة SSRF في GitHub Copilot: الخادم كان ممكن يتخلى يجيب URLs يتحكم فيها المهاجم، وتم إثباتها out-of-band عبر صورة 1x1 بتشتغل كـ tracker probe على dsum-sec.casalemedia.com/rum.",
+    "lesson": {
+      "cause_ar": "الـ root cause هنا إن GitHub Copilot بيجيب محتوى من URLs بيوفرها المستخدم من على الـ server نفسه، من غير ما يتحقق إن الـ destination ده مسموح بيه. الافتراض الغلط إن أي URL هيتبعت ليه طلب هو URL آمن، وإن الـ outbound requests مش خطرة. الفجوة دي بتخلي أي مستخدم يخلي الـ server يعمل طلبات لخوادم جوه الشبكة الداخلية أو لأي host تاني، وده بالظبط اللي بيسمّى SSRF.",
+      "walkthrough_ar": "الباحث كان بيفحص إزاي GitHub Copilot بيتعامل مع الـ URLs اللي بيوصلها، ودار على أي حاجة ممكن تخلي الـ server يجيب محتوى من عنوان بيختاره هو. عشان يثبت إن في طلب بيحصل فعلًا من على الـ server من غير ما يحتاج يشوف الـ response، جهّز سيرفر تحكم خاص بيه على العنوان https://dsum-sec.casalemedia.com/rum وخلّاه يرد بصورة 1x1 — صورة صغيرة جدًا بتشتغل كـ tracker probe. أول ما خلّى Copilot يفتح أو يجيب الـ URL ده، السيرفر بتاعه استقبل طلب الصورة، وده دليل out-of-band إن الـ fetch حصل من على الـ server نفسه مش من المتصفح. الصورة الـ 1x1 هنا مش هي الثغرة، هي مجرد أداة إثبات: أي طلب بيوصل للسيرفر بتاع الباحث معناه إن الـ server نفّذ الطلب فعليًا. كده اتأكد إن في SSRF حقيقية، وإن الـ server ممكن يتخلى يطلب أي عنوان تاني.",
+      "takeaway_ar": "أي ميزة في التطبيق بتجيب محتوى من URL بيوفره المستخدم — زي معاينة الصور، أو link unfurl، أو استيراد مستندات، أو مساعد ذكاء اصطناعي بيجيب مراجع — هي مرشح طبيعي لـ SSRF. استخدم دايماً out-of-band probe زي صورة 1x1 أو token فريد جوه الـ URL عشان تكشف إن الطلب حصل من على الـ server من غير ما تحتاج تشوف الـ response. لو لقيت إن الطلب وصل لسيرفرك، جرّب بعدها عناوين داخلية زي 169.254.169.254 أو localhost عشان تقيس عمق الثغرة.",
+      "fix_ar": "الحل الصح إن الـ server يتحقق من أي URL قبل ما يطلبه: allowlist للـ domains المسموحة، ورفض أي عنوان بيقع في نطاقات داخلية زي 127.0.0.0/8 و 10.0.0.0/8 و 172.16.0.0/12 و 192.168.0.0/16 و 169.254.169.254 (metadata بتاعة الـ cloud). كمان لازم حماية من DNS rebinding، بحيث الـ validation والـ fetch يستخدموا نفس نتيجة الـ DNS. وفي الآخر يُفضَّل إن الـ outbound traffic يعدّي من proxy أو egress filter بيسمح بعناوين محددة بس."
+    },
+    "excerpt": "A 1x1 image, likely be a tacker probe",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "8b4de87aa365",
     "title": "From MLOps to MLOops: Exposing the Attack Surface of Machine Learning Platforms",
     "url": "https://jfrog.com/blog/from-mlops-to-mloops-exposing-the-attack-surface-of-machine-learning-platforms",
@@ -2677,6 +2710,41 @@
     "score": 53
   },
   {
+    "id": "9257b52a9d97",
+    "title": "World of SELECT-only PostgreSQL Injections",
+    "url": "http://phrack.org/issues/71/8.html",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Maksym Vatsyk"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-19T00:00:00.000Z",
+    "added_at": "2026-09-22T22:20:01.729Z",
+    "categories": [
+      "sqli",
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "A trivial SELECT-only SQL injection in a Golang/PGX API — where stacked queries were blocked by prepared statements — was escalated to PostgreSQL superuser and full RCE by abusing lo_import/lo_export to rewrite table filenodes and postgresql.conf.",
+    "summary_ar": "ثغرة SQL injection بسيطة من نوع SELECT-only في API مبني على Golang/PGX — حيث مُنعت الـ stacked queries عبر prepared statements — تم تصعيدها إلى صلاحيات superuser على PostgreSQL ثم RCE كاملة عبر استغلال دوال lo_import/lo_export لإعادة كتابة ملفات filenode وملف postgresql.conf.",
+    "lesson": {
+      "cause_ar": "الـ root cause الأساسي إن التطبيق كان بياخد الـ query parameter `id` من المستخدم ويدمجه جوه الـ SQL query مباشرة عبر `fmt.Sprintf` من غير أي parameterization — يعني أي قيمة في الـ parameter بتتفسر كجزء من الاستعلام نفسه. المشكلة اتعمّقت لما طلع إن الـ PGX driver بيحوّل أي query لـ prepared statement تحت الغطا، فبيمنع الـ stacked queries نهائيًا، وده خلا الباحث محبوس في SELECT واحد بس. لكن الافتراض الخاطئ الأكبر كان من ناحية PostgreSQL نفسها: الدوال الجاهزة `lo_import` و`lo_export` متاحة للسوبر يوزر افتراضيًا وبتسمح بقراءة وكتابة ملفات على السيرفر، والـ DBMS شغال تحت OS user اسمه `postgres` عنده صلاحية الوصول لملفات الـ data والـ config بتاعته. فالفجوة الحقيقية مش بس في الـ SQLi — إنما في إن نظام قاعدة البيانات نفسه بيدي للـ SELECT injection أدوات للوصول للملفات، وده اللي فتح باب الـ privesc والـ RCE.",
+      "walkthrough_ar": "الباحث كان بيفحص API عام بيخدم كـ public data repository — تطبيق مكتوب بـ Golang مع إطار Gin ودرايفر PGX، وكل البيانات متاحة لأي حد يقراها لكن التعديل محصور في ناس موثوقة. لاحظ إن الـ endpoint `/phrases` بياخد parameter اسمه `id`، فجرّب يلعب بيه: `id=1` رجّع صف واحد، و`id=-1` رجّع مصفوفة فاضية، و`id=-1 OR 1=1` رجّع كل الصفوف — يعني SQLi مؤكدة في السطر `SELECT id, text FROM phrases WHERE id=%s`. أول خطة كانت الـ stacked queries، فجرّب `id=-1; SELECT pg_sleep(5)` لكن السيرفر ردّ بخطأ `ERROR: cannot insert multiple commands into a prepared statement (SQLSTATE 42601)` — طلع إن PGX بيحوّل كل query لـ prepared statement تحت الغطا فبيمنع تنفيذ أكتر من أمر. جرّب كمان `id=-1 OR (UPDATE * phrases SET text='lol')` و`id=-1 OR (DELETE * FROM phrases)` ففشلوا بـ syntax error، لكن `id=-1 OR (SELECT 1)=1` اشتغلت تمام — يعني الـ SELECT المتداخلة مسموحة. بما إن قراية البيانات نفسها مش إنجاز (البيانات عامة)، دور على دوال PostgreSQL الجاهزة اللي ممكن تساعد، ولقى `lo_import` و`lo_export` — دوال Large Objects بتسمح بقراءة ملف من السيرفر جوه الـ DB وبالعكس، ومتاحة للسوبر يوزر افتراضيًا. عشان يعرف إيه الملفات المتاحة، شاف `/etc/passwd` ولقى `postgres:x:129:129::/var/lib/postgresql:/bin/bash`، وبعدين شغّل `find / -uid 129 -type f -perm -600` ولقى ملفات مهمة زي `/var/lib/postgresql/data/postgresql.conf` و`pg_hba.conf` و`pg_ident.conf` وملفات data تبع قاعدة البيانات. من هنا بدأ التصعيد اللي المقال بيشرحه على مراحل: تحديد الـ target table، البحث عن الـ filenode بتاعها، قراية وتنزيل الـ filenode، استخراج الـ table metadata، تعديل الملفات offline عشان يخلي نفسه superuser، وبعدين Flushing الـ Hot storage عشان التعديل يظهر. وللوصول للـ RCE: قراية `postgresql.conf` الأصلي، اختيار parameter مناسب للاستغلال، compile مكتبة خبيثة، رفعها للسيرفر، وإعادة تحميل الـ config — وهي تقنية مبنية على اكتشافات Denis Andzakovic وsylsTyping من 2021 و2022.",
+      "takeaway_ar": "أول درس: لما تلاقي SQLi ويفشل الـ stacked queries بسبب prepared statements، متستسلمش — في PostgreSQL الـ SELECT-only ممكن توصل لأبعد من كده بكتير. العلامات اللي بتدل على النمط ده: رسالة خطأ زي `cannot insert multiple commands into a prepared statement` اللي بتكشف سلوك الـ driver، وقدرتك على استدعاء دوال جوه SELECT متداخلة، وكون الـ DB user عنده صلاحيات superuser. لو الدوال `lo_import`/`lo_export` أو `pg_read_file` شغالة، يبقى عندك قراية وكتابة ملفات على السيرفر — وده بيكفي يبدأ سلسلة تصعيد كاملة. النمط ده بيتكرر في أي هدف PostgreSQL فيه injection مقيدة بـ SELECT، خصوصًا لما تكون قاعدة البيانات شغالة تحت OS user بصلاحيات واسعة على ملفاتها.",
+      "fix_ar": "الإصلاح الأول والأهم على مستوى التطبيق: استخدام parameterized queries بدل دمج المدخلات في الـ query string — في PGX المفروض تمرر القيم كـ arguments لـ `pool.Query` بدل `fmt.Sprintf`، وده بيقتل الـ SQLi من جذوره. على مستوى قاعدة البيانات، لازم الـ DB role المستخدمة في التطبيق تكون غير superuser، وتتسحب منها صلاحية استدعاء الدوال الخطيرة زي `lo_import` و`lo_export` و`pg_read_file`، أو تُحرم من `pg_largeobject` لو مش محتاجاها. كمان الـ OS user اللي شغال عليه PostgreSQL لازم يكون بحساب منفصل بصلاحيات محدودة، وملفات الـ config زي `postgresql.conf` و`pg_hba.conf` متبقاش قابلة للكتابة من الـ DBMS نفسه. وأخيرًا، لو التطبيق بيخدم بيانات عامة، أي injection حتى لو SELECT-only لازم تتعامل معاها كحرجة لأنها ممكن تتصعد لـ RCE."
+    },
+    "excerpt": "0 - Introduction 1 - The SQLi that started it all 1.0 - Target info 1.1 - A rather trivial injection 1.2 - No stacked queries for you 1.3 - Abusing server-side lo_ functions 1.4 - Not (entirely) a superuser 1.5 - Looking for a privesc 2 - PostgreSQL storage concepts 2.0 - Tables and Filenodes 2.1 - Filenode format 2.2 - Table metadata 2.3 - Cold and Hot Data storages 2.4 - Editing filenodes offline 3 - Updating the PostgreSQL data without UPDATE 3.0 - Identifying target table 3.1 - Search for the associated Filenode 3.2 - Reading and downloading Filenode 3.3 - Extracting table metadata 3.4 - M",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "b7e80ec0929d",
     "title": "$4,998 Bounty Awarded and 100,000 WordPress Sites Protected Against Unauthenticated Remote Code Execution Vulnerability Patched in GiveWP WordPress Plugin",
     "url": "https://www.wordfence.com/blog/2024/08/4998-bounty-awarded-and-100000-wordpress-sites-protected-against-unauthenticated-remote-code-execution-vulnerability-patched-in-givewp-wordpress-plugin",
@@ -2743,6 +2811,75 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "deb9cf380c18",
+    "title": "$1600 Bounty on a Main Domain",
+    "url": "https://medium.com/@debu8er/1600-bounty-on-a-main-domain-8c30557c0f64",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "debug (@debug50)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "1,600",
+    "published_at": "2024-08-18T00:00:00.000Z",
+    "added_at": "2026-09-22T22:20:49.358Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "high",
+    "summary_en": "Four bugs on a VDP main domain: an open redirect via CRLF injection, a 2FA bypass that accepts email OTPs for phone verification, sensitive account data leaked in the login response before 2FA completes, and a session fixation flaw letting a captured _sc_session cookie skip 2FA on other accounts — $1600 total.",
+    "summary_ar": "باحث في برنامج VDP خاص اكتشف 4 ثغرات في الدومين الرئيسي: Open Redirect عبر CRLF injection، وثغرة بتسمح باستخدام كود تأكيد الإيميل للتحقق من رقم الهاتف (2FA bypass)، وتسريب بيانات الحساب في الـ login response قبل إتمام الـ 2FA، وSession Fixation بتمكّن من إعادة استخدام كوكي _sc_session لتجاوز الـ 2FA على حسابات تانية — بمجموع جوائز $1600.",
+    "lesson": {
+      "cause_ar": "الـ root cause الأساسي إن التطبيق بيفصلش بين قنوات التحقق: نفس الـ API (verify_two_factor_auth) بيستقبل كود الـ OTP سواء جاي من الإيميل أو من الهاتف من غير ما يربط الكود بالقناة اللي اتبعت عليها، فكود الإيميل بيشتغل لتأكيد رقم الهاتف. كمان كوكي _sc_session اللي بتتضبط بعد إتمام الـ 2FA مش مربوطة بالحساب نفسه، فأي حد معاه الكوكي يقدر يستخدمها على حساب تاني من غير 2FA. وفي تسجيل الدخول، الـ response بيرجع بيانات حساسة كاملة (اسم، username، secret token، PIN، عنوان) قبل ما الـ 2FA يخلص أصلاً. والـ redirectTo بيتحقق منه بشكل ناقص سمح بـ CRLF injection عبر /%0d/.",
+      "walkthrough_ar": "الباحث debu8er كان بيشتغل على برنامج VDP خاص بيهدف إنه يـ triage 20 bug، واتعلم من فيديوهات zseano على يوتيوب. بعد ما اتعملت له دعوة خاصة لبرنامج scope بتاعه wildcard (_.redacted.com)، قرر يركّز على الدومين الرئيسي بس من غير subdomain discovery، وفضل يختبر function ورا function لـ 3 أسابيع من غير أي نتيجة. أول حاجة لفتت نظره إن بعد الـ logout المستخدم بيتحوّل لـ /login?redirectTo=/account، فلما جرّب يغيّر القيمة لـ https://evil.com و //evil.com ما اشتغلش، لكن لما جرّب /%0d/evil.com اتعمل redirect لـ evil.com — بس اتشال كـ duplicate لأن حد تاني بلغها قبله بيوم. بعدها لاحظ إن التطبيق بيستخدم نفس الـ API للتحقق من كود الإيميل وكود الهاتف: POST /api/v1/users/two_factor_auth?email=... للتحقق بالإيميل و POST /api/v1/users/two_factor_auth?phone=... للهاتف، والتحقق النهائي بيحصل عبر POST /api/v1/users/verify_two_factor_auth بجسم JSON زي {\"otp_attempt\":\"116293\"}. فافترض إنه يقدر يبدأ phone verification وبعدين يرسل كود الإيميل الجديد مكان كود الهاتف — وطلعت الفرضية صح، فاتقبل النظام كود الإيميل لتأكيد رقم الهاتف، واتصنّفت Medium (6.1) بـ $300. وفي subdomain تابع للدومين الرئيسي (few.redacted.com)، لاحظ إن الـ login response قبل ما يدخل كود الـ 2FA بيرجع بيانات الحساب كاملة: الاسم، اللقب، username، secret token، رقم الهاتف، PIN، والعنوان — من غير ما يكمّل الـ 2FA، واتصنّفت Medium (4.4) بـ $300. آخر حاجة كانت Session Fixation: بعد إتمام الـ 2FA بيتبعت كوكي _sc_session، واكتشف إن الكوكي دي بتتشاف على حسابات تانية، فسجّل الدخول بحساب A وكمّل الـ 2FA والتقط الكوكي، وبعدين استخدمها على حساب B من غير 2FA — اتشالت duplicate على الويب، لكن لما دوّر في تطبيق Android لقى نفس الثغرة في API تاني، واتصنّفت High (7.7) بـ $1000.",
+      "takeaway_ar": "أي flow فيه 2FA يستاهل تختبره من زاوية \"هل الكود مربوط بالقناة اللي اتبعت عليها؟\" — جرّب تبدأ تحقق بالإيميل وبعدين تقدم كود من قناة تانية، ولاحظ لو الـ verify endpoint واحد لكل القنوات. كمان أي كوكي بتتضبط بعد خطوة حساسة (زي الـ 2FA) لازم تتأكد إنها مربوطة بالحساب: اعمل account A و account B واعبر الكوكي بينهم. ولاحظ دايماً الـ response بتاع الـ login قبل إتمام الـ 2FA — لو فيه بيانات حساسة بتتسرب، دي ثغرة مستقلة. ولو لقيت duplicate على الويب، دوّر على نفس الـ endpoint في تطبيقات الموبايل أو APIs تانية — غالباً نفس الـ bug بيتكرر في مكان تاني.",
+      "fix_ar": "الحل الصح إن كود الـ OTP يتبقى مربوط بالقناة اللي اتبعت عليها (email أو phone) وبالجلسة اللي بدأت الطلب، والـ verify endpoint لازم يتحقق إن الكود اتبعت للقناة المطلوبة فعلاً مش أي كود صالح. وكوكي _sc_session لازم تكون مربوطة بالحساب والجلسة، وتتبطل (invalidate) لو اتعاد استخدامها أو اتحاول على حساب تاني. والـ login response لازم يرجّع البيانات الحساسة بس بعد إتمام كل خطوات المصادقة، ومتنساش إن الـ redirectTo لازم يتحقق منه بـ allowlist للدومينات الداخلية مع رفض أي CRLF أو protocol-relative URLs زي //evil.com."
+    },
+    "excerpt": "3. [Bug 3: Premature Information Disclosure Post-Email and Password Authentication ($300)](https://medium.com/?source=post_page-----8c30557c0f64-----------------------------------------#0f83 \"Bug 3: Premature Information Disclosure Post-Email and Password Authentication ($300)\") 1. [Steps to Reproduce](https://medium.com/?source=post_page-----8c30557c0f64-----------------------------------------#983e \"Steps to Reproduce\") 4. [Bug 4: Session Fixation in Website 2FA Flow Allows Bypassing 2FA for Sensitive Actions ($1000)](https://medium.com/?source=post_page-----8c30557c0f64---------------------",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "78f0a6a9d6bc",
+    "title": "500$ From Meta by reporting a HTMLi(Accidental Bug)",
+    "url": "https://armx64.medium.com/500-from-meta-by-reporting-a-htmli-accidental-bug-fef2e5a0f4c4",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "A.R Maheer"
+    ],
+    "program": "Meta / Facebook",
+    "platform_slug": "other",
+    "bounty_raw": "500",
+    "published_at": "2024-08-16T00:00:00.000Z",
+    "added_at": "2026-09-22T22:21:23.761Z",
+    "categories": [
+      "xss",
+      "other"
+    ],
+    "severity": "low",
+    "summary_en": "A stored HTML injection in Messenger group nicknames let the researcher render an H1 tag inside the message 'seen by' list, earning a $500 bounty from Meta. Impact was limited to one-way HTML execution with restrictions.",
+    "summary_ar": "ثغرة HTML injection مخزّنة في أسماء النيك في جروبات Messenger خلّت الباحث يقدر يعرض وسم H1 جوه قائمة 'شاهد الرسالة' (seen by)، وكسب منها $500 من Meta. التأثير كان محدودًا بتنفيذ HTML في اتجاه واحد مع بعض القيود.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن حقل الـ nickname في جروبات Messenger كان بيسمح بإدخال HTML tags من غير sanitization أو escaping، ولما التطبيق بيعرض الأسماء في قائمة الـ 'seen by' كان بيرندر المحتوى كـ HTML بدل ما يتعامل معاه كنص عادي. الافتراض الغلط هنا إن الـ nickname مجرد نص بسيط مش هيبقى له تأثير على الـ rendering، فمفيش validation كافية على الإدخال ولا output encoding على العرض. النتيجة إن أي حد يقدر يعدّل النيك بتاعه لوسم H1، والـ tag ده كان بيتنفذ فعلًا في مكان غير متوقع خالص — قائمة الناس اللي شافت الرسالة.",
+      "walkthrough_ar": "الباحث كان بيعمل حاجة عادية جدًا: بيتصفح جروب كوميونيتي على Messenger، ومن غير ما يقصد ضغط على رسالة. زي ما Messenger بيعمل دايماً، طلعت له قائمة الـ 'seen' — الأسماء اللي شافت الرسالة. في القائمة دي لاحظ حاجة غريبة: اسم واحد كان حجمه أكبر بشكل ملحوظ من باقي الأسماء. في الأول اعتبرها glitch أو مشكلة عرض مؤقتة وعدّى. لكن فضل عنده فضول، فراح يتأكد من الـ nicknames المعرّفة في الجروب. هناك اكتشف إن الاسم اللي ظهر بحجم كبير في قائمة الـ seen كان مكتوب جواه وسم H1 — يعني مش glitch، ده HTML code حقيقي كان بيتنفذ جوه قائمة الـ seen. الباحث حاول يثبت impact أكبر، لكن لقى إن التنفيذ كان one-way فقط وبيقف قدامه بعض القيود، فمقدرش يوصّل لـ script execution أو تأثير أوسع. بلّغ Meta بالثغرة، وMeta خدت 14 يوم عشان تحل المشكلة، وفي الآخر اتصرف بـ $500 bounty.",
+      "takeaway_ar": "الدرس هنا إن أغرب الثغرات ممكن تبان قدامك وأنت مش بتدور عليها — الباحث كان بيتصفح عادي ولقى الـ bug بالصدفة. خليك منتبه لأي rendering غير طبيعي في التطبيق: خط أكبر من الطبيعي، تنسيق غريب، ألوان أو أحجام مش مظبوطة — دي غالبًا علامة إن في HTML أو markup بيتنفذ مكان ما المفروض يبقى نص عادي. الأماكن اللي بتعرض بيانات يتحكم فيها المستخدمين (nicknames, display names, bios) في سياقات غير متوقعة زي قوائم الـ seen أو الـ notifications هي أرض خصبة للـ HTML injection. لو لقيت HTML بيتنفذ، جرّب على طول ترفع الـ impact بـ script tags أو event handlers، لكن حتى لو مقدرتش، HTMLi لوحدها ممكن تتبقي وتتصرف.",
+      "fix_ar": "الحل الصح بيبدأ من الـ input validation: حقل الـ nickname لازم يرفض أو يستقبل أي HTML tags من الأساس، أو على الأقل يتعمل له sanitization صارم على الـ server. والأهم من كده الـ output encoding: أي بيانات يتحكم فيها المستخدم لازم تتعرض كنص عادي (text) مش كـ HTML — يعني استخدام textContent بدل innerHTML، وcontext-aware escaping حسب مكان العرض. كمان لازم يكون في policy موحدة للـ rendering: لو في feature بتدعم تنسيق معين (زي bold أو italic)، يبقى لازم whitelist للـ tags المسموحة بس، وأي tag برة الـ whitelist يتعامل كنص. وده بالظبط اللي Meta عملته لما خدت 14 يوم تصلّح المشكلة."
+    },
+    "excerpt": "This is maybe the shortest article on my medium blog, this is all about a simple “**HTMLi on Messenger Group (Nickname)”.** While casually looking through our community group, I unintentionally tapped on a message. Like always, Messenger revealed the names of those who had read it. One name in the ‘seen’ list stood out as it was noticeably larger than the rest. Initially, I dismissed it as a glitch. However, when I checked the nicknames in the group chat, I discovered that the name displayed in an unusually large font on the ‘seen’ list was actually written in an H1 HTML tag. It wasn’t a glitc",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
   },
   {
     "id": "8088fa5dc7bd",
