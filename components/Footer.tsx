@@ -16,6 +16,22 @@ export default function Footer() {
         <span>
           محرك التصنيف: <span className="font-mono text-primary/80">{meta.aiProvider}</span>
         </span>
+        {typeof meta.aiGeneratedTotal === "number" && (
+          <>
+            <span aria-hidden className="text-border">
+              ·
+            </span>
+            <span>{meta.aiGeneratedTotal} بمعالجة AI</span>
+          </>
+        )}
+        {typeof meta.aiFallbackThisRun === "number" && meta.aiFallbackThisRun > 0 && (
+          <>
+            <span aria-hidden className="text-border">
+              ·
+            </span>
+            <span>آخر تشغيلة: {meta.aiFallbackThisRun} بدون AI</span>
+          </>
+        )}
       </p>
       <p className="mt-3 max-w-2xl">
         الموقع لا ينسخ محتوى الكتابات الأصلية — كل بطاقة تعرض عنوانًا دقيقًا وملخصًا فقط ثم تحيلك لرابط المصدر الأصلي. ترتيب

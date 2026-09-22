@@ -29,35 +29,6 @@
     "score": 60
   },
   {
-    "id": "a0554adcda28",
-    "title": "Breaking Down Barriers: Exploiting Pre-Auth SQL Injection in WhatsUp Gold",
-    "url": "https://summoning.team/blog/progress-whatsup-gold-sqli-cve-2024-6670",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Sina Kheirkhah (@SinSinology)"
-    ],
-    "program": "Progress (WhatsUp Gold)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-30T00:00:00.000Z",
-    "added_at": "2026-09-22T20:37:44.858Z",
-    "categories": [
-      "auth-bypass",
-      "sqli",
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk abo",
-    "summary_ar": null,
-    "excerpt": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk about how this was possible ![Image 3: ZDI](https://summoning.team/images/blog/whatsupgold-haserrors/poc-CVE-2024-6670-poc.png) # Manish Kishan Tanwar If it wasn’t because of the motivation and lessons that my dear friend [Manish](https://x.com/indishell1046) has taught me over the years I have known him, I wouldn’t be able to exploit this bug, thank you my fri",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
     "id": "aab8b175c6b3",
     "title": "Instagram and Meta 2FA Bypass by Unprotected Backup Code Retrieval in Accounts Center",
     "url": "https://medium.com/@scriptshuva/instagram-and-meta-2fa-bypass-by-unprotected-backup-code-retrieval-in-accounts-center-c735ff650f10",

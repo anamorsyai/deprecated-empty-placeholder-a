@@ -34,7 +34,7 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
         <SeverityBadge severity={w.severity} />
       </div>
 
-      <h1 className="mb-4 text-xl font-extrabold leading-snug sm:text-2xl" dir="ltr">
+      <h1 className="mb-4 break-words text-xl font-extrabold leading-snug sm:text-2xl" dir="ltr">
         <span className="block text-right" dir="rtl">
           {w.title}
         </span>
@@ -68,7 +68,7 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
         href={w.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mb-6 flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-bg transition hover:opacity-90 sm:hidden"
+        className="mb-6 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-bg transition hover:opacity-90 sm:hidden"
       >
         اقرأ المصدر الأصلي ↗
       </a>
@@ -131,7 +131,7 @@ function LessonSection({ lesson, aiGenerated }: { lesson: Lesson | null; aiGener
           <h2 className="relative mb-3 flex items-center gap-2 text-base font-extrabold text-primary sm:text-lg">
             🛠️ قصة الاكتشاف والاستغلال
           </h2>
-          <p className="relative text-[15px] leading-[1.9] text-[#e6edf3] sm:text-base">{lesson!.walkthrough_ar}</p>
+          <p className="relative break-words text-[15px] leading-[1.9] text-ink sm:text-base">{lesson!.walkthrough_ar}</p>
         </div>
       )}
 

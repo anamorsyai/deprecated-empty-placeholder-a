@@ -158,27 +158,54 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
   if (!base) throw new Error("no base URL configured for this provider");
   if (!model) throw new Error("no model id configured for this provider");
 
+  // People constantly paste the full chat-completions URL into the base secret
+  // (.../v1/chat/completions) even though the docs say to stop at /v1 — which
+  // would otherwise build .../chat/completions/chat/completions and 404 every
+  // call, silently degrading the whole run to heuristic. Tolerate both forms.
+  const root = base
+    .replace(/\/+$/, "")
+    .replace(/\/chat\/completions\/?$/, "");
+  const endpoint = `${root}/chat/completions`;
+
   const headers = { "content-type": "application/json", ...extraHeaders };
   // Optional: a self-hosted/local endpoint may need no auth at all — only
   // send Authorization when a key was actually given.
   if (key) headers.authorization = `Bearer ${key}`;
 
-  const res = await fetch(`${base}/chat/completions`, {
-    method: "POST",
-    headers,
-    signal: AbortSignal.timeout(60000),
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      max_tokens: 3072,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: PROMPT_INSTRUCTIONS },
-        { role: "user", content: userPrompt },
-      ],
-    }),
+  const body = (withJsonMode) => ({
+    model,
+    temperature: 0.2,
+    max_tokens: 3072,
+    ...(withJsonMode ? { response_format: { type: "json_object" } } : {}),
+    messages: [
+      { role: "system", content: PROMPT_INSTRUCTIONS },
+      { role: "user", content: userPrompt },
+    ],
   });
-  if (!res.ok) throw new Error(`${base} HTTP ${res.status}: ${await res.text()}`);
+
+  const post = (withJsonMode) =>
+    fetch(endpoint, {
+      method: "POST",
+      headers,
+      signal: AbortSignal.timeout(60000),
+      body: JSON.stringify(body(withJsonMode)),
+    });
+
+  let res = await post(true);
+  if (!res.ok) {
+    const errText = await res.text();
+    // Some OpenAI-compatible servers (older llama.cpp builds, minimal
+    // proxies) 400 on response_format. Retry once as plain JSON and let
+    // parseModelJson() extract the object — better than losing the AI
+    // read for the whole item.
+    if (res.status === 400 && /response_format|json/i.test(errText)) {
+      console.warn(`  ${base} rejected json mode, retrying without it`);
+      res = await post(false);
+      if (!res.ok) throw new Error(`${base} HTTP ${res.status}: ${await res.text()}`);
+    } else {
+      throw new Error(`${base} HTTP ${res.status}: ${errText}`);
+    }
+  }
   const data = await res.json();
   return data.choices?.[0]?.message?.content || "";
 }
@@ -258,7 +285,10 @@ function parseBountyAmount(raw) {
 }
 
 export function detectPlatform(item) {
-  const haystack = `${item.url} ${item.program || ""} ${item.sourceName || ""}`.toLowerCase();
+  // Titles often name the platform ("...on HackerOne", "...— Bugcrowd...")
+  // while the URL is just a Medium link, so include them in the haystack.
+  const haystack =
+    `${item.url} ${item.program || ""} ${item.sourceName || ""} ${item.cleanTitle || ""} ${item.title || ""}`.toLowerCase();
   for (const p of taxonomy.platforms) {
     if (p.match.some((m) => haystack.includes(m))) return p.slug;
   }

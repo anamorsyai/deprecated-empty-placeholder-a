@@ -18,13 +18,18 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       colors: {
-        bg: "#0b0f14",
-        surface: "#121821",
-        surface2: "#182130",
-        border: "#22303f",
-        primary: "#3ddc97",
-        accent: "#ff6b6b",
-        muted: "#8698ac",
+        // Theme-aware: every color resolves from a CSS variable so
+        // [data-theme="..."] on <html> can reskin the whole site.
+        // The rgb(.../<alpha-value>) shape keeps Tailwind opacity
+        // modifiers (bg-primary/10, text-muted/70, ...) working.
+        bg: "rgb(var(--c-bg) / <alpha-value>)",
+        surface: "rgb(var(--c-surface) / <alpha-value>)",
+        surface2: "rgb(var(--c-surface2) / <alpha-value>)",
+        border: "rgb(var(--c-border) / <alpha-value>)",
+        primary: "rgb(var(--c-primary) / <alpha-value>)",
+        accent: "rgb(var(--c-accent) / <alpha-value>)",
+        muted: "rgb(var(--c-muted) / <alpha-value>)",
+        ink: "rgb(var(--c-ink) / <alpha-value>)",
       },
     },
   },

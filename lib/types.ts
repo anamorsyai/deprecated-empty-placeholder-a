@@ -67,6 +67,11 @@ export interface Meta {
   totalItems: number;
   newItemsThisRun: number;
   aiProvider: string;
+  /** How many of the last run's new items got a real AI read vs heuristic. */
+  aiOkThisRun?: number;
+  aiFallbackThisRun?: number;
+  /** Archive-wide count of items with ai_generated=true. */
+  aiGeneratedTotal?: number;
   bySource: Record<string, number>;
   byCategory: Record<string, number>;
 }

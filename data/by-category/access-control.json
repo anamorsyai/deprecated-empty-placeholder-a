@@ -126,34 +126,6 @@
     "score": 53
   },
   {
-    "id": "99d90444b887",
-    "title": "Microsoft Windows MSI Installer - Repair to SYSTEM - A detailed journey",
-    "url": "https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Michael Baer"
-    ],
-    "program": "Microsoft (Windows)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-12T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:32.691Z",
-    "categories": [
-      "access-control",
-      "rce"
-    ],
-    "severity": "high",
-    "summary_en": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014.",
-    "summary_ar": null,
-    "excerpt": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014. ![Image 1](https://sec-consult.com/fileadmin/user_upload/sec-consult/Dynamisch/Blogartikel/2024_09/image__3_.png) _This article by our researcher Michael Baer for the SEC Consult Vulnerability Lab will explain different attacks against MSI installers and present an open-source analyzer tool named \"msiscan\" in order to automatically detect potential security issues. The mai",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 53
-  },
-  {
     "id": "0f7fe09dbad3",
     "title": "Hijacking SQL Server Credentials using Agent Jobs for Domain Privilege Escalation",
     "url": "https://www.netspi.com/blog/technical-blog/network-pentesting/hijacking-sql-server-credentials-with-agent-jobs-for-domain-privilege-escalation",
@@ -179,34 +151,6 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
-  },
-  {
-    "id": "93e9b91314ff",
-    "title": "CVE-2024-45195: Apache OFBiz Unauthenticated Remote Code Execution (Fixed)",
-    "url": "https://www.rapid7.com/blog/post/2024/09/05/cve-2024-45195-apache-ofbiz-unauthenticated-remote-code-execution-fixed",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Ryan Emmons"
-    ],
-    "program": "Apache OFBiz",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-05T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:43.028Z",
-    "categories": [
-      "access-control",
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here.",
-    "summary_ar": null,
-    "excerpt": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here. Explore platform](https://www.rapid7.com/platform/) * * * Capabilities * [Attack Surface Management Reveal & protect coverage gaps](https://www.rapid7.com/products/command/attack-surface-management-asm/) * [Exposure Management Identify & remediate at-risk data](https://www.rapid7.com/products/command/exposure-management/) * [Vulnerability Management Pinpoint & eliminate risk](https://www.rapid7.com/solutions/vulnerability-management/) * [CyberGRC Manage governance, risk & compliance](",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
   },
   {
     "id": "82084d0599f6",

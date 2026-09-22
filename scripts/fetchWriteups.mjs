@@ -11,6 +11,7 @@ import { extractContent } from "./lib/extractContent.mjs";
 import { classifyAndSummarize, detectPlatform, activeProvider } from "./lib/ai.mjs";
 import { computeScore } from "./lib/score.mjs";
 import { isLikelyBugBounty, looksLikeWriteupContent } from "./lib/relevance.mjs";
+import { loadBlocklist, isBlocked } from "./lib/blocklist.mjs";
 
 const SOURCE_BY_SLUG = new Map(
   [...sources.structured, ...sources.rss].map((s) => [s.slug, s])
@@ -39,7 +40,12 @@ async function main() {
   const seenTitles = new Set(existing.map((w) => normalizeTitle(w.title)));
 
   const candidates = await collectCandidates();
-  const relevant = candidates.filter((c) => isLikelyBugBounty(c, SOURCE_BY_SLUG.get(c.sourceSlug)));
+  const blocklist = await loadBlocklist();
+  const unblocked = candidates.filter((c) => !isBlocked(c, blocklist));
+  if (unblocked.length !== candidates.length) {
+    console.log(`  blocklist skipped ${candidates.length - unblocked.length} curated-out item(s)`);
+  }
+  const relevant = unblocked.filter((c) => isLikelyBugBounty(c, SOURCE_BY_SLUG.get(c.sourceSlug)));
   const fresh = selectBalanced(dedupeNew(relevant, seenUrls, seenTitles), MAX_NEW_PER_RUN, MAX_PER_SOURCE_PER_RUN);
 
   console.log(
@@ -74,11 +80,21 @@ async function main() {
   await writeFile(WRITEUPS_PATH, JSON.stringify(merged, null, 2));
   await writeByCategoryFiles(merged);
 
+  const aiOkThisRun = processed.filter((w) => w.ai_generated).length;
+  const aiFallbackThisRun = processed.length - aiOkThisRun;
+  const aiGeneratedTotal = merged.filter((w) => w.ai_generated).length;
+  console.log(
+    `AI reads this run: ${aiOkThisRun} ok, ${aiFallbackThisRun} heuristic fallback (provider: ${activeProvider})`
+  );
+
   const meta = {
     lastRun: new Date().toISOString(),
     totalItems: merged.length,
     newItemsThisRun: processed.length,
     aiProvider: activeProvider,
+    aiOkThisRun,
+    aiFallbackThisRun,
+    aiGeneratedTotal,
     bySource: countBy(merged, (w) => w.source.slug),
     byCategory: countBy(merged.flatMap((w) => w.categories), (c) => c),
   };

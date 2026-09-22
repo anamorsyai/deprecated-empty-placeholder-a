@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 const SEVERITY_STYLES: Record<string, string> = {
-  critical: "bg-accent/15 text-accent border-accent/40",
-  high: "bg-orange-500/15 text-orange-400 border-orange-500/40",
-  medium: "bg-yellow-500/15 text-yellow-400 border-yellow-500/40",
-  low: "bg-sky-500/15 text-sky-400 border-sky-500/40",
+  // Text colors use a darker step for light backgrounds, lighter step on dark.
+  critical: "bg-accent/15 text-red-600 border-accent/40 dark:text-accent",
+  high: "bg-orange-500/15 text-orange-700 border-orange-500/40 dark:text-orange-400",
+  medium: "bg-yellow-500/15 text-yellow-700 border-yellow-500/40 dark:text-yellow-400",
+  low: "bg-sky-500/15 text-sky-700 border-sky-500/40 dark:text-sky-400",
 };
 
 export const SEVERITY_BORDER: Record<string, string> = {

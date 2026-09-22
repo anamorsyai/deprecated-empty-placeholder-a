@@ -40,10 +40,21 @@ export async function extractContent(url, { retries = 1 } = {}) {
 const UNAVAILABLE_RE =
   /^(4\d\d\b|this (story|post|page|article) (is no longer available|has been (deleted|removed|unpublished))|page not found|deleted by author|content not found)/i;
 
+// Jina couldn't render the page (bot-blocked pages, e.g. Reddit's "network
+// security" block) and fell back to echoing the requested URL as the title.
+// Storing that as the writeup title produces entries like
+// "URL Source: https://www.reddit.com/..." — reject it so the caller falls
+// back to the feed's own title instead.
+const JINA_URL_TITLE_RE = /^(url source:\s*)?https?:\/\/\S+/i;
+
+// Block/consent interstitials that return HTTP 200 with no article content.
+const BLOCKED_PAGE_RE =
+  /(you've been blocked by network security|blocked by network security|are you a human|verify you are human|enable javascript and cookies)/i;
+
 function parseJinaResponse(text) {
   const titleMatch = text.match(/^Title:\s*(.+)$/m);
   const rawTitle = titleMatch ? titleMatch[1].trim() : null;
-  if (rawTitle && UNAVAILABLE_RE.test(rawTitle)) {
+  if (rawTitle && (UNAVAILABLE_RE.test(rawTitle) || JINA_URL_TITLE_RE.test(rawTitle))) {
     // Signal "nothing usable here" — the caller falls back to the original
     // feed title and skips setting an excerpt, instead of storing this page's
     // placeholder text as if it were real content.
@@ -52,6 +63,9 @@ function parseJinaResponse(text) {
 
   const contentIdx = text.indexOf("Markdown Content:");
   const rawBody = contentIdx >= 0 ? text.slice(contentIdx + "Markdown Content:".length).trim() : text.trim();
+  if (BLOCKED_PAGE_RE.test(rawBody.slice(0, 2000))) {
+    return { cleanTitle: null, excerpt: null, fullTextForClassification: null };
+  }
   const body = stripLeadingHeading(stripBoilerplate(rawBody));
 
   return {

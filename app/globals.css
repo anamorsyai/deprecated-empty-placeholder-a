@@ -2,29 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------- Themes: dark is the default (also the pre-JS first paint) ---------- */
+:root {
+  color-scheme: dark;
+  --c-bg: 11 15 20;
+  --c-surface: 18 24 33;
+  --c-surface2: 24 33 48;
+  --c-border: 34 48 63;
+  --c-primary: 61 220 151;
+  --c-accent: 255 107 107;
+  --c-muted: 134 152 172;
+  --c-ink: 230 237 243;
+  --glow1: rgba(61, 220, 151, 0.08);
+  --glow2: rgba(255, 107, 107, 0.05);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --c-bg: 246 248 250;
+  --c-surface: 255 255 255;
+  --c-surface2: 238 242 246;
+  --c-border: 214 221 229;
+  --c-primary: 13 157 99;
+  --c-accent: 217 45 32;
+  --c-muted: 91 107 124;
+  --c-ink: 22 33 44;
+  --glow1: rgba(13, 157, 99, 0.07);
+  --glow2: rgba(217, 45, 32, 0.04);
+}
+
+/* High contrast: pure-black dark theme for low-vision readers. */
+[data-theme="contrast"] {
+  color-scheme: dark;
+  --c-bg: 0 0 0;
+  --c-surface: 10 10 10;
+  --c-surface2: 22 22 22;
+  --c-border: 120 120 120;
+  --c-primary: 255 234 0;
+  --c-accent: 255 92 92;
+  --c-muted: 216 216 216;
+  --c-ink: 255 255 255;
+  --glow1: transparent;
+  --glow2: transparent;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #0b0f14;
+  background-color: rgb(var(--c-bg));
   background-image:
-    radial-gradient(60rem 40rem at 100% -10%, rgba(61, 220, 151, 0.08), transparent),
-    radial-gradient(50rem 30rem at -10% 20%, rgba(255, 107, 107, 0.05), transparent);
+    radial-gradient(60rem 40rem at 100% -10%, var(--glow1), transparent),
+    radial-gradient(50rem 30rem at -10% 20%, var(--glow2), transparent);
   background-attachment: fixed;
-  color: #e6edf3;
+  color: rgb(var(--c-ink));
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
-  background-color: #3ddc97;
-  color: #0b0f14;
+  background-color: rgb(var(--c-primary));
+  color: rgb(var(--c-bg));
 }
 
 :focus-visible {
-  outline: 2px solid #3ddc97;
+  outline: 2px solid rgb(var(--c-primary));
   outline-offset: 2px;
   border-radius: 4px;
+}
+[data-theme="contrast"] :focus-visible {
+  outline-width: 3px;
 }
 
 .card-hover {
@@ -34,6 +82,15 @@ body {
   border-color: rgba(61, 220, 151, 0.5);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px -8px rgba(61, 220, 151, 0.15), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+}
+@media (hover: none) {
+  /* No hover on touch screens: skip the lift, keep a press feedback instead. */
+  .card-hover:hover {
+    transform: none;
+  }
+  .card-hover:active {
+    transform: scale(0.99);
+  }
 }
 
 .no-scrollbar {

@@ -1,38 +1,5 @@
 [
   {
-    "id": "dc21bb527df7",
-    "title": "How I Went from Zero Experience to Finding Valid Bugs on HackerOne",
-    "url": "https://medium.com/@tomsayers88/how-i-went-from-zero-experience-to-finding-valid-bugs-on-hackerone-5c4edc9b8bc0",
-    "source": {
-      "slug": "medium-tag-bug-bounty",
-      "name": "Medium — #bug-bounty"
-    },
-    "authors": [
-      "h1ddn"
-    ],
-    "program": null,
-    "platform_slug": "hackerone",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T20:48:35.000Z",
-    "added_at": "2026-09-22T21:34:50.677Z",
-    "categories": [
-      "recon"
-    ],
-    "severity": "medium",
-    "summary_en": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon. Like many beginners, I relied heavily on passive recon and third-party tools like Wayback Machine and VirusTotal. Most of my early reports weren’t great, they usually ended up closed as **Informative** or **Duplicate** because they lacked a clear, demonstrable business impact. ## Get h1ddn’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster si",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 47
-  },
-  {
     "id": "6c00a49174c8",
     "title": "Attackers Stopped Phishing. They’re Hitting the App Directly Now — And SQL Injection Is Back.",
     "url": "https://medium.com/@riyalimba/attackers-stopped-phishing-theyre-hitting-the-app-directly-now-and-sql-injection-is-back-5e2aa7019d55",

@@ -1,38 +1,5 @@
 [
   {
-    "id": "dc21bb527df7",
-    "title": "How I Went from Zero Experience to Finding Valid Bugs on HackerOne",
-    "url": "https://medium.com/@tomsayers88/how-i-went-from-zero-experience-to-finding-valid-bugs-on-hackerone-5c4edc9b8bc0",
-    "source": {
-      "slug": "medium-tag-bug-bounty",
-      "name": "Medium — #bug-bounty"
-    },
-    "authors": [
-      "h1ddn"
-    ],
-    "program": null,
-    "platform_slug": "hackerone",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T20:48:35.000Z",
-    "added_at": "2026-09-22T21:34:50.677Z",
-    "categories": [
-      "recon"
-    ],
-    "severity": "medium",
-    "summary_en": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "I started my bug bounty journey in October 2022 without any prior cybersecurity experience. Looking back, those early days were filled with trial, error, and a lot of noisy recon. Like many beginners, I relied heavily on passive recon and third-party tools like Wayback Machine and VirusTotal. Most of my early reports weren’t great, they usually ended up closed as **Informative** or **Duplicate** because they lacked a clear, demonstrable business impact. ## Get h1ddn’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster si",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 47
-  },
-  {
     "id": "c623ee07e137",
     "title": "Bug Bounty শুরু করার আগে যা বুঝতে হবে",
     "url": "https://medium.com/@cyber.mehedi.13/bug-bounty-%E0%A6%B6%E0%A7%81%E0%A6%B0%E0%A7%81-%E0%A6%95%E0%A6%B0%E0%A6%BE%E0%A6%B0-%E0%A6%86%E0%A6%97%E0%A7%87-%E0%A6%AF%E0%A6%BE-%E0%A6%AC%E0%A7%81%E0%A6%9D%E0%A6%A4%E0%A7%87-%E0%A6%B9%E0%A6%AC%E0%A7%87-c53ab87a911b",
@@ -98,39 +65,6 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
-  },
-  {
-    "id": "5485da6140ad",
-    "title": "100 Days of Bug Bounty — Day 1 🐞",
-    "url": "https://zubairahm3d.medium.com/100-days-of-bug-bounty-day-1-b077dd4f9655",
-    "source": {
-      "slug": "medium-tag-writeup",
-      "name": "Medium — #bug-bounty-writeup"
-    },
-    "authors": [
-      "Zubair Ahmed"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T18:10:59.000Z",
-    "added_at": "2026-09-22T21:34:54.218Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "medium",
-    "summary_en": "Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security. Follow writer [![Image 3: Zubair Ahmed](https://miro.medium.com/v2/resize:fill:40:40/1*sXCIPlM9Cb1uiUmS8_xwDg.jpeg)](https://zubairahm3d.medium.com/?source=post_page---post_author_sidebar--b077dd4f9655-----------------a405baa72d33------------------------) ## Zubair Ahmed Security Enthusiast focused on learning Web Security, Pentesting, and vulnerability research, with hands-on experience in smart contract security. Follow writer [Bug Hunting](https:",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 47
   },
   {
     "id": "65698b6cdca3",
@@ -201,72 +135,6 @@
     "score": 53
   },
   {
-    "id": "d04d7e15e079",
-    "title": "Subfinder: Because Guessing Subdomains Manually Is a War Crime Against Your Time",
-    "url": "https://medium.com/@padhyepushkar/subfinder-because-guessing-subdomains-manually-is-a-war-crime-against-your-time-4b1dea12ec92",
-    "source": {
-      "slug": "medium-tag-bug-bounty",
-      "name": "Medium — #bug-bounty"
-    },
-    "authors": [
-      "Pushkar Padhye"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T13:03:12.000Z",
-    "added_at": "2026-09-22T21:50:25.934Z",
-    "categories": [
-      "other"
-    ],
-    "severity": null,
-    "summary_en": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not. Let me paint you a picture. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*anM_F-sXl0r0Ed_fgr8RAQ.png) It’s 2 AM. You’re three energy drinks deep, eyeballing a target’s main domain like it owes you money. You fire up Subfinder with zero API keys and get 43 subdomains. You feel like a hacker god for about nine seconds unt",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 40
-  },
-  {
-    "id": "049bd12bb969",
-    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
-    "url": "https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
-    "source": {
-      "slug": "reddit-netsec",
-      "name": "r/netsec"
-    },
-    "authors": [
-      "/u/No-View3333"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T12:28:26.000Z",
-    "added_at": "2026-09-22T21:34:58.077Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
     "id": "4462fb4fb454",
     "title": "They Allowed Five Image Formats. Four Were Pictures.",
     "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",
@@ -296,39 +164,6 @@
       "fix_ar": null
     },
     "excerpt": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer [![Image 3: Nitin yadav](https://miro.medium.com/v2/resize:fill:40:40/1*46gfQYRZ6po8nWu68GB5LA.png)](https://kd-200.medium.com/?source=post_page---post_author_sidebar--5052c83f57e6-----------------353eb5c447fb------------------------) ## Nitin yadav Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : [https://linktr.ee/ydv_nitin](https://linktr.ee/ydv_nitin) Follow writer Member-only story [Bug Bounty](https://medium.co",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 47
-  },
-  {
-    "id": "808dde2c5eba",
-    "title": "How I Started Getting Bug Bounties in Just My Second Month",
-    "url": "https://infosecwriteups.com/how-i-started-getting-bug-bounties-in-just-my-second-month-b80448dc9901",
-    "source": {
-      "slug": "medium-tag-bug-bounty",
-      "name": "Medium — #bug-bounty"
-    },
-    "authors": [
-      "Sairaj Thorat"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T11:15:20.000Z",
-    "added_at": "2026-09-22T21:50:38.958Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "medium",
-    "summary_en": "Initially, I knew nothing about bug bounty hunting when I began it. Actually, I did not know anything about the way web applications work and the types of vulnerabilities. Therefore, I decided to begin from the basic stuff.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "Initially, I knew nothing about bug bounty hunting when I began it. Actually, I did not know anything about the way web applications work and the types of vulnerabilities. Therefore, I decided to begin from the basic stuff. Several days were spent on learning Burp Suite, understanding requests and responses, intercepting, and modifying traffic. After that, I started working through the PortSwigger Web Security Academy to learn about common vulnerabilities and the way they work. Finally, I decided to submit reports. The first submission proved to be quite a successful one. It turned out that th",
     "ai_generated": false,
     "engagement": null,
     "score": 47
@@ -401,39 +236,6 @@
     "score": 47
   },
   {
-    "id": "36922ca22566",
-    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
-    "url": "https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
-    "source": {
-      "slug": "reddit-netsec",
-      "name": "r/netsec"
-    },
-    "authors": [
-      "/u/MobetaSec"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T07:58:09.000Z",
-    "added_at": "2026-09-22T21:35:02.238Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
     "id": "1020bb92a9dd",
     "title": "How a single broken button got me £150 from a bug bounty program",
     "url": "https://infosecwriteups.com/how-a-single-broken-button-got-me-150-from-a-bug-bounty-program-81f203d7f733",
@@ -465,39 +267,6 @@
     "ai_generated": false,
     "engagement": null,
     "score": 47
-  },
-  {
-    "id": "8928bc0c4e35",
-    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
-    "url": "https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
-    "source": {
-      "slug": "reddit-netsec",
-      "name": "r/netsec"
-    },
-    "authors": [
-      "/u/TheReedemer69"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-21T16:30:48.000Z",
-    "added_at": "2026-09-22T21:35:05.090Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
   },
   {
     "id": "1343f5bb324c",
@@ -732,73 +501,6 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
-  },
-  {
-    "id": "940c4cb5aaf6",
-    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
-    "url": "https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
-    "source": {
-      "slug": "reddit-netsec",
-      "name": "r/netsec"
-    },
-    "authors": [
-      "/u/bajk"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-16T13:52:01.000Z",
-    "added_at": "2026-09-22T21:35:10.402Z",
-    "categories": [
-      "rce",
-      "csrf"
-    ],
-    "severity": "medium",
-    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 47
-  },
-  {
-    "id": "621024e258ca",
-    "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
-    "url": "https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
-    "source": {
-      "slug": "reddit-netsec",
-      "name": "r/netsec"
-    },
-    "authors": [
-      "/u/buherator"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-14T13:20:24.000Z",
-    "added_at": "2026-09-22T21:35:12.631Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5) You've been blocked by network security. To continue, log in to your Reddit account or use your developer token If you think you've been blocked by mistake, file a ticket below and we'll look into it. [Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
   },
   {
     "id": "3ea2f62f6789",
@@ -1149,34 +851,6 @@
     "score": 60
   },
   {
-    "id": "99d90444b887",
-    "title": "Microsoft Windows MSI Installer - Repair to SYSTEM - A detailed journey",
-    "url": "https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Michael Baer"
-    ],
-    "program": "Microsoft (Windows)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-12T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:32.691Z",
-    "categories": [
-      "access-control",
-      "rce"
-    ],
-    "severity": "high",
-    "summary_en": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014.",
-    "summary_ar": null,
-    "excerpt": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014. ![Image 1](https://sec-consult.com/fileadmin/user_upload/sec-consult/Dynamisch/Blogartikel/2024_09/image__3_.png) _This article by our researcher Michael Baer for the SEC Consult Vulnerability Lab will explain different attacks against MSI installers and present an open-source analyzer tool named \"msiscan\" in order to automatically detect potential security issues. The mai",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 53
-  },
-  {
     "id": "acee5a7b4ce0",
     "title": "We Spent $20 To Achieve RCE And Accidentally Became The Admins Of .MOBI",
     "url": "https://labs.watchtowr.com/we-spent-20-to-achieve-rce-and-accidentally-became-the-admins-of-mobi",
@@ -1199,62 +873,6 @@
     "summary_en": "This research is a glimpse into the capability powering the watchTowr Platform, a **Preemptive Exposure Management** solution.",
     "summary_ar": null,
     "excerpt": "This research is a glimpse into the capability powering the watchTowr Platform, a **Preemptive Exposure Management** solution. We enable organizations to **autonomously validate and mitigate** their exposure to emerging threats, ahead of in-the-wild exploitation. [Request a demo](https://watchtowr.com/demo/) Welcome back to another watchTowr Labs blog. Brace yourselves, this is one of our most astounding discoveries. ### Summary What started out as a bit of fun between colleagues while avoiding the Vegas heat and $20 bottles of water in our Black Hat hotel rooms - has now seemingly become a ma",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "7e686c15388a",
-    "title": "Directory Traversal, SQL Injection and Server-Side Request Forgery",
-    "url": "https://research.aurainfosec.io/disclosure/sagecrm2",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Chris McCurley (@chrisrmccurley)"
-    ],
-    "program": "Sage",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-10T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:34.646Z",
-    "categories": [
-      "ssrf",
-      "sqli",
-      "file-upload"
-    ],
-    "severity": "high",
-    "summary_en": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure.",
-    "summary_ar": null,
-    "excerpt": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure. ## [CVE-2023-47300](https://nvd.nist.gov/vuln/detail/CVE-2023-47300) - Authenticated Directory Traversal through Print and Merge Preview Functionality[#](https://research.aurainfosec.io/disclosure/sagecrm2#cve-2023-47300---authenticated-directory-traversal-through-print-and-merge-preview-functionality) The SageCRM application allows for Document templates to be created and",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 53
-  },
-  {
-    "id": "b860f488c16b",
-    "title": "Getting code execution on Veeam through CVE-2023-27532 – SCRT Team Blog",
-    "url": "https://blog.scrt.ch/2024/09/10/getting-code-execution-on-veeam-through-cve-2023-27532",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Alain Mowat (@plopz0r)"
-    ],
-    "program": "Veeam",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-10T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:35.604Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "While several blog posts have shown how to retrieve credentials through this vulnerability, we decided to dig deeper and see whether it was possible to execute arbitrary code through this issue.",
-    "summary_ar": null,
-    "excerpt": "While several blog posts have shown how to retrieve credentials through this vulnerability, we decided to dig deeper and see whether it was possible to execute arbitrary code through this issue. **DISCLAIMER**: This blog post was written a year and a half ago and we have postponed publication upon Veeam’s request, but given a recent post from Watchtowr ([here](https://labs.watchtowr.com/veeam-backup-response-rce-with-auth-but-mostly-without-auth-cve-2024-40711-2/)) detailing the almost exact vulnerability, we feel like we can now freely publish this article. The original statement released by",
     "ai_generated": false,
     "engagement": null,
     "score": 60
@@ -1337,34 +955,6 @@
     "summary_en": "This website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot. ## Verification successful.",
     "summary_ar": null,
     "excerpt": "This website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot. ## Verification successful. Waiting for script.hashnode.dev to respond Ray ID: `a3f415fb0dda8b33` Performance and Security by [Cloudflare](https://www.cloudflare.com/?utm_source=challenge&utm_campaign=m)[Privacy](https://www.cloudflare.com/privacypolicy/)",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "93e9b91314ff",
-    "title": "CVE-2024-45195: Apache OFBiz Unauthenticated Remote Code Execution (Fixed)",
-    "url": "https://www.rapid7.com/blog/post/2024/09/05/cve-2024-45195-apache-ofbiz-unauthenticated-remote-code-execution-fixed",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Ryan Emmons"
-    ],
-    "program": "Apache OFBiz",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-05T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:43.028Z",
-    "categories": [
-      "access-control",
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here.",
-    "summary_ar": null,
-    "excerpt": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here. Explore platform](https://www.rapid7.com/platform/) * * * Capabilities * [Attack Surface Management Reveal & protect coverage gaps](https://www.rapid7.com/products/command/attack-surface-management-asm/) * [Exposure Management Identify & remediate at-risk data](https://www.rapid7.com/products/command/exposure-management/) * [Vulnerability Management Pinpoint & eliminate risk](https://www.rapid7.com/solutions/vulnerability-management/) * [CyberGRC Manage governance, risk & compliance](",
     "ai_generated": false,
     "engagement": null,
     "score": 60
@@ -1761,62 +1351,6 @@
     "score": 60
   },
   {
-    "id": "a0554adcda28",
-    "title": "Breaking Down Barriers: Exploiting Pre-Auth SQL Injection in WhatsUp Gold",
-    "url": "https://summoning.team/blog/progress-whatsup-gold-sqli-cve-2024-6670",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Sina Kheirkhah (@SinSinology)"
-    ],
-    "program": "Progress (WhatsUp Gold)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-30T00:00:00.000Z",
-    "added_at": "2026-09-22T20:37:44.858Z",
-    "categories": [
-      "auth-bypass",
-      "sqli",
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk abo",
-    "summary_ar": null,
-    "excerpt": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk about how this was possible ![Image 3: ZDI](https://summoning.team/images/blog/whatsupgold-haserrors/poc-CVE-2024-6670-poc.png) # Manish Kishan Tanwar If it wasn’t because of the motivation and lessons that my dear friend [Manish](https://x.com/indishell1046) has taught me over the years I have known him, I wouldn’t be able to exploit this bug, thank you my fri",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "405049a1fe91",
-    "title": "4 exploits, 1 bug: exploiting CVE-2024-20017 4 different ways",
-    "url": "https://blog.coffinsec.com/0day/2024/08/30/exploiting-CVE-2024-20017-four-different-ways.html",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "hyper (@hyprdude)"
-    ],
-    "program": "MediaTek",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-30T00:00:00.000Z",
-    "added_at": "2026-09-22T20:37:45.870Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "Well, here we are. This post was meant to be finished around March of this year to coincide with the publication of the vulnerability I’m going to be writing about, [CVE-2024-20017](https://nvd.nist.gov/vuln/detail/CVE-2024-20017).",
-    "summary_ar": null,
-    "excerpt": "Well, here we are. This post was meant to be finished around March of this year to coincide with the publication of the vulnerability I’m going to be writing about, [CVE-2024-20017](https://nvd.nist.gov/vuln/detail/CVE-2024-20017). Unfortunately, this also ended up coinciding with me moving, starting a new job, and getting really busy at said job, so here we are nearly 6 months later. This post is probably going to be one of my longest, so strap in. At the end of last year I discovered and reported a vulnerability in ```plaintext wappd ``` , a network daemon that is a part of the MediaTek MT76",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
     "id": "c6cec4e1871e",
     "title": "24/7 managed detection, response, and expert cybersecurity services - GoSecure",
     "url": "https://gosecure.ai/blog/2024/08/30/key-and-e-a-pentesters-tale-on-how-a-photo-opened-real-doors",
@@ -1869,35 +1403,6 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
-  },
-  {
-    "id": "9c4151111e3f",
-    "title": "Analysis of CVE-2024-43044 – Conviso AppSec",
-    "url": "https://blog.convisoappsec.com/en/analysis-of-cve-2024-43044",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Gabriel Quadros (@gqsilva)",
-      "Ricardo Silva (@rick2600)"
-    ],
-    "program": "Jenkins",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-29T00:00:00.000Z",
-    "added_at": "2026-09-22T20:37:49.129Z",
-    "categories": [
-      "rce",
-      "file-upload"
-    ],
-    "severity": "critical",
-    "summary_en": "Jenkins is a widely used tool for automating tasks like building, testing, and deploying software. It’s a key part of the development process in many organizations.",
-    "summary_ar": null,
-    "excerpt": "Jenkins is a widely used tool for automating tasks like building, testing, and deploying software. It’s a key part of the development process in many organizations. If an attacker gains access to a Jenkins server, they can do serious damage like stealing credentials, messing with code, or even disrupting deployments. With access to Jenkins, an attacker could tamper with the software pipeline, potentially causing chaos in the development process and compromising sensitive data. In this blog post we are going to analyze the advisory for the CVE-2024-43044, an arbitrary file read vulnerability in",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
   },
   {
     "id": "99882b593a7f",
@@ -2002,40 +1507,6 @@
     "score": 53
   },
   {
-    "id": "8823aaa1360a",
-    "title": "Zero Day Initiative — CVE-2024-37079: VMware vCenter Server Integer Underflow Code Execution Vulnerability",
-    "url": "https://www.zerodayinitiative.com/blog/2024/8/27/cve-2024-37079-vmware-vcenter-server-integer-underflow-code-execution-vulnerability",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Grigory Dorodnov",
-      "Guy Lederfein (@glederfein)"
-    ],
-    "program": "VMware",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-28T00:00:00.000Z",
-    "added_at": "2026-09-22T21:12:49.263Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "medium",
-    "summary_en": "_In this excerpt of a Trend Micro Vulnerability Research Service vulnerability report, Grigory Dorodnov and Guy Lederfein of the Trend Micro Research Team detail a recently patched code execution vulnerability in the VMware vCenter Server.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "_In this excerpt of a Trend Micro Vulnerability Research Service vulnerability report, Grigory Dorodnov and Guy Lederfein of the Trend Micro Research Team detail a recently patched code execution vulnerability in the VMware vCenter Server. This bug was originally discovered by Hao Zheng and Zibo Li from TianGong Team of Legendsec at Qi'anxin Group. Successfully exploiting this vulnerability could lead to a heap buffer overflow, which could result in the execution of arbitrary code in the context of the vulnerable service. The following is a portion of their write-up covering CVE-2024-37079, wi",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 47
-  },
-  {
     "id": "96b8db51b1ec",
     "title": "[$500] How I was able to give verification badge to any YouTube channel and bypass needed requirements",
     "url": "https://vojtechcekal.medium.com/how-i-was-able-to-give-verification-badge-to-any-youtube-channel-and-bypass-needed-requirements-b88855afe4b7",
@@ -2133,39 +1604,6 @@
     "ai_generated": false,
     "engagement": null,
     "score": 40
-  },
-  {
-    "id": "0adf33545c1f",
-    "title": "WordPress GiveWP POP to RCE (CVE-2024-5932) | RCE Security",
-    "url": "https://www.rcesecurity.com/2024/08/wordpress-givewp-pop-to-rce-cve-2024-5932",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Julien Ahrens (@MrTuxracer)"
-    ],
-    "program": "Wordfence",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-26T00:00:00.000Z",
-    "added_at": "2026-09-22T21:13:11.025Z",
-    "categories": [
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "While the Wordfence blog post provides some insights into the root cause of the vulnerability and a brief description of the POP chain, it misses out (deliberately, I assume) on some key points.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "While the Wordfence blog post provides some insights into the root cause of the vulnerability and a brief description of the POP chain, it misses out (deliberately, I assume) on some key points. I’m skipping the entire process of installing and setting up WordPress and setting up the debug environment using VScode here and getting straight to the details. The only prerequisite for successfully exploiting the bug (despite the old version of the plugin) is that GiveWP must be enabled and configured with at least one donation form. ## The Entry Point The vulnerable code path can be triggered usin",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
   },
   {
     "id": "e3a4b6e82523",
@@ -2368,73 +1806,6 @@
     "score": 60
   },
   {
-    "id": "025b2f80c145",
-    "title": "https://match.adsrvr.org/track/cmf/google",
-    "url": "https://www.horizon3.ai/attack-research/disclosures/traccar-5-remote-code-execution-vulnerabilities",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Naveen Sunkavally"
-    ],
-    "program": "Traccar",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-23T00:00:00.000Z",
-    "added_at": "2026-09-22T21:21:57.561Z",
-    "categories": [
-      "rce",
-      "file-upload"
-    ],
-    "severity": "critical",
-    "summary_en": "A 1x1 image, likely be a tacker probe",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "A 1x1 image, likely be a tacker probe",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "24c68a471531",
-    "title": "https://match.adsrvr.org/track/cmf/google",
-    "url": "https://www.horizon3.ai/attack-research/disclosures/ntlm-credential-theft-in-python-windows-applications",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Naveen Sunkavally"
-    ],
-    "program": "Python, Hugging Face (Gradio), Werkzeug, Jupyter, Snowflake (Streamlit)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-23T00:00:00.000Z",
-    "added_at": "2026-09-22T21:22:02.277Z",
-    "categories": [
-      "ssrf"
-    ],
-    "severity": "high",
-    "summary_en": "A 1x1 image, likely be a tacker probe",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "A 1x1 image, likely be a tacker probe",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 53
-  },
-  {
     "id": "aab8b175c6b3",
     "title": "Instagram and Meta 2FA Bypass by Unprotected Backup Code Retrieval in Accounts Center",
     "url": "https://medium.com/@scriptshuva/instagram-and-meta-2fa-bypass-by-unprotected-backup-code-retrieval-in-accounts-center-c735ff650f10",
@@ -2603,39 +1974,6 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
-  },
-  {
-    "id": "3ddd0b45e014",
-    "title": "https://dsum-sec.casalemedia.com/rum",
-    "url": "https://www.tenable.com/blog/ssrfing-the-web-with-the-help-of-copilot-studio",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Evan Grant (@stargravy)"
-    ],
-    "program": "GitHub (Copilot)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-20T00:00:00.000Z",
-    "added_at": "2026-09-22T22:19:06.148Z",
-    "categories": [
-      "ssrf"
-    ],
-    "severity": "medium",
-    "summary_en": "SSRF in GitHub Copilot: the server could be made to fetch attacker-controlled URLs, confirmed out-of-band with a 1x1 image tracker probe served from dsum-sec.casalemedia.com/rum.",
-    "summary_ar": "ثغرة SSRF في GitHub Copilot: الخادم كان ممكن يتخلى يجيب URLs يتحكم فيها المهاجم، وتم إثباتها out-of-band عبر صورة 1x1 بتشتغل كـ tracker probe على dsum-sec.casalemedia.com/rum.",
-    "lesson": {
-      "cause_ar": "الـ root cause هنا إن GitHub Copilot بيجيب محتوى من URLs بيوفرها المستخدم من على الـ server نفسه، من غير ما يتحقق إن الـ destination ده مسموح بيه. الافتراض الغلط إن أي URL هيتبعت ليه طلب هو URL آمن، وإن الـ outbound requests مش خطرة. الفجوة دي بتخلي أي مستخدم يخلي الـ server يعمل طلبات لخوادم جوه الشبكة الداخلية أو لأي host تاني، وده بالظبط اللي بيسمّى SSRF.",
-      "walkthrough_ar": "الباحث كان بيفحص إزاي GitHub Copilot بيتعامل مع الـ URLs اللي بيوصلها، ودار على أي حاجة ممكن تخلي الـ server يجيب محتوى من عنوان بيختاره هو. عشان يثبت إن في طلب بيحصل فعلًا من على الـ server من غير ما يحتاج يشوف الـ response، جهّز سيرفر تحكم خاص بيه على العنوان https://dsum-sec.casalemedia.com/rum وخلّاه يرد بصورة 1x1 — صورة صغيرة جدًا بتشتغل كـ tracker probe. أول ما خلّى Copilot يفتح أو يجيب الـ URL ده، السيرفر بتاعه استقبل طلب الصورة، وده دليل out-of-band إن الـ fetch حصل من على الـ server نفسه مش من المتصفح. الصورة الـ 1x1 هنا مش هي الثغرة، هي مجرد أداة إثبات: أي طلب بيوصل للسيرفر بتاع الباحث معناه إن الـ server نفّذ الطلب فعليًا. كده اتأكد إن في SSRF حقيقية، وإن الـ server ممكن يتخلى يطلب أي عنوان تاني.",
-      "takeaway_ar": "أي ميزة في التطبيق بتجيب محتوى من URL بيوفره المستخدم — زي معاينة الصور، أو link unfurl، أو استيراد مستندات، أو مساعد ذكاء اصطناعي بيجيب مراجع — هي مرشح طبيعي لـ SSRF. استخدم دايماً out-of-band probe زي صورة 1x1 أو token فريد جوه الـ URL عشان تكشف إن الطلب حصل من على الـ server من غير ما تحتاج تشوف الـ response. لو لقيت إن الطلب وصل لسيرفرك، جرّب بعدها عناوين داخلية زي 169.254.169.254 أو localhost عشان تقيس عمق الثغرة.",
-      "fix_ar": "الحل الصح إن الـ server يتحقق من أي URL قبل ما يطلبه: allowlist للـ domains المسموحة، ورفض أي عنوان بيقع في نطاقات داخلية زي 127.0.0.0/8 و 10.0.0.0/8 و 172.16.0.0/12 و 192.168.0.0/16 و 169.254.169.254 (metadata بتاعة الـ cloud). كمان لازم حماية من DNS rebinding، بحيث الـ validation والـ fetch يستخدموا نفس نتيجة الـ DNS. وفي الآخر يُفضَّل إن الـ outbound traffic يعدّي من proxy أو egress filter بيسمح بعناوين محددة بس."
-    },
-    "excerpt": "A 1x1 image, likely be a tacker probe",
-    "ai_generated": true,
-    "engagement": null,
-    "score": 47
   },
   {
     "id": "8b4de87aa365",

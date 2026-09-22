@@ -26,7 +26,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
 
       <Link
         href={`/writeup/${writeup.id}`}
-        className="text-[15px] font-bold leading-snug text-[#e6edf3] hover:text-primary sm:text-base"
+        className="break-words text-[15px] font-bold leading-snug text-ink hover:text-primary sm:text-base"
         dir="ltr"
       >
         <span className="block text-right" dir="rtl">
@@ -53,10 +53,10 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
         })}
       </div>
 
-      <div className="mt-1 flex items-center gap-3">
+      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-2">
         <Link
           href={`/writeup/${writeup.id}`}
-          className="rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary/20"
+          className="inline-flex min-h-[44px] items-center rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary/20"
         >
           اقرأ الشرح الكامل
         </Link>
@@ -64,7 +64,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
           href={writeup.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-semibold text-muted transition hover:text-primary"
+          className="inline-flex min-h-[44px] items-center text-xs font-semibold text-muted transition hover:text-primary"
         >
           المصدر الأصلي ↗
         </a>

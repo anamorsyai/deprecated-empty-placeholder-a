@@ -21,33 +21,47 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Shared by the pipeline step and the conflict-recovery re-run below.
+    env:
+      AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      CUSTOM_API_BASE: ${{ secrets.CUSTOM_API_BASE }}
+      CUSTOM_API_KEY: ${{ secrets.CUSTOM_API_KEY }}
+      CUSTOM_MODEL: ${{ secrets.CUSTOM_MODEL }}
+      CUSTOM_API_HEADERS: ${{ secrets.CUSTOM_API_HEADERS }}
+      JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci
 
       - name: Run the aggregation pipeline
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          CUSTOM_API_BASE: ${{ secrets.CUSTOM_API_BASE }}
-          CUSTOM_API_KEY: ${{ secrets.CUSTOM_API_KEY }}
-          CUSTOM_MODEL: ${{ secrets.CUSTOM_MODEL }}
-          CUSTOM_API_HEADERS: ${{ secrets.CUSTOM_API_HEADERS }}
-          JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
         run: npm run fetch
 
       - name: Commit updated data
         run: |
           git config user.name "writeups-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/writeups.json data/meta.json data/by-category/
+          git add data/writeups.json data/meta.json data/by-category/ data/blocklist.json
           git diff --cached --quiet || git commit -m "chore(data): refresh writeups $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git pull --rebase origin main
-          git push
+          # Another fetch run may have pushed while we were working — both jobs
+          # append to data/writeups.json, so a plain rebase conflicts and the
+          # whole run fails (this already lost one batch of writeups). If the
+          # rebase fails, regenerate on top of the fresh history instead:
+          # dedupe makes the second pass a no-op for already-stored items.
+          if ! git pull --rebase --autostash origin main; then
+            git rebase --abort
+            npm run fetch
+            git add data/writeups.json data/meta.json data/by-category/ data/blocklist.json
+            git diff --cached --quiet || git commit -m "chore(data): refresh writeups $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git pull --rebase --autostash origin main || git pull --rebase origin main
+          fi
+          git push || (git pull --rebase origin main && git push)

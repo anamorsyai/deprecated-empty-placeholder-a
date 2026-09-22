@@ -1,0 +1,131 @@
+{
+  "note": "Curated removals — the pipeline skips these URLs/titles so hourly runs never re-add them. Add entries manually to curate the archive.",
+  "entries": [
+    {
+      "url": "https://medium.com/@tomsayers88/how-i-went-from-zero-experience-to-finding-valid-bugs-on-hackerone-5c4edc9b8bc0",
+      "title": "How I Went from Zero Experience to Finding Valid Bugs on HackerOne",
+      "reason": "career/tutorial, not a vulnerability writeup",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://zubairahm3d.medium.com/100-days-of-bug-bounty-day-1-b077dd4f9655",
+      "title": "100 Days of Bug Bounty — Day 1 🐞",
+      "reason": "career/tutorial, not a vulnerability writeup",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://medium.com/@padhyepushkar/subfinder-because-guessing-subdomains-manually-is-a-war-crime-against-your-time-4b1dea12ec92",
+      "title": "Subfinder: Because Guessing Subdomains Manually Is a War Crime Against Your Time",
+      "reason": "career/tutorial, not a vulnerability writeup",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
+      "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn84lz/the_finding_said_rce_the_second_tester_asked_one",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/how-i-started-getting-bug-bounties-in-just-my-second-month-b80448dc9901",
+      "title": "How I Started Getting Bug Bounties in Just My Second Month",
+      "reason": "career/tutorial, not a vulnerability writeup",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
+      "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wn37be/vcenter_preauth_rce_cve20265930959310",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
+      "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wmhror/zte_smarthome_account_takeover_password_reset",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+      "title": "URL Source: https://www.reddit.com/r/netsec/comments/1whxuyv/bypassing_refererbased_csrf_with",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
+      "title": "URL Source: https://www.reddit.com/r/netsec/comments/1wg39a3/ibm_db2_mirror_for_i_preauth_rce_and_the_road_to",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey",
+      "title": "Microsoft Windows MSI Installer - Repair to SYSTEM - A detailed journey",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://research.aurainfosec.io/disclosure/sagecrm2",
+      "title": "Directory Traversal, SQL Injection and Server-Side Request Forgery",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://blog.scrt.ch/2024/09/10/getting-code-execution-on-veeam-through-cve-2023-27532",
+      "title": "Getting code execution on Veeam through CVE-2023-27532 – SCRT Team Blog",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.rapid7.com/blog/post/2024/09/05/cve-2024-45195-apache-ofbiz-unauthenticated-remote-code-execution-fixed",
+      "title": "CVE-2024-45195: Apache OFBiz Unauthenticated Remote Code Execution (Fixed)",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://summoning.team/blog/progress-whatsup-gold-sqli-cve-2024-6670",
+      "title": "Breaking Down Barriers: Exploiting Pre-Auth SQL Injection in WhatsUp Gold",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://blog.coffinsec.com/0day/2024/08/30/exploiting-CVE-2024-20017-four-different-ways.html",
+      "title": "4 exploits, 1 bug: exploiting CVE-2024-20017 4 different ways",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://blog.convisoappsec.com/en/analysis-of-cve-2024-43044",
+      "title": "Analysis of CVE-2024-43044 – Conviso AppSec",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.zerodayinitiative.com/blog/2024/8/27/cve-2024-37079-vmware-vcenter-server-integer-underflow-code-execution-vulnerability",
+      "title": "Zero Day Initiative — CVE-2024-37079: VMware vCenter Server Integer Underflow Code Execution Vulnerability",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.rcesecurity.com/2024/08/wordpress-givewp-pop-to-rce-cve-2024-5932",
+      "title": "WordPress GiveWP POP to RCE (CVE-2024-5932) | RCE Security",
+      "reason": "vendor CVE advisory without bounty context",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.horizon3.ai/attack-research/disclosures/traccar-5-remote-code-execution-vulnerabilities",
+      "title": "https://match.adsrvr.org/track/cmf/google",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.horizon3.ai/attack-research/disclosures/ntlm-credential-theft-in-python-windows-applications",
+      "title": "https://match.adsrvr.org/track/cmf/google",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://www.tenable.com/blog/ssrfing-the-web-with-the-help-of-copilot-studio",
+      "title": "https://dsum-sec.casalemedia.com/rum",
+      "reason": "blocked/tracking page title",
+      "removed_at": "2026-09-22T22:42:37Z"
+    }
+  ]
+}

@@ -68,35 +68,6 @@
     "score": 53
   },
   {
-    "id": "7e686c15388a",
-    "title": "Directory Traversal, SQL Injection and Server-Side Request Forgery",
-    "url": "https://research.aurainfosec.io/disclosure/sagecrm2",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Chris McCurley (@chrisrmccurley)"
-    ],
-    "program": "Sage",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-10T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:34.646Z",
-    "categories": [
-      "ssrf",
-      "sqli",
-      "file-upload"
-    ],
-    "severity": "high",
-    "summary_en": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure.",
-    "summary_ar": null,
-    "excerpt": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure. ## [CVE-2023-47300](https://nvd.nist.gov/vuln/detail/CVE-2023-47300) - Authenticated Directory Traversal through Print and Merge Preview Functionality[#](https://research.aurainfosec.io/disclosure/sagecrm2#cve-2023-47300---authenticated-directory-traversal-through-print-and-merge-preview-functionality) The SageCRM application allows for Document templates to be created and",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 53
-  },
-  {
     "id": "3454530ecc1c",
     "title": "IIS welcome page to source code review to LFI!",
     "url": "https://medium.com/@omarahmed_13016/iis-welcome-page-to-source-code-review-to-lfi-23ec581049f5",
@@ -120,39 +91,6 @@
     "summary_en": "found an IIS welcome page, enumerated directories& files using IIS Short name scanner and FFUF, found an open source webchat software, source code review led to LFI and blind SSRF.",
     "summary_ar": null,
     "excerpt": "found an IIS welcome page, enumerated directories& files using IIS Short name scanner and FFUF, found an open source webchat software, source code review led to LFI and blind SSRF. So, I had this subdomain that returned the IIS welcome page -> Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*WwB0QCizvKJx0bHKBnqKCQ.png) then I used [https://github.com/irsdl/IIS-ShortName-Scanner](https://github.com/irsdl/IIS-ShortName-Scanner) before fuzzing and It showed that this target was vulnerable to [IIS Short File Name Disclosure](https://github.com/",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 53
-  },
-  {
-    "id": "24c68a471531",
-    "title": "https://match.adsrvr.org/track/cmf/google",
-    "url": "https://www.horizon3.ai/attack-research/disclosures/ntlm-credential-theft-in-python-windows-applications",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Naveen Sunkavally"
-    ],
-    "program": "Python, Hugging Face (Gradio), Werkzeug, Jupyter, Snowflake (Streamlit)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-23T00:00:00.000Z",
-    "added_at": "2026-09-22T21:22:02.277Z",
-    "categories": [
-      "ssrf"
-    ],
-    "severity": "high",
-    "summary_en": "A 1x1 image, likely be a tacker probe",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "A 1x1 image, likely be a tacker probe",
     "ai_generated": false,
     "engagement": null,
     "score": 53
@@ -191,38 +129,5 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
-  },
-  {
-    "id": "3ddd0b45e014",
-    "title": "https://dsum-sec.casalemedia.com/rum",
-    "url": "https://www.tenable.com/blog/ssrfing-the-web-with-the-help-of-copilot-studio",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Evan Grant (@stargravy)"
-    ],
-    "program": "GitHub (Copilot)",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-20T00:00:00.000Z",
-    "added_at": "2026-09-22T22:19:06.148Z",
-    "categories": [
-      "ssrf"
-    ],
-    "severity": "medium",
-    "summary_en": "SSRF in GitHub Copilot: the server could be made to fetch attacker-controlled URLs, confirmed out-of-band with a 1x1 image tracker probe served from dsum-sec.casalemedia.com/rum.",
-    "summary_ar": "ثغرة SSRF في GitHub Copilot: الخادم كان ممكن يتخلى يجيب URLs يتحكم فيها المهاجم، وتم إثباتها out-of-band عبر صورة 1x1 بتشتغل كـ tracker probe على dsum-sec.casalemedia.com/rum.",
-    "lesson": {
-      "cause_ar": "الـ root cause هنا إن GitHub Copilot بيجيب محتوى من URLs بيوفرها المستخدم من على الـ server نفسه، من غير ما يتحقق إن الـ destination ده مسموح بيه. الافتراض الغلط إن أي URL هيتبعت ليه طلب هو URL آمن، وإن الـ outbound requests مش خطرة. الفجوة دي بتخلي أي مستخدم يخلي الـ server يعمل طلبات لخوادم جوه الشبكة الداخلية أو لأي host تاني، وده بالظبط اللي بيسمّى SSRF.",
-      "walkthrough_ar": "الباحث كان بيفحص إزاي GitHub Copilot بيتعامل مع الـ URLs اللي بيوصلها، ودار على أي حاجة ممكن تخلي الـ server يجيب محتوى من عنوان بيختاره هو. عشان يثبت إن في طلب بيحصل فعلًا من على الـ server من غير ما يحتاج يشوف الـ response، جهّز سيرفر تحكم خاص بيه على العنوان https://dsum-sec.casalemedia.com/rum وخلّاه يرد بصورة 1x1 — صورة صغيرة جدًا بتشتغل كـ tracker probe. أول ما خلّى Copilot يفتح أو يجيب الـ URL ده، السيرفر بتاعه استقبل طلب الصورة، وده دليل out-of-band إن الـ fetch حصل من على الـ server نفسه مش من المتصفح. الصورة الـ 1x1 هنا مش هي الثغرة، هي مجرد أداة إثبات: أي طلب بيوصل للسيرفر بتاع الباحث معناه إن الـ server نفّذ الطلب فعليًا. كده اتأكد إن في SSRF حقيقية، وإن الـ server ممكن يتخلى يطلب أي عنوان تاني.",
-      "takeaway_ar": "أي ميزة في التطبيق بتجيب محتوى من URL بيوفره المستخدم — زي معاينة الصور، أو link unfurl، أو استيراد مستندات، أو مساعد ذكاء اصطناعي بيجيب مراجع — هي مرشح طبيعي لـ SSRF. استخدم دايماً out-of-band probe زي صورة 1x1 أو token فريد جوه الـ URL عشان تكشف إن الطلب حصل من على الـ server من غير ما تحتاج تشوف الـ response. لو لقيت إن الطلب وصل لسيرفرك، جرّب بعدها عناوين داخلية زي 169.254.169.254 أو localhost عشان تقيس عمق الثغرة.",
-      "fix_ar": "الحل الصح إن الـ server يتحقق من أي URL قبل ما يطلبه: allowlist للـ domains المسموحة، ورفض أي عنوان بيقع في نطاقات داخلية زي 127.0.0.0/8 و 10.0.0.0/8 و 172.16.0.0/12 و 192.168.0.0/16 و 169.254.169.254 (metadata بتاعة الـ cloud). كمان لازم حماية من DNS rebinding، بحيث الـ validation والـ fetch يستخدموا نفس نتيجة الـ DNS. وفي الآخر يُفضَّل إن الـ outbound traffic يعدّي من proxy أو egress filter بيسمح بعناوين محددة بس."
-    },
-    "excerpt": "A 1x1 image, likely be a tacker probe",
-    "ai_generated": true,
-    "engagement": null,
-    "score": 47
   }
 ]

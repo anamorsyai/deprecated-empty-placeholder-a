@@ -33,39 +33,6 @@
     "score": 60
   },
   {
-    "id": "d04d7e15e079",
-    "title": "Subfinder: Because Guessing Subdomains Manually Is a War Crime Against Your Time",
-    "url": "https://medium.com/@padhyepushkar/subfinder-because-guessing-subdomains-manually-is-a-war-crime-against-your-time-4b1dea12ec92",
-    "source": {
-      "slug": "medium-tag-bug-bounty",
-      "name": "Medium — #bug-bounty"
-    },
-    "authors": [
-      "Pushkar Padhye"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-22T13:03:12.000Z",
-    "added_at": "2026-09-22T21:50:25.934Z",
-    "categories": [
-      "other"
-    ],
-    "severity": null,
-    "summary_en": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "**Note: This article is for authorized security testing only.** Use these techniques on targets you own or have written permission to test. Bug bounty programs count as permission. Your neighbor’s WordPress site does not. Let me paint you a picture. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*anM_F-sXl0r0Ed_fgr8RAQ.png) It’s 2 AM. You’re three energy drinks deep, eyeballing a target’s main domain like it owes you money. You fire up Subfinder with zero API keys and get 43 subdomains. You feel like a hacker god for about nine seconds unt",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 40
-  },
-  {
     "id": "c0ae30f18434",
     "title": "How a public javascript file led me to a phone verification bypass on a social media website",
     "url": "https://infosecwriteups.com/how-a-public-javascript-file-led-me-to-a-phone-verification-bypass-on-a-social-media-website-a7ecdd6df9b8",
