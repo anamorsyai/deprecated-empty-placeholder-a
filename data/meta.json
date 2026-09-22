@@ -1,0 +1,27 @@
+{
+  "lastRun": "2026-09-22T20:34:01.678Z",
+  "totalItems": 26,
+  "newItemsThisRun": 26,
+  "aiProvider": "none",
+  "bySource": {
+    "infosec-writeups": 1,
+    "pentesterland": 25
+  },
+  "byCategory": {
+    "idor-bola": 2,
+    "auth-bypass": 1,
+    "access-control": 5,
+    "rce": 14,
+    "supply-chain": 2,
+    "oauth-jwt": 1,
+    "other": 5,
+    "file-upload": 3,
+    "ssrf": 1,
+    "sqli": 1,
+    "xss": 3,
+    "recon": 1,
+    "ssti": 1,
+    "info-disclosure": 1,
+    "csrf": 1
+  }
+}

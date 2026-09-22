@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+next-env.d.ts
+public/rss.xml
+public/search-index.json
+*.local
+.env
+.env.local

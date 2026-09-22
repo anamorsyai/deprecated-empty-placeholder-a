@@ -1,0 +1,56 @@
+{
+  "structured": [
+    {
+      "slug": "pentesterland",
+      "name": "Pentester Land",
+      "type": "pentesterland",
+      "url": "https://pentester.land/writeups.json",
+      "trustedBugBounty": true
+    }
+  ],
+  "rss": [
+    {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)",
+      "url": "https://infosecwriteups.com/feed",
+      "enabled": true,
+      "note": "Mixed publication (CTF, pentest labs, bug bounty) — gated through the bug-bounty relevance filter, not trusted outright."
+    },
+    {
+      "slug": "intigriti-blog",
+      "name": "Intigriti Blog",
+      "url": "https://blog.intigriti.com/feed/",
+      "enabled": true,
+      "note": "Also publishes business/interview/news posts — gated through the relevance filter to keep only actual vulnerability writeups."
+    },
+    {
+      "slug": "reddit-netsec",
+      "name": "r/netsec",
+      "url": "https://www.reddit.com/r/netsec/.rss",
+      "enabled": true,
+      "filterKeywords": ["writeup", "write-up", "bug bounty", "vulnerability", "disclosed", "rce", "idor", "xss", "ssrf", "sqli", "bypass", "account takeover"],
+      "note": "Broad subreddit — pre-filtered by keyword, then gated again through the relevance filter."
+    },
+    {
+      "slug": "portswigger-research",
+      "name": "PortSwigger Research",
+      "url": "https://portswigger.net/research/rss",
+      "enabled": false,
+      "note": "Independent web security research, not bug-bounty-program writeups — off by default per user request to keep the feed bug-bounty-only. Flip enabled:true to bring it back."
+    },
+    {
+      "slug": "zdi",
+      "name": "Zero Day Initiative",
+      "url": "https://www.zerodayinitiative.com/rss/published/",
+      "enabled": false,
+      "note": "Vendor CVE advisories (ZDI's own acquisition program), not bug bounty writeups — off by default, was the biggest source of noise in the first seed."
+    },
+    {
+      "slug": "rcesecurity",
+      "name": "RCE Security",
+      "url": "https://www.rcesecurity.com/feed/",
+      "enabled": false,
+      "note": "Independent CVE research, rarely tied to a bounty program — off by default."
+    }
+  ]
+}

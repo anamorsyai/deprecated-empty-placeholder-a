@@ -1,0 +1,721 @@
+[
+  {
+    "id": "b0dfc32a1239",
+    "title": "BOLA: Enumerating an Entire Employee Directory Through a Predictable ID",
+    "url": "https://infosecwriteups.com/bola-enumerating-an-entire-employee-directory-through-a-predictable-id-2fa11370e919",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Sid"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-08T14:55:10.000Z",
+    "added_at": "2026-09-22T20:33:19.782Z",
+    "categories": [
+      "idor-bola"
+    ],
+    "severity": "medium",
+    "summary_en": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test.",
+    "summary_ar": null,
+    "excerpt": "**Disclosure note:**_This was found during an authorized, client-commissioned penetration test. The target platform, endpoint domain, employee names, and all captured values below have been anonymized/fictionalized — none of the identifiers, credentials, or personal data shown are real. Reported to the client, remediation done/confirmed as of 08/24/26._ ### TL;DR During a gray-box pentest of a corporate SaaS platform (“TargetApp”), an internal HR/personnel endpoint accepted a plain sequential integer — `idPersonnal` — as the only identifier for which employee record to return, with no check th",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "0431aea8087a",
+    "title": "Vulnerabilities in Open Source C2 Frameworks",
+    "url": "https://blog.includesecurity.com/2024/09/vulnerabilities-in-open-source-c2-frameworks",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Laurence Tennant"
+    ],
+    "program": "Bishop Fox (Sliver), Havoc, Ninja C2, SHAD0W, Covenant",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-18T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:24.656Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed.",
+    "summary_ar": null,
+    "excerpt": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed. I decided to investigate open source Command & Control (C2) frameworks used in network and red teaming assessments to understand how they work, and ended up finding a fun mix of authenticated and unauthenticated RCE (remote code execution) vulnerabilities. This post provides an overview of C2 concepts, gives a brief survey of current open source frameworks, and reviews the details of identified vulnerabil",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "bd0f29ec2eb1",
+    "title": "[2,500$ Bug Bounty Write-Up] Remote Code Execution (RCE) via unclaimed Node package",
+    "url": "https://medium.com/@p0lyxena/2-500-bug-bounty-write-up-remote-code-execution-rce-via-unclaimed-node-package-6b9108d10643",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Fuleki Ioan"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "2,500",
+    "published_at": "2024-09-18T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:25.555Z",
+    "categories": [
+      "rce",
+      "supply-chain"
+    ],
+    "severity": "critical",
+    "summary_en": "**Dependency Confusion** is a type of software supply chain vulnerability that occurs when a company’s internal package is mistakenly downloaded from a public repository, such as npm, rather than its private registry.",
+    "summary_ar": null,
+    "excerpt": "**Dependency Confusion** is a type of software supply chain vulnerability that occurs when a company’s internal package is mistakenly downloaded from a public repository, such as npm, rather than its private registry. This can happen if the package manager (like npm, pip, or others) defaults to pulling from a public source and a package with the same name exists there. In a dependency confusion attack, an attacker can create a malicious package with the same name as a company’s internal package and publish it to a public registry. If the company’s systems resolve the package from the public re",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "f135c894a080",
+    "title": "Data Theft in Salesforce: Manipulating Public Links",
+    "url": "https://www.varonis.com/blog/manipulating-salesforce-public-links",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Nitay Bachrach"
+    ],
+    "program": "Salesforce",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-16T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:26.491Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Introducing Varonis Data Lifecycle Management: Cut storage cost, improve AI accuracy, reduce risk, and automate compliance [Learn more](https://www.varonis.com/blog/introducing-data-lifecycle-management?hsLang=en) [](https://www.varonis.com",
+    "summary_ar": null,
+    "excerpt": "Introducing Varonis Data Lifecycle Management: Cut storage cost, improve AI accuracy, reduce risk, and automate compliance [Learn more](https://www.varonis.com/blog/introducing-data-lifecycle-management?hsLang=en) [](https://www.varonis.com/?hsLang=en) Platform Data Security Platform [Platform overview](https://www.varonis.com/data-security-platform?hsLang=en) Data Security [![Image 1: Data discovery & classification icon](https://www.varonis.com/hubfs/2024%20Website%20Redesign/02_Icon%20Library/Nav%20Icons/Data%20discovery%20%26%20classification_Icon.svg) Data discovery & classification Accur",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "2a58b79404f7",
+    "title": "Attacking PowerShell CLIXML Deserialization",
+    "url": "https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Alexander Andersson"
+    ],
+    "program": "Microsoft",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-13T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:27.774Z",
+    "categories": [
+      "rce",
+      "oauth-jwt"
+    ],
+    "severity": "critical",
+    "summary_en": "[](https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization#site-header) # Attacking PowerShell CLIXML Deserialization In this article, we will learn that using PowerShell’s CLIXML deserialization could lead to undesired",
+    "summary_ar": null,
+    "excerpt": "[](https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization#site-header) # Attacking PowerShell CLIXML Deserialization In this article, we will learn that using PowerShell’s CLIXML deserialization could lead to undesired effects, including remote code execution. We will also see that widely used solutions, like PowerShell Remoting and PowerShell Direct (Hyper-V), rely on such deserialization and could make you vulnerable to this kind of attack. * * [![Image 27: alexander andersson](https://www.truesec.com/wp-content/uploads/2024/03/Alexander-Andersson-Truesec-Expert-480x480",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "e771846711f8",
+    "title": "Logic Flaw: I Can Block You from Accessing Your Own Account",
+    "url": "https://medium.com/@hashimamin/logic-flaw-i-can-block-you-from-accessing-your-own-account-63fc2a88bb72",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Hashim Amin"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-13T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:28.778Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Hey Hackers, This’s `mrhashimamin`. Ever been part of a forum? Ah, the good old days.",
+    "summary_ar": null,
+    "excerpt": "Hey Hackers, This’s `mrhashimamin`. Ever been part of a forum? Ah, the good old days. I still remember all my failed, time-wasting attempts to become famous on those meme forums— creating cringey memes and hardly trying to get my name on the leaderboard. Press enter or click to view image in full size ![Image 5](https://miro.medium.com/v2/resize:fit:700/1*0Ho8Lb-1JWy6zFS7wnZoVw.png) KnowYourMeme leaderboard - Just an example of what i’m talking about ## So, what’s the point? Why are we talking about this now? Well, that’s what this is about. After encountering `duplicates` and `N/As` in a few",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "de5cd9663712",
+    "title": "Escalating from Reader to Contributor in Azure API Management",
+    "url": "https://binarysecurity.no/posts/2024/09/apim-privilege-escalation",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Christian Håland"
+    ],
+    "program": "Microsoft (Azure)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-13T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:29.787Z",
+    "categories": [
+      "access-control",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "When reading or deploying an Azure API Management resource in the Azure Portal or through ARM/Bicep templates, the Azure Resource Manager (ARM) API is used.",
+    "summary_ar": null,
+    "excerpt": "When reading or deploying an Azure API Management resource in the Azure Portal or through ARM/Bicep templates, the Azure Resource Manager (ARM) API is used. The ARM API restricts certain actions when a user with ```plaintext Reader ``` permissions browses the APIM resource. Older versions of the ARM API would allow a user with Reader access to view all subscription keys (often required to talk to an API exposed via APIM), read the client credentials of any identity provider service principal, and read the keys used to interact with the Direct Management API. Microsoft therefore added an option",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "02f43e2e6e08",
+    "title": "Zero-Click Calendar invite — Critical zero-click vulnerability chain in macOS",
+    "url": "https://mikko-kenttala.medium.com/zero-click-calendar-invite-critical-zero-click-vulnerability-chain-in-macos-a7a434fc887b",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Mikko Kenttälä (@Turmio_)"
+    ],
+    "program": "Apple (macOS)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-13T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:30.736Z",
+    "categories": [
+      "rce",
+      "file-upload"
+    ],
+    "severity": "critical",
+    "summary_en": "I found a zero-click vulnerability in macOS Calendar, which allows an attacker to add or delete arbitrary files inside the Calendar sandbox environment.",
+    "summary_ar": null,
+    "excerpt": "I found a zero-click vulnerability in macOS Calendar, which allows an attacker to add or delete arbitrary files inside the Calendar sandbox environment. This could lead to many bad things including malicious code execution which can be combined with security protection evasion with Photos to compromise users’ sensitive Photos iCloud Photos data. Apple has **fixed** all of the vulnerabilities between October 2022 and September 2023. If you like to see my presentation video about this, you can check my Disobey 2024 presentation: [https://www.youtube.com/watch?v=9NlQXLLQrvk](https://www.youtube.c",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "6cc31a86c7a4",
+    "title": "Interesting Story of an Account Takeover Vulnerability",
+    "url": "https://medium.com/@deepanshudev369/interesting-story-of-an-account-takeover-vulnerability-140a45a058a3",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Deepanshu (@golu_369)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "2,000",
+    "published_at": "2024-09-12T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:31.629Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "I hope you’re all doing well! Today, I want to share a fascinating account takeover vulnerability that I recently discovered .",
+    "summary_ar": null,
+    "excerpt": "I hope you’re all doing well! Today, I want to share a fascinating account takeover vulnerability that I recently discovered . Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:700/1*b071ti8HCTZ5VL2J4yloIQ.jpeg) So I got an invite to a Private Bug bounty program on hackerone.com , The scope was very limited and its a 4 year old program , Initially it looked secured but I thought to give it a try . So I straight away Jumped to check the Forgot Password functionality of the company main website . I entered my email in forgot password field and inter",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "99d90444b887",
+    "title": "Microsoft Windows MSI Installer - Repair to SYSTEM - A detailed journey",
+    "url": "https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Michael Baer"
+    ],
+    "program": "Microsoft (Windows)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-12T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:32.691Z",
+    "categories": [
+      "access-control",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014.",
+    "summary_ar": null,
+    "excerpt": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014. ![Image 1](https://sec-consult.com/fileadmin/user_upload/sec-consult/Dynamisch/Blogartikel/2024_09/image__3_.png) _This article by our researcher Michael Baer for the SEC Consult Vulnerability Lab will explain different attacks against MSI installers and present an open-source analyzer tool named \"msiscan\" in order to automatically detect potential security issues. The mai",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "acee5a7b4ce0",
+    "title": "We Spent $20 To Achieve RCE And Accidentally Became The Admins Of .MOBI",
+    "url": "https://labs.watchtowr.com/we-spent-20-to-achieve-rce-and-accidentally-became-the-admins-of-mobi",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "watchTowr (@watchtowrcyber)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-11T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:33.688Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "This research is a glimpse into the capability powering the watchTowr Platform, a **Preemptive Exposure Management** solution.",
+    "summary_ar": null,
+    "excerpt": "This research is a glimpse into the capability powering the watchTowr Platform, a **Preemptive Exposure Management** solution. We enable organizations to **autonomously validate and mitigate** their exposure to emerging threats, ahead of in-the-wild exploitation. [Request a demo](https://watchtowr.com/demo/) Welcome back to another watchTowr Labs blog. Brace yourselves, this is one of our most astounding discoveries. ### Summary What started out as a bit of fun between colleagues while avoiding the Vegas heat and $20 bottles of water in our Black Hat hotel rooms - has now seemingly become a ma",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "7e686c15388a",
+    "title": "Directory Traversal, SQL Injection and Server-Side Request Forgery",
+    "url": "https://research.aurainfosec.io/disclosure/sagecrm2",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Chris McCurley (@chrisrmccurley)"
+    ],
+    "program": "Sage",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-10T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:34.646Z",
+    "categories": [
+      "ssrf",
+      "sqli",
+      "file-upload"
+    ],
+    "severity": "high",
+    "summary_en": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure.",
+    "summary_ar": null,
+    "excerpt": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure. ## [CVE-2023-47300](https://nvd.nist.gov/vuln/detail/CVE-2023-47300) - Authenticated Directory Traversal through Print and Merge Preview Functionality[#](https://research.aurainfosec.io/disclosure/sagecrm2#cve-2023-47300---authenticated-directory-traversal-through-print-and-merge-preview-functionality) The SageCRM application allows for Document templates to be created and",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "b860f488c16b",
+    "title": "Getting code execution on Veeam through CVE-2023-27532 – SCRT Team Blog",
+    "url": "https://blog.scrt.ch/2024/09/10/getting-code-execution-on-veeam-through-cve-2023-27532",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Alain Mowat (@plopz0r)"
+    ],
+    "program": "Veeam",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-10T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:35.604Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "While several blog posts have shown how to retrieve credentials through this vulnerability, we decided to dig deeper and see whether it was possible to execute arbitrary code through this issue.",
+    "summary_ar": null,
+    "excerpt": "While several blog posts have shown how to retrieve credentials through this vulnerability, we decided to dig deeper and see whether it was possible to execute arbitrary code through this issue. **DISCLAIMER**: This blog post was written a year and a half ago and we have postponed publication upon Veeam’s request, but given a recent post from Watchtowr ([here](https://labs.watchtowr.com/veeam-backup-response-rce-with-auth-but-mostly-without-auth-cve-2024-40711-2/)) detailing the almost exact vulnerability, we feel like we can now freely publish this article. The original statement released by",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "0f7fe09dbad3",
+    "title": "Hijacking SQL Server Credentials using Agent Jobs for Domain Privilege Escalation",
+    "url": "https://www.netspi.com/blog/technical-blog/network-pentesting/hijacking-sql-server-credentials-with-agent-jobs-for-domain-privilege-escalation",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Scott Sutherland"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-10T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:36.584Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "[Penetration Testing as a Service ( PTaaS ) Shift projects to programs with human-delivered, contextualized pentesting services](https://www.netspi.com/netspi-ptaas/) * * * [Application Pentesting Web, API, Mobile, Thick, and Virtual Applic",
+    "summary_ar": null,
+    "excerpt": "[Penetration Testing as a Service ( PTaaS ) Shift projects to programs with human-delivered, contextualized pentesting services](https://www.netspi.com/netspi-ptaas/) * * * [Application Pentesting Web, API, Mobile, Thick, and Virtual Applications](https://www.netspi.com/netspi-ptaas/application-penetration-testing/)[AI/ML Pentesting Enhance your AI / ML security with expert LLM testing and jailbreaking](https://www.netspi.com/netspi-ptaas/ai-ml-penetration-testing/)[Cloud Pentesting Secure AWS, Azure, and Google Cloud infrastructures](https://www.netspi.com/netspi-ptaas/cloud-penetration-testi",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "ac1825a332ff",
+    "title": "When Certificates Fail: A Story of Bypassed MFA in Remote Access",
+    "url": "https://edermi.github.io/post/2024/mfa_bypass_mtls",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Michael Eder (@michael_eder_)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-09T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:37.550Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Long time no see! After 3 years of no new blog posts and also no conference talks from my side, I decided it’s time to write again. I’ll start easy with a fun story that happened a while ago.",
+    "summary_ar": null,
+    "excerpt": "Long time no see! After 3 years of no new blog posts and also no conference talks from my side, I decided it’s time to write again. I’ll start easy with a fun story that happened a while ago. I gave a short lightning talk about this on [Alligatorcon 2024](https://alligatorcon.eu/index-2024.html), but as it may be of greater interest, ChatGPT and I wrote a little more elaborate version that consists of full sentences. If you prefer clicking through my original slides, [you can find them here](https://github.com/edermi/papers/blob/master/AlligatorconEU2024%20-%20Lightning%20Talk%20Not%20So%20Sma",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "4e444461f81c",
+    "title": "Just a moment...",
+    "url": "https://script.hashnode.dev/self-xss-to-ato-via-site-features",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Hossein Shourabi (@hoseinshurabi)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-08T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:42.017Z",
+    "categories": [
+      "xss",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "This website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot. ## Verification successful.",
+    "summary_ar": null,
+    "excerpt": "This website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot. ## Verification successful. Waiting for script.hashnode.dev to respond Ray ID: `a3f415fb0dda8b33` Performance and Security by [Cloudflare](https://www.cloudflare.com/?utm_source=challenge&utm_campaign=m)[Privacy](https://www.cloudflare.com/privacypolicy/)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "93e9b91314ff",
+    "title": "CVE-2024-45195: Apache OFBiz Unauthenticated Remote Code Execution (Fixed)",
+    "url": "https://www.rapid7.com/blog/post/2024/09/05/cve-2024-45195-apache-ofbiz-unauthenticated-remote-code-execution-fixed",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ryan Emmons"
+    ],
+    "program": "Apache OFBiz",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-05T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:43.028Z",
+    "categories": [
+      "access-control",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here.",
+    "summary_ar": null,
+    "excerpt": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here. Explore platform](https://www.rapid7.com/platform/) * * * Capabilities * [Attack Surface Management Reveal & protect coverage gaps](https://www.rapid7.com/products/command/attack-surface-management-asm/) * [Exposure Management Identify & remediate at-risk data](https://www.rapid7.com/products/command/exposure-management/) * [Vulnerability Management Pinpoint & eliminate risk](https://www.rapid7.com/solutions/vulnerability-management/) * [CyberGRC Manage governance, risk & compliance](",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "265e8c2d17c5",
+    "title": "How 100% Manual Hacking (Without Even Kali And Burp) Led To 2 Medium Vulnerabilities On YesWeHack",
+    "url": "https://medium.com/@manan_sanghvi/how-100-manual-hacking-without-even-kali-and-burp-led-to-2-medium-vulnerabilities-on-yeswehack-bbda00fcd84e",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Manan Sanghvi (@An____Anonymous)"
+    ],
+    "program": null,
+    "platform_slug": "yeswehack",
+    "bounty_raw": null,
+    "published_at": "2024-09-05T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:43.954Z",
+    "categories": [
+      "xss",
+      "recon"
+    ],
+    "severity": "medium",
+    "summary_en": "If you’re a beginner, this Write-Up is perfect for you. You’ll learn something new about how to perform good reconnaissance through Google Dorking .",
+    "summary_ar": null,
+    "excerpt": "If you’re a beginner, this Write-Up is perfect for you. You’ll learn something new about how to perform good reconnaissance through Google Dorking . Before that, if you haven’t read my previous write-ups, I highly recommend checking them out. You’ll find valuable insights and experiences that can help you on your journey. For those who haven’t seen it yet, my first write-up is titled: “**In under age (<18), How I Hacked Multi- Billion-Dollar-Corp and got first 4 fig. $2600 Bounty!**” Make sure to give it a read — it’s an exciting story that marked the beginning of my journey in hacking. ## [In",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "e046cb37730f",
+    "title": "Unmasking Harmful Content in a Healthcare Chatbot: A Red Team Perspective",
+    "url": "https://www.synack.com/blog/unmasking-harmful-content-in-a-medical-chatbot-a-red-team-perspective",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "William Wallace (@phyr3wall)"
+    ],
+    "program": null,
+    "platform_slug": "synack",
+    "bounty_raw": null,
+    "published_at": "2024-09-05T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:44.902Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "search input label submit search button![Image 2](https://cdn-ilehafm.nitrocdn.com/CEIcVhvPIRwjlbZfWoPvwdyDLoTdsmEr/assets/images/optimized/rev-4aa77c2/www.synack.com/wp-content/themes/synack/webroot/images/icon/search-mobile.svg) * [Go Bac",
+    "summary_ar": null,
+    "excerpt": "search input label submit search button![Image 2](https://cdn-ilehafm.nitrocdn.com/CEIcVhvPIRwjlbZfWoPvwdyDLoTdsmEr/assets/images/optimized/rev-4aa77c2/www.synack.com/wp-content/themes/synack/webroot/images/icon/search-mobile.svg) * [Go Back](https://www.synack.com/blog/unmasking-harmful-content-in-a-medical-chatbot-a-red-team-perspective#) * [Platform](https://www.synack.com/blog/unmasking-harmful-content-in-a-medical-chatbot-a-red-team-perspective#) * [Platform Tab Intro Section](https://www.synack.com/blog/unmasking-harmful-content-in-a-medical-chatbot-a-red-team-perspective#)AI and human p",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
+    "id": "9daf2f2d897e",
+    "title": "SSTI in Bug Bounty Program: The Time I Played with Handlebars and Broke Stuff",
+    "url": "https://medium.com/@ali.zamini/ssti-in-bug-bounty-program-the-time-i-played-with-handlebars-and-broke-stuff-7dc1f9834a3d",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ali Zamini"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-05T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:45.834Z",
+    "categories": [
+      "ssti"
+    ],
+    "severity": "medium",
+    "summary_en": "Hey, everybody! 🎉 I’m super excited to share this wild bug I recently found in a public bug bounty program. This one was a fun ride, so grab some popcorn and let me tell you all about it.",
+    "summary_ar": null,
+    "excerpt": "Hey, everybody! 🎉 I’m super excited to share this wild bug I recently found in a public bug bounty program. This one was a fun ride, so grab some popcorn and let me tell you all about it. So, the scope for this target was as wide as the ocean — `*.target.tld`. Naturally, I went into full detective mode and started hunting for subdomains. And what’s the first thing any seasoned bounty hunter does? That’s right, a good old-fashioned Google Dork: `site:*.target.tld -out_of_scope`. 🤓 After scrolling through a bunch of results, I stumbled upon a subdomain that piqued my curiosity. Let’s call it `",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "0986a94dab92",
+    "title": "Spip Preauth RCE 2024: Part 2, A Big Upload",
+    "url": "https://thinkloveshare.com/hacking/spip_preauth_rce_2024_part_2_a_big_upload",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Laluka (@TheLaluka)"
+    ],
+    "program": "SPIP",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-04T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:48.453Z",
+    "categories": [
+      "rce",
+      "file-upload"
+    ],
+    "severity": "critical",
+    "summary_en": "> Hello dear reader, > This article is the continuation of my Spip research, with a twist! > One Spip Unauth RCE Challenge player ([@Vozec1](https://x.com/Vozec1)) came to me with an extra question after solving my initial challenge: “I thi",
+    "summary_ar": null,
+    "excerpt": "> Hello dear reader, > This article is the continuation of my Spip research, with a twist! > One Spip Unauth RCE Challenge player ([@Vozec1](https://x.com/Vozec1)) came to me with an extra question after solving my initial challenge: “I think I found another similar bug, are you already aware of this issue?” > And I was not (code changes fast)! We therefore worked together to make the most out of it, here’s our co-written story! 💌 ## Some Context Hello, [@Vozec1](https://x.com/Vozec1) here! 👋 A month ago, [TheLaluka](https://x.com/TheLaluka/)[suggested](https://x.com/TheLaluka/status/1821821",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "4d6b131a9ffb",
+    "title": "Revival Hijack – PyPI hijack technique exploited in the wild, puts 22K packages at risk",
+    "url": "https://jfrog.com/blog/revival-hijack-pypi-hijack-technique-exploited-22k-packages-at-risk",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Andrey Polkovnichenko",
+      "Brian Moussalli"
+    ],
+    "program": "PyPI",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-04T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:50.863Z",
+    "categories": [
+      "supply-chain"
+    ],
+    "severity": "medium",
+    "summary_en": "Revival Hijack – PyPI hijack technique exploited in the wild, puts 22K packages at risk",
+    "summary_ar": null,
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "a7bd9a1333ea",
+    "title": "410 Deleted by author — Medium",
+    "url": "https://prateeksrivastavaa.medium.com/zomatoooo-idor-in-saved-payments-f8c014879741",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Prateek Srivastava"
+    ],
+    "program": "Zomato",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-04T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:54.517Z",
+    "categories": [
+      "idor-bola",
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "[Sitemap](https://prateeksrivastavaa.medium.com/sitemap/sitemap.xml) [Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav------------------------------",
+    "summary_ar": null,
+    "excerpt": "[Sitemap](https://prateeksrivastavaa.medium.com/sitemap/sitemap.xml) [Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------) Sign up [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fprateeksrivastavaa.medium.com%2Fzomatoooo-idor-in-saved-payments-f8c014879741&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------) [](https://medium.com/?source=---top_nav_layout_nav---------------------------------------",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "e7517d9b8951",
+    "title": "Medium",
+    "url": "https://medium.com/@srishavinkumar/p3-medium-how-i-gain-access-to-nasas-internal-workspace-d0896fee563c",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sri Shavin Kumar"
+    ],
+    "program": "NASA",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-03T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:55.416Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "summary_en": "You can find (just about) anything on Medium — apparently even a page that doesn’t exist.",
+    "summary_ar": null,
+    "excerpt": "You can find (just about) anything on Medium — apparently even a page that doesn’t exist. Maybe these stories will take you somewhere new? [Home](https://medium.com/) [](https://medium.com/zenite/what-makes-a-place-sacred-5c79b10ce4a4) #### [What Makes A Place Sacred?](https://medium.com/zenite/what-makes-a-place-sacred-5c79b10ce4a4) [![Image 2: Jason McBride](https://miro.medium.com/v2/resize:fill:40:40/1*e2d-qbfDDTDl_t9AfbQ7_g@2x.jpeg)](https://jasoncmcbride.medium.com/) [Jason McBride](https://jasoncmcbride.medium.com/)[in Zenite](https://medium.com/zenite) Sep 20, 2026 · 6 min read Member-",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "66023ab3eed7",
+    "title": "Basic HTTP Authentication Risk: Uncovering pyspider Vulnerabilities",
+    "url": "https://www.sonarsource.com/blog/basic-http-authentication-risk-uncovering-pyspider-vulnerabilities",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Yaniv Nizry (@YNizry)"
+    ],
+    "program": "pyspider",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-02T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:58.035Z",
+    "categories": [
+      "xss",
+      "rce",
+      "csrf"
+    ],
+    "severity": "medium",
+    "summary_en": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) [![Image 18: sonar logo ](https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e",
+    "summary_ar": null,
+    "excerpt": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) [![Image 18: sonar logo ](https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg?w=128&h=32&fit=clip&q=80&auto=format)](https://www.sonarsource.com/ \"Sonar homepage\") Products [Products](https://www.sonarsource.com/products/sonarqube/) [![Image 19](https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/01c683cb-54e6-4d40-adbd-f71a6b15cfed/Cloud.svg) #### SonarQube Cloud",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "78d85fe53978",
+    "title": "Ghost in the PPL Part 1: BYOVDLL – SCRT Team Blog",
+    "url": "https://blog.scrt.ch/2024/08/09/ghost-in-the-ppl-part-1-byovdll",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Clément Labro (@itm4n)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-02T00:00:00.000Z",
+    "added_at": "2026-09-22T20:34:00.976Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "In this series of blog posts, I will explore yet another avenue for bypassing LSA Protection in Userland.",
+    "summary_ar": null,
+    "excerpt": "In this series of blog posts, I will explore yet another avenue for bypassing LSA Protection in Userland. I will also detail the biggest challenges I faced while developing a proof-of-concept, and discuss some novel techniques and tricks to load an arbitrary DLL in LSASS, or even dump its memory. ## Bring Your Own Vulnerable DLL (BYOVDLL) In July 2022, Microsoft brought some changes to their Protected Process Light (PPL) implementation to mitigate a well-known flaw, originally discovered by [Alex Ionescu](https://infosec.exchange/@aionescu) and [James Forshaw](https://infosec.exchange/@tiranid",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  }
+]

@@ -1,0 +1,44 @@
+name: Fetch bug bounty writeups
+
+on:
+  schedule:
+    # Every 6 hours — a bug hunter opening the site each morning always sees
+    # something new without the pipeline hammering free-tier APIs.
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/**"
+      - "taxonomy.json"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run the aggregation pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
+        run: npm run fetch
+
+      - name: Commit updated data
+        run: |
+          git config user.name "writeups-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/writeups.json data/meta.json
+          git diff --cached --quiet || git commit -m "chore(data): refresh writeups $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push

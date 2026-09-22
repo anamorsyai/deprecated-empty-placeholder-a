@@ -1,0 +1,36 @@
+{
+  "categories": [
+    { "slug": "idor-bola", "label_en": "IDOR / BOLA", "label_ar": "IDOR / كسر صلاحيات الكائن", "keywords": ["idor", "bola", "broken object level", "insecure direct object"] },
+    { "slug": "auth-bypass", "label_en": "Authentication Bypass", "label_ar": "تجاوز المصادقة", "keywords": ["auth bypass", "authentication bypass", "login bypass", "2fa bypass", "otp bypass"] },
+    { "slug": "access-control", "label_en": "Broken Access Control", "label_ar": "خلل في التحكم بالصلاحيات", "keywords": ["access control", "bfla", "privilege escalation", "authorization"] },
+    { "slug": "ssrf", "label_en": "SSRF", "label_ar": "SSRF", "keywords": ["ssrf", "server-side request forgery", "cloud metadata", "169.254.169.254"] },
+    { "slug": "xss", "label_en": "XSS", "label_ar": "XSS", "keywords": ["xss", "cross-site scripting", "cross site scripting"] },
+    { "slug": "sqli", "label_en": "SQL Injection", "label_ar": "حقن SQL", "keywords": ["sql injection", "sqli", "nosql injection", "nosqli"] },
+    { "slug": "rce", "label_en": "RCE / Command Injection", "label_ar": "تنفيذ كود عن بعد", "keywords": ["rce", "remote code execution", "command injection", "os command", "code execution"] },
+    { "slug": "ssti", "label_en": "SSTI", "label_ar": "SSTI", "keywords": ["ssti", "template injection"] },
+    { "slug": "xxe", "label_en": "XXE", "label_ar": "XXE", "keywords": ["xxe", "xml external entity"] },
+    { "slug": "csrf", "label_en": "CSRF", "label_ar": "CSRF", "keywords": ["csrf", "cross-site request forgery"] },
+    { "slug": "cors", "label_en": "CORS Misconfiguration", "label_ar": "خلل إعدادات CORS", "keywords": ["cors"] },
+    { "slug": "oauth-jwt", "label_en": "OAuth / JWT / SSO", "label_ar": "OAuth / JWT / SSO", "keywords": ["oauth", "jwt", "saml", "sso", "openid"] },
+    { "slug": "business-logic", "label_en": "Business Logic", "label_ar": "ثغرات منطق العمل", "keywords": ["business logic", "price manipulation", "workflow bypass"] },
+    { "slug": "race-condition", "label_en": "Race Condition", "label_ar": "Race Condition", "keywords": ["race condition", "toctou"] },
+    { "slug": "file-upload", "label_en": "File Upload / Path Traversal", "label_ar": "رفع ملفات / Path Traversal", "keywords": ["file upload", "path traversal", "directory traversal", "arbitrary file"] },
+    { "slug": "cache-smuggling", "label_en": "Cache Poisoning / Request Smuggling", "label_ar": "تسميم الكاش / تهريب الطلبات", "keywords": ["cache poisoning", "cache deception", "request smuggling", "desync"] },
+    { "slug": "subdomain-takeover", "label_en": "Subdomain Takeover", "label_ar": "الاستيلاء على نطاق فرعي", "keywords": ["subdomain takeover"] },
+    { "slug": "info-disclosure", "label_en": "Information Disclosure", "label_ar": "تسريب معلومات", "keywords": ["information disclosure", "sensitive data exposure", "secrets exposed", "api key leak"] },
+    { "slug": "mass-assignment", "label_en": "Mass Assignment", "label_ar": "Mass Assignment", "keywords": ["mass assignment"] },
+    { "slug": "graphql", "label_en": "GraphQL", "label_ar": "GraphQL", "keywords": ["graphql"] },
+    { "slug": "supply-chain", "label_en": "Supply Chain / Dependency", "label_ar": "سلسلة التوريد / الاعتماديات", "keywords": ["supply chain", "dependency confusion", "unclaimed package", "typosquat"] },
+    { "slug": "recon", "label_en": "Recon & Methodology", "label_ar": "الاستكشاف والمنهجية", "keywords": ["recon", "reconnaissance", "methodology", "bug bounty tips"] },
+    { "slug": "other", "label_en": "Other", "label_ar": "أخرى", "keywords": [] }
+  ],
+  "platforms": [
+    { "slug": "hackerone", "label": "HackerOne", "match": ["hackerone.com", "hackerone"] },
+    { "slug": "bugcrowd", "label": "Bugcrowd", "match": ["bugcrowd.com", "bugcrowd"] },
+    { "slug": "intigriti", "label": "Intigriti", "match": ["intigriti.com", "intigriti"] },
+    { "slug": "yeswehack", "label": "YesWeHack", "match": ["yeswehack.com", "yeswehack"] },
+    { "slug": "synack", "label": "Synack", "match": ["synack.com", "synack"] },
+    { "slug": "self-disclosed", "label": "Self-disclosed / Public research", "match": [] },
+    { "slug": "other", "label": "Other", "match": [] }
+  ]
+}
