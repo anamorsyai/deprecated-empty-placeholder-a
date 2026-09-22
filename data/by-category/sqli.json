@@ -1,0 +1,87 @@
+[
+  {
+    "id": "7e686c15388a",
+    "title": "Directory Traversal, SQL Injection and Server-Side Request Forgery",
+    "url": "https://research.aurainfosec.io/disclosure/sagecrm2",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Chris McCurley (@chrisrmccurley)"
+    ],
+    "program": "Sage",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-10T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:34.646Z",
+    "categories": [
+      "ssrf",
+      "sqli",
+      "file-upload"
+    ],
+    "severity": "high",
+    "summary_en": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure.",
+    "summary_ar": null,
+    "excerpt": "Given the length of time since these vulnerabilities were first disclosed, I would first like to thank to the vendor for their patience during this process and transparency during the remedial phase. It has been a pleasure. ## [CVE-2023-47300](https://nvd.nist.gov/vuln/detail/CVE-2023-47300) - Authenticated Directory Traversal through Print and Merge Preview Functionality[#](https://research.aurainfosec.io/disclosure/sagecrm2#cve-2023-47300---authenticated-directory-traversal-through-print-and-merge-preview-functionality) The SageCRM application allows for Document templates to be created and",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "a0554adcda28",
+    "title": "Breaking Down Barriers: Exploiting Pre-Auth SQL Injection in WhatsUp Gold",
+    "url": "https://summoning.team/blog/progress-whatsup-gold-sqli-cve-2024-6670",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sina Kheirkhah (@SinSinology)"
+    ],
+    "program": "Progress (WhatsUp Gold)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-30T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:44.858Z",
+    "categories": [
+      "auth-bypass",
+      "sqli",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk abo",
+    "summary_ar": null,
+    "excerpt": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk about how this was possible ![Image 3: ZDI](https://summoning.team/images/blog/whatsupgold-haserrors/poc-CVE-2024-6670-poc.png) # Manish Kishan Tanwar If it wasn’t because of the motivation and lessons that my dear friend [Manish](https://x.com/indishell1046) has taught me over the years I have known him, I wouldn’t be able to exploit this bug, thank you my fri",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "ccbd823d1a82",
+    "title": "Bypassing airport security via SQL injection",
+    "url": "https://ian.sh/tsa",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ian Carroll (@iangcarroll)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-29T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:48.000Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "summary_en": "![Image 1: Bypassing airport security via SQL injection](https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/727c7878-4188-46dd-a7ff-52f28720199b/lucia-serone--0DVsjv1AHc-unsplash/w=1920,quality=90,fit=scale-down) # Bypassing",
+    "summary_ar": null,
+    "excerpt": "![Image 1: Bypassing airport security via SQL injection](https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/727c7878-4188-46dd-a7ff-52f28720199b/lucia-serone--0DVsjv1AHc-unsplash/w=1920,quality=90,fit=scale-down) # Bypassing airport security via SQL injection 08/29/2024 # Introduction Like many, [Sam Curry](https://twitter.com/samwcyo) and I spend a lot of time waiting in airport security lines. If you do this enough, you might sometimes see a special lane at airport security called **Known Crewmember** (KCM). KCM is a TSA program that allows pilots and flight attendants to byp",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  }
+]

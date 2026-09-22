@@ -21,12 +21,7 @@ const INCLUDE_RE =
 // bounty submission") mention bounty vocabulary constantly without ever being
 // a writeup — catch the common shapes explicitly.
 const META_POST_RE =
-  /\b(introducing|meet (the|your)|named (the )?(new )?(official )?provider|how to appeal|how to become|guide to (starting|getting started)|checklist for|tips? for (new|beginner)s?|announcing)\b/i;
-
-// Narrative/report language a real "I found X in Y" writeup almost always
-// has, that a tool announcement or a tips listicle doesn't.
-const NARRATIVE_RE =
-  /\b(i (found|discovered|noticed|tested|reported|was able)|allowed (me|an attacker|us) to|able to (bypass|access|read|execute|escalate|exfiltrate)|steps to reproduce|proof of concept|\bpoc\b|disclosed (this|the|to)|reported (this|the|to)|the vulnerability (was|is|allowed)|this (bug|vulnerability|flaw)|exploiting this|vulnerable (endpoint|parameter|to))\b/i;
+  /\b(introducing|unleashed|is coming\b|meet (the|your|crowdrecon)|named (the )?(new )?(official )?provider|how to appeal|how to become|guide to (starting|getting started)|checklist for|tips? for (new|beginner)s?|announcing|we'?re (excited|thrilled|proud) to)\b/i;
 
 export function isLikelyBugBounty(candidate, source) {
   if (source?.trustedBugBounty) return true;
@@ -38,14 +33,22 @@ export function isLikelyBugBounty(candidate, source) {
   return INCLUDE_RE.test(haystack);
 }
 
-// Second pass, run after Jina extraction (more text to work with than an RSS
-// snippet). Catches meta/announcement posts that slipped past the title-only
-// gate above once we can see the actual article body.
+// Second pass, run after Jina extraction (the full article, not just an RSS
+// snippet, so meta/announcement posts that slipped past the title-only gate
+// above are easier to catch once we can see the actual body). This is purely
+// a NEGATIVE re-check — it does NOT require narrative language, because a
+// real writeup's first ~600 chars very often don't happen to contain an
+// English "I found/discovered" phrase (different author styles, a technical
+// lead-in, a non-English excerpt, a title-only stub) and requiring one caused
+// massive false rejects of genuine writeups. Positive relevance was already
+// established by isLikelyBugBounty(); this only removes what got through by
+// mistake.
 export function looksLikeWriteupContent(enrichedItem, source) {
   if (source?.trustedBugBounty) return true;
 
-  const text = `${enrichedItem.cleanTitle || enrichedItem.title || ""} ${enrichedItem.excerpt || ""}`;
-  if (META_POST_RE.test(enrichedItem.cleanTitle || enrichedItem.title || "")) return false;
+  const title = enrichedItem.cleanTitle || enrichedItem.title || "";
+  const text = `${title} ${enrichedItem.fullTextForClassification || enrichedItem.excerpt || ""}`;
+  if (META_POST_RE.test(title)) return false;
   if (LAB_CTF_RE.test(text) || EXCLUDE_RE.test(text)) return false;
-  return NARRATIVE_RE.test(text);
+  return true;
 }

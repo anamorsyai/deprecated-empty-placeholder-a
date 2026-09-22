@@ -1,17 +1,17 @@
 {
   "lastRun": "2026-09-22T21:22:24.584Z",
-  "totalItems": 56,
+  "totalItems": 53,
   "newItemsThisRun": 10,
   "aiProvider": "none",
   "bySource": {
     "infosec-writeups": 1,
-    "pentesterland": 55
+    "pentesterland": 52
   },
   "byCategory": {
-    "idor-bola": 3,
+    "idor-bola": 2,
     "auth-bypass": 3,
     "access-control": 7,
-    "rce": 33,
+    "rce": 30,
     "supply-chain": 2,
     "oauth-jwt": 2,
     "other": 8,
@@ -21,7 +21,7 @@
     "xss": 5,
     "recon": 1,
     "ssti": 2,
-    "info-disclosure": 3,
+    "info-disclosure": 2,
     "csrf": 3,
     "xxe": 1,
     "graphql": 1

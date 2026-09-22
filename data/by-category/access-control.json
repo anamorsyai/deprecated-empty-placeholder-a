@@ -1,0 +1,212 @@
+[
+  {
+    "id": "0431aea8087a",
+    "title": "Vulnerabilities in Open Source C2 Frameworks",
+    "url": "https://blog.includesecurity.com/2024/09/vulnerabilities-in-open-source-c2-frameworks",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Laurence Tennant"
+    ],
+    "program": "Bishop Fox (Sliver), Havoc, Ninja C2, SHAD0W, Covenant",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-18T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:24.656Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed.",
+    "summary_ar": null,
+    "excerpt": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed. I decided to investigate open source Command & Control (C2) frameworks used in network and red teaming assessments to understand how they work, and ended up finding a fun mix of authenticated and unauthenticated RCE (remote code execution) vulnerabilities. This post provides an overview of C2 concepts, gives a brief survey of current open source frameworks, and reviews the details of identified vulnerabil",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "de5cd9663712",
+    "title": "Escalating from Reader to Contributor in Azure API Management",
+    "url": "https://binarysecurity.no/posts/2024/09/apim-privilege-escalation",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Christian Håland"
+    ],
+    "program": "Microsoft (Azure)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-13T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:29.787Z",
+    "categories": [
+      "access-control",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "When reading or deploying an Azure API Management resource in the Azure Portal or through ARM/Bicep templates, the Azure Resource Manager (ARM) API is used.",
+    "summary_ar": null,
+    "excerpt": "When reading or deploying an Azure API Management resource in the Azure Portal or through ARM/Bicep templates, the Azure Resource Manager (ARM) API is used. The ARM API restricts certain actions when a user with ```plaintext Reader ``` permissions browses the APIM resource. Older versions of the ARM API would allow a user with Reader access to view all subscription keys (often required to talk to an API exposed via APIM), read the client credentials of any identity provider service principal, and read the keys used to interact with the Direct Management API. Microsoft therefore added an option",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "99d90444b887",
+    "title": "Microsoft Windows MSI Installer - Repair to SYSTEM - A detailed journey",
+    "url": "https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Michael Baer"
+    ],
+    "program": "Microsoft (Windows)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-12T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:32.691Z",
+    "categories": [
+      "access-control",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014.",
+    "summary_ar": null,
+    "excerpt": "Repair functions of Microsoft Windows MSI installers can be vulnerable in several ways, for instance allowing local attackers to escalate their privileges to SYSTEM rights. This vulnerability is referenced as CVE-2024-38014. ![Image 1](https://sec-consult.com/fileadmin/user_upload/sec-consult/Dynamisch/Blogartikel/2024_09/image__3_.png) _This article by our researcher Michael Baer for the SEC Consult Vulnerability Lab will explain different attacks against MSI installers and present an open-source analyzer tool named \"msiscan\" in order to automatically detect potential security issues. The mai",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "0f7fe09dbad3",
+    "title": "Hijacking SQL Server Credentials using Agent Jobs for Domain Privilege Escalation",
+    "url": "https://www.netspi.com/blog/technical-blog/network-pentesting/hijacking-sql-server-credentials-with-agent-jobs-for-domain-privilege-escalation",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Scott Sutherland"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-10T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:36.584Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "[Penetration Testing as a Service ( PTaaS ) Shift projects to programs with human-delivered, contextualized pentesting services](https://www.netspi.com/netspi-ptaas/) * * * [Application Pentesting Web, API, Mobile, Thick, and Virtual Applic",
+    "summary_ar": null,
+    "excerpt": "[Penetration Testing as a Service ( PTaaS ) Shift projects to programs with human-delivered, contextualized pentesting services](https://www.netspi.com/netspi-ptaas/) * * * [Application Pentesting Web, API, Mobile, Thick, and Virtual Applications](https://www.netspi.com/netspi-ptaas/application-penetration-testing/)[AI/ML Pentesting Enhance your AI / ML security with expert LLM testing and jailbreaking](https://www.netspi.com/netspi-ptaas/ai-ml-penetration-testing/)[Cloud Pentesting Secure AWS, Azure, and Google Cloud infrastructures](https://www.netspi.com/netspi-ptaas/cloud-penetration-testi",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "93e9b91314ff",
+    "title": "CVE-2024-45195: Apache OFBiz Unauthenticated Remote Code Execution (Fixed)",
+    "url": "https://www.rapid7.com/blog/post/2024/09/05/cve-2024-45195-apache-ofbiz-unauthenticated-remote-code-execution-fixed",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ryan Emmons"
+    ],
+    "program": "Apache OFBiz",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-05T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:43.028Z",
+    "categories": [
+      "access-control",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here.",
+    "summary_ar": null,
+    "excerpt": "[The Command Platform Respond faster and outpace attackers. Taking command of your attack surface starts here. Explore platform](https://www.rapid7.com/platform/) * * * Capabilities * [Attack Surface Management Reveal & protect coverage gaps](https://www.rapid7.com/products/command/attack-surface-management-asm/) * [Exposure Management Identify & remediate at-risk data](https://www.rapid7.com/products/command/exposure-management/) * [Vulnerability Management Pinpoint & eliminate risk](https://www.rapid7.com/solutions/vulnerability-management/) * [CyberGRC Manage governance, risk & compliance](",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "82084d0599f6",
+    "title": "3CX Phone System Local Privilege Escalation Vulnerability",
+    "url": "https://www.praetorian.com/blog/3cx-phone-system-local-privilege-escalation-vulnerability",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Adam Crosser"
+    ],
+    "program": "3CX",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-28T00:00:00.000Z",
+    "added_at": "2026-09-22T21:12:44.046Z",
+    "categories": [
+      "access-control",
+      "rce",
+      "file-upload"
+    ],
+    "severity": "high",
+    "summary_en": "**Meet Constantine – Find Mythos-level vulnerabilities in your code. It proves them, patches them, PRs them back.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Meet Constantine – Find Mythos-level vulnerabilities in your code. It proves them, patches them, PRs them back. Autonomously.** [Download Datasheet](https://www.praetorian.com/resources/constantine-datasheet/) [![Image 1: Praetorian](blob:http://localhost/3996b1f50294d624028045a67d4c4997)](https://www.praetorian.com/) * [Platform](https://www.praetorian.com/blog/3cx-phone-system-local-privilege-escalation-vulnerability#)Close Platform Open Platform #### [Praetorian Guard Platform](https://www.praetorian.com/guard/) * [Adversarial Exposure Validation](https://www.praetorian.com/guard/breach-a",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "460aace6901c",
+    "title": "Authorization bypass due to cache misconfiguration",
+    "url": "https://rikeshbaniya.medium.com/authorization-bypass-due-to-cache-misconfiguration-fde8b2332d2d",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Rikesh Baniya (@rikeshbaniya)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "2,000",
+    "published_at": "2024-08-21T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:23.882Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "graphql"
+    ],
+    "severity": "high",
+    "summary_en": "`target.com` was the user facing portal where users could go and buy items. `admin.target.com` was basically the admin portal for sellers where they could list their items, track orders, customer info and so on.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "`target.com` was the user facing portal where users could go and buy items. `admin.target.com` was basically the admin portal for sellers where they could list their items, track orders, customer info and so on. I was testing for idors and access controls. I generally use Autorize for it. If a lower privilege user is able to hit the admin endpoint Autorize will flag it as “bypassed” . ![Image 4](https://miro.medium.com/v2/resize:fit:668/1*4teG_skh-IEYO4In-02kwg.png) With the normal user cookie from `target.com` placed into Autorize , i was using the `admin.target.com` to check if a normal user",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  }
+]

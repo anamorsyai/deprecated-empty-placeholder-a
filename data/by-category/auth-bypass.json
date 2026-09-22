@@ -1,0 +1,93 @@
+[
+  {
+    "id": "0431aea8087a",
+    "title": "Vulnerabilities in Open Source C2 Frameworks",
+    "url": "https://blog.includesecurity.com/2024/09/vulnerabilities-in-open-source-c2-frameworks",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Laurence Tennant"
+    ],
+    "program": "Bishop Fox (Sliver), Havoc, Ninja C2, SHAD0W, Covenant",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-18T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:24.656Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed.",
+    "summary_ar": null,
+    "excerpt": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed. I decided to investigate open source Command & Control (C2) frameworks used in network and red teaming assessments to understand how they work, and ended up finding a fun mix of authenticated and unauthenticated RCE (remote code execution) vulnerabilities. This post provides an overview of C2 concepts, gives a brief survey of current open source frameworks, and reviews the details of identified vulnerabil",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "a0554adcda28",
+    "title": "Breaking Down Barriers: Exploiting Pre-Auth SQL Injection in WhatsUp Gold",
+    "url": "https://summoning.team/blog/progress-whatsup-gold-sqli-cve-2024-6670",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sina Kheirkhah (@SinSinology)"
+    ],
+    "program": "Progress (WhatsUp Gold)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-30T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:44.858Z",
+    "categories": [
+      "auth-bypass",
+      "sqli",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk abo",
+    "summary_ar": null,
+    "excerpt": "I discovered an unauthenticated SQL injection against the latest version of progress whatsup gold and turned it into a authentication bypass, after that the product by design allows you to achieve RCE (that part is up to you), lets talk about how this was possible ![Image 3: ZDI](https://summoning.team/images/blog/whatsupgold-haserrors/poc-CVE-2024-6670-poc.png) # Manish Kishan Tanwar If it wasn’t because of the motivation and lessons that my dear friend [Manish](https://x.com/indishell1046) has taught me over the years I have known him, I wouldn’t be able to exploit this bug, thank you my fri",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "aab8b175c6b3",
+    "title": "Instagram and Meta 2FA Bypass by Unprotected Backup Code Retrieval in Accounts Center",
+    "url": "https://medium.com/@scriptshuva/instagram-and-meta-2fa-bypass-by-unprotected-backup-code-retrieval-in-accounts-center-c735ff650f10",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Shuva Saha (@scriptshuva)"
+    ],
+    "program": "Meta / Facebook",
+    "platform_slug": "other",
+    "bounty_raw": "10,000",
+    "published_at": "2024-08-22T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:06.888Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "summary_en": "Hello, I'm Shuva Saha (scriptshuva). Today, I will be discussing a vulnerability I discovered: bypass of two-factor authentication (2FA) mechanisms in Meta and Instagram.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hello, I'm Shuva Saha (scriptshuva). Today, I will be discussing a vulnerability I discovered: bypass of two-factor authentication (2FA) mechanisms in Meta and Instagram. **Bounty**: $10,000 Awarded for bypassing two-factor authentication (2FA) mechanisms in Meta and Instagram ### Meta 2FA Bypass A hacker who gains access to a victim Facebook or Instagram account can retrieve Meta 2FA backup codes from account center, bypassing Meta two-factor authentication (2FA) and gaining full access to victim Meta account. ### Step 1: Login Initiation 1. Go to [Meta Auth](https://auth.meta.com/). 2. Log i",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  }
+]

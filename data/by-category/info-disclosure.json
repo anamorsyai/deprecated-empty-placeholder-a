@@ -1,0 +1,62 @@
+[
+  {
+    "id": "e7517d9b8951",
+    "title": "Medium",
+    "url": "https://medium.com/@srishavinkumar/p3-medium-how-i-gain-access-to-nasas-internal-workspace-d0896fee563c",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sri Shavin Kumar"
+    ],
+    "program": "NASA",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-03T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:55.416Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "summary_en": "You can find (just about) anything on Medium — apparently even a page that doesn’t exist.",
+    "summary_ar": null,
+    "excerpt": "You can find (just about) anything on Medium — apparently even a page that doesn’t exist. Maybe these stories will take you somewhere new? [Home](https://medium.com/) [](https://medium.com/zenite/what-makes-a-place-sacred-5c79b10ce4a4) #### [What Makes A Place Sacred?](https://medium.com/zenite/what-makes-a-place-sacred-5c79b10ce4a4) [![Image 2: Jason McBride](https://miro.medium.com/v2/resize:fill:40:40/1*e2d-qbfDDTDl_t9AfbQ7_g@2x.jpeg)](https://jasoncmcbride.medium.com/) [Jason McBride](https://jasoncmcbride.medium.com/)[in Zenite](https://medium.com/zenite) Sep 20, 2026 · 6 min read Member-",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "4d630ca496e5",
+    "title": "How I Got Sensitive Directory Using Google Dorks",
+    "url": "https://ch44nd.medium.com/find-bugs-from-google-dorks-ec574c01471b",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Chandan das"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-25T00:00:00.000Z",
+    "added_at": "2026-09-22T21:21:44.470Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "summary_en": "**This** is my first article. This article will talk about how to find information disclosure bug via google dorks. Let’s me introduce myself I’m Chandan das from India and I’m a web penetration tester.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**This** is my first article. This article will talk about how to find information disclosure bug via google dorks. Let’s me introduce myself I’m Chandan das from India and I’m a web penetration tester. ## **Lets start !** **The** company didn’t want me to publish their name. For this reason, I’ll call it “**redacted.com**”. Let’s begin! I started hunting with some google dorks. ( site:redacted.com intitle:index.of) I found interesting directories. ## Get Ch4ndan das’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster s",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  }
+]

@@ -32,6 +32,46 @@
       "note": "Broad subreddit — pre-filtered by keyword, then gated again through the relevance filter."
     },
     {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty",
+      "url": "https://medium.com/feed/tag/bug-bounty",
+      "enabled": true,
+      "note": "Medium's own tag feed — site-wide, not limited to one publication."
+    },
+    {
+      "slug": "medium-tag-bugbounty",
+      "name": "Medium — #bugbounty",
+      "url": "https://medium.com/feed/tag/bugbounty",
+      "enabled": true,
+      "note": "Same as medium-tag-bug-bounty but the no-hyphen tag variant — some authors only use one."
+    },
+    {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup",
+      "url": "https://medium.com/feed/tag/bug-bounty-writeup",
+      "enabled": true
+    },
+    {
+      "slug": "zseano-blog",
+      "name": "zseano",
+      "url": "https://zseano.medium.com/feed",
+      "enabled": true,
+      "note": "Well-known individual bug bounty hunter's personal Medium blog."
+    },
+    {
+      "slug": "assetnote",
+      "name": "Assetnote",
+      "url": "https://blog.assetnote.io/feed.xml",
+      "enabled": true,
+      "note": "Research team blog, heavy on real bounty-program findings — gated same as everyone else."
+    },
+    {
+      "slug": "zsec",
+      "name": "zsec.uk",
+      "url": "https://blog.zsec.uk/rss/",
+      "enabled": true
+    },
+    {
       "slug": "portswigger-research",
       "name": "PortSwigger Research",
       "url": "https://portswigger.net/research/rss",

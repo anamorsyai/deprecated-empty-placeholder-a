@@ -4,6 +4,7 @@ out
 next-env.d.ts
 public/rss.xml
 public/search-index.json
+public/feed.json
 *.local
 .env
 .env.local

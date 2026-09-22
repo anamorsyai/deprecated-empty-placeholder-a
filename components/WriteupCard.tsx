@@ -1,10 +1,10 @@
 import Link from "next/link";
-import type { Writeup } from "@/lib/types";
+import type { WriteupCardData } from "@/lib/types";
 import { getCategory, getPlatform } from "@/lib/data";
 import { SEVERITY_BORDER, SeverityBadge, Tag } from "@/components/Badge";
 import { timeAgoAr } from "@/lib/format";
 
-export default function WriteupCard({ writeup, compact = false }: { writeup: Writeup; compact?: boolean }) {
+export default function WriteupCard({ writeup, compact = false }: { writeup: WriteupCardData; compact?: boolean }) {
   const platform = getPlatform(writeup.platform_slug);
   const summary = writeup.summary_ar || writeup.summary_en || writeup.excerpt;
   const borderColor = writeup.severity ? SEVERITY_BORDER[writeup.severity] : "border-s-border";

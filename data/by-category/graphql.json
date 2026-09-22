@@ -1,0 +1,37 @@
+[
+  {
+    "id": "460aace6901c",
+    "title": "Authorization bypass due to cache misconfiguration",
+    "url": "https://rikeshbaniya.medium.com/authorization-bypass-due-to-cache-misconfiguration-fde8b2332d2d",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Rikesh Baniya (@rikeshbaniya)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "2,000",
+    "published_at": "2024-08-21T00:00:00.000Z",
+    "added_at": "2026-09-22T21:22:23.882Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "graphql"
+    ],
+    "severity": "high",
+    "summary_en": "`target.com` was the user facing portal where users could go and buy items. `admin.target.com` was basically the admin portal for sellers where they could list their items, track orders, customer info and so on.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "`target.com` was the user facing portal where users could go and buy items. `admin.target.com` was basically the admin portal for sellers where they could list their items, track orders, customer info and so on. I was testing for idors and access controls. I generally use Autorize for it. If a lower privilege user is able to hit the admin endpoint Autorize will flag it as “bypassed” . ![Image 4](https://miro.medium.com/v2/resize:fit:668/1*4teG_skh-IEYO4In-02kwg.png) With the normal user cookie from `target.com` placed into Autorize , i was using the `admin.target.com` to check if a normal user",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  }
+]

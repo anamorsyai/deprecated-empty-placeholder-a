@@ -1,0 +1,29 @@
+[
+  {
+    "id": "a8d2afba9086",
+    "title": "The Hunt for XXE to LFI: How I Uncovered CVE-2019–9670 in a Bug Bounty Program",
+    "url": "https://infosecwriteups.com/the-hunt-for-xxe-to-lfi-how-i-uncovered-cve-2019-9670-in-a-bug-bounty-program-5668e4afa806",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Karthikeyan.V (@karthithehacker)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-31T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:43.894Z",
+    "categories": [
+      "xxe"
+    ],
+    "severity": "critical",
+    "summary_en": "A few months ago, during one of my late-night bug bounty hunting sessions, I stumbled upon a critical vulnerability that could lead to a full server takeover. The target was a well-known program, and I was determined to dig deep.",
+    "summary_ar": null,
+    "excerpt": "A few months ago, during one of my late-night bug bounty hunting sessions, I stumbled upon a critical vulnerability that could lead to a full server takeover. The target was a well-known program, and I was determined to dig deep. This is the story of how I discovered the XXE to LFI vulnerability (CVE-2019–9670) in my target program. ### The Discovery While probing the target, I noticed something peculiar about the way their server handled XML inputs. My initial scans revealed that the server was running Synacor Zimbra Collaboration Suite version 8.7.x, which I knew had some known vulnerabiliti",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  }
+]

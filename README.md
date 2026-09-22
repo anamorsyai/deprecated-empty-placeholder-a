@@ -14,7 +14,7 @@ writeup (نوع الثغرة، المنصة، درجة الخطورة، ملخص
 
 ```
 app/                 Next.js App Router (static export) — كل الصفحات
-components/          مكوّنات React مشتركة
+components/          مكوّنات React مشتركة (InfiniteFeed = client-side infinite scroll)
 lib/                 قراءة الـ data وقت الـ build + helpers
 scripts/             pipeline التجميع (Node, يشتغل بره Next)
   sources.json       تعريف المصادر (structured + RSS)
@@ -22,16 +22,21 @@ scripts/             pipeline التجميع (Node, يشتغل بره Next)
   lib/sources/       fetchers (Pentester Land JSON, RSS عام)
   lib/relevance.mjs   بوابة "bug bounty بس" — بترفض الضوضاء قبل وبعد الاستخراج
   lib/extractContent.mjs   Jina Reader (عنوان دقيق + محتوى نظيف)
-  lib/ai.mjs          طبقة التصنيف/التلخيص القابلة للاستبدال
+  lib/ai.mjs          طبقة التصنيف/التلخيص/الشرح القابلة للاستبدال
   lib/score.mjs        معادلة ترتيب "الأكثر تأثيرًا"
+  buildStaticExtras.mjs   بيولّد public/rss.xml + search-index.json + feed.json
 data/
-  writeups.json       قاعدة البيانات الفعلية (array)، بيتحدّث تلقائيًا ويتعمله commit
+  writeups.json       الأرشيف الكامل (array) — **دائم، محدش بيتشال منه أبدًا**، بيتعمله commit أوتوماتيك
+  by-category/        نفس الأرشيف مقسّم لملف لكل تصنيف (idor-bola.json, rce.json, ...) — سهل تتصفحه في GitHub نفسه
   meta.json            إحصائيات آخر تشغيلة
 taxonomy.json          التصنيفات والمنصات (مصدر واحد يستخدمه الـ pipeline والموقع)
 ```
 
 الموقع static بالكامل (`next export`) — مفيش سيرفر أو قاعدة بيانات وقت التشغيل، كل حاجة بتتبني وقت
-الـ build من ملفات JSON في الريبو، وده اللي بيخليه مجاني 100% على GitHub Pages.
+الـ build من ملفات JSON في الريبو، وده اللي بيخليه مجاني 100% على GitHub Pages. الـ "infinite scroll"
+بردو client-side بحت: `public/feed.json` بيتولّد وقت الـ build وفيه كل الـ writeups (من غير نص الشرح
+الكامل، عشان الحجم)، والصفحة بتحمّل صفحة أولى وقت الـ build وبعدين تكمل تحميل من نفس الملف كل ما تنزل
+لتحت (IntersectionObserver) — مفيش أي API calls وقت التصفح.
 
 ## المصادر الحالية
 
@@ -42,10 +47,20 @@ CVE advisories مالهاش علاقة ببرنامج bounty. الفلترة ب�
 
    | المصدر | النوع | ملاحظات |
    |---|---|---|
-   | [Pentester Land](https://pentester.land) | JSON منظم، **موثوق 100%** | ده أصلاً موقع مخصص لتجميع bug bounty writeups بس — مفيش فلترة زيادة، فيه tags/program/bounty جاهزين |
+   | [Pentester Land](https://pentester.land) | JSON منظم، **موثوق 100%** | ده أصلاً موقع مخصص لتجميع bug bounty writeups بس — مفيش فلترة زيادة، فيه tags/program/bounty جاهزين. أكبر مصدر تغطية لـ HackerOne/Bugcrowd/Intigriti/YesWeHack (بيجمّع مقالات الباحثين عنهم) |
    | [InfoSec Write-ups](https://infosecwriteups.com) | RSS | تجميعة Medium — بتنشر CTF وتوتوريالز كمان، فبتعدي على فلتر الـ relevance |
+   | Medium — `#bug-bounty` / `#bugbounty` / `#bug-bounty-writeup` | RSS × 3 | تاجات Medium نفسها (مش تجميعة واحدة) — تغطية أوسع من أي publication واحدة |
+   | [zseano](https://zseano.medium.com) | RSS | مدونة باحث bug bounty معروف |
+   | [Assetnote](https://blog.assetnote.io) | RSS | فريق أبحاث بيلاقي ثغرات حقيقية في برامج bounty |
+   | [zsec.uk](https://blog.zsec.uk) | RSS | مدونة متخصصة bug bounty |
    | [Intigriti Blog](https://blog.intigriti.com) | RSS | بتنشر مقابلات وأخبار بيزنس كمان — نفس الفلتر |
    | [r/netsec](https://reddit.com/r/netsec) | RSS | فلترة بكلمات مفتاحية الأول، وبعدين فلتر الـ relevance. Reddit بيحجب أحيانًا طلبات من سيرفرات (403)، الـ pipeline بيتخطاها من غير ما يفشل |
+
+   **ليه مفيش HackerOne مباشر؟** الـ Hacktivity feed العام والـ RSS بتاعهم اتقفلوا من سنين — دلوقتي
+   الموقع كله React/GraphQL خاص من غير أي endpoint عام موثّق. بناء scraper بيقلّد طلبات المتصفح على
+   API خاص مش موثّق حاجة هشة هتتعطل أول ما يغيّروا حاجة، فمعملتهاش. تغطية HackerOne بتيجي عن طريق
+   Pentester Land ومدوّنات الباحثين اللي بينشروا هناك — والموقع بيوسم أي writeup اتاكد إنه HackerOne
+   في صفحة `/platform/hackerone` سواء جه من أي مصدر.
 
    مصادر موجودة في الملف لكن **متقفلة عمدًا** (`enabled: false`) لأنها مش writeups بمعنى bug bounty
    (أبحاث أمنية مستقلة / CVE advisories من غير سياق بونتي — كانت مصدر أغلب الـ "ضوضاء" في أول نسخة):
@@ -85,10 +100,22 @@ CVE advisories مالهاش علاقة ببرنامج bounty. الفلترة ب�
 
 احصل على مفتاح Gemini مجاني من https://aistudio.google.com/apikey (دقيقتين، من غير بطاقة ائتمان)،
 وضيفه كـ **Repository secret** باسم `GEMINI_API_KEY`. الـ pipeline هيستخدمه تلقائيًا من غير أي تعديل كود،
-وبعد أول تشغيلة تالية (كل 6 ساعات، أو شغّلها يدويًا من تبويب Actions) هتلاقي كل الـ writeups الجديدة فيها
+وبعد أول تشغيلة تالية (كل ساعة، أو شغّلها يدويًا من تبويب Actions) هتلاقي كل الـ writeups الجديدة فيها
 الشرح الكامل.
 
 اختياري: `JINA_API_KEY` من https://jina.ai/reader لرفع حد الطلبات لو المصادر كتيرة.
+
+## عدم التكرار
+
+فيه طبقتين ضد تكرار نفس الـ writeup:
+
+1. **URL** بعد normalization (شيل الـ hash، بعض الـ tracking params، الـ trailing slash) — الطبقة
+   الأساسية.
+2. **العنوان** بعد normalization (lowercase + شيل علامات الترقيم) — بيتقارن مرتين: الأول على عنوان
+   الـ RSS قبل حتى ما نستخرج المحتوى (يوفّر وقت)، والتاني على العنوان النهائي بعد Jina (بيمسك حالة إن
+   نفس المقال ليه عنوانين مختلفين شوية في مصدرين، أو اتعاد نشره).
+
+بمجرد ما عنوان يتخزن، مستحيل يتكرر تاني — حتى لو مصدر تاني لقاه برابط مختلف كليًا.
 
 ## الترتيب ("تريند" / "الأكثر تأثيرًا")
 
@@ -110,10 +137,14 @@ npm run build       # static export → out/
 
 ## الأتمتة (GitHub Actions)
 
-- **`.github/workflows/writeups-fetch.yml`** — كل 6 ساعات (وباليدوي)، بيشغّل الـ pipeline ويعمل
-  commit للـ data تلقائيًا.
+- **`.github/workflows/writeups-fetch.yml`** — **كل ساعة** (وباليدوي)، بيشغّل الـ pipeline ويعمل
+  commit للـ data تلقائيًا (`data/writeups.json` + `data/by-category/*.json` + `data/meta.json`).
+  فيه `concurrency` group عشان لو تشغيلة اتأخرت مش هيتصادموا مع بعض.
 - **`.github/workflows/writeups-deploy.yml`** — أي push على main (بما فيه الـ data commit
   اللي فوق) بيبني الموقع وينشره على GitHub Pages تلقائيًا.
+
+الأرشيف **دائم** — `fetchWriteups.mjs` مبيشيلش أي writeup اتخزن قبل كده، فالـ repo بيكبر باستمرار
+وكل شرح AI اتعمل بيفضل محفوظ للأبد.
 
 ### تفعيل GitHub Pages (مرة واحدة)
 

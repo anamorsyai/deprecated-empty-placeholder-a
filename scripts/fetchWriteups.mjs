@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import sources from "./sources.json" with { type: "json" };
+import taxonomy from "../taxonomy.json" with { type: "json" };
 import { fetchPentesterLand } from "./lib/sources/pentesterland.mjs";
 import { fetchRss } from "./lib/sources/rss.mjs";
 import { extractContent } from "./lib/extractContent.mjs";
@@ -19,22 +20,27 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, "..", "data");
 const WRITEUPS_PATH = path.join(DATA_DIR, "writeups.json");
 const META_PATH = path.join(DATA_DIR, "meta.json");
+const BY_CATEGORY_DIR = path.join(DATA_DIR, "by-category");
 
-const MAX_NEW_PER_RUN = Number(process.env.MAX_NEW_PER_RUN || 40);
-const MAX_PER_SOURCE_PER_RUN = Number(process.env.MAX_PER_SOURCE_PER_RUN || 10);
-const MAX_TOTAL_ITEMS = Number(process.env.MAX_TOTAL_ITEMS || 2000);
+// Runs hourly now, so each run only needs to cover a small slice — lower
+// per-run caps than a 6-hourly cadence would use, spread more evenly across
+// the day (gentler on free-tier Jina/AI rate limits too).
+const MAX_NEW_PER_RUN = Number(process.env.MAX_NEW_PER_RUN || 20);
+const MAX_PER_SOURCE_PER_RUN = Number(process.env.MAX_PER_SOURCE_PER_RUN || 5);
 const PER_ITEM_DELAY_MS = 700;
 
 async function main() {
   console.log(`AI provider: ${activeProvider}`);
   await mkdir(DATA_DIR, { recursive: true });
+  await mkdir(BY_CATEGORY_DIR, { recursive: true });
 
   const existing = await loadExisting();
   const seenUrls = new Set(existing.map((w) => w.url));
+  const seenTitles = new Set(existing.map((w) => normalizeTitle(w.title)));
 
   const candidates = await collectCandidates();
   const relevant = candidates.filter((c) => isLikelyBugBounty(c, SOURCE_BY_SLUG.get(c.sourceSlug)));
-  const fresh = selectBalanced(dedupeNew(relevant, seenUrls), MAX_NEW_PER_RUN, MAX_PER_SOURCE_PER_RUN);
+  const fresh = selectBalanced(dedupeNew(relevant, seenUrls, seenTitles), MAX_NEW_PER_RUN, MAX_PER_SOURCE_PER_RUN);
 
   console.log(
     `Found ${candidates.length} candidates, ${relevant.length} passed the bug-bounty relevance filter (${candidates.length - relevant.length} dropped as noise), ${fresh.length} new (processing up to ${MAX_NEW_PER_RUN}).`
@@ -45,6 +51,16 @@ async function main() {
     process.stdout.write(`  [${i + 1}/${fresh.length}] ${candidate.url}\n`);
     try {
       const record = await processCandidate(candidate);
+      // Final safety net: the resolved title (Jina's cleaned-up version, which
+      // can differ from the RSS title used for the earlier pre-filter) might
+      // still collide with something already stored or already processed this
+      // run — e.g. the same writeup picked up by two different feeds.
+      const finalTitle = normalizeTitle(record.title);
+      if (finalTitle && seenTitles.has(finalTitle)) {
+        console.warn(`    skipped (duplicate title after extraction: "${record.title}")`);
+        continue;
+      }
+      if (finalTitle) seenTitles.add(finalTitle);
       processed.push(record);
     } catch (err) {
       console.warn(`    skipped (${err.message})`);
@@ -52,8 +68,11 @@ async function main() {
     await sleep(PER_ITEM_DELAY_MS);
   }
 
-  const merged = mergeAndRescore(existing, processed).slice(0, MAX_TOTAL_ITEMS);
+  // Permanent archive — nothing already explained is ever dropped, so the
+  // repo keeps growing as the true, durable store of every writeup covered.
+  const merged = mergeAndRescore(existing, processed);
   await writeFile(WRITEUPS_PATH, JSON.stringify(merged, null, 2));
+  await writeByCategoryFiles(merged);
 
   const meta = {
     lastRun: new Date().toISOString(),
@@ -96,14 +115,32 @@ async function collectCandidates() {
   return all;
 }
 
-function dedupeNew(candidates, seenUrls) {
+// Two-layer dedupe: exact URL (the common case — same feed re-listing an
+// item, or two feeds linking the identical article) AND normalized title
+// (catches the same writeup mirrored at a different URL — e.g. picked up by
+// both a Medium tag feed and InfoSec Write-ups with different query strings
+// that survive normalizeUrl, or a cross-post). Once a title has been stored,
+// it can never be added again regardless of source or URL.
+function dedupeNew(candidates, seenUrls, seenTitles) {
   const byUrl = new Map();
+  const titlesThisBatch = new Set(seenTitles);
   for (const c of candidates) {
     const norm = normalizeUrl(c.url);
     if (seenUrls.has(norm) || byUrl.has(norm)) continue;
+    const t = normalizeTitle(c.title);
+    if (t && titlesThisBatch.has(t)) continue;
+    if (t) titlesThisBatch.add(t);
     byUrl.set(norm, c);
   }
   return [...byUrl.values()].sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || ""));
+}
+
+function normalizeTitle(title) {
+  return (title || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()
+    .replace(/\s+/g, " ");
 }
 
 // Caps how many items any single source can contribute per run, so a
@@ -180,6 +217,23 @@ async function processCandidate(candidate) {
   };
   record.score = computeScore(record);
   return record;
+}
+
+// Permanent, human-browsable archive split by category — one JSON file per
+// taxonomy category, each holding every writeup ever classified into it
+// (newest first). Regenerated in full each run from the merged master list,
+// so it's always consistent with data/writeups.json.
+async function writeByCategoryFiles(merged) {
+  const byCategory = new Map(taxonomy.categories.map((c) => [c.slug, []]));
+  for (const w of merged) {
+    for (const slug of w.categories) {
+      if (byCategory.has(slug)) byCategory.get(slug).push(w);
+    }
+  }
+  for (const [slug, items] of byCategory) {
+    const sorted = [...items].sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""));
+    await writeFile(path.join(BY_CATEGORY_DIR, `${slug}.json`), JSON.stringify(sorted, null, 2));
+  }
 }
 
 function mergeAndRescore(existing, fresh) {

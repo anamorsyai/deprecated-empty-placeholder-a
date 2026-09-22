@@ -30,14 +30,32 @@ export async function extractContent(url, { retries = 1 } = {}) {
   return null;
 }
 
+// The article existed when the RSS feed listed it but is gone by the time we
+// fetch it (author deleted it, 404/410, unpublished) — Jina still returns 200
+// with a page saying so. Without this, that placeholder text ("410 Deleted by
+// author — Medium", nav chrome, nothing else) gets stored as if it were the
+// real title/excerpt, and every such dead page collides on the exact same
+// generic title (a false "duplicate" the title-dedup then correctly, but
+// uselessly, collapses).
+const UNAVAILABLE_RE =
+  /^(4\d\d\b|this (story|post|page|article) (is no longer available|has been (deleted|removed|unpublished))|page not found|deleted by author|content not found)/i;
+
 function parseJinaResponse(text) {
   const titleMatch = text.match(/^Title:\s*(.+)$/m);
+  const rawTitle = titleMatch ? titleMatch[1].trim() : null;
+  if (rawTitle && UNAVAILABLE_RE.test(rawTitle)) {
+    // Signal "nothing usable here" — the caller falls back to the original
+    // feed title and skips setting an excerpt, instead of storing this page's
+    // placeholder text as if it were real content.
+    return { cleanTitle: null, excerpt: null, fullTextForClassification: null };
+  }
+
   const contentIdx = text.indexOf("Markdown Content:");
   const rawBody = contentIdx >= 0 ? text.slice(contentIdx + "Markdown Content:".length).trim() : text.trim();
   const body = stripLeadingHeading(stripBoilerplate(rawBody));
 
   return {
-    cleanTitle: pickBestTitle(titleMatch ? titleMatch[1].trim() : null, rawBody),
+    cleanTitle: pickBestTitle(rawTitle, rawBody),
     excerpt: body.replace(/\s+/g, " ").slice(0, 600).trim(),
     fullTextForClassification: body.slice(0, 9000),
   };

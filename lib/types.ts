@@ -29,6 +29,26 @@ export interface Writeup {
   score: number;
 }
 
+// The subset of a Writeup that WriteupCard (and the client-side feed.json it
+// can also be fed by, for infinite scroll) actually needs to render — never
+// includes `lesson`, which is only fetched on the writeup's own page.
+export interface WriteupCardData {
+  id: string;
+  title: string;
+  url: string;
+  source: { slug: string; name: string };
+  program: string | null;
+  platform_slug: string;
+  bounty_raw: string | null;
+  published_at: string;
+  categories: string[];
+  severity: Severity;
+  summary_en: string;
+  summary_ar: string | null;
+  excerpt: string | null;
+  score: number;
+}
+
 export interface CategoryDef {
   slug: string;
   label_en: string;

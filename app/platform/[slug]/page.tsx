@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import WriteupCard from "@/components/WriteupCard";
+import InfiniteFeed from "@/components/InfiniteFeed";
 import { getByPlatform, getPlatform, platforms } from "@/lib/data";
 
 export function generateStaticParams() {
@@ -23,11 +23,7 @@ export default function PlatformPage({ params }: { params: { slug: string } }) {
       {writeups.length === 0 ? (
         <p className="text-muted">لسه معندناش writeups من المنصة دي.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {writeups.map((w) => (
-            <WriteupCard key={w.id} writeup={w} />
-          ))}
-        </div>
+        <InfiniteFeed initial={writeups.slice(0, 12)} platform={params.slug} />
       )}
     </div>
   );

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "bd0f29ec2eb1",
+    "title": "[2,500$ Bug Bounty Write-Up] Remote Code Execution (RCE) via unclaimed Node package",
+    "url": "https://medium.com/@p0lyxena/2-500-bug-bounty-write-up-remote-code-execution-rce-via-unclaimed-node-package-6b9108d10643",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Fuleki Ioan"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "2,500",
+    "published_at": "2024-09-18T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:25.555Z",
+    "categories": [
+      "rce",
+      "supply-chain"
+    ],
+    "severity": "critical",
+    "summary_en": "**Dependency Confusion** is a type of software supply chain vulnerability that occurs when a company’s internal package is mistakenly downloaded from a public repository, such as npm, rather than its private registry.",
+    "summary_ar": null,
+    "excerpt": "**Dependency Confusion** is a type of software supply chain vulnerability that occurs when a company’s internal package is mistakenly downloaded from a public repository, such as npm, rather than its private registry. This can happen if the package manager (like npm, pip, or others) defaults to pulling from a public source and a package with the same name exists there. In a dependency confusion attack, an attacker can create a malicious package with the same name as a company’s internal package and publish it to a public registry. If the company’s systems resolve the package from the public re",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "4d6b131a9ffb",
+    "title": "Revival Hijack – PyPI hijack technique exploited in the wild, puts 22K packages at risk",
+    "url": "https://jfrog.com/blog/revival-hijack-pypi-hijack-technique-exploited-22k-packages-at-risk",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Andrey Polkovnichenko",
+      "Brian Moussalli"
+    ],
+    "program": "PyPI",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-04T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:50.863Z",
+    "categories": [
+      "supply-chain"
+    ],
+    "severity": "medium",
+    "summary_en": "Revival Hijack – PyPI hijack technique exploited in the wild, puts 22K packages at risk",
+    "summary_ar": null,
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "2a58b79404f7",
+    "title": "Attacking PowerShell CLIXML Deserialization",
+    "url": "https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Alexander Andersson"
+    ],
+    "program": "Microsoft",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-13T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:27.774Z",
+    "categories": [
+      "rce",
+      "oauth-jwt"
+    ],
+    "severity": "critical",
+    "summary_en": "[](https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization#site-header) # Attacking PowerShell CLIXML Deserialization In this article, we will learn that using PowerShell’s CLIXML deserialization could lead to undesired",
+    "summary_ar": null,
+    "excerpt": "[](https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization#site-header) # Attacking PowerShell CLIXML Deserialization In this article, we will learn that using PowerShell’s CLIXML deserialization could lead to undesired effects, including remote code execution. We will also see that widely used solutions, like PowerShell Remoting and PowerShell Direct (Hyper-V), rely on such deserialization and could make you vulnerable to this kind of attack. * * [![Image 27: alexander andersson](https://www.truesec.com/wp-content/uploads/2024/03/Alexander-Andersson-Truesec-Expert-480x480",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "4a0683176f85",
+    "title": "How I Got $250 For My Second Bug on HackerOne",
+    "url": "https://medium.com/@likithteki76/how-i-got-250-for-my-second-bug-in-hackerone-35c75cbd84bd",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Likith Teki"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": "250",
+    "published_at": "2024-09-01T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:42.731Z",
+    "categories": [
+      "rce",
+      "oauth-jwt"
+    ],
+    "severity": "medium",
+    "summary_en": "Hello everyone, I hope you all are doing Great! Today’s writeup explains how I earned $250 from my second bug report on HackerOne.",
+    "summary_ar": null,
+    "excerpt": "Hello everyone, I hope you all are doing Great! Today’s writeup explains how I earned $250 from my second bug report on HackerOne. If you haven’t read my first article, please check it out by clicking the link below: ## [How I Got $150 on HackerOne for My First Bug ### Hello everyone, I’m Likith Teki A bug bounty Hunter and Ethical Hacker medium.com](https://medium.com/@likithteki76/how-i-got-150-on-hackerone-for-my-first-bug-8af0ed515e79?source=post_page-----35c75cbd84bd-----------------------------------------) ## **_Title : Removing linked identity does not invalidate associated sessions_**",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  }
+]

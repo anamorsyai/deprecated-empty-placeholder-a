@@ -2,9 +2,9 @@ name: Fetch bug bounty writeups
 
 on:
   schedule:
-    # Every 6 hours — a bug hunter opening the site each morning always sees
-    # something new without the pipeline hammering free-tier APIs.
-    - cron: "0 */6 * * *"
+    # Hourly — the per-run item caps in fetchWriteups.mjs are sized for this
+    # cadence (small, frequent batches instead of big infrequent ones).
+    - cron: "0 * * * *"
   workflow_dispatch:
   push:
     paths:
@@ -13,6 +13,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: writeups-fetch
+  cancel-in-progress: false
 
 jobs:
   fetch:
@@ -39,6 +43,7 @@ jobs:
         run: |
           git config user.name "writeups-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/writeups.json data/meta.json
+          git add data/writeups.json data/meta.json data/by-category/
           git diff --cached --quiet || git commit -m "chore(data): refresh writeups $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git pull --rebase origin main
           git push

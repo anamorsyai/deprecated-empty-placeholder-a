@@ -1,0 +1,30 @@
+[
+  {
+    "id": "265e8c2d17c5",
+    "title": "How 100% Manual Hacking (Without Even Kali And Burp) Led To 2 Medium Vulnerabilities On YesWeHack",
+    "url": "https://medium.com/@manan_sanghvi/how-100-manual-hacking-without-even-kali-and-burp-led-to-2-medium-vulnerabilities-on-yeswehack-bbda00fcd84e",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Manan Sanghvi (@An____Anonymous)"
+    ],
+    "program": null,
+    "platform_slug": "yeswehack",
+    "bounty_raw": null,
+    "published_at": "2024-09-05T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:43.954Z",
+    "categories": [
+      "xss",
+      "recon"
+    ],
+    "severity": "medium",
+    "summary_en": "If you’re a beginner, this Write-Up is perfect for you. You’ll learn something new about how to perform good reconnaissance through Google Dorking .",
+    "summary_ar": null,
+    "excerpt": "If you’re a beginner, this Write-Up is perfect for you. You’ll learn something new about how to perform good reconnaissance through Google Dorking . Before that, if you haven’t read my previous write-ups, I highly recommend checking them out. You’ll find valuable insights and experiences that can help you on your journey. For those who haven’t seen it yet, my first write-up is titled: “**In under age (<18), How I Hacked Multi- Billion-Dollar-Corp and got first 4 fig. $2600 Bounty!**” Make sure to give it a read — it’s an exciting story that marked the beginning of my journey in hacking. ## [In",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  }
+]

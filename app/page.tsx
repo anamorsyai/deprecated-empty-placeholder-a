@@ -1,5 +1,6 @@
 import Link from "next/link";
 import WriteupCard from "@/components/WriteupCard";
+import InfiniteFeed from "@/components/InfiniteFeed";
 import { categories, categoryCount, getLatest, getMostImpactful, getTrending, meta, platforms, platformCount } from "@/lib/data";
 
 export default function HomePage() {
@@ -29,18 +30,14 @@ export default function HomePage() {
           <span className="rounded-full border border-border bg-bg/40 px-3 py-1.5 text-muted">
             {categories.length - 1} تصنيف
           </span>
-          <span className="rounded-full border border-border bg-bg/40 px-3 py-1.5 text-muted">تحديث كل 6 ساعات</span>
+          <span className="rounded-full border border-border bg-bg/40 px-3 py-1.5 text-muted">تحديث كل ساعة</span>
         </div>
       </section>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <section>
           <h2 className="mb-4 text-xl font-extrabold sm:text-2xl">أحدث الـ Writeups</h2>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {latest.map((w) => (
-              <WriteupCard key={w.id} writeup={w} />
-            ))}
-          </div>
+          <InfiniteFeed initial={latest} />
         </section>
 
         <aside className="flex flex-col gap-8">

@@ -1,0 +1,141 @@
+[
+  {
+    "id": "4e444461f81c",
+    "title": "Just a moment...",
+    "url": "https://script.hashnode.dev/self-xss-to-ato-via-site-features",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Hossein Shourabi (@hoseinshurabi)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-09-08T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:42.017Z",
+    "categories": [
+      "xss",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "This website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot. ## Verification successful.",
+    "summary_ar": null,
+    "excerpt": "This website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot. ## Verification successful. Waiting for script.hashnode.dev to respond Ray ID: `a3f415fb0dda8b33` Performance and Security by [Cloudflare](https://www.cloudflare.com/?utm_source=challenge&utm_campaign=m)[Privacy](https://www.cloudflare.com/privacypolicy/)",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "265e8c2d17c5",
+    "title": "How 100% Manual Hacking (Without Even Kali And Burp) Led To 2 Medium Vulnerabilities On YesWeHack",
+    "url": "https://medium.com/@manan_sanghvi/how-100-manual-hacking-without-even-kali-and-burp-led-to-2-medium-vulnerabilities-on-yeswehack-bbda00fcd84e",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Manan Sanghvi (@An____Anonymous)"
+    ],
+    "program": null,
+    "platform_slug": "yeswehack",
+    "bounty_raw": null,
+    "published_at": "2024-09-05T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:43.954Z",
+    "categories": [
+      "xss",
+      "recon"
+    ],
+    "severity": "medium",
+    "summary_en": "If you’re a beginner, this Write-Up is perfect for you. You’ll learn something new about how to perform good reconnaissance through Google Dorking .",
+    "summary_ar": null,
+    "excerpt": "If you’re a beginner, this Write-Up is perfect for you. You’ll learn something new about how to perform good reconnaissance through Google Dorking . Before that, if you haven’t read my previous write-ups, I highly recommend checking them out. You’ll find valuable insights and experiences that can help you on your journey. For those who haven’t seen it yet, my first write-up is titled: “**In under age (<18), How I Hacked Multi- Billion-Dollar-Corp and got first 4 fig. $2600 Bounty!**” Make sure to give it a read — it’s an exciting story that marked the beginning of my journey in hacking. ## [In",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "66023ab3eed7",
+    "title": "Basic HTTP Authentication Risk: Uncovering pyspider Vulnerabilities",
+    "url": "https://www.sonarsource.com/blog/basic-http-authentication-risk-uncovering-pyspider-vulnerabilities",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Yaniv Nizry (@YNizry)"
+    ],
+    "program": "pyspider",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-02T00:00:00.000Z",
+    "added_at": "2026-09-22T20:33:58.035Z",
+    "categories": [
+      "xss",
+      "rce",
+      "csrf"
+    ],
+    "severity": "medium",
+    "summary_en": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) [![Image 18: sonar logo ](https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e",
+    "summary_ar": null,
+    "excerpt": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) [![Image 18: sonar logo ](https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg?w=128&h=32&fit=clip&q=80&auto=format)](https://www.sonarsource.com/ \"Sonar homepage\") Products [Products](https://www.sonarsource.com/products/sonarqube/) [![Image 19](https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/01c683cb-54e6-4d40-adbd-f71a6b15cfed/Cloud.svg) #### SonarQube Cloud",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "a4983d116df3",
+    "title": "Bypassing CSP via URL Parser Confusions : XSS on Netlify’s Image CDN",
+    "url": "https://sudhanshur705.medium.com/bypassing-csp-via-url-parser-confusions-xss-on-netlifys-image-cdn-755a27065fd9",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sudhanshu Rajbhar (@sudhanshur705)"
+    ],
+    "program": "Netlify",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-01T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:40.711Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "In this blogpost I am going to talk about my finding which was a XSS on Netlify’s Image CDN used in [https://app.netlify.com](https://app.netlify.com/) and how I managed to bypass this CSP `Content-Security-Policy: script-src ‘none’` (for t",
+    "summary_ar": null,
+    "excerpt": "In this blogpost I am going to talk about my finding which was a XSS on Netlify’s Image CDN used in [https://app.netlify.com](https://app.netlify.com/) and how I managed to bypass this CSP `Content-Security-Policy: script-src ‘none’` (for those of you who aren’t much familiar with this CSP , in simple terms it means no script execution will be there in any case) along with that some other things which can be applied on other sites also which are using Netlify’s Image CDN , for those of you unfamiliar with what it is would recommend reading this article: ## [Netlify Image CDN ### Transform imag",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "0b6360cd5c93",
+    "title": "A Story About How I Found XSS in ASUS",
+    "url": "https://infosecwriteups.com/a-story-about-how-i-found-xss-in-asus-cb233ce3bb9c",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Karthikeyan.V (@karthithehacker)"
+    ],
+    "program": "Asus",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-09-01T00:00:00.000Z",
+    "added_at": "2026-09-22T20:37:41.733Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "A few months ago, during a routine security assessment, I uncovered a significant cross-site scripting (XSS) vulnerability in the ASUS Laravel Ignition debugging tool.",
+    "summary_ar": null,
+    "excerpt": "A few months ago, during a routine security assessment, I uncovered a significant cross-site scripting (XSS) vulnerability in the ASUS Laravel Ignition debugging tool. This vulnerability, identified as R-XSS, posed a high risk due to the potential for unauthorized script execution in users’ browsers. Here’s how I discovered and explored this vulnerability. Press enter or click to view image in full size ![Image 4](https://miro.medium.com/v2/resize:fit:1000/1*Dx3iowTStEWjlOTnYhjrPA.png) ## The Discovery While examining the target, I noticed that the Laravel Ignition debug mode was enabled on `a",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  }
+]
