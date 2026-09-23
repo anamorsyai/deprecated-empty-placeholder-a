@@ -1,5 +1,44 @@
 [
   {
+    "id": "8c0c67cc9576",
+    "title": "Security Context Dies at Boundaries",
+    "url": "https://medium.com/@Uhudsavasindankacanokcu2/security-context-dies-at-boundaries-066af65a09d2",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Berkan SAL"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T20:03:34.000Z",
+    "added_at": "2026-09-23T20:10:08.336Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "summary_en": "After spending enough time reviewing security-sensitive systems, individual vulnerabilities start looking less individual. The technologies change. One bug is in a browser-facing development server. Another is in a WebSocket stream.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "After spending enough time reviewing security-sensitive systems, individual vulnerabilities start looking less individual. The technologies change. One bug is in a browser-facing development server. Another is in a WebSocket stream. Another appears in an identity platform. Another lives inside SSRF protection. Another is buried in a DeFi oracle calculation. Yet the same structural failure keeps appearing: > **_A security property exists on one side of a boundary, but does not survive the transition to the other side._** Identity disappears. Provenance disappears. Network semantics become strin",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "495c7c384e29",
     "title": "I asked my AI agent to inspect a website. The website took over my machine (34-run measurement across 5 agent harnesses)",
     "url": "https://www.reddit.com/r/netsec/comments/1wogg6h/i_asked_my_ai_agent_to_inspect_a_website_the",
