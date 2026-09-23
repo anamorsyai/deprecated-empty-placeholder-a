@@ -278,5 +278,44 @@
     "ai_generated": true,
     "engagement": null,
     "score": 47
+  },
+  {
+    "id": "868281197075",
+    "title": "Medium",
+    "url": "https://medium.com/@r3vsh/cswsh-meets-llm-chatbots-3ab09af5ab6f",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Sachin Sharma"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-05T00:00:00.000Z",
+    "added_at": "2026-09-23T15:55:04.553Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "During a pentest engagement in unfamiliar domains, it’s always reassuring to discover a vulnerability tied to the broader application configuration rather than just the specific pentesting focus.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a pentest engagement in unfamiliar domains, it’s always reassuring to discover a vulnerability tied to the broader application configuration rather than just the specific pentesting focus. This can reveal deeper issues and provide valuable insights into the overall security posture. ## Get Sachin Sharma’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in I recently conducted a pentest on a chatbot designed for support staff to use for internal queries. The backend used Claude Anthropic for querying, which",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
   }
 ]
