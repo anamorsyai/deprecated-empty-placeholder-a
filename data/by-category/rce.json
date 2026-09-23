@@ -1,5 +1,44 @@
 [
   {
+    "id": "6cf86f800123",
+    "title": "I Bypassed OTP Verification by Changing One Response",
+    "url": "https://medium.com/@sahilmaurya2575/i-bypassed-otp-verification-by-changing-one-response-c54ec1db8876",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Sahilmaurya"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T17:29:09.000Z",
+    "added_at": "2026-09-23T17:37:39.187Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Enter Details ↓ Request OTP ↓ Enter OTP ↓ Verify OTP ↓ Complete Registration The important step here is **OTP Verification**. I wanted to see what happened when an incorrect OTP was submitted.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Enter Details ↓ Request OTP ↓ Enter OTP ↓ Verify OTP ↓ Complete Registration The important step here is **OTP Verification**. I wanted to see what happened when an incorrect OTP was submitted. ## 🧪 Testing With Burp Suite I entered an incorrect OTP and intercepted the response using **Burp Suite**. The response contained a status value similar to: { \"data\": { \"request_token\": \"original_token\", \"status\": \"FAILED\" } } At this point, everything looked normal. The OTP was incorrect, so the status was: FAILED ## 👀 The Interesting Part I changed only one value in the response. From: \"status\": \"FAI",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "cc47b0666fb4",
     "title": "I Took Over a Media Giant’s Subdomain with a Free Netlify Account and a Ten-Minute Attention Span",
     "url": "https://khanmoeez.medium.com/i-took-over-a-media-giants-subdomain-with-a-free-netlify-account-and-a-ten-minute-attention-span-a4020ac315c3",
