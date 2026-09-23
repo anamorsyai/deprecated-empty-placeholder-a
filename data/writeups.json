@@ -891,6 +891,47 @@
     "score": 47
   },
   {
+    "id": "8d20686388ab",
+    "title": "Exploiting authorization by nonce in WordPress plugins",
+    "url": "https://nowotarski.info/wordpress-nonce-authorization",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Bartek Nowotarski"
+    ],
+    "program": "Wordfence",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-05T00:00:00.000Z",
+    "added_at": "2026-09-23T15:05:31.833Z",
+    "categories": [
+      "access-control",
+      "sqli",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "**tl;dr:** Many WordPress plugins use nonces and nothing else to authorize requests. This often has a potential for exploitation to gain privilege escalation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**tl;dr:** Many WordPress plugins use nonces and nothing else to authorize requests. This often has a potential for exploitation to gain privilege escalation. In this article, I elaborate on WordPress security features connected to nonces and AJAX/REST requests and describe three critical vulnerabilities I’ve found in popular WordPress plugins. **Table of Contents** * About WordPress * Built-in security features for plugins * `wp_ajax` and REST handlers * Nonce value generation * Vulnerabilities * Arbitrary File Upload / RCE in Advanced File Manager * Arbitrary File Upload / RCE in Filester *",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "fe1147f7ccc0",
     "title": "Government Emails at Risk: Critical Cross-Site Scripting Vulnerability in Roundcube Webmail",
     "url": "https://www.sonarsource.com/blog/government-emails-at-risk-critical-cross-site-scripting-vulnerability-in-roundcube-webmail",
