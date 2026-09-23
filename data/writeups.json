@@ -1,5 +1,39 @@
 [
   {
+    "id": "e87cdc701bb2",
+    "title": "How I Became Better at Bug Bounty Hunting: 7 Tips I Wish I Knew Earlier",
+    "url": "https://medium.com/@sairajthorat077/how-i-became-better-at-bug-bounty-hunting-7-tips-i-wish-i-knew-earlier-00f41bceda9a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Sairaj Thorat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T12:38:30.000Z",
+    "added_at": "2026-09-23T12:56:39.823Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Initially, when I started bug bounty hunting, I thought discovering bugs was all about having the appropriate tools and payloads.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Initially, when I started bug bounty hunting, I thought discovering bugs was all about having the appropriate tools and payloads. With time and by working on more applications and reporting them, I came to the conclusion that tools comprised only a fraction of bug bounty hunting. What actually helped me become better at bug bounty hunting is **my ability to understand applications, to pay attention to details, to analyze API responses, to question oddities, and think about developer mistakes rather than hunt for vulnerabilities.** Here are some examples of what changed my attitude toward bug b",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "e6b7d6b3a63e",
     "title": "File Upload XSS Beyond SVG: Four Vectors Validation Misses",
     "url": "https://kd-200.medium.com/file-upload-xss-beyond-svg-four-vectors-validation-misses-3d1cc9df3311",
@@ -203,6 +237,40 @@
       "fix_ar": null
     },
     "excerpt": "Bug bounty hunter and security researcher focused on web security. Curious by nature, always learning, exploring, and finding new ways to break things. writer Image 3: yOnly ## yOnly Bug bounty hunter and security researcher focused on web security. Curious by nature, always learning, exploring, and finding new ways to break things. writer Cybersecurity Bug Bounty Web Security Jwt Ethical Hacking # How I Found a DOM XSS Through a JWT `alg:none` — and Earned a $400 Bounty Image 4: yOnly yOnly 8 min read · 3 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "6e6d30ed20ec",
+    "title": "I Found an Unauthenticated XSS in a WordPress Hotel Plugin — Then Someone Beat Me to It by a Week",
+    "url": "https://osintteam.blog/i-found-an-unauthenticated-xss-in-a-wordpress-hotel-plugin-then-someone-beat-me-to-it-by-a-week-580906008ac5",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mr Abdullah"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T07:47:00.000Z",
+    "added_at": "2026-09-23T12:56:56.039Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "_A reflected XSS in nd-booking, a display:none trap that fools most PoCs, and an honest look at what “duplicate” really means in bug bounty._ Press enter or click to view image in full size Image 3 > **_Lab-only, responsible disclosure:_**_",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A reflected XSS in nd-booking, a display:none trap that fools most PoCs, and an honest look at what “duplicate” really means in bug bounty._ Press enter or click to view image in full size Image 3 > **_Lab-only, responsible disclosure:_**_I reported this through Patchstack and tested everything on my own local WordPress install with fake data. Never run any of this against a site you don’t own. This writeup is here to teach the_ method _— the finding itself is already known to the vendor._ ## The unglamorous truth about bug hunting Everyone wants the story where you find the bug. Nobody tells",
     "ai_generated": false,
     "engagement": null,
     "score": 47

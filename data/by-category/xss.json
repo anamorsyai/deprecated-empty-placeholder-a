@@ -70,6 +70,40 @@
     "score": 47
   },
   {
+    "id": "6e6d30ed20ec",
+    "title": "I Found an Unauthenticated XSS in a WordPress Hotel Plugin — Then Someone Beat Me to It by a Week",
+    "url": "https://osintteam.blog/i-found-an-unauthenticated-xss-in-a-wordpress-hotel-plugin-then-someone-beat-me-to-it-by-a-week-580906008ac5",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mr Abdullah"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T07:47:00.000Z",
+    "added_at": "2026-09-23T12:56:56.039Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "_A reflected XSS in nd-booking, a display:none trap that fools most PoCs, and an honest look at what “duplicate” really means in bug bounty._ Press enter or click to view image in full size Image 3 > **_Lab-only, responsible disclosure:_**_",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A reflected XSS in nd-booking, a display:none trap that fools most PoCs, and an honest look at what “duplicate” really means in bug bounty._ Press enter or click to view image in full size Image 3 > **_Lab-only, responsible disclosure:_**_I reported this through Patchstack and tested everything on my own local WordPress install with fake data. Never run any of this against a site you don’t own. This writeup is here to teach the_ method _— the finding itself is already known to the vendor._ ## The unglamorous truth about bug hunting Everyone wants the story where you find the bug. Nobody tells",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4462fb4fb454",
     "title": "They Allowed Five Image Formats. Four Were Pictures.",
     "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",

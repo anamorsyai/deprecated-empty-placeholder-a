@@ -1,5 +1,39 @@
 [
   {
+    "id": "e87cdc701bb2",
+    "title": "How I Became Better at Bug Bounty Hunting: 7 Tips I Wish I Knew Earlier",
+    "url": "https://medium.com/@sairajthorat077/how-i-became-better-at-bug-bounty-hunting-7-tips-i-wish-i-knew-earlier-00f41bceda9a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Sairaj Thorat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T12:38:30.000Z",
+    "added_at": "2026-09-23T12:56:39.823Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Initially, when I started bug bounty hunting, I thought discovering bugs was all about having the appropriate tools and payloads.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Initially, when I started bug bounty hunting, I thought discovering bugs was all about having the appropriate tools and payloads. With time and by working on more applications and reporting them, I came to the conclusion that tools comprised only a fraction of bug bounty hunting. What actually helped me become better at bug bounty hunting is **my ability to understand applications, to pay attention to details, to analyze API responses, to question oddities, and think about developer mistakes rather than hunt for vulnerabilities.** Here are some examples of what changed my attitude toward bug b",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "997a0069b2df",
     "title": "52 Request Smuggling Reports. Two Rules Decide the Payout.",
     "url": "https://infosecwriteups.com/52-request-smuggling-reports-two-rules-decide-the-payout-901479562df9",
