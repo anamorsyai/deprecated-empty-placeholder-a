@@ -94,7 +94,13 @@ jobs:
           git add data/writeups.json data/meta.json data/by-category/
           git commit -m "chore(data): requested explanation for ${{ steps.req.outputs.id }}"
           git pull --rebase --autostash origin main || git pull --rebase origin main
-          git push || (git pull --rebase origin main && git push)
+          for i in 1 2 3; do
+            git push && break
+            echo "push attempt $i failed, waiting 45s for the racing run to settle"
+            sleep 45
+            git pull --rebase --autostash origin main || true
+          done
+          git status -sb | head -3
           curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \

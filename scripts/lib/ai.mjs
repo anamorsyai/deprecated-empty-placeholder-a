@@ -29,6 +29,14 @@ const PROVIDER = resolveProvider();
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 150000);
 const AI_MAX_TOKENS = Number(process.env.AI_MAX_TOKENS || 6500);
 
+// Free tiers say "retry in Ns" when throttling — honor it (capped) instead of
+// a blind fixed wait, so a momentary spike doesn't cost the teaching read.
+function retryAfterMs(errText, fallbackMs) {
+  const m = String(errText || "").match(/retry in ([\d.]+)s/i);
+  if (m) return Math.min(Math.round(parseFloat(m[1]) * 1000), 120000);
+  return fallbackMs;
+}
+
 // Free-model gateways (opencode zen and its free proxies) fingerprint the
 // User-Agent: official `opencode/...` clients get the normal free quota,
 // anything else lands in a degraded bucket (429s, stalls, 524s). So we
@@ -199,8 +207,9 @@ async function callGemini(userPrompt) {
       const errText = await res.text();
       const retryable = res.status === 429 || (res.status >= 500 && res.status < 600);
       if (retryable && attempt === 0) {
-        console.warn(`  Gemini HTTP ${res.status}, waiting 20s and retrying once`);
-        await new Promise((r) => setTimeout(r, 20000));
+        const wait = retryAfterMs(errText, 20000);
+        console.warn(`  Gemini HTTP ${res.status}, waiting ${Math.round(wait / 1000)}s and retrying once`);
+        await new Promise((r) => setTimeout(r, wait));
         continue;
       }
       throw new Error(`Gemini HTTP ${res.status}: ${errText}`);
@@ -286,11 +295,12 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
       continue;
     }
     if (res.status === 429 && attempt === 0) {
-      // Free-tier rate limit: back off briefly, then try once more. On a
-      // 5-minute fetch cadence the next run would retry anyway, but a short
-      // pause often clears a momentary spike within the same run.
-      console.warn(`  ${base} HTTP 429 (rate limited), waiting 15s and retrying once`);
-      await new Promise((r) => setTimeout(r, 15000));
+      // Free-tier rate limit: back off (honoring any suggested delay), then
+      // try once more. On a 5-minute fetch cadence the next run would retry
+      // anyway, but a short pause often clears a momentary spike in-run.
+      const wait = retryAfterMs(errText, 15000);
+      console.warn(`  ${base} HTTP 429 (rate limited), waiting ${Math.round(wait / 1000)}s and retrying once`);
+      await new Promise((r) => setTimeout(r, wait));
       continue;
     }
     if (res.status >= 500 && res.status < 600 && attempt === 0) {
