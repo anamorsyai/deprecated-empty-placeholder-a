@@ -8,7 +8,7 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const cat = getCategory(params.slug);
-  return { title: cat ? cat.label_ar : "تصنيف" };
+  return { title: cat ? cat.label_en : "Category" };
 }
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
@@ -18,12 +18,12 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
   return (
     <div>
-      <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">{cat.label_ar}</h1>
+      <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">{cat.label_en}</h1>
       <p className="mb-5 font-mono text-xs text-muted">
-        {cat.label_en} · {writeups.length} writeup
+        {cat.label_en} · {writeups.length} writeups
       </p>
       {writeups.length === 0 ? (
-        <p className="text-muted">لسه معندناش writeups في التصنيف ده.</p>
+        <p className="text-muted">No writeups in this category yet.</p>
       ) : (
         <InfiniteFeed initial={writeups.slice(0, 12)} category={params.slug} />
       )}

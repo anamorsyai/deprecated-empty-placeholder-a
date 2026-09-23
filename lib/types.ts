@@ -1,12 +1,19 @@
 export type Severity = "critical" | "high" | "medium" | "low" | null;
 
 export interface Lesson {
-  cause_ar: string | null;
-  walkthrough_ar: string | null;
+  /** English lesson (current prompt). Null when not yet taught. */
+  cause: string | null;
+  walkthrough: string | null;
   /** Illustrative parallel example composed by the AI (fictional target) — not from the article. */
-  example_ar: string | null;
-  takeaway_ar: string | null;
-  fix_ar: string | null;
+  example: string | null;
+  takeaway: string | null;
+  fix: string | null;
+  /** Legacy pre-English Arabic lesson — kept so the translate toggle can show it. */
+  cause_ar?: string | null;
+  walkthrough_ar?: string | null;
+  example_ar?: string | null;
+  takeaway_ar?: string | null;
+  fix_ar?: string | null;
 }
 
 export interface Writeup {

@@ -8,7 +8,7 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const p = getPlatform(params.slug);
-  return { title: p ? p.label : "منصة" };
+  return { title: p ? p.label : "Platform" };
 }
 
 export default function PlatformPage({ params }: { params: { slug: string } }) {
@@ -19,9 +19,9 @@ export default function PlatformPage({ params }: { params: { slug: string } }) {
   return (
     <div>
       <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">{platform.label}</h1>
-      <p className="mb-5 text-xs text-muted">{writeups.length} writeup</p>
+      <p className="mb-5 text-xs text-muted">{writeups.length} writeups</p>
       {writeups.length === 0 ? (
-        <p className="text-muted">لسه معندناش writeups من المنصة دي.</p>
+        <p className="text-muted">No writeups from this platform yet.</p>
       ) : (
         <InfiniteFeed initial={writeups.slice(0, 12)} platform={params.slug} />
       )}

@@ -42,19 +42,19 @@ export default function SearchPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">بحث</h1>
-      <p className="mb-5 text-sm text-muted">بحث فوري في العنوان، الملخص، والمصدر — من غير سيرفر.</p>
+      <h1 className="mb-1 text-2xl font-extrabold sm:text-3xl">Search</h1>
+      <p className="mb-5 text-sm text-muted">Instant search across titles, summaries, and sources — no server needed.</p>
 
       <input
         autoFocus
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="دوّر بالعنوان، النوع، أو المصدر... (مثال: IDOR, HackerOne, SSRF)"
+        placeholder="Search by title, type, or source... (e.g. IDOR, HackerOne, SSRF)"
         inputMode="search"
         className="mb-6 w-full rounded-xl border border-border bg-surface px-4 py-3.5 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 sm:text-sm"
       />
 
-      {!index && <p className="text-muted">جاري تحميل الفهرس...</p>}
+      {!index && <p className="text-muted">Loading index…</p>}
 
       <ul className="flex flex-col gap-2">
         {results.map((r) => (
@@ -63,7 +63,7 @@ export default function SearchPage() {
               href={`/writeup/${r.id}`}
               className="card-hover flex min-h-[48px] items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 text-sm hover:text-primary"
             >
-              <span className="min-w-0 flex-1 truncate font-bold" dir="ltr">
+              <span className="min-w-0 flex-1 truncate font-bold" dir="auto">
                 {r.title}
               </span>
               <span className="hidden shrink-0 text-xs text-muted min-[420px]:block">{r.source}</span>
@@ -72,7 +72,7 @@ export default function SearchPage() {
         ))}
       </ul>
 
-      {index && results.length === 0 && <p className="text-muted">مفيش نتايج مطابقة.</p>}
+      {index && results.length === 0 && <p className="text-muted">No matching results.</p>}
     </div>
   );
 }

@@ -68,11 +68,11 @@ export default function InfiniteFeed({ initial, category, platform }: Props) {
 
       {hasMore ? (
         <div ref={sentinelRef} className="flex justify-center py-8 text-sm text-muted">
-          <span className="animate-pulse">جاري تحميل المزيد...</span>
+          <span className="animate-pulse">Loading more…</span>
         </div>
       ) : (
         all !== null && (
-          <p className="py-8 text-center text-sm text-muted">وصلت لآخر الأرشيف — {items.length} writeup.</p>
+          <p className="py-8 text-center text-sm text-muted">You reached the end of the archive — {items.length} writeups.</p>
         )
       )}
     </div>

@@ -8,11 +8,11 @@ const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo" });
 
 export const metadata: Metadata = {
   title: {
-    default: "Bug Bounty Radar — رادار كتابات الـ Bug Bounty",
+    default: "Bug Bounty Radar — Daily Bug Bounty Writeups, Explained",
     template: "%s — Bug Bounty Radar",
   },
   description:
-    "تجميعة يومية لأحدث وأهم writeups الخاصة بـ bug bounty من مصادر متعددة، مصنّفة ومرتبة بالذكاء الاصطناعي.",
+    "A daily collection of the latest and most important bug bounty writeups from multiple sources — classified, ranked, and taught step by step.",
 };
 
 export const viewport: Viewport = {
@@ -31,7 +31,7 @@ const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("bbr-theme
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={cairo.variable} suppressHydrationWarning>
+    <html lang="en" dir="ltr" className={cairo.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>

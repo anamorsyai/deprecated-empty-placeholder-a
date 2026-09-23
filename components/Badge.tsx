@@ -15,18 +15,18 @@ export const SEVERITY_BORDER: Record<string, string> = {
   low: "border-s-sky-400",
 };
 
-const SEVERITY_LABEL_AR: Record<string, string> = {
-  critical: "حرجة",
-  high: "عالية",
-  medium: "متوسطة",
-  low: "منخفضة",
+const SEVERITY_LABEL_EN: Record<string, string> = {
+  critical: "Critical",
+  high: "High",
+  medium: "Medium",
+  low: "Low",
 };
 
 export function SeverityBadge({ severity }: { severity: string | null }) {
   if (!severity) return null;
   return (
     <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap ${SEVERITY_STYLES[severity]}`}>
-      {SEVERITY_LABEL_AR[severity] || severity}
+      {SEVERITY_LABEL_EN[severity] || severity}
     </span>
   );
 }

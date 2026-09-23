@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 
 const THEMES = [
-  { id: "dark", icon: "🌙", label: "داكن" },
-  { id: "light", icon: "☀️", label: "فاتح" },
-  { id: "contrast", icon: "◑", label: "تباين عالٍ" },
+  { id: "dark", icon: "🌙", label: "Dark" },
+  { id: "light", icon: "☀️", label: "Light" },
+  { id: "contrast", icon: "◑", label: "High contrast" },
 ] as const;
 
 type ThemeId = (typeof THEMES)[number]["id"];
@@ -44,8 +44,8 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={cycle}
-      title={`الثيم الحالي: ${current.label} — اضغط للتبديل`}
-      aria-label={`تبديل الثيم (الحالي: ${current.label})`}
+      title={`Current theme: ${current.label} — press to switch`}
+      aria-label={`Switch theme (current: ${current.label})`}
       className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-lg transition hover:border-primary/60 hover:text-primary"
     >
       <span aria-hidden>{current.icon}</span>

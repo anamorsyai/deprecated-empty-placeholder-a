@@ -2,11 +2,11 @@ import Link from "next/link";
 import type { WriteupCardData } from "@/lib/types";
 import { getCategory, getPlatform } from "@/lib/data";
 import { SEVERITY_BORDER, SeverityBadge, Tag } from "@/components/Badge";
-import { timeAgoAr } from "@/lib/format";
+import { timeAgoEn } from "@/lib/format";
 
 export default function WriteupCard({ writeup, compact = false }: { writeup: WriteupCardData; compact?: boolean }) {
   const platform = getPlatform(writeup.platform_slug);
-  const summary = writeup.summary_ar || writeup.summary_en || writeup.excerpt;
+  const summary = writeup.summary_en || writeup.summary_ar || writeup.excerpt;
   const borderColor = writeup.severity ? SEVERITY_BORDER[writeup.severity] : "border-s-border";
 
   return (
@@ -14,7 +14,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
         <span className="truncate">{writeup.source.name}</span>
         <span aria-hidden>·</span>
-        <span className="shrink-0">{timeAgoAr(writeup.published_at)}</span>
+        <span className="shrink-0">{timeAgoEn(writeup.published_at)}</span>
         {writeup.bounty_raw && (
           <>
             <span aria-hidden>·</span>
@@ -27,15 +27,13 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
       <Link
         href={`/writeup/${writeup.id}`}
         className="break-words text-[15px] font-bold leading-snug text-ink hover:text-primary sm:text-base"
-        dir="ltr"
+        dir="auto"
       >
-        <span className="block text-right" dir="rtl">
-          {writeup.title}
-        </span>
+        {writeup.title}
       </Link>
 
       {!compact && summary && (
-        <p className="line-clamp-2 break-words text-sm leading-relaxed text-muted" dir={writeup.summary_ar ? "rtl" : "ltr"}>
+        <p className="line-clamp-2 break-words text-sm leading-relaxed text-muted" dir="auto">
           {summary}
         </p>
       )}
@@ -47,7 +45,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
           if (!cat) return null;
           return (
             <Tag key={slug} href={`/category/${slug}`}>
-              {cat.label_ar}
+              {cat.label_en}
             </Tag>
           );
         })}
@@ -58,7 +56,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
           href={`/writeup/${writeup.id}`}
           className="inline-flex min-h-[44px] items-center rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary/20"
         >
-          اقرأ الشرح الكامل
+          Read full breakdown
         </Link>
         <a
           href={writeup.url}
@@ -66,7 +64,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
           rel="noopener noreferrer"
           className="inline-flex min-h-[44px] items-center text-xs font-semibold text-muted transition hover:text-primary"
         >
-          المصدر الأصلي ↗
+          Original source ↗
         </a>
       </div>
     </article>

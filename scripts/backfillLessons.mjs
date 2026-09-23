@@ -34,7 +34,7 @@ async function main() {
   }
   const writeups = JSON.parse(await readFile(WRITEUPS_PATH, "utf8"));
   const queue = writeups
-    .filter((w) => !w.lesson?.walkthrough_ar)
+    .filter((w) => !(w.lesson?.walkthrough || w.lesson?.walkthrough_ar))
     .sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""));
   console.log(`${queue.length} archived item(s) missing a full lesson`);
 
@@ -85,7 +85,7 @@ async function backfillOne(w) {
   }
   const ai = await classifyAndSummarize(enriched);
   if (!ai.aiGenerated) return false; // AI call failed -> heuristic, don't overwrite
-  if (!ai.lesson?.walkthrough_ar) {
+  if (!ai.lesson?.walkthrough) {
     console.warn("    thin content — leaving heuristic version untouched");
     return false;
   }
@@ -93,8 +93,15 @@ async function backfillOne(w) {
   w.categories = ai.categories;
   w.severity = ai.severity;
   w.summary_en = ai.summary_en || w.summary_en;
-  w.summary_ar = ai.summary_ar || w.summary_ar;
-  w.lesson = ai.lesson;
+  // Preserve any legacy Arabic lesson for the translate toggle; the new
+  // English lesson lives alongside it under the suffix-less keys. (The AI
+  // result carries nulls for the legacy keys — never let those wipe Arabic.)
+  const keepAr = {};
+  for (const k of ["cause_ar", "walkthrough_ar", "example_ar", "takeaway_ar", "fix_ar"]) {
+    if (w.lesson?.[k]) keepAr[k] = w.lesson[k];
+  }
+  w.lesson = { ...ai.lesson, ...keepAr };
+  w.summary_ar = w.summary_ar || null;
   w.excerpt = enriched.excerpt || w.excerpt;
   w.platform_slug = detectPlatform({ ...enriched, sourceName: w.source?.name });
   w.ai_generated = true;

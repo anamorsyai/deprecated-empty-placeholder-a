@@ -76,25 +76,28 @@ function parseCustomHeaders() {
 const CATEGORY_SLUGS = taxonomy.categories.map((c) => c.slug);
 const PLATFORM_SLUGS = taxonomy.platforms.map((p) => p.slug);
 
-const PROMPT_INSTRUCTIONS = `You are two things at once for a bug bounty writeup aggregator read daily by hackers:
-(1) a strict gatekeeper — the site must stay bug-bounty-only, no CTF/training-lab writeups, no vendor CVE advisories unrelated to a bounty program, no interviews/news/business posts; and
-(2) a hands-on mentor who has read the full writeup and now teaches it to a hunter in Arabic — not a summary, a real masterclass that lets someone learn the technique deeply without opening the original link.
+const PROMPT_INSTRUCTIONS = `You are two things at once for a bug bounty writeup aggregator:
+(1) a strict gatekeeper — the site must stay bug-bounty-only: no CTF/training-lab writeups, no vendor CVE advisories unrelated to a bounty program, no interviews/news/business posts; and
+(2) a professional teacher writing in ENGLISH for a reader who knows NOTHING — assume they never wrote a line of code and never studied security. Your job: take them from zero to fully understanding this vulnerability, while giving working professionals the exact payloads and code to review.
 
 Return ONLY minified JSON, no markdown fences, matching exactly:
-{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"summary_en":string,"summary_ar":string,"lesson_cause_ar":string,"lesson_walkthrough_ar":string,"lesson_example_ar":string,"lesson_takeaway_ar":string,"lesson_fix_ar":string}
+{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"summary_en":string,"lesson_cause":string,"lesson_walkthrough":string,"lesson_example":string,"lesson_takeaway":string,"lesson_fix":string}
 
 Rules:
 - is_bug_bounty: true ONLY if this describes a real vulnerability found and reported against a specific target/program (bug bounty platform report, responsible disclosure, or an independent researcher's disclosed finding with a named target). false for CTF/TryHackMe/HackTheBox writeups, generic tutorials, interviews, news, opinion/career pieces, or vendor advisories with no bounty/disclosure context. When false, every field below is an empty string except categories/severity (best-effort).
 - categories must be chosen from this exact list: ${CATEGORY_SLUGS.join(", ")}
 - severity: your best judgement of real-world impact ("critical" for RCE/full account takeover/mass data breach, "high" for auth bypass/significant data exposure, "medium"/"low" otherwise, null if you truly cannot tell).
 - summary_en: 1-2 punchy sentences in English describing the vulnerability and impact (no fluff, no "this writeup discusses"). Used on list/card views.
-- summary_ar: the same 1-2 sentences in natural Modern Standard Arabic, technical terms (XSS, IDOR, RCE...) kept in Latin script. Used on list/card views.
-- lesson_cause_ar (4-6 sentences): الـ root cause — إزاي الثغرة دي حصلت أصلاً في تصميم أو تنفيذ النظام؟ ما الافتراض الخاطئ أو الفجوة في الـ logic اللي فتحت الباب؟ اربط كل نقطة بتفصيلة من المقال (endpoint، parameter، سطر كود) كلما أمكن.
-- lesson_walkthrough_ar (THE MAIN EVENT — a Lego-style step-by-step build, 10-20 short numbered steps "الخطوة 1، الخطوة 2..."). Like assembling Lego bricks until the final exploit shape appears: EVERY step has three parts: (أ) عمل الباحث إيه بالظبط، (ب) الكود/الـ payload/الطلب الحرفي من المقال (URL كامل، HTTP request، JSON، snippet — يتحط في سطر لوحده)، (ج) ليه الخطوة دي شغالة — الميكانيزم في جملة أو جملتين (ليه السيرفر استجاب كده؟ إيه الافتراض اللي اتكسر؟). ابدأ من السياق (كان بيفحص إيه وليه)، ثم أول ملاحظة غريبة، ثم كل تجربة بالترتيب الزمني، وانتهي بالـ payload النهائي وإثبات الأثر (وصل لإيه بالظبط). لو المقال فيه مثال تقني محدد لازم يتذكر حرفيًا مش يتلخص. قاعدتان صارمتان: (1) لو المقال يذكر عدة مسارات هجوم (vectors) غطّها كلها — لو العنوان يعد بأربعة vectors اشرح الأربعة، ممنوع الاكتفاء بالأول؛ (2) عرّف كل مصطلح تقني عند أول استخدام له في 10 كلمات عربية أو أقل (للقارئ المبتدئ).
-- lesson_example_ar (a parallel training example, NOT from the article): مثال مشابه مبسّط من تأليفك لنفس فئة الثغرة على هدف وهمي (استخدم target.example دائمًا)، فيه: سطرين كود ضعيف (vulnerable snippet) + طلب الهجوم + سطر واحد يشرح ليه نجح. ده للتدريب فقط — اكتب المحتوى التعليمي بس من غير أي disclaimer (الموقع بيعرضه في قسم منفصل موسوم "مثال مشابه").
-- lesson_takeaway_ar (3-5 sentences): الدرس العملي لصياد ثغرات — إمتى يدور على النمط ده تاني، وإيه العلامات (signals) اللي تدله إن نفس الفئة موجودة في هدف تاني، وأدوات/كلمات بحث عملية.
-- lesson_fix_ar (4-6 sentences): الإصلاح الصحيح بالتفصيل التقني — ومعاه snippet الكود الصح (fixed code) كلما كان ذلك ممكنًا، مش مجرد "أصلحوها".
-- HONESTY IS MANDATORY: article-derived fields (cause/walkthrough/takeaway/fix) must come ONLY from the extracted content below — never invent endpoints, payloads, or results. If the content is too thin for a field, write "" for it rather than padding. The ONLY field you may compose freely is lesson_example_ar (it's explicitly illustrative, on a fictional target, and displayed as such).`;
+- All lesson_* fields are in ENGLISH, written for a ZERO-KNOWLEDGE reader who is also useful to a pro. Hard requirements:
+  - Define EVERY technical term the first time it appears (one short plain-English line each): HTTP request, parameter, payload, XSS, SQL query, authentication, cookie, header, endpoint... Assume nothing.
+  - Break EVERY code/payload/request into pieces and explain what each piece does, character group by character group when it matters (e.g. what the single quote does in SQL, what <script> tells the browser).
+  - State your teaching assumptions explicitly ("We assume the app does X...").
+- lesson_cause (4-6 sentences): the root cause — what design/implementation flaw opened the door? Tie each point to a detail from the article (endpoint, parameter, code line).
+- lesson_walkthrough (THE MAIN EVENT — Lego-style, 10-20 short numbered steps "Step 1, Step 2..."). Like assembling Lego bricks until the final exploit appears. EVERY step has three parts: (a) exactly what the researcher did, (b) the VERBATIM code/payload/request from the article on its own line (full URL, HTTP request, JSON, snippet), (c) an explicit "Why:" line with the mechanism PLUS a beginner gloss in parentheses when jargon appears. Cover EVERY distinct attack path in the article (if the title promises four vectors, teach all four). Chronological order: context -> first odd observation -> each experiment -> final payload -> proof of impact.
+- lesson_example (a parallel training example you compose, NOT from the article): the same bug class on a fictional target (always use target.example): a short vulnerable snippet + the attack request + why it works, each explained for a beginner. Displayed in its own labeled section, so write only the teaching content.
+- lesson_takeaway (3-5 sentences): the practical hunter lesson — when to hunt this pattern again, what signals to look for, concrete tools/search words.
+- lesson_fix (4-6 sentences): the correct fix in technical detail, WITH a fixed code snippet whenever applicable.
+- HONESTY IS MANDATORY: article-derived fields (cause/walkthrough/takeaway/fix) must come ONLY from the extracted content below — never invent endpoints, payloads, or results. If the content is too thin for a field, write "" for it. The ONLY freely-composed field is lesson_example (explicitly illustrative, fictional target).`;
 
 export async function classifyAndSummarize(item) {
   if (PROVIDER === "none") return heuristicClassify(item);
@@ -133,13 +136,20 @@ export async function classifyAndSummarize(item) {
       categories: sanitizeCategories(parsed.categories),
       severity: sanitizeSeverity(parsed.severity),
       summary_en: (parsed.summary_en || "").trim() || heuristicSummary(item),
-      summary_ar: (parsed.summary_ar || "").trim() || null,
+      // Arabic comes from the on-site translation service, never the AI.
+      summary_ar: null,
       lesson: {
-        cause_ar: (parsed.lesson_cause_ar || "").trim() || null,
-        walkthrough_ar: (parsed.lesson_walkthrough_ar || "").trim() || null,
-        example_ar: (parsed.lesson_example_ar || "").trim() || null,
-        takeaway_ar: (parsed.lesson_takeaway_ar || "").trim() || null,
-        fix_ar: (parsed.lesson_fix_ar || "").trim() || null,
+        cause: (parsed.lesson_cause || "").trim() || null,
+        walkthrough: (parsed.lesson_walkthrough || "").trim() || null,
+        example: (parsed.lesson_example || "").trim() || null,
+        takeaway: (parsed.lesson_takeaway || "").trim() || null,
+        fix: (parsed.lesson_fix || "").trim() || null,
+        // Legacy Arabic fields (pre-English archive) — always empty for new items.
+        cause_ar: null,
+        walkthrough_ar: null,
+        example_ar: null,
+        takeaway_ar: null,
+        fix_ar: null,
       },
       aiGenerated: true,
     };
@@ -345,9 +355,12 @@ export function heuristicClassify(item) {
     summary_en: heuristicSummary(item),
     summary_ar: null,
     // No AI key configured -> can't honestly generate a teaching walkthrough
-    // without inventing detail. The writeup page shows a "add a free key" note
+    // without inventing detail. The writeup page explains translation options
     // instead of fabricated content.
-    lesson: { cause_ar: null, walkthrough_ar: null, example_ar: null, takeaway_ar: null, fix_ar: null },
+    lesson: {
+      cause: null, walkthrough: null, example: null, takeaway: null, fix: null,
+      cause_ar: null, walkthrough_ar: null, example_ar: null, takeaway_ar: null, fix_ar: null,
+    },
     aiGenerated: false,
   };
 }
