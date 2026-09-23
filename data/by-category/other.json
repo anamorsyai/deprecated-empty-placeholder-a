@@ -942,5 +942,45 @@
     "ai_generated": true,
     "engagement": null,
     "score": 47
+  },
+  {
+    "id": "e195c9a7abd8",
+    "title": "Security Blog",
+    "url": "https://www.praetorian.com/blog/exploiting-lambda-functions-for-fun-and-profit",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Max Rattray",
+      "Siddhant Kalgutkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-06T00:00:00.000Z",
+    "added_at": "2026-09-23T14:37:38.574Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "**Meet Constantine – Find Mythos-level vulnerabilities in your code. It proves them, patches them, PRs them back.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Meet Constantine – Find Mythos-level vulnerabilities in your code. It proves them, patches them, PRs them back. Autonomously.** Download Datasheet Image 1: Praetorian * PlatformClose Platform Open Platform #### Praetorian Guard Platform * Adversarial Exposure Validation * Attack Surface Management * Continuous Penetration Testing * Continuous Threat Exposure Management * Cyber Threat Intelligence * Unified Vulnerability Management * Adversarial Exposure Validation * Attack Surface Management * Continuous Penetration Testing * Continuous Threat Exposure Management * Cyber Threat Intelligence",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
   }
 ]
