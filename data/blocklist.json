@@ -126,6 +126,600 @@
       "title": "https://dsum-sec.casalemedia.com/rum",
       "reason": "blocked/tracking page title",
       "removed_at": "2026-09-22T22:42:37Z"
+    },
+    {
+      "url": "https://medium.com/@mansigolecha84_17480/i-found-a-tax-pdf-while-reconning-a-private-company-026b5556a05b",
+      "title": "I Found a Tax PDF While Reconning a Private Company",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@sairajthorat077/how-i-became-better-at-bug-bounty-hunting-7-tips-i-wish-i-knew-earlier-00f41bceda9a",
+      "title": "How I Became Better at Bug Bounty Hunting: 7 Tips I Wish I Knew Earlier",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://iamrudhh.medium.com/day-03-bug-bounty-setting-up-your-hacking-environment-3539f42a405d",
+      "title": "Day 03 — Bug Bounty: Setting Up Your Hacking Environment",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://babycoder143.medium.com/from-a-strange-base64-parameter-to-a-critical-php-deserialization-vulnerability-dc9c93468f50",
+      "title": "From a Strange Base64 Parameter to a Critical PHP Deserialization Vulnerability",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://meetcyber.net/bug-bounty-hunting-low-hanging-bugs-beginners-can-easily-find-235fcd49997c",
+      "title": "Bug Bounty Hunting: Low-Hanging Bugs Beginners Can Easily Find",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@riyalimba/a-hacker-broke-into-openai-using-claude-he-got-paid-6-500-heres-why-that-number-matters-e66e51807cdf",
+      "title": "A Hacker Broke Into OpenAI Using Claude. He Got Paid $6,500. Here’s Why That Number Matters.",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@yOnly_/how-i-found-a-dom-xss-through-a-jwt-alg-none-and-earned-a-400-bounty-3595093eacec",
+      "title": "How I Found a DOM XSS Through a JWT alg:none — and Earned a $400 Bounty",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://osintteam.blog/i-found-an-unauthenticated-xss-in-a-wordpress-hotel-plugin-then-someone-beat-me-to-it-by-a-week-580906008ac5",
+      "title": "I Found an Unauthenticated XSS in a WordPress Hotel Plugin — Then Someone Beat Me to It by a Week",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://sukhveersingh97997.medium.com/top-5-bugs-that-still-pay-in-2026-20fa296a212d",
+      "title": "Top 5 Bugs That Still Pay in 2026",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@verylazytech/20-ai-red-teaming-techniques-every-security-professional-should-learn-step-by-step-guide-10ce49cd57ec",
+      "title": "20 AI Red Teaming Techniques Every Security Professional Should Learn (Step-by-Step Guide)",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@jokodfir/apps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3",
+      "title": "Apps SDK sandbox escape: *** App reaches native window.Android/window.AndroidBridge JS interfaces — mobile application",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.reddit.com/r/netsec/comments/1wnvaik/attcking_tacacs_to_pwn_your_network_via_a_preauth",
+      "title": "ATT&CKing TACACS+ to Pwn Your Network via a Pre-Auth RCE - elttam",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@cyber.mehedi.13/bug-bounty-%E0%A6%B6%E0%A7%81%E0%A6%B0%E0%A7%81-%E0%A6%95%E0%A6%B0%E0%A6%BE%E0%A6%B0-%E0%A6%86%E0%A6%97%E0%A7%87-%E0%A6%AF%E0%A6%BE-%E0%A6%AC%E0%A7%81%E0%A6%9D%E0%A6%A4%E0%A7%87-%E0%A6%B9%E0%A6%AC%E0%A7%87-c53ab87a911b",
+      "title": "Bug Bounty শুরু করার আগে যা বুঝতে হবে",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@t4nv1/6-800-for-sending-fields-nobody-asked-me-to-send-a-mass-assignment-privilege-escalation-f04982df5e5e",
+      "title": "$6,800 for Sending Fields Nobody Asked Me To Send: A Mass Assignment Privilege Escalation",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://cyphernova1337.medium.com/the-incomplete-fix-how-a-critical-auth-vulnerabilitys-patch-left-a-second-door-open-7ba6e2a08ad0",
+      "title": "The Incomplete Fix: How a Critical Auth Vulnerability’s Patch Left a Second Door Open",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@riyalimba/attackers-stopped-phishing-theyre-hitting-the-app-directly-now-and-sql-injection-is-back-5e2aa7019d55",
+      "title": "Attackers Stopped Phishing. They’re Hitting the App Directly Now — And SQL Injection Is Back.",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",
+      "title": "They Allowed Five Image Formats. Four Were Pictures.",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@RaminAghabeigi/from-vulnerability-to-report-how-security-researchers-communicate-impact-cf4fe56c67c1",
+      "title": "🛡️ Finding a vulnerability is only half the job.",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@ArshiaHex/one-hidden-json-field-turned-my-user-ticket-into-an-admin-ticket-5b019cb6489f",
+      "title": "One Hidden JSON Field Turned My User Ticket into an Admin Ticket 🚨",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/how-a-single-broken-button-got-me-150-from-a-bug-bounty-program-81f203d7f733",
+      "title": "How a single broken button got me £150 from a bug bounty program",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@kiwi.bounty22/bac-unauthorized-email-sending-a38a07bd74f0",
+      "title": "BAC: Unauthorized Email Sending.",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/how-a-public-javascript-file-led-me-to-a-phone-verification-bypass-on-a-social-media-website-a7ecdd6df9b8",
+      "title": "How a public javascript file led me to a phone verification bypass on a social media website",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://systemweakness.com/the-report-nobody-read-and-what-i-learned-from-it-88751313b2b7",
+      "title": "The Report Nobody Read (And What I Learned From It)",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@priyanshbhadoria5/the-anonymous-5-gb-file-host-that-almost-wasnt-how-a-silent-websocket-led-me-to-unauthenticated-c34120be1492",
+      "title": "How a Silent Websocket Led Me to Unauthenticated Uploads on a University’s Exam Platform",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@anshbohra10/how-i-found-an-undocumented-graphql-endpoint-leaking-home-addresses-of-french-company-owners-eur-8536b9dd0ec1",
+      "title": "How I Found an Undocumented GraphQL Endpoint Leaking Home Addresses of French Company Owners (EUR…",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/how-i-tricked-openclaw-into-attacking-its-own-network-a-nat64-ssrf-bypass-9b93a7f11cd9",
+      "title": "How I Tricked OpenClaw Into Attacking Its Own Network: A NAT64 SSRF Bypass",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/from-bug-to-schema-exploring-error-based-sql-injection-on-an-authenticating-portal-be905548ada2",
+      "title": "From Bug to Schema: Exploring Error-Based SQL Injection on an Authenticating Portal",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/improper-otp-implementation-to-full-account-takeover-df21e126f10f",
+      "title": "Improper OTP Implementation to Full Account Takeover",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/bola-enumerating-an-entire-employee-directory-through-a-predictable-id-2fa11370e919",
+      "title": "BOLA: Enumerating an Entire Employee Directory Through a Predictable ID",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.intigriti.com/researchers/blog/hacking-tools/hacking-ai-customer-service-agents",
+      "title": "Hacking AI customer service agents",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.intigriti.com/researchers/blog/hacking-tools/exploiting-web-cache-poisoning-vulnerabilities",
+      "title": "Exploiting web cache poisoning vulnerabilities",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://blog.includesecurity.com/2024/09/vulnerabilities-in-open-source-c2-frameworks",
+      "title": "Vulnerabilities in Open Source C2 Frameworks",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@p0lyxena/2-500-bug-bounty-write-up-remote-code-execution-rce-via-unclaimed-node-package-6b9108d10643",
+      "title": "[2,500$ Bug Bounty Write-Up] Remote Code Execution (RCE) via unclaimed Node package",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.varonis.com/blog/manipulating-salesforce-public-links",
+      "title": "Data Theft in Salesforce: Manipulating Public Links",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.truesec.com/hub/blog/attacking-powershell-clixml-deserialization",
+      "title": "Attacking PowerShell CLIXML Deserialization",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@hashimamin/logic-flaw-i-can-block-you-from-accessing-your-own-account-63fc2a88bb72",
+      "title": "Logic Flaw: I Can Block You from Accessing Your Own Account",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://binarysecurity.no/posts/2024/09/apim-privilege-escalation",
+      "title": "Escalating from Reader to Contributor in Azure API Management",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://mikko-kenttala.medium.com/zero-click-calendar-invite-critical-zero-click-vulnerability-chain-in-macos-a7a434fc887b",
+      "title": "Zero-Click Calendar invite — Critical zero-click vulnerability chain in macOS",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@deepanshudev369/interesting-story-of-an-account-takeover-vulnerability-140a45a058a3",
+      "title": "Interesting Story of an Account Takeover Vulnerability",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://labs.watchtowr.com/we-spent-20-to-achieve-rce-and-accidentally-became-the-admins-of-mobi",
+      "title": "We Spent $20 To Achieve RCE And Accidentally Became The Admins Of .MOBI",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.netspi.com/blog/technical-blog/network-pentesting/hijacking-sql-server-credentials-with-agent-jobs-for-domain-privilege-escalation",
+      "title": "Hijacking SQL Server Credentials using Agent Jobs for Domain Privilege Escalation",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://edermi.github.io/post/2024/mfa_bypass_mtls",
+      "title": "When Certificates Fail: A Story of Bypassed MFA in Remote Access",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://script.hashnode.dev/self-xss-to-ato-via-site-features",
+      "title": "Just a moment...",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@manan_sanghvi/how-100-manual-hacking-without-even-kali-and-burp-led-to-2-medium-vulnerabilities-on-yeswehack-bbda00fcd84e",
+      "title": "How 100% Manual Hacking (Without Even Kali And Burp) Led To 2 Medium Vulnerabilities On YesWeHack",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.synack.com/blog/unmasking-harmful-content-in-a-medical-chatbot-a-red-team-perspective",
+      "title": "Unmasking Harmful Content in a Healthcare Chatbot: A Red Team Perspective",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@ali.zamini/ssti-in-bug-bounty-program-the-time-i-played-with-handlebars-and-broke-stuff-7dc1f9834a3d",
+      "title": "SSTI in Bug Bounty Program: The Time I Played with Handlebars and Broke Stuff",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://prateeksrivastavaa.medium.com/zomatoooo-idor-in-saved-payments-f8c014879741",
+      "title": "Zomatoooo! IDOR in Saved Payments",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://thinkloveshare.com/hacking/spip_preauth_rce_2024_part_2_a_big_upload",
+      "title": "Spip Preauth RCE 2024: Part 2, A Big Upload",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://jfrog.com/blog/revival-hijack-pypi-hijack-technique-exploited-22k-packages-at-risk",
+      "title": "Revival Hijack – PyPI hijack technique exploited in the wild, puts 22K packages at risk",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@srishavinkumar/p3-medium-how-i-gain-access-to-nasas-internal-workspace-d0896fee563c",
+      "title": "Medium",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.sonarsource.com/blog/basic-http-authentication-risk-uncovering-pyspider-vulnerabilities",
+      "title": "Basic HTTP Authentication Risk: Uncovering pyspider Vulnerabilities",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://blog.scrt.ch/2024/08/09/ghost-in-the-ppl-part-1-byovdll",
+      "title": "Ghost in the PPL Part 1: BYOVDLL – SCRT Team Blog",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@omarahmed_13016/iis-welcome-page-to-source-code-review-to-lfi-23ec581049f5",
+      "title": "IIS welcome page to source code review to LFI!",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://sudhanshur705.medium.com/bypassing-csp-via-url-parser-confusions-xss-on-netlifys-image-cdn-755a27065fd9",
+      "title": "Bypassing CSP via URL Parser Confusions : XSS on Netlify’s Image CDN",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/a-story-about-how-i-found-xss-in-asus-cb233ce3bb9c",
+      "title": "A Story About How I Found XSS in ASUS",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@likithteki76/how-i-got-250-for-my-second-bug-in-hackerone-35c75cbd84bd",
+      "title": "How I Got $250 For My Second Bug on HackerOne",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/the-hunt-for-xxe-to-lfi-how-i-uncovered-cve-2019-9670-in-a-bug-bounty-program-5668e4afa806",
+      "title": "The Hunt for XXE to LFI: How I Uncovered CVE-2019–9670 in a Bug Bounty Program",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://gosecure.ai/blog/2024/08/30/key-and-e-a-pentesters-tale-on-how-a-photo-opened-real-doors",
+      "title": "24/7 managed detection, response, and expert cybersecurity services - GoSecure",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://ian.sh/tsa",
+      "title": "Bypassing airport security via SQL injection",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@0xold/15k-rce-through-monitoring-debug-mode-4f474d8549d5",
+      "title": "$15k RCE Through Monitoring Debug Mode",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/csrf-bypass-using-domain-confusion-leads-to-ato-ac682dd17722",
+      "title": "CSRF Bypass Using Domain Confusion Leads To ATO",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.praetorian.com/blog/3cx-phone-system-local-privilege-escalation-vulnerability",
+      "title": "3CX Phone System Local Privilege Escalation Vulnerability",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://vojtechcekal.medium.com/how-i-was-able-to-give-verification-badge-to-any-youtube-channel-and-bypass-needed-requirements-b88855afe4b7",
+      "title": "[$500] How I was able to give verification badge to any YouTube channel and bypass needed requirements",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://blog.redteam-pentesting.de/2024/moodle-rce",
+      "title": "Back to School - Exploiting a Remote Code Execution Vulnerability in Moodle",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://embracethered.com/blog/posts/2024/m365-copilot-prompt-injection-tool-invocation-and-data-exfil-using-ascii-smuggling",
+      "title": "\"Microsoft Copilot: From Prompt Injection to Exfiltration of Personal Information\"",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@asharm.khan7/like-bypass-on-customer-reviews-500-bounty-b8d45a98c096",
+      "title": "“Like” Bypass on Customer Reviews — €500 bounty",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@gokulsspace/hitting-the-jackpot-with-rce-43755cac1415",
+      "title": "Hitting the jackpot with RCE!",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://ch44nd.medium.com/find-bugs-from-google-dorks-ec574c01471b",
+      "title": "How I Got Sensitive Directory Using Google Dorks",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@meharhuzaifa777/exploiting-log4j-rce-in-apple-app-store-ca99a549de1f",
+      "title": "How I got $24000 Bounty from a Log4j RCE in Apple App Store.",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://k4tedu.medium.com/how-i-can-easily-get-four-p1-at-nasa-using-simple-google-dorking-d4457bec1971",
+      "title": "How I can easily get four P1 at NASA using Simple Google Dorking.",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@domenicoveneziano/hidden-in-plain-sight-uncovering-rce-on-a-forgotten-axis2-instance-86ddc91f1415",
+      "title": "Hidden in Plain Sight: Uncovering RCE on a Forgotten Axis2 Instance",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@scriptshuva/instagram-and-meta-2fa-bypass-by-unprotected-backup-code-retrieval-in-accounts-center-c735ff650f10",
+      "title": "Instagram and Meta 2FA Bypass by Unprotected Backup Code Retrieval in Accounts Center",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.anvilsecure.com/blog/vulnerabilities-in-homepage-dashboard.html",
+      "title": "Vulnerabilities in Homepage Dashboard",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://embracethered.com/blog/posts/2024/google-ai-studio-data-exfiltration-now-fixed",
+      "title": "\"Google AI Studio: LLM-Powered Data Exfiltration Hits Again! Quickly Fixed.\"",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://sec.stealthcopter.com/wpml-rce-via-twig-ssti",
+      "title": "WPML Multilingual CMS Authenticated Contributor+ Remote Code Execution (RCE) via Twig Server-Side Template Injection (SSTI)",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://rikeshbaniya.medium.com/authorization-bypass-due-to-cache-misconfiguration-fde8b2332d2d",
+      "title": "Authorization bypass due to cache misconfiguration",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://jfrog.com/blog/from-mlops-to-mloops-exposing-the-attack-surface-of-machine-learning-platforms",
+      "title": "From MLOps to MLOops: Exposing the Attack Surface of Machine Learning Platforms",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.miggo.io/resources/uncovering-auth-vulnerability-in-aws-alb-albeast",
+      "title": "The Hunt for ALBeast: A Technical Walkthrough",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.wordfence.com/blog/2024/08/4998-bounty-awarded-and-100000-wordpress-sites-protected-against-unauthenticated-remote-code-execution-vulnerability-patched-in-givewp-wordpress-plugin",
+      "title": "$4,998 Bounty Awarded and 100,000 WordPress Sites Protected Against Unauthenticated Remote Code Execution Vulnerability Patched in GiveWP WordPress Plugin",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.traceable.ai/blog-post/how-1-exposed-honeywell-api-gave-us-control-over-an-internal-engineering-system",
+      "title": "Traceable - Blog: How 1 Exposed Honeywell API Gave us Control Over an Internal Engineering System",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://infosecwriteups.com/forced-sso-session-fixation-5d3b457b79cb",
+      "title": "Forced SSO Session Fixation",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://trustedsec.com/blog/oops-i-udld-it-again",
+      "title": "Oops I UDL'd it Again",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.synacktiv.com/publications/sccmsecretspy-exploiting-sccm-policies-distribution-for-credentials-harvesting-initial.html",
+      "title": "SCCMSecrets.py: exploiting SCCM policies distribution for credentials harvesting, initial access and lateral movement",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://snyk.io/blog/nodejs-add-on-extensions",
+      "title": "Vulnerabilities in NodeJS C/C++ add-on extensions",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@noob.assassin/breaking-the-barrier-admin-panel-takeover-worth-3500-78da79089ca3",
+      "title": "Breaking the Barrier: Admin Panel Takeover Worth $3500",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.sonarsource.com/blog/front-end-frameworks-when-bypassing-built-in-sanitization-might-backfire",
+      "title": "Front-End Frameworks: When Bypassing Built-in Sanitization Might Backfire",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://jfrog.com/blog/cve-2024-38428-wget-vuln-all-you-need-to-know",
+      "title": "CVE-2024-38428 Wget Vulnerability: All you need to know",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://medium.com/@momos1337/how-i-hacked-nasa-bug-bounty-6975b833eb45",
+      "title": "How i hacked NASA? at NASA VDP",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.aquasec.com/blog/bucket-monopoly-breaching-aws-accounts-through-shadow-resources",
+      "title": "Bucket Monopoly: Breaching AWS Accounts Through Shadow Resources",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.akamai.com/blog/security-research/2024/aug/2024-august-kubernetes-gitsync-command-injection-defcon",
+      "title": "Git-Syncing into Trouble: Exploring Command Injection Flaws in Kubernetes",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://blog.orange.tw/2024/08/confusion-attacks-en.html",
+      "title": "Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server!",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://portswigger.net/research/gotta-cache-em-all",
+      "title": "Gotta cache 'em all: bending the rules of web cache exploitation",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.semperis.com/blog/unoauthorized-privilege-elevation-through-microsoft-applications",
+      "title": "UnOAuthorized: Privilege Elevation Through Microsoft Applications",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://portswigger.net/research/splitting-the-email-atom",
+      "title": "Splitting the email atom: exploiting parsers to bypass access controls",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.akamai.com/blog/security-research/2024-august-vpn-post-exploitation-techniques-black-hat",
+      "title": "Living off the VPN — Exploring VPN Post-Exploitation Techniques",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://portswigger.net/research/listen-to-the-whispers-web-timing-attacks-that-actually-work",
+      "title": "Listen to the whispers: web timing attacks that actually work | PortSwigger Research",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://www.praetorian.com/blog/exploiting-lambda-functions-for-fun-and-profit",
+      "title": "Security Blog",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://rhinosecuritylabs.com/research/vestaboard-vulnerabilities",
+      "title": "Vestaboard: Exploring Broken Access Controls and Privilege Escalation",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
+    },
+    {
+      "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
+      "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
+      "reason": "bulk cleanup: archived without AI explanation",
+      "removed_at": "2026-09-23T14:39:24Z"
     }
   ]
 }

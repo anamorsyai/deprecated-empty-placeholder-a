@@ -1,41 +1,5 @@
 [
   {
-    "id": "9ae499604b2e",
-    "title": "Bug Bounty Hunting: Low-Hanging Bugs Beginners Can Easily Find",
-    "url": "https://meetcyber.net/bug-bounty-hunting-low-hanging-bugs-beginners-can-easily-find-235fcd49997c",
-    "source": {
-      "slug": "medium-tag-bug-bounty",
-      "name": "Medium — #bug-bounty"
-    },
-    "authors": [
-      "Monika"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-09-23T10:00:59.000Z",
-    "added_at": "2026-09-23T12:39:16.268Z",
-    "categories": [
-      "idor-bola",
-      "auth-bypass",
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "If you’re new to bug bounty hunting, don’t jump straight into chasing complex vulnerabilities like RCE or intricate authentication bypasses.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "example_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "If you’re new to bug bounty hunting, don’t jump straight into chasing complex vulnerabilities like RCE or intricate authentication bypasses. There are several bug classes that are commonly found, relatively easy to spot with the right approach, and great for building a strong foundation. Below are some bugs that make excellent starting points but always remember: only test on authorized programs (like HackerOne or Bugcrowd) with explicit scope, since testing without permission is illegal. ### 1. IDOR (Insecure Direct Object Reference) This is one of the most common and beginner-friendly bugs.",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
     "id": "e5c4d34f1e4a",
     "title": "Insecure Authorization on *** Android — mobile application",
     "url": "https://medium.com/@jokodfir/insecure-authorization-on-android-mobile-application-89472e4f468b",
@@ -67,140 +31,6 @@
     },
     "excerpt": "com.***.browserflow.feature.CustomTabFlowActivity is exported (android:exported=”true”) and registered as the redirect target for several sensitive browser-based OAuth/SSO flows, including: * com.***.editor://oauth (used by 3rd-party Marketplace app connections, e.g. Google Drive) * com.***.editor://external-app-config * ***editor://sso * [https://www.***.com/oauth/transfer,](https://www.canva.com/oauth/transfer,) /login/sso/transfer, /apps/oauth/authorized/app, /apps/configured/app (App Links, autoVerify=”true”) I decompiled the app and traced the native code that handles an incoming redirect",
     "ai_generated": true,
-    "engagement": null,
-    "score": 53
-  },
-  {
-    "id": "0431aea8087a",
-    "title": "Vulnerabilities in Open Source C2 Frameworks",
-    "url": "https://blog.includesecurity.com/2024/09/vulnerabilities-in-open-source-c2-frameworks",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Laurence Tennant"
-    ],
-    "program": "Bishop Fox (Sliver), Havoc, Ninja C2, SHAD0W, Covenant",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-09-18T00:00:00.000Z",
-    "added_at": "2026-09-22T20:33:24.656Z",
-    "categories": [
-      "auth-bypass",
-      "access-control",
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed.",
-    "summary_ar": null,
-    "excerpt": "Application and source code security assessments are the primary focus of our work at Include Security, but sometimes network pentesting that uses software written by other hackers is needed. I decided to investigate open source Command & Control (C2) frameworks used in network and red teaming assessments to understand how they work, and ended up finding a fun mix of authenticated and unauthenticated RCE (remote code execution) vulnerabilities. This post provides an overview of C2 concepts, gives a brief survey of current open source frameworks, and reviews the details of identified vulnerabil",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "aab8b175c6b3",
-    "title": "Instagram and Meta 2FA Bypass by Unprotected Backup Code Retrieval in Accounts Center",
-    "url": "https://medium.com/@scriptshuva/instagram-and-meta-2fa-bypass-by-unprotected-backup-code-retrieval-in-accounts-center-c735ff650f10",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Shuva Saha (@scriptshuva)"
-    ],
-    "program": "Meta / Facebook",
-    "platform_slug": "other",
-    "bounty_raw": "10,000",
-    "published_at": "2024-08-22T00:00:00.000Z",
-    "added_at": "2026-09-22T21:22:06.888Z",
-    "categories": [
-      "auth-bypass"
-    ],
-    "severity": "critical",
-    "summary_en": "Hello, I'm Shuva Saha (scriptshuva). Today, I will be discussing a vulnerability I discovered: bypass of two-factor authentication (2FA) mechanisms in Meta and Instagram.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "Hello, I'm Shuva Saha (scriptshuva). Today, I will be discussing a vulnerability I discovered: bypass of two-factor authentication (2FA) mechanisms in Meta and Instagram. **Bounty**: $10,000 Awarded for bypassing two-factor authentication (2FA) mechanisms in Meta and Instagram ### Meta 2FA Bypass A hacker who gains access to a victim Facebook or Instagram account can retrieve Meta 2FA backup codes from account center, bypassing Meta two-factor authentication (2FA) and gaining full access to victim Meta account. ### Step 1: Login Initiation 1. Go to [Meta Auth](https://auth.meta.com/). 2. Log i",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "8b4de87aa365",
-    "title": "From MLOps to MLOops: Exposing the Attack Surface of Machine Learning Platforms",
-    "url": "https://jfrog.com/blog/from-mlops-to-mloops-exposing-the-attack-surface-of-machine-learning-platforms",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Ori Hollander",
-      "Shachar Menashe",
-      "Natan Nehorai",
-      "Uriya Yavnieli"
-    ],
-    "program": "Jupyter, Hugging Face, MLflow, KServe, Seldon",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-20T00:00:00.000Z",
-    "added_at": "2026-09-22T22:11:35.271Z",
-    "categories": [
-      "rce",
-      "xss",
-      "auth-bypass"
-    ],
-    "severity": "critical",
-    "summary_en": "JFrog security research maps the attack surface of ML platforms (Jupyter, Hugging Face, MLflow, KServe, Seldon), demonstrating RCE, XSS, missing authentication, and container escape achievable through malicious AI models and datasets.",
-    "summary_ar": "بحث JFrog الأمني يكشف سطح هجوم واسع في منصات تعلّم الآلة (Jupyter, Hugging Face, MLflow, KServe, Seldon)، ويُظهر ثغرات RCE وXSS وغياب المصادقة والهروب من الحاوية (container escape) عبر نماذج ومجموعات بيانات AI خبيثة.",
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce. This is AgentSecOps. [Learn More](https://jfrog.com/ai/) Trusted AI [![Image 12](https://speedmedia2.jfrog.com/08612fe1-9391-4cf3-ac1a-6dd49c36b276/jfrog.com/wp-content/uploads/2026/03/Logo-AI-Catalog.svg) JFrog AI Catalog Trust Your Agentic Workforce](https://jfrog.com/ai-catalog/) [Agent Guard](https://jfrog.com/blog/agent-guard-control-ai-assets-before-they-become-s",
-    "ai_generated": true,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "3679fa4d7680",
-    "title": "The Hunt for ALBeast: A Technical Walkthrough",
-    "url": "https://www.miggo.io/resources/uncovering-auth-vulnerability-in-aws-alb-albeast",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Liad Eliyahu (@liadeliyahu)"
-    ],
-    "program": "AWS",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-20T00:00:00.000Z",
-    "added_at": "2026-09-22T21:51:41.529Z",
-    "categories": [
-      "auth-bypass",
-      "access-control"
-    ],
-    "severity": "high",
-    "summary_en": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Produ",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "[AI Runtime Defense Platform See & Secure AI and Agentic Risks](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[Miggo ADR Platform Protect Every Application You Build or Use](https://www.miggo.io/why-adr) Product [Runtime Defense Platform for Applications, AI, and Agents Detect and respond to AI and agentic driven threats](https://www.miggo.io/runtime-defense-platform-for-applications-ai-and-agents)[**Miggo Know** Know your live applications inside-out](https://www.miggo.io/product/security-observability)[Miggo Prove Find and prevent the exploitable risks that mat",
-    "ai_generated": false,
     "engagement": null,
     "score": 53
   },
@@ -378,40 +208,6 @@
     "score": 60
   },
   {
-    "id": "9b7cc84cde1f",
-    "title": "Breaking the Barrier: Admin Panel Takeover Worth $3500",
-    "url": "https://medium.com/@noob.assassin/breaking-the-barrier-admin-panel-takeover-worth-3500-78da79089ca3",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Aditya Sharma (@Assass1nmarcos)"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": "3,500",
-    "published_at": "2024-08-13T00:00:00.000Z",
-    "added_at": "2026-09-23T05:48:15.422Z",
-    "categories": [
-      "auth-bypass",
-      "info-disclosure"
-    ],
-    "severity": "high",
-    "summary_en": "I’m back with another writeup where we successfully bypassed the Admin Panel while working on a Bugcrowd private program.",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "I’m back with another writeup where we successfully bypassed the Admin Panel while working on a Bugcrowd private program. This issue was discovered in collaboration with my friend Rajesh Ranjan (Also thanks to him for inviting me to collaborate on the program). ## What is Admin Panel Bypass? Admin panel bypass is a technique used by attackers to gain unauthorized access to an administrative interface of a website or application. This typically involves exploiting vulnerabilities, such as weak authentication mechanisms, exposed endpoints, or flawed password reset functionalities, to bypass the",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 53
-  },
-  {
     "id": "53c2cd2c4af7",
     "title": "How I Got $150 on HackerOne for My First Bug",
     "url": "https://medium.com/@likithteki76/how-i-got-150-on-hackerone-for-my-first-bug-8af0ed515e79",
@@ -446,42 +242,6 @@
     "score": 53
   },
   {
-    "id": "939926e6b9ff",
-    "title": "Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server!",
-    "url": "https://blog.orange.tw/2024/08/confusion-attacks-en.html",
-    "source": {
-      "slug": "pentesterland",
-      "name": "Pentester Land"
-    },
-    "authors": [
-      "Orange Tsai (@orange_8361)"
-    ],
-    "program": "Apache HTTP Server, ModSecurity, Redmine",
-    "platform_slug": "other",
-    "bounty_raw": null,
-    "published_at": "2024-08-09T00:00:00.000Z",
-    "added_at": "2026-09-23T06:23:07.467Z",
-    "categories": [
-      "auth-bypass",
-      "access-control",
-      "ssrf"
-    ],
-    "severity": "critical",
-    "summary_en": "> Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server! Also, I would like to thank Akamai for their friendly outreach! They released mitigation measures immediately after this research was published (details can be",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "example_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "> Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server! Also, I would like to thank Akamai for their friendly outreach! They released mitigation measures immediately after this research was published (details can be found on Akamai’s blog). # [](https://blog.orange.tw/2024/08/confusion-attacks-en.html#TL-DR \"TL;DR\")TL;DR This article explores architectural issues within the Apache HTTP Server, highlighting several technical debts within Httpd, **including 3 types of Confusion Attacks, 9 new vulnerabilities, 20 exploitation techniques, and over 30 case studies**. The co",
-    "ai_generated": false,
-    "engagement": null,
-    "score": 60
-  },
-  {
     "id": "45a90b4cf8d9",
     "title": "The Butterfly Effect: Turning Overlooked Misconfigurations into Zero Click Account Takeover",
     "url": "https://oussamarahali.com/blog/butterfly-effect-zero-click-account-takeover",
@@ -514,38 +274,6 @@
     },
     "excerpt": "In the world of application security, even low severity misconfigurations can act as a butterfly’s wing flap, triggering a chain reaction that leads to more impactful attack scenarios. Today, I’ll take you on a journey through one such scenario, where low impact vulnerabilities snowball into a full blown zero click account takeover. Along the way, you’ll see how every overlooked detail and misconfiguration can become a stepping stone for a determined attacker. In a recent pentest, I was tasked with assessing a student e-learning platform. The client uses this platform to train new partners and",
     "ai_generated": true,
-    "engagement": null,
-    "score": 60
-  },
-  {
-    "id": "8088fa5dc7bd",
-    "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
-    "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
-    "source": {
-      "slug": "assetnote",
-      "name": "Assetnote"
-    },
-    "authors": [],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2024-01-18T13:00:00.000Z",
-    "added_at": "2026-09-22T21:51:52.472Z",
-    "categories": [
-      "auth-bypass",
-      "rce"
-    ],
-    "severity": "critical",
-    "summary_en": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-sec",
-    "summary_ar": null,
-    "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": "[Back to Research blog](https://blog.assetnote.io/research-blog) # High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE [Get research alerts](https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce) Share on social [](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce)[](https://twitter.com/intent/tweet?url=https%3A%2F%2Fblog.assetnote.io%2F2024%2F01%2F19%2Fivanti-pulse-connect-secure-auth-bypass-rce&text=High%20Signal%20Detection%20and%2",
-    "ai_generated": false,
     "engagement": null,
     "score": 60
   }
