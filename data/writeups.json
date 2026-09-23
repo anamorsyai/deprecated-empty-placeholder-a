@@ -1483,6 +1483,45 @@
     "score": 60
   },
   {
+    "id": "b4568cd9b4d0",
+    "title": "Escalating Privileges in Google Cloud via Open Groups",
+    "url": "https://www.netspi.com/blog/technical-blog/cloud-pentesting/escalating-privileges-in-google-cloud-via-open-groups",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Thomas Elling"
+    ],
+    "program": "Google (GCP)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-07-31T00:00:00.000Z",
+    "added_at": "2026-09-23T16:56:11.251Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "Penetration Testing as a Service ( PTaaS ) Shift projects to programs with human-delivered, contextualized pentesting services * * * Application Pentesting Web, API, Mobile, Thick, and Virtual ApplicationsAI/ML Pentesting Enhance your AI /",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Penetration Testing as a Service ( PTaaS ) Shift projects to programs with human-delivered, contextualized pentesting services * * * Application Pentesting Web, API, Mobile, Thick, and Virtual ApplicationsAI/ML Pentesting Enhance your AI / ML security with expert LLM testing and jailbreakingCloud Pentesting Secure AWS, Azure, and Google Cloud infrastructuresMainframe Pentesting z/OS Mainframe Testing - CICS / IMS Region and ApplicationNetwork Pentesting Internal, External, Wireless, Host-based, and Virtual Desktop NetworksHardware Systems Automotive, Medical device, IoT, ATM, and Operational T",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "6da33771ed5c",
     "title": "Credential Disclosure in LastPass – Certitude Blog",
     "url": "https://certitude.consulting/blog/en/credential-disclosure-in-lastpass",
