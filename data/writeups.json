@@ -889,5 +889,45 @@
     "ai_generated": false,
     "engagement": null,
     "score": 47
+  },
+  {
+    "id": "fe1147f7ccc0",
+    "title": "Government Emails at Risk: Critical Cross-Site Scripting Vulnerability in Roundcube Webmail",
+    "url": "https://www.sonarsource.com/blog/government-emails-at-risk-critical-cross-site-scripting-vulnerability-in-roundcube-webmail",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Oskar Zeino-Mahmalat"
+    ],
+    "program": "Roundcube",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-05T00:00:00.000Z",
+    "added_at": "2026-09-23T15:01:43.139Z",
+    "categories": [
+      "xss",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) Image 1: sonar logo Products Products Image 2 #### SonarQube Cloud Cloud based code verification and governance fo",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) Image 1: sonar logo Products Products Image 2 #### SonarQube Cloud Cloud based code verification and governance for your CI/CD workflowsImage 3 #### SonarQube Server Self-managed code verification and governance for your CI/CD workflowsImage 4 #### SonarQube Advanced Security Secure use of open source code with advanced SAST and SCAImage 5 #### Gitar AI code review that fixes issues and commits until your build passesImage 6 #### Sonar Vortex New Context before the agen",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]
