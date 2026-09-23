@@ -1,5 +1,44 @@
 [
   {
+    "id": "e7c9e98315fe",
+    "title": "$5,400 for a Regex That Trusted the Wrong Domain: CORS Misconfiguration to Full Account Data Theft",
+    "url": "https://medium.com/@t4nv1/5-400-for-a-regex-that-trusted-the-wrong-domain-cors-misconfiguration-to-full-account-data-theft-c04903525ed7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T19:06:01.000Z",
+    "added_at": "2026-09-23T19:09:17.623Z",
+    "categories": [
+      "cors"
+    ],
+    "severity": "medium",
+    "summary_en": "Some vulnerabilities take real cleverness to find. This one took reading a single response header carefully enough to notice it was doing something a header like that should never do, and then about twenty minutes of methodically trying to",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Some vulnerabilities take real cleverness to find. This one took reading a single response header carefully enough to notice it was doing something a header like that should never do, and then about twenty minutes of methodically trying to break a regular expression I couldn’t see but could infer the shape of from how it behaved. The target, which I’ll call **Palisade** here per their program’s disclosure terms, is a personal-finance dashboard aggregating account and transaction data across linked bank accounts — exactly the kind of application where “can another website read my data without m",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "fddda59afc4e",
     "title": "My First Bug Bounty: CORS Misconfiguration",
     "url": "https://r0b0ts.medium.com/my-first-bug-bounty-cors-misconfiguration-3e6f38835c4e",

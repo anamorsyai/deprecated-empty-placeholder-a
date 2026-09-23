@@ -1,17 +1,18 @@
 {
-  "lastRun": "2026-09-23T19:05:30.478Z",
-  "totalItems": 56,
-  "newItemsThisRun": 0,
+  "lastRun": "2026-09-23T19:09:20.189Z",
+  "totalItems": 57,
+  "newItemsThisRun": 1,
   "aiProvider": "custom",
   "aiOkThisRun": 0,
-  "aiFallbackThisRun": 0,
+  "aiFallbackThisRun": 1,
   "aiGeneratedTotal": 20,
   "bySource": {
-    "medium-tag-bug-bounty": 7,
+    "medium-tag-bug-bounty": 8,
     "infosec-writeups": 1,
     "pentesterland": 48
   },
   "byCategory": {
+    "cors": 2,
     "other": 14,
     "recon": 1,
     "rce": 15,
@@ -28,7 +29,6 @@
     "supply-chain": 1,
     "idor-bola": 3,
     "graphql": 1,
-    "cors": 1,
     "csrf": 1
   }
 }
