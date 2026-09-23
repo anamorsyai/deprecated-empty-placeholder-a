@@ -273,6 +273,14 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
       jsonMode = false;
       continue;
     }
+    if (res.status === 429 && attempt === 0) {
+      // Free-tier rate limit: back off briefly, then try once more. On a
+      // 5-minute fetch cadence the next run would retry anyway, but a short
+      // pause often clears a momentary spike within the same run.
+      console.warn(`  ${base} HTTP 429 (rate limited), waiting 15s and retrying once`);
+      await new Promise((r) => setTimeout(r, 15000));
+      continue;
+    }
     if (res.status >= 500 && res.status < 600 && attempt === 0) {
       console.warn(`  ${base} HTTP ${res.status}, retrying once`);
       continue;
