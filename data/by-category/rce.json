@@ -104,6 +104,40 @@
     "score": 60
   },
   {
+    "id": "e1258e109292",
+    "title": "20 AI Red Teaming Techniques Every Security Professional Should Learn (Step-by-Step Guide)",
+    "url": "https://medium.com/@verylazytech/20-ai-red-teaming-techniques-every-security-professional-should-learn-step-by-step-guide-10ce49cd57ec",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Very Lazy Tech "
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T06:03:39.000Z",
+    "added_at": "2026-09-23T13:06:51.805Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Very Lazy Tech 👾 8 min read · 7 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F10ce49cd57ec&operation=register&redirect=https%3A%2F%2Fmedium.verylazytech.com%2F20-ai-red-teaming-techniques-ever",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Very Lazy Tech 👾 8 min read · 7 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F10ce49cd57ec&operation=register&redirect=https%3A%2F%2Fmedium.verylazytech.com%2F20-ai-red-teaming-techniques-every-security-professional-should-learn-step-by-step-guide-10ce49cd57ec&user=Very+Lazy+Tech+%F0%9F%91%BE&userId=defbb8c3cf98&source=---header_actions--10ce49cd57ec---------------------clap_footer--------------------) -- [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2F10ce49cd57ec&operation=register&redirect=https%3A%2F%2Fmed",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "30206f7aad3e",
     "title": "Apps SDK sandbox escape: *** App reaches native window.Android/window.AndroidBridge JS interfaces — mobile application",
     "url": "https://medium.com/@jokodfir/apps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3",

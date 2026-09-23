@@ -104,6 +104,40 @@
     "score": 47
   },
   {
+    "id": "8361d5710522",
+    "title": "Top 5 Bugs That Still Pay in 2026",
+    "url": "https://sukhveersingh97997.medium.com/top-5-bugs-that-still-pay-in-2026-20fa296a212d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Sukhveer Singh"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T06:22:36.000Z",
+    "added_at": "2026-09-23T13:06:28.391Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "I’ll be honest with you: bug bounty economics have shifted hard. AI-assisted scanning flooded every major platform with reports, and the old “find a reflected XSS on a forgotten subdomain” pipeline doesn’t pay like it used to.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’ll be honest with you: bug bounty economics have shifted hard. AI-assisted scanning flooded every major platform with reports, and the old “find a reflected XSS on a forgotten subdomain” pipeline doesn’t pay like it used to. Microsoft’s average payout per researcher dropped from $49,000 to roughly $35,000 last year — not because Microsoft cut spending, but because more researchers are splitting a similar-sized pie. But here’s what hasn’t changed: bugs with clear business impact still get paid. In fact, some pay more than ever. The trick is knowing which bug classes survived the AI flood and",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4462fb4fb454",
     "title": "They Allowed Five Image Formats. Four Were Pictures.",
     "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",
