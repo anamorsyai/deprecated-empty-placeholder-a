@@ -1,5 +1,71 @@
 [
   {
+    "id": "30206f7aad3e",
+    "title": "Apps SDK sandbox escape: *** App reaches native window.Android/window.AndroidBridge JS interfaces — mobile application",
+    "url": "https://medium.com/@jokodfir/apps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Joko Purwanto"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T03:53:06.000Z",
+    "added_at": "2026-09-23T05:44:19.842Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Image 2: Joko Purwanto Joko Purwanto 3 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fde7ef00e4bc3&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40jokodfir%2Fapps-sdk-sandb",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 2: Joko Purwanto Joko Purwanto 3 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fde7ef00e4bc3&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40jokodfir%2Fapps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3&user=Joko+Purwanto&userId=637030b9c7b7&source=---header_actions--de7ef00e4bc3---------------------clap_footer--------------------) [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fde7ef00e4bc3&operation=register&redirect=https%3A%2F%2Fmedium.com%",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "ad8160d45e8f",
+    "title": "ATT&CKing TACACS+ to Pwn Your Network via a Pre-Auth RCE - elttam",
+    "url": "https://www.reddit.com/r/netsec/comments/1wnvaik/attcking_tacacs_to_pwn_your_network_via_a_preauth",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/AnimalStrange"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T03:53:01.000Z",
+    "added_at": "2026-09-23T05:45:22.615Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "ATT&CKing TACACS+ to Pwn Your Network via a Pre-Auth RCE - elttam",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "c623ee07e137",
     "title": "Bug Bounty শুরু করার আগে যা বুঝতে হবে",
     "url": "https://medium.com/@cyber.mehedi.13/bug-bounty-%E0%A6%B6%E0%A7%81%E0%A6%B0%E0%A7%81-%E0%A6%95%E0%A6%B0%E0%A6%BE%E0%A6%B0-%E0%A6%86%E0%A6%97%E0%A7%87-%E0%A6%AF%E0%A6%BE-%E0%A6%AC%E0%A7%81%E0%A6%9D%E0%A6%A4%E0%A7%87-%E0%A6%B9%E0%A6%AC%E0%A7%87-c53ab87a911b",
@@ -984,6 +1050,41 @@
     "score": 60
   },
   {
+    "id": "bfb35c946398",
+    "title": "Forced SSO Session Fixation",
+    "url": "https://infosecwriteups.com/forced-sso-session-fixation-5d3b457b79cb",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Serj Novoselov (@novoselov_s)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-16T00:00:00.000Z",
+    "added_at": "2026-09-23T05:47:13.783Z",
+    "categories": [
+      "rce",
+      "csrf",
+      "oauth-jwt"
+    ],
+    "severity": "critical",
+    "summary_en": "During a recent project, I encountered an interesting small issue that allowed for a one-click account takeover by fixating a session identifier and forcing a victim’s browser to initiate the first steps of a Single Sign-On (SSO) flow.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a recent project, I encountered an interesting small issue that allowed for a one-click account takeover by fixating a session identifier and forcing a victim’s browser to initiate the first steps of a Single Sign-On (SSO) flow. This vulnerability was possible due to the absence of anti-CSRF token verification. Press enter or click to view image in full size Image 4 ### The Login Page The login page exhibited the “with SSO” feature: Press enter or click to view image in full size Image 5 ### Investigating the SSO Flow Upon investigating the SSO flow, I discovered the following sequence",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "0a1bb956fdf9",
     "title": "Spip Preauth RCE 2024: Part 1, The Feather",
     "url": "https://thinkloveshare.com/hacking/spip_preauth_rce_2024_part_1_the_feather",
@@ -1050,6 +1151,75 @@
     "ai_generated": true,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "19eae9b2d63d",
+    "title": "Front-End Frameworks: When Bypassing Built-in Sanitization Might Backfire",
+    "url": "https://www.sonarsource.com/blog/front-end-frameworks-when-bypassing-built-in-sanitization-might-backfire",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Stefan Schiller (@scryh_)"
+    ],
+    "program": "Firefly III",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-13T00:00:00.000Z",
+    "added_at": "2026-09-23T05:49:23.187Z",
+    "categories": [
+      "xss",
+      "rce",
+      "file-upload"
+    ],
+    "severity": "medium",
+    "summary_en": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) Image 1: sonar logo Products Products Image 2 #### SonarQube Cloud Cloud based code verification and governance fo",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) Image 1: sonar logo Products Products Image 2 #### SonarQube Cloud Cloud based code verification and governance for your CI/CD workflowsImage 3 #### SonarQube Server Self-managed code verification and governance for your CI/CD workflowsImage 4 #### SonarQube Advanced Security Secure use of open source code with advanced SAST and SCAImage 5 #### Gitar AI code review that fixes issues and commits until your build passesImage 6 #### Sonar Vortex New Context before the agen",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "0cd9214b3bbb",
+    "title": "CVE-2024-38428 Wget Vulnerability: All you need to know",
+    "url": "https://jfrog.com/blog/cve-2024-38428-wget-vuln-all-you-need-to-know",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Goni Golan"
+    ],
+    "program": "GNU Wget",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-12T00:00:00.000Z",
+    "added_at": "2026-09-23T05:51:19.813Z",
+    "categories": [
+      "ssrf",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce. This is AgentSecOps. Learn More Trusted AI Image 12 JFrog AI Catalog Trust Your Agentic Workforce Agent Guard MCP Registry Agent Skills Registry Plugins Registry APM Registry Model Registry AI Integrations Image 13 ClaudeImage 14 CursorImage 15 CodexImage 16 Hugging FaceImage 17 NVIDIAImage 18 Visual Studio CodeImage 19 DevinImage 20 KiroImage 21 Open CodeImage 22 Nano",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
   },
   {
     "id": "8088fa5dc7bd",

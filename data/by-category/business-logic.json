@@ -102,5 +102,39 @@
     "ai_generated": true,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "53c2cd2c4af7",
+    "title": "How I Got $150 on HackerOne for My First Bug",
+    "url": "https://medium.com/@likithteki76/how-i-got-150-on-hackerone-for-my-first-bug-8af0ed515e79",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Likith Teki (@likith_teki)"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": "150",
+    "published_at": "2024-08-12T00:00:00.000Z",
+    "added_at": "2026-09-23T05:50:15.215Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "summary_en": "A private HackerOne program paid $150 for a 2FA recovery-code hygiene flaw: old recovery codes stayed valid after 2FA was disabled and re-enabled, letting attackers bypass 2FA and take over accounts.",
+    "summary_ar": "برنامج خاص على HackerOne دفع $150 مقابل ثغرة في إدارة recovery codes الخاصة بـ 2FA: الكودات القديمة فضلت صالحة بعد تعطيل وإعادة تفعيل 2FA، مما سمح للمهاجم بعمل bypass لـ 2FA والاستيلاء على الحسابات.",
+    "lesson": {
+      "cause_ar": "الـ root cause هنا إن النظام مش بيعمل revoke للـ recovery codes القديمة لما المستخدم يعطّل 2FA. الافتراض الخاطئ في التصميم كان إن إعادة تفعيل 2FA هتولّد كودات جديدة وبالتالي الكودات القديمة هتبوظ تلقائيًا — لكن السيرفر فضل بيقبل الكودات اللي اتولّدت قبل إعادة التفعيل. المشكلة مش في خوارزمية التوليد نفسها، لكن في إدارة دورة حياة الأسرار (secret lifecycle): مفيش أي آلية لإبطال الكودات الصادرة سابقًا عند تغيير حالة 2FA. فبالتالي أي recovery code تسرّب أو اتسرق قبل كده يفضل صالح للأبد حتى بعد ما المستخدم يعمل disable وإعادة enable.",
+      "walkthrough_ar": "في يونيو 2024 كان الباحث بيختبر تدفق الـ 2FA في برنامج خاص على HackerOne، وقرر يفحص دورة حياة الـ recovery codes كاملة بدل ما يكتفي باختبار تسجيل الدخول العادي. الخطوة الأولى كانت إنه فعّل 2FA على حسابه وولّد recovery codes وحفظها في مكان آمن. بعدها عطّل 2FA من إعدادات الحساب، وبعدين أعاد تفعيله تاني من نفس الإعدادات. هنا لاحظ إن النظام ما عملهوش أي إشارة إن الكودات القديمة اتبطلت — فقرر يختبر الفرضية دي عمليًا. سجّل خروجه من الحساب، وبعدين حاول يسجل دخول تاني مستخدمًا واحد من الـ recovery codes القديمة اللي اتولّدت قبل إعادة التفعيل. النتيجة كانت إن الكود القديم اشتغل وخلّاه يدخل الحساب من غير ما يطلب منه كود 2FA جديد. يعني رغم إن 2FA اتقفل واتفتح تاني، النظام فضل قايل إن الكودات القديمة لسه صالحة. الباحث وثّق الخطوات دي بالظبط — Enable 2FA، Save Codes، Disable 2FA، Re-enable 2FA، Sign Out، وبعدين Login Attempt بالكود القديم — ورفع تقرير مفصل على HackerOne فيه وصف المشكلة وخطوات إعادة الإنتاج والأثر المتوقع. الفريق الأمني أكد الثغرة ودفعله $150. الثغرة دي اتسمّت في التقرير Incorrect 2FA Recovery Code Hygiene، وبتسمح لأي حد معاه كود قديم إنه يعمل bypass للـ 2FA ويدخل حساب المستخدم.",
+      "takeaway_ar": "أي تطبيق فيه 2FA لازم تختبر دورة حياته كاملة مش بس تسجيل الدخول: فعّل، عطّل، أعد التفعيل، وبعدين جرّب الكودات القديمة والـ TOTP secret القديم. العلامة اللي بتدل على الفئة دي إن النظام لما يعيد تفعيل 2FA ما بيظهرش أي تغيير في صلاحية الكودات القديمة أو ما بيطلبش إعادة تحقق. نفس النمط بيظهر كمان في تغيير الباسورد أو الإيميل أو الـ API keys — دايماً اسأل نفسك: هل الأسرار القديمة اتبطلت فعلًا على السيرفر ولا لسه شغالة؟ ولو لقيت إن حالة أمنية بتتغير من غير ما الأسرار القديمة تتبطل، يبقى قدامك ثغرة تستاهل تقرير.",
+      "fix_ar": "الحل الصح إن السيرفر يعمل invalidation صريحة لكل الـ recovery codes وكل أسرار الـ TOTP القديمة لحظة ما المستخدم يعطّل 2FA، ويفضل يرفضها حتى لو أعاد التفعيل بعدين. عند إعادة التفعيل لازم يتولّد secret جديد وكودات جديدة تمامًا، وأي كود قديم يترفض بـ error واضح. كمان الـ recovery codes المفروض تكون single-use — أي كود بيتستخدم مرة واحدة وبعدها يتبطل فورًا حتى لو كان صحيح. ويفضل تسجيل كل عملية enable/disable في audit log عشان تقدر تتبع أي كود اتولّد وإمتى اتبطل."
+    },
+    "excerpt": "Getting started in bug bounty hunting can be both thrilling and challenging. When I discovered my first vulnerability on a private program and reported it, I wasn’t just excited about finding a flaw. I was also pleasantly surprised to receive $150 for my efforts. Here’s the story of how I found and reported this bug and what made it such a rewarding experience ## **Title: Incorrect 2FA Recovery Code Hygiene** In June 2024, I came across a issue in the management of 2FA (two-factor authentication) recovery codes within a private program on HackerOne. The vulnerability emerged when a user disabl",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
   }
 ]

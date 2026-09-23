@@ -199,6 +199,40 @@
     "score": 53
   },
   {
+    "id": "9b7cc84cde1f",
+    "title": "Breaking the Barrier: Admin Panel Takeover Worth $3500",
+    "url": "https://medium.com/@noob.assassin/breaking-the-barrier-admin-panel-takeover-worth-3500-78da79089ca3",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Aditya Sharma (@Assass1nmarcos)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "3,500",
+    "published_at": "2024-08-13T00:00:00.000Z",
+    "added_at": "2026-09-23T05:48:15.422Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "summary_en": "I’m back with another writeup where we successfully bypassed the Admin Panel while working on a Bugcrowd private program.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m back with another writeup where we successfully bypassed the Admin Panel while working on a Bugcrowd private program. This issue was discovered in collaboration with my friend Rajesh Ranjan (Also thanks to him for inviting me to collaborate on the program). ## What is Admin Panel Bypass? Admin panel bypass is a technique used by attackers to gain unauthorized access to an administrative interface of a website or application. This typically involves exploiting vulnerabilities, such as weak authentication mechanisms, exposed endpoints, or flawed password reset functionalities, to bypass the",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "6e07f0bb2e1c",
     "title": "ArtiPACKED: Hacking Giants Through a Race Condition in GitHub Actions Artifacts",
     "url": "https://unit42.paloaltonetworks.com/github-repo-artifacts-leak-tokens",

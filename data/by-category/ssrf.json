@@ -129,5 +129,39 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "0cd9214b3bbb",
+    "title": "CVE-2024-38428 Wget Vulnerability: All you need to know",
+    "url": "https://jfrog.com/blog/cve-2024-38428-wget-vuln-all-you-need-to-know",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Goni Golan"
+    ],
+    "program": "GNU Wget",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-12T00:00:00.000Z",
+    "added_at": "2026-09-23T05:51:19.813Z",
+    "categories": [
+      "ssrf",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce. This is AgentSecOps. Learn More Trusted AI Image 12 JFrog AI Catalog Trust Your Agentic Workforce Agent Guard MCP Registry Agent Skills Registry Plugins Registry APM Registry Model Registry AI Integrations Image 13 ClaudeImage 14 CursorImage 15 CodexImage 16 Hugging FaceImage 17 NVIDIAImage 18 Visual Studio CodeImage 19 DevinImage 20 KiroImage 21 Open CodeImage 22 Nano",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
   }
 ]

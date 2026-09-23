@@ -1,5 +1,71 @@
 [
   {
+    "id": "30206f7aad3e",
+    "title": "Apps SDK sandbox escape: *** App reaches native window.Android/window.AndroidBridge JS interfaces — mobile application",
+    "url": "https://medium.com/@jokodfir/apps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Joko Purwanto"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T03:53:06.000Z",
+    "added_at": "2026-09-23T05:44:19.842Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "Image 2: Joko Purwanto Joko Purwanto 3 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fde7ef00e4bc3&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40jokodfir%2Fapps-sdk-sandb",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 2: Joko Purwanto Joko Purwanto 3 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fde7ef00e4bc3&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40jokodfir%2Fapps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3&user=Joko+Purwanto&userId=637030b9c7b7&source=---header_actions--de7ef00e4bc3---------------------clap_footer--------------------) [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fde7ef00e4bc3&operation=register&redirect=https%3A%2F%2Fmedium.com%",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "ad8160d45e8f",
+    "title": "ATT&CKing TACACS+ to Pwn Your Network via a Pre-Auth RCE - elttam",
+    "url": "https://www.reddit.com/r/netsec/comments/1wnvaik/attcking_tacacs_to_pwn_your_network_via_a_preauth",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/AnimalStrange"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T03:53:01.000Z",
+    "added_at": "2026-09-23T05:45:22.615Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "ATT&CKing TACACS+ to Pwn Your Network via a Pre-Auth RCE - elttam",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "997a0069b2df",
     "title": "52 Request Smuggling Reports. Two Rules Decide the Payout.",
     "url": "https://infosecwriteups.com/52-request-smuggling-reports-two-rules-decide-the-payout-901479562df9",
@@ -2289,6 +2355,41 @@
     "score": 53
   },
   {
+    "id": "bfb35c946398",
+    "title": "Forced SSO Session Fixation",
+    "url": "https://infosecwriteups.com/forced-sso-session-fixation-5d3b457b79cb",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Serj Novoselov (@novoselov_s)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-16T00:00:00.000Z",
+    "added_at": "2026-09-23T05:47:13.783Z",
+    "categories": [
+      "rce",
+      "csrf",
+      "oauth-jwt"
+    ],
+    "severity": "critical",
+    "summary_en": "During a recent project, I encountered an interesting small issue that allowed for a one-click account takeover by fixating a session identifier and forcing a victim’s browser to initiate the first steps of a Single Sign-On (SSO) flow.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a recent project, I encountered an interesting small issue that allowed for a one-click account takeover by fixating a session identifier and forcing a victim’s browser to initiate the first steps of a Single Sign-On (SSO) flow. This vulnerability was possible due to the absence of anti-CSRF token verification. Press enter or click to view image in full size Image 4 ### The Login Page The login page exhibited the “with SSO” feature: Press enter or click to view image in full size Image 5 ### Investigating the SSO Flow Upon investigating the SSO flow, I discovered the following sequence",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "0a1bb956fdf9",
     "title": "Spip Preauth RCE 2024: Part 1, The Feather",
     "url": "https://thinkloveshare.com/hacking/spip_preauth_rce_2024_part_1_the_feather",
@@ -2631,6 +2732,75 @@
     "score": 60
   },
   {
+    "id": "9b7cc84cde1f",
+    "title": "Breaking the Barrier: Admin Panel Takeover Worth $3500",
+    "url": "https://medium.com/@noob.assassin/breaking-the-barrier-admin-panel-takeover-worth-3500-78da79089ca3",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Aditya Sharma (@Assass1nmarcos)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "3,500",
+    "published_at": "2024-08-13T00:00:00.000Z",
+    "added_at": "2026-09-23T05:48:15.422Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "summary_en": "I’m back with another writeup where we successfully bypassed the Admin Panel while working on a Bugcrowd private program.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m back with another writeup where we successfully bypassed the Admin Panel while working on a Bugcrowd private program. This issue was discovered in collaboration with my friend Rajesh Ranjan (Also thanks to him for inviting me to collaborate on the program). ## What is Admin Panel Bypass? Admin panel bypass is a technique used by attackers to gain unauthorized access to an administrative interface of a website or application. This typically involves exploiting vulnerabilities, such as weak authentication mechanisms, exposed endpoints, or flawed password reset functionalities, to bypass the",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "19eae9b2d63d",
+    "title": "Front-End Frameworks: When Bypassing Built-in Sanitization Might Backfire",
+    "url": "https://www.sonarsource.com/blog/front-end-frameworks-when-bypassing-built-in-sanitization-might-backfire",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Stefan Schiller (@scryh_)"
+    ],
+    "program": "Firefly III",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-13T00:00:00.000Z",
+    "added_at": "2026-09-23T05:49:23.187Z",
+    "categories": [
+      "xss",
+      "rce",
+      "file-upload"
+    ],
+    "severity": "medium",
+    "summary_en": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) Image 1: sonar logo Products Products Image 2 #### SonarQube Cloud Cloud based code verification and governance fo",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "[[Save your seat] SonarQube World Tour NYC - Oct. 15](https://www.sonarsource.com/resources/events/world-tour/new-york-city/) Image 1: sonar logo Products Products Image 2 #### SonarQube Cloud Cloud based code verification and governance for your CI/CD workflowsImage 3 #### SonarQube Server Self-managed code verification and governance for your CI/CD workflowsImage 4 #### SonarQube Advanced Security Secure use of open source code with advanced SAST and SCAImage 5 #### Gitar AI code review that fixes issues and commits until your build passesImage 6 #### Sonar Vortex New Context before the agen",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "6e07f0bb2e1c",
     "title": "ArtiPACKED: Hacking Giants Through a Race Condition in GitHub Actions Artifacts",
     "url": "https://unit42.paloaltonetworks.com/github-repo-artifacts-leak-tokens",
@@ -2662,6 +2832,74 @@
     },
     "excerpt": "Cloud Cybersecurity Research # ArtiPACKED: Hacking Giants Through a Race Condition in GitHub Actions Artifacts Image 53: Clock Icon 11 min read Related Products Image 54: Prisma Cloud iconCode to Cloud PlatformImage 55: Prisma Cloud iconPrisma CloudImage 56: Unit 42 Incident Response iconUnit 42 Incident Response * Image 57: Profile Icon By: * Yaron Avital * Image 58: Published IconPublished:August 13, 2024 * Image 59: Tags Icon Categories: * Cloud Cybersecurity Research * Threat Research * Image 60: Tags Icon Tags: * Artifacts * AWS * GitHub * Open source * Red Hat * Ubuntu * Image 61: Downlo",
     "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "53c2cd2c4af7",
+    "title": "How I Got $150 on HackerOne for My First Bug",
+    "url": "https://medium.com/@likithteki76/how-i-got-150-on-hackerone-for-my-first-bug-8af0ed515e79",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Likith Teki (@likith_teki)"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": "150",
+    "published_at": "2024-08-12T00:00:00.000Z",
+    "added_at": "2026-09-23T05:50:15.215Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "summary_en": "A private HackerOne program paid $150 for a 2FA recovery-code hygiene flaw: old recovery codes stayed valid after 2FA was disabled and re-enabled, letting attackers bypass 2FA and take over accounts.",
+    "summary_ar": "برنامج خاص على HackerOne دفع $150 مقابل ثغرة في إدارة recovery codes الخاصة بـ 2FA: الكودات القديمة فضلت صالحة بعد تعطيل وإعادة تفعيل 2FA، مما سمح للمهاجم بعمل bypass لـ 2FA والاستيلاء على الحسابات.",
+    "lesson": {
+      "cause_ar": "الـ root cause هنا إن النظام مش بيعمل revoke للـ recovery codes القديمة لما المستخدم يعطّل 2FA. الافتراض الخاطئ في التصميم كان إن إعادة تفعيل 2FA هتولّد كودات جديدة وبالتالي الكودات القديمة هتبوظ تلقائيًا — لكن السيرفر فضل بيقبل الكودات اللي اتولّدت قبل إعادة التفعيل. المشكلة مش في خوارزمية التوليد نفسها، لكن في إدارة دورة حياة الأسرار (secret lifecycle): مفيش أي آلية لإبطال الكودات الصادرة سابقًا عند تغيير حالة 2FA. فبالتالي أي recovery code تسرّب أو اتسرق قبل كده يفضل صالح للأبد حتى بعد ما المستخدم يعمل disable وإعادة enable.",
+      "walkthrough_ar": "في يونيو 2024 كان الباحث بيختبر تدفق الـ 2FA في برنامج خاص على HackerOne، وقرر يفحص دورة حياة الـ recovery codes كاملة بدل ما يكتفي باختبار تسجيل الدخول العادي. الخطوة الأولى كانت إنه فعّل 2FA على حسابه وولّد recovery codes وحفظها في مكان آمن. بعدها عطّل 2FA من إعدادات الحساب، وبعدين أعاد تفعيله تاني من نفس الإعدادات. هنا لاحظ إن النظام ما عملهوش أي إشارة إن الكودات القديمة اتبطلت — فقرر يختبر الفرضية دي عمليًا. سجّل خروجه من الحساب، وبعدين حاول يسجل دخول تاني مستخدمًا واحد من الـ recovery codes القديمة اللي اتولّدت قبل إعادة التفعيل. النتيجة كانت إن الكود القديم اشتغل وخلّاه يدخل الحساب من غير ما يطلب منه كود 2FA جديد. يعني رغم إن 2FA اتقفل واتفتح تاني، النظام فضل قايل إن الكودات القديمة لسه صالحة. الباحث وثّق الخطوات دي بالظبط — Enable 2FA، Save Codes، Disable 2FA، Re-enable 2FA، Sign Out، وبعدين Login Attempt بالكود القديم — ورفع تقرير مفصل على HackerOne فيه وصف المشكلة وخطوات إعادة الإنتاج والأثر المتوقع. الفريق الأمني أكد الثغرة ودفعله $150. الثغرة دي اتسمّت في التقرير Incorrect 2FA Recovery Code Hygiene، وبتسمح لأي حد معاه كود قديم إنه يعمل bypass للـ 2FA ويدخل حساب المستخدم.",
+      "takeaway_ar": "أي تطبيق فيه 2FA لازم تختبر دورة حياته كاملة مش بس تسجيل الدخول: فعّل، عطّل، أعد التفعيل، وبعدين جرّب الكودات القديمة والـ TOTP secret القديم. العلامة اللي بتدل على الفئة دي إن النظام لما يعيد تفعيل 2FA ما بيظهرش أي تغيير في صلاحية الكودات القديمة أو ما بيطلبش إعادة تحقق. نفس النمط بيظهر كمان في تغيير الباسورد أو الإيميل أو الـ API keys — دايماً اسأل نفسك: هل الأسرار القديمة اتبطلت فعلًا على السيرفر ولا لسه شغالة؟ ولو لقيت إن حالة أمنية بتتغير من غير ما الأسرار القديمة تتبطل، يبقى قدامك ثغرة تستاهل تقرير.",
+      "fix_ar": "الحل الصح إن السيرفر يعمل invalidation صريحة لكل الـ recovery codes وكل أسرار الـ TOTP القديمة لحظة ما المستخدم يعطّل 2FA، ويفضل يرفضها حتى لو أعاد التفعيل بعدين. عند إعادة التفعيل لازم يتولّد secret جديد وكودات جديدة تمامًا، وأي كود قديم يترفض بـ error واضح. كمان الـ recovery codes المفروض تكون single-use — أي كود بيتستخدم مرة واحدة وبعدها يتبطل فورًا حتى لو كان صحيح. ويفضل تسجيل كل عملية enable/disable في audit log عشان تقدر تتبع أي كود اتولّد وإمتى اتبطل."
+    },
+    "excerpt": "Getting started in bug bounty hunting can be both thrilling and challenging. When I discovered my first vulnerability on a private program and reported it, I wasn’t just excited about finding a flaw. I was also pleasantly surprised to receive $150 for my efforts. Here’s the story of how I found and reported this bug and what made it such a rewarding experience ## **Title: Incorrect 2FA Recovery Code Hygiene** In June 2024, I came across a issue in the management of 2FA (two-factor authentication) recovery codes within a private program on HackerOne. The vulnerability emerged when a user disabl",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "0cd9214b3bbb",
+    "title": "CVE-2024-38428 Wget Vulnerability: All you need to know",
+    "url": "https://jfrog.com/blog/cve-2024-38428-wget-vuln-all-you-need-to-know",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Goni Golan"
+    ],
+    "program": "GNU Wget",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-12T00:00:00.000Z",
+    "added_at": "2026-09-23T05:51:19.813Z",
+    "categories": [
+      "ssrf",
+      "rce"
+    ],
+    "severity": "high",
+    "summary_en": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "JFrog immunizes what agents consume and controls how they build and deploy — every AI model, agent skill, plugin, MCP server, package, and AI-generated artifact, governed in a single source of truth. A trusted agentic workforce. This is AgentSecOps. Learn More Trusted AI Image 12 JFrog AI Catalog Trust Your Agentic Workforce Agent Guard MCP Registry Agent Skills Registry Plugins Registry APM Registry Model Registry AI Integrations Image 13 ClaudeImage 14 CursorImage 15 CodexImage 16 Hugging FaceImage 17 NVIDIAImage 18 Visual Studio CodeImage 19 DevinImage 20 KiroImage 21 Open CodeImage 22 Nano",
+    "ai_generated": false,
     "engagement": null,
     "score": 53
   },
