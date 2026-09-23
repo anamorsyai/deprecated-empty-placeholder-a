@@ -101,5 +101,45 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "b9da9e97a206",
+    "title": "Splitting the email atom: exploiting parsers to bypass access controls",
+    "url": "https://portswigger.net/research/splitting-the-email-atom",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Gareth Heyes (@garethheyes)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-07T00:00:00.000Z",
+    "added_at": "2026-09-23T13:38:20.341Z",
+    "categories": [
+      "access-control",
+      "cache-smuggling"
+    ],
+    "severity": "medium",
+    "summary_en": "Products Solutions ResearchAcademySupport Company CustomersAboutBlogCareersLegalContactResellers My accountCustomersAboutBlogCareersLegalContactResellers Image 1: Burp AT**Burp AT**Agentic AI that extends human-led pentesting.Image 2: Burp",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Products Solutions ResearchAcademySupport Company CustomersAboutBlogCareersLegalContactResellers My accountCustomersAboutBlogCareersLegalContactResellers Image 1: Burp AT**Burp AT**Agentic AI that extends human-led pentesting.Image 2: Burp Suite DAST**Burp Suite DAST**The enterprise-enabled dynamic web vulnerability scanner.Image 3: Burp Suite Professional**Burp Suite Professional**The world's #1 web penetration testing toolkit.Image 4: Burp Suite Community Edition**Burp Suite Community Edition**The best manual tools to start web security testing.View all product editions **Burp Scanner** Burp",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
   }
 ]
