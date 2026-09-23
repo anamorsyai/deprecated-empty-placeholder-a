@@ -1363,5 +1363,44 @@
     "ai_generated": false,
     "engagement": null,
     "score": 47
+  },
+  {
+    "id": "3ef48d74f47d",
+    "title": "Pwn2Own Miami: Aveva Edge Arbitrary DLL Loading Vulnerability",
+    "url": "https://piffd0s.medium.com/pwn2own-miami-aveva-edge-arbitrary-dll-loading-vulnerability-b2d10fc7d55c",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Piffd0s (@piffd0s)"
+    ],
+    "program": "AVEVA",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-01T00:00:00.000Z",
+    "added_at": "2026-09-23T16:33:16.435Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "This article covers the vulnerability I discovered while researching the Aveva Edge attack surface for Pwn2Own Miami a few years ago. It’s been patched for a while now so its fair to release my writeup of the program.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This article covers the vulnerability I discovered while researching the Aveva Edge attack surface for Pwn2Own Miami a few years ago. It’s been patched for a while now so its fair to release my writeup of the program. Upon testing Aveva Edge V20 SP1 and later SP2 it was found that Aveva Edge Application files (.APP) can be configured to trigger DLL loading from unsafe paths. The root cause of this condition is due to the fact that upon startup Aveva Edge will always load imgman32.dll from a safe and trusted location. Press enter or click to view image in full size Image 4 Imgman32.dll loaded f",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]
