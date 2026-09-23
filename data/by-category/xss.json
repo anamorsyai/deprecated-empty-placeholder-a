@@ -349,5 +349,39 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "36d3fc83bc13",
+    "title": "_Persistent XSS on Microsoft Bing.com by poisoning Bingbot indexing_",
+    "url": "https://infosecwriteups.com/persistent-xss-vulnerability-on-microsoft-bings-video-indexing-system-a46db992ac7b",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Supakiad S. (@Supakiad_Mee)"
+    ],
+    "program": "Microsoft (Bing)",
+    "platform_slug": "other",
+    "bounty_raw": "3,000",
+    "published_at": "2024-08-08T00:00:00.000Z",
+    "added_at": "2026-09-23T06:35:20.051Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "summary_en": "Stored XSS on Bing.com achieved by poisoning Bingbot: video metadata (title, description, owner) crawled from external sites is served unsanitized from /videos/vdasync with Content-Type text/html, so a <script> payload posted on VK executed in Bing's domain context.",
+    "summary_ar": "ثغرة XSS مخزنة (Stored XSS) على Bing.com تم تحقيقها عبر تسميم Bingbot: بيانات الفيديو (العنوان والوصف واسم المالك) التي يزحفها Bingbot من مواقع خارجية تُعرض بدون تعقيم من /videos/vdasync مع Content-Type: text/html، فتنفّذ حمولة <script> نُشرت على VK داخل سياق نطاق Bing.",
+    "lesson": {
+      "cause_ar": "السبب الجذري أن Bingbot يجمع بيانات الفيديو (العنوان، الوصف، اسم المالك) من مواقع خارجية ويخزّنها في فهرس Bing بدون أي تعقيم (sanitization) أو ترميز. الافتراض الخاطئ أن هذه البيانات الخارجية مصدرها موثوق، فتُعامل كمحتوى آمن وتُعرض كما هي. المشكلة تضاعفت لأن endpoint الفيديو https://www.bing.com/videos/vdasync يعيد هذه البيانات بصيغة JSON لكن مع Content-Type: text/html; charset=utf-8 بدلاً من application/json. المتصفح يفسّر الاستجابة كـ HTML، فينفّذ أي وسم <script> موجود داخل بيانات JSON. النتيجة أن المهاجم يتحكم في metadata فيديو على منصة خارجية تسمح بعلامات <> (مثل VK)، وبعد أن يزحفها Bingbot تتحول إلى XSS مخزنة دائمة على نطاق Bing نفسه.",
+      "walkthrough_ar": "الخطوة 1: السياق — الباحث كان يستخدم Bing واكتشف أنه عند البحث عن صورة أو فيديو ومحاولة عرض نتيجة فيديو، يتحول الرابط إلى endpoint معين.\n(أ) فتح نتيجة فيديو من بحث Bing.\n(ب) الرابط: https://www.bing.com/videos/vdasync\n(ج) هذا هو الـ endpoint الذي يخدم تفاصيل الفيديو في بحث Bing.\n\nالخطوة 2: بعد النقر وعرض التفاصيل، لاحظ أن الـ API يعيد metadata الفيديو الذي جمعه Bingbot من مواقع أخرى وخزّنه في نظام بحث Bing.\n(أ) فحص استجابة الـ API.\n(ب) الاستجابة تحتوي على عنوان الفيديو ووصفه واسم المالك بصيغة JSON.\n(ج) معنى ذلك أن البيانات المعروضة مصدرها خارجي وليست مولّدة داخل Bing.\n\nالخطوة 3: لاحظ أن Content-Type لهذا الرابط هو text/html بدلاً من application/json.\n(أ) فحص ترويسات الاستجابة.\n(ب) Content-type: text/html; charset=utf-8\n(ج) رغم أن البيانات بصيغة JSON، المتصفح سيفسّرها كـ HTML، فأي وسم <script> داخل البيانات سينفّذ.\n\nالخطوة 4: طرح سؤال: ماذا لو تحكمنا في الـ metadata وقام Bingbot بجلب بياناتنا وتخزينها في موقع Bing بدون تعقيم أو ترميز؟\n(أ) بناء فرضية هجوم.\n(ب) الفرضية: التحكم في عنوان/وصف/مالك فيديو خارجي ثم انتظار زحف Bingbot.\n(ج) لو نجح ذلك، أي زائر لصفحة نتائج الفيديو سينفّذ السكربت داخل نطاق Bing.\n\nالخطوة 5: اختار منصات تسمح بعلامات <> في metadata الفيديو: VK وTikTok وInstagram — واستبعد YouTube وVimeo وDailymotion.\n(أ) تحديد منصة مناسبة للنشر.\n(ب) المنصات المستخدمة: https://vk.com/video/@club226523289 و https://www.tiktok.com/@m3ez_xss و https://www.instagram.com/m3ez.ss\n(ج) لتنفيذ JavaScript أو HTML injection نحتاج إلى <>، وهي غير متاحة على المنصات الكبرى مثل YouTube.\n\nالخطوة 6: رفع فيديو على vk.com مع تضمين الحمولة في اسم المالك أو عنوان الفيديو أو الوصف.\n(أ) إنشاء منشور فيديو بالحمولة.\n(ب) الحمولة: <script>prompt('Stored XSS by Supakiad S. (m3ez)',document.domain);</script>\n(ج) الحمولة ستُخزَّن كجزء من metadata الفيديو على VK وستظهر في بيانات الفيديو.\n\nالخطوة 7: نشر منشور الفيديو ليكون متاحًا للجميع، بما في ذلك السماح لـ Bingbot بالزحف إلى metadata الفيديو.\n(أ) جعل المنشور عامًا.\n(ب) المنشور: https://vk.com/wall-226523289_2\n(ج) Bingbot يزحف الروابط الخارجية ويحدّث فهرس Bing باستمرار.\n\nالخطوة 8: بعد بضعة أيام، ظهر الفيديو من vk.com في بحث فيديو Bing.\n(أ) البحث عن الفيديو على Bing.\n(ب) ظهور الفيديو في نتائج بحث فيديو Bing.\n(ج) تأكيد أن Bingbot زحف الـ metadata وخزّنه في الفهرس بدون تعقيم.\n\nالخطوة 9: عند عرض تفاصيل الفيديو المصاب، ينفّذ المتصفح السكربت داخل سياق تطبيق Bing.\n(أ) فتح تفاصيل الفيديو المصاب.\n(ب) تنفيذ prompt('Stored XSS by Supakiad S. (m3ez)',document.domain) داخل نطاق Bing.\n(ج) Content-Type: text/html يجعل المتصفح يفسّر JSON كـ HTML وينفّذ <script>.\n\nالخطوة 10: الأثر النهائي — تنفيذ JavaScript عشوائي في سياق Bing.\n(أ) توثيق الأثر في التقرير.\n(ب) الأثر: سرقة الكوكيز، اختطاف الجلسات، تشويه الصفحات، والتصيد.\n(ج) XSS مخزنة دائمة تؤثر على كل مستخدم يشاهد تفاصيل الفيديو المصاب، وليس فقط المهاجم.",
+      "example_ar": "مثال تدريبي على هدف وهمي: محرك بحث فيديو افتراضي على target.example يجمع metadata الفيديو من مواقع خارجية عبر زاحف.\n\nالكود الضعيف:\n@app.route('/api/video_details')\ndef video_details():\n    video = db.get_video(request.args.get('id'))\n    # metadata جاء من الزاحف الخارجي وتم تخزينه كما هو بدون تعقيم\n    return json.dumps({\"title\": video.title, \"owner\": video.owner}), 200, {\"Content-Type\": \"text/html\"}\n\nطلب الهجوم: المهاجم ينشر فيديو على منصة خارجية باسم مالك يحتوي على <script>alert(document.domain)</script>، ثم يزحف الزاحف البيانات ويخزّنها، وعندما يزور الضحية https://target.example/api/video_details?id=123 تنفّذ الحمولة.\n\nلماذا نجح: الاستجابة تُرسل بـ Content-Type: text/html رغم أن البيانات JSON، فيفسّر المتصفح المحتوى كـ HTML وينفّذ وسم <script> المخزّن.",
+      "takeaway_ar": "ابحث عن محركات البحث والتجميعات (aggregators) التي تجلب metadata من مصادر خارجية — أي نظام فيه زاحف أو import لبيانات طرف ثالث هو مرشح قوي لهذه الفئة. افحص دائمًا ترويسة Content-Type لأي endpoint يعيد JSON: لو وجدتها text/html فهذه إشارة حمراء فورية. جرّب إدخال علامات <> في الحقول التي تتحكم فيها خارجيًا (العنوان، الوصف، اسم المالك) وراقب هل تصل كما هي إلى الاستجابة. استخدم أدوات مثل curl -I لفحص الترويسات وBurp لمراقبة الاستجابات، وابحث عن أنماط URLs مثل /videos/vdasync أو أي مسار يعيد بيانات مجمّعة. تذكّر أن المنصات الكبرى (YouTube وVimeo) تعقّم <>، لذا جرّب منصات أصغر تسمح بها.",
+      "fix_ar": "الإصلاح الصحيح متعدد الطبقات: أولاً، تعقيم وترميز كل metadata قادم من مصادر خارجية قبل التخزين أو العرض (output encoding) بحيث تتحول <> إلى كيانات HTML. ثانيًا، إرجاع البيانات بصيغة JSON مع Content-Type صحيح application/json حتى لا يفسّر المتصفح المحتوى كـ HTML. ثالثًا، إضافة سياسة CSP صارمة تمنع تنفيذ السكربتات المضمّنة. رابعًا، فرض validation على الحقول (طول، مجموعة أحرف مسموحة) عند الاستيراد.\n\nالكود الصحيح:\n@app.route('/api/video_details')\ndef video_details():\n    video = db.get_video(request.args.get('id'))\n    # تعقيم metadata الخارجي قبل الإرجاع\n    safe_title = html.escape(video.title)\n    safe_owner = html.escape(video.owner)\n    return json.dumps({\"title\": safe_title, \"owner\": safe_owner}), 200, {\"Content-Type\": \"application/json; charset=utf-8\"}"
+    },
+    "excerpt": "In this blog post, I will discuss the details of a Persistent XSS on Bing.com by poisoning **Bingbot**from external websites. > **What is Stored or Persistent XSS?** > Stored attacks are those where the injected script is permanently stored on the target servers, such as in a database, in a message forum, visitor log, comment field, etc. The victim then retrieves the malicious script from the server when it requests the stored information. Stored XSS is also sometimes referred to as Persistent or Type-II XSS. > > > For more information, please visit: Cross Site Scripting (XSS) | OWASP ### **Wh",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
   }
 ]

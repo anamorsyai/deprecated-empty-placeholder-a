@@ -266,5 +266,43 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "fa6166fa7242",
+    "title": "Bucket Monopoly: Breaching AWS Accounts Through Shadow Resources",
+    "url": "https://www.aquasec.com/blog/bucket-monopoly-breaching-aws-accounts-through-shadow-resources",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Yakir Kadkoda",
+      "Ofek Itach",
+      "Michael Katchinskiy"
+    ],
+    "program": "AWS",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-09T00:00:00.000Z",
+    "added_at": "2026-09-23T06:33:35.314Z",
+    "categories": [
+      "rce",
+      "info-disclosure",
+      "supply-chain"
+    ],
+    "severity": "critical",
+    "summary_en": "Aqua Platform Runtime Powered Cloud Security Monitor behavior, detect exploitable risk, enforce policy and contain threats across the application lifecycle.​Platform overview Code Security * Scanning & Assurance Scan artifacts across the en",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Aqua Platform Runtime Powered Cloud Security Monitor behavior, detect exploitable risk, enforce policy and contain threats across the application lifecycle.​Platform overview Code Security * Scanning & Assurance Scan artifacts across the entire software development lifecycle * Software Supply Chain Security Protect your code, tools, and processes * Vulnerability Management Advanced Code-to-Cloud vulnerability management to reduce noise and fix fast Runtime Security * Container Security Full lifecycle advanced protection for containerized applications * Cloud Workload Protection (CWPP)Runtime p",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]
