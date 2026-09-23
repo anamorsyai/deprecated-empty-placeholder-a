@@ -1483,6 +1483,45 @@
     "score": 60
   },
   {
+    "id": "0c4cf2beb331",
+    "title": "CODE WHITE | Teaching the Old .NET Remoting New Exploitation Tricks",
+    "url": "https://code-white.com/blog/teaching-the-old-net-remoting-new-exploitation-tricks",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Markus Wulftange (@mwulftange)"
+    ],
+    "program": "Microsoft (.NET Framework), Apache log4net",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-07-31T00:00:00.000Z",
+    "added_at": "2026-09-23T16:48:30.618Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "This blog post provides insights into three exploitation techniques that can still be used in cases of a hardened .NET Remoting server with `TypeFilterLevel.Low` and Code Access Security (CAS) restrictions in place.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This blog post provides insights into three exploitation techniques that can still be used in cases of a hardened .NET Remoting server with `TypeFilterLevel.Low` and Code Access Security (CAS) restrictions in place. Two of these tricks are considered novel and can help in cases where ExploitRemotingService is stuck. # Introduction This is hopefully the last post on .NET Remoting as it has already been extensively dissected by many researchers. Definitely worth mentioning is James Forshaw, who published the first insights and exploitable design flaws in .NET Remoting back in 2012. From then on,",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "93f5858d91c2",
     "title": "Plug Security Holes in React Apps That Can Lead to API Exploitation",
     "url": "https://thenewstack.io/plug-security-holes-in-react-apps-that-can-lead-to-api-exploitation",
