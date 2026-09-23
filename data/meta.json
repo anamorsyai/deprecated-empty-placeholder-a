@@ -1,10 +1,10 @@
 {
-  "lastRun": "2026-09-23T19:58:32.189Z",
+  "lastRun": "2026-09-23T20:02:22.018Z",
   "totalItems": 59,
-  "newItemsThisRun": 1,
+  "newItemsThisRun": 0,
   "aiProvider": "custom",
   "aiOkThisRun": 0,
-  "aiFallbackThisRun": 1,
+  "aiFallbackThisRun": 0,
   "aiGeneratedTotal": 20,
   "bySource": {
     "reddit-netsec": 1,
