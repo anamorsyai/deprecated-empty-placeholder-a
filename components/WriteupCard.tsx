@@ -10,7 +10,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
   const borderColor = writeup.severity ? SEVERITY_BORDER[writeup.severity] : "border-s-border";
 
   return (
-    <article className={`card-hover flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-4 border-s-4 sm:p-5 ${borderColor}`}>
+    <article className={`card-hover flex min-w-0 flex-col gap-2.5 rounded-xl border border-border bg-surface p-4 border-s-4 sm:p-5 ${borderColor}`}>
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
         <span className="truncate">{writeup.source.name}</span>
         <span aria-hidden>·</span>
@@ -35,7 +35,7 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
       </Link>
 
       {!compact && summary && (
-        <p className="line-clamp-2 text-sm leading-relaxed text-muted" dir={writeup.summary_ar ? "rtl" : "ltr"}>
+        <p className="line-clamp-2 break-words text-sm leading-relaxed text-muted" dir={writeup.summary_ar ? "rtl" : "ltr"}>
           {summary}
         </p>
       )}

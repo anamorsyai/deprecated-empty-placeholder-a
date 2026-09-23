@@ -70,9 +70,24 @@ function parseJinaResponse(text) {
 
   return {
     cleanTitle: pickBestTitle(rawTitle, rawBody),
-    excerpt: body.replace(/\s+/g, " ").slice(0, 600).trim(),
+    excerpt: readableExcerpt(body),
     fullTextForClassification: body.slice(0, 9000),
   };
+}
+
+// Display-only cleanup for the card excerpt: collapse markdown links/images
+// to their visible text (a 200-char tracking URL must never reach the layout)
+// and drop stray "Follow"/"Sign in" Medium chrome. The full classification
+// text is intentionally left raw — endpoint names and URLs help the AI.
+function readableExcerpt(body) {
+  const text = body
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/\b(Follow|Sign in|Log in)\b\s*/g, "")
+    .replace(/\s+/g, " ")
+    .slice(0, 600)
+    .trim();
+  return text;
 }
 
 // The page <title> is often just site branding on advisory/bulletin pages

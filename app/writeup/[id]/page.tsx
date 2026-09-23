@@ -76,9 +76,9 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
       {(w.summary_ar || w.summary_en) && (
         <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
           <h2 className="mb-2 text-sm font-bold text-primary">ملخص سريع</h2>
-          {w.summary_ar && <p className="mb-2 leading-relaxed">{w.summary_ar}</p>}
+          {w.summary_ar && <p className="mb-2 break-words leading-relaxed">{w.summary_ar}</p>}
           {w.summary_en && (
-            <p className="text-sm leading-relaxed text-muted" dir="ltr">
+            <p className="break-words text-sm leading-relaxed text-muted" dir="ltr">
               {w.summary_en}
             </p>
           )}
@@ -142,7 +142,7 @@ function LessonSection({ lesson, aiGenerated }: { lesson: Lesson | null; aiGener
               <h3 className="mb-1.5 text-sm font-bold">
                 {s.icon} {s.title}
               </h3>
-              <p className="text-sm leading-relaxed text-muted">{lesson![s.key]}</p>
+              <p className="break-words text-sm leading-relaxed text-muted">{lesson![s.key]}</p>
             </div>
           ))}
         </div>
