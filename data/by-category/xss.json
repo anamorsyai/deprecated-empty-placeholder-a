@@ -212,5 +212,44 @@
     "ai_generated": false,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "c985f143e7d1",
+    "title": "Auditing Atlassian Plugins, 53 0-Days Later",
+    "url": "https://cyllective.com/blog/posts/atlassian-audit-plugins",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "cyllective (@cyllective)"
+    ],
+    "program": "Atlassian",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-02T00:00:00.000Z",
+    "added_at": "2026-09-23T16:18:26.267Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "summary_en": "This post is the first part of our Atlassian plugin series. In this one, we focus on the general plugin ecosystem, specifically on the data center and server flavors for Atlassian products, and how we found multiple 0-day vulnerabilities.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This post is the first part of our Atlassian plugin series. In this one, we focus on the general plugin ecosystem, specifically on the data center and server flavors for Atlassian products, and how we found multiple 0-day vulnerabilities. In the second part, we investigate the capabilities of a malicious plugin. ## Enter The Marketplace# Image 3: Atlassian Marketplace Atlassian Marketplace If you start installing plugins, you’ll land on the Atlassian marketplace↗ sooner or later. Let’s dive deeper into what the Atlassian marketplace has to offer and find out how well their security checks hold",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
   }
 ]
