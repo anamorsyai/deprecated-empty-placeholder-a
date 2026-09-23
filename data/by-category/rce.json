@@ -1,5 +1,44 @@
 [
   {
+    "id": "cc47b0666fb4",
+    "title": "I Took Over a Media Giant’s Subdomain with a Free Netlify Account and a Ten-Minute Attention Span",
+    "url": "https://khanmoeez.medium.com/i-took-over-a-media-giants-subdomain-with-a-free-netlify-account-and-a-ten-minute-attention-span-a4020ac315c3",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Abdul Moeez Khan"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T15:52:02.000Z",
+    "added_at": "2026-09-23T16:06:58.663Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "## A story about a forgotten CNAME record, a platform that trusts you a little too much, and why “it’s just a subdomain” is the wrong way to think about DNS hygiene.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "## A story about a forgotten CNAME record, a platform that trusts you a little too much, and why “it’s just a subdomain” is the wrong way to think about DNS hygiene. Image 3: Abdul Moeez Khan Abdul Moeez Khan 10 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fa4020ac315c3&operation=register&redirect=https%3A%2F%2Fkhanmoeez.medium.com%2Fi-took-over-a-media-giants-subdomain-with-a-free-netlify-account-and-a-ten-minute-attention-span-a4020ac315c3&user=Abdul+Moeez+Khan&userId=d58dc6f5ca22&source=---header_actions--a4020ac315c3-----------------",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "9257b52a9d97",
     "title": "World of SELECT-only PostgreSQL Injections",
     "url": "http://phrack.org/issues/71/8.html",
