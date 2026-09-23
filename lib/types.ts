@@ -3,6 +3,8 @@ export type Severity = "critical" | "high" | "medium" | "low" | null;
 export interface Lesson {
   cause_ar: string | null;
   walkthrough_ar: string | null;
+  /** Illustrative parallel example composed by the AI (fictional target) — not from the article. */
+  example_ar: string | null;
   takeaway_ar: string | null;
   fix_ar: string | null;
 }

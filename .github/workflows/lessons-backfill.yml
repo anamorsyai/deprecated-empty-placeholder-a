@@ -1,0 +1,74 @@
+name: Backfill missing AI lessons
+
+# Gives archived writeups that never got a full AI teaching read (timeout
+# fallback, or added before the teacher prompt existed) a lesson with the
+# current prompt. Newest first, capped per run — re-dispatch until the queue
+# in the logs reads 0. Never deletes or reorders anything.
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_items:
+        description: "How many archived items to teach this run"
+        required: false
+        default: "10"
+
+permissions:
+  contents: write
+  # Data commits made with GITHUB_TOKEN don't fire the deploy workflow
+  # (GitHub loop protection), so we dispatch it explicitly below.
+  actions: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+      AI_TIMEOUT_MS: "150000"
+      BACKFILL_MAX: ${{ inputs.max_items }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      CUSTOM_API_BASE: ${{ secrets.CUSTOM_API_BASE }}
+      CUSTOM_API_KEY: ${{ secrets.CUSTOM_API_KEY }}
+      CUSTOM_MODEL: ${{ secrets.CUSTOM_MODEL }}
+      CUSTOM_API_HEADERS: ${{ secrets.CUSTOM_API_HEADERS }}
+      JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Backfill lessons
+        run: npm run backfill:lessons
+
+      - name: Commit backfilled lessons
+        id: commit
+        run: |
+          git config user.name "writeups-bot"
+          git config user.email "actions@users.noreply.github.com"
+          BEFORE_SHA=$(git rev-parse origin/main)
+          git add data/writeups.json data/meta.json data/by-category/
+          git diff --cached --quiet || git commit -m "chore(data): backfill AI lessons $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git pull --rebase --autostash origin main || git pull --rebase origin main
+          git push || (git pull --rebase origin main && git push)
+          if [ "$BEFORE_SHA" != "$(git rev-parse origin/main)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger site deploy
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-deploy.yml/dispatches" \
+            -d '{"ref":"main"}'

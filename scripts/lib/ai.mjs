@@ -22,6 +22,12 @@ import taxonomy from "../../taxonomy.json" with { type: "json" };
 
 const PROVIDER = resolveProvider();
 
+// Slow/self-hosted endpoints regularly need more than a minute for a long
+// teaching-style answer (we saw consistent 60s+ timeouts in production).
+// Overridable per run without touching code.
+const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 150000);
+const AI_MAX_TOKENS = Number(process.env.AI_MAX_TOKENS || 5000);
+
 function resolveProvider() {
   const forced = process.env.AI_PROVIDER;
   if (forced) return forced;
@@ -51,10 +57,10 @@ const PLATFORM_SLUGS = taxonomy.platforms.map((p) => p.slug);
 
 const PROMPT_INSTRUCTIONS = `You are two things at once for a bug bounty writeup aggregator read daily by hackers:
 (1) a strict gatekeeper — the site must stay bug-bounty-only, no CTF/training-lab writeups, no vendor CVE advisories unrelated to a bounty program, no interviews/news/business posts; and
-(2) a hands-on mentor who has read the full writeup and now teaches it to a hunter in Arabic — not a summary, a real walkthrough that lets someone learn the technique without opening the original link.
+(2) a hands-on mentor who has read the full writeup and now teaches it to a hunter in Arabic — not a summary, a real masterclass that lets someone learn the technique deeply without opening the original link.
 
 Return ONLY minified JSON, no markdown fences, matching exactly:
-{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"summary_en":string,"summary_ar":string,"lesson_cause_ar":string,"lesson_walkthrough_ar":string,"lesson_takeaway_ar":string,"lesson_fix_ar":string}
+{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"summary_en":string,"summary_ar":string,"lesson_cause_ar":string,"lesson_walkthrough_ar":string,"lesson_example_ar":string,"lesson_takeaway_ar":string,"lesson_fix_ar":string}
 
 Rules:
 - is_bug_bounty: true ONLY if this describes a real vulnerability found and reported against a specific target/program (bug bounty platform report, responsible disclosure, or an independent researcher's disclosed finding with a named target). false for CTF/TryHackMe/HackTheBox writeups, generic tutorials, interviews, news, opinion/career pieces, or vendor advisories with no bounty/disclosure context. When false, every field below is an empty string except categories/severity (best-effort).
@@ -62,17 +68,12 @@ Rules:
 - severity: your best judgement of real-world impact ("critical" for RCE/full account takeover/mass data breach, "high" for auth bypass/significant data exposure, "medium"/"low" otherwise, null if you truly cannot tell).
 - summary_en: 1-2 punchy sentences in English describing the vulnerability and impact (no fluff, no "this writeup discusses"). Used on list/card views.
 - summary_ar: the same 1-2 sentences in natural Modern Standard Arabic, technical terms (XSS, IDOR, RCE...) kept in Latin script. Used on list/card views.
-- The four lesson_*_ar fields are the full teaching content shown on the writeup's own page — write them as a real teacher would, in Arabic, technical terms in Latin script, concrete and specific to THIS writeup (never generic filler that could apply to any writeup of the same vuln class):
-  - lesson_cause_ar (3-5 sentences): الـ root cause — إزاي الثغرة دي حصلت أصلاً في تصميم أو تنفيذ النظام؟ ما الافتراض الخاطئ أو الفجوة في الـ logic اللي فتحت الباب؟
-  - lesson_walkthrough_ar (THE MAIN EVENT — write this as an actual story, 8-14 sentences, not a dry list): احكي قصة اكتشاف واستغلال الثغرة بالترتيب الزمني بالظبط زي ما حصلت مع الباحث، بصوت راوي، وليس تعريف نظري. غطّي:
-      1) السياق: إيه اللي كان الباحث بيعمله وقت ما لاحظ حاجة غريبة (أي جزء من التطبيق كان بيفحص، وليه).
-      2) الملاحظة الأولى: إيه بالظبط اللي لفت نظره (سلوك غير متوقع، رسالة خطأ، فرق في الـ response، endpoint غريب).
-      3) التجربة: إيه اللي جرّبه بعد كده خطوة بخطوة — واقتبس كل تفصيلة حرفية موجودة في المقال (اسم الـ endpoint/الـ parameter، الـ payload أو الكود بالظبط، أي طلب/استجابة HTTP مذكورة، أي رسالة خطأ أو رقم status code).
-      4) النتيجة: الـ payload أو التقنية النهائية اللي أثبتت الثغرة، ونص إثبات الأثر (إيه اللي قدر يوصله/يشوفه/يعمله).
-      إذا المقال فيه مثال تقني محدد (URL، snippet كود، JSON، header)، لازم يتذكر حرفيًا جوه القصة مش يتلخّص لعبارة عامة — ده اللي بيفرق بين شرح حقيقي وملخص فاضي.
-  - lesson_takeaway_ar (3-5 sentences): الدرس العملي لصياد ثغرات بيقرا الكتابة دي — إمتى يدور على النمط ده تاني، وإيه العلامات (signals) اللي تدله إن نفس الفئة من الثغرات ممكن تكون موجودة في هدف تاني.
-  - lesson_fix_ar (3-5 sentences): إزاي المطور كان/لازم يصلح المشكلة دي بشكل صحيح (مش بس "أصلحوها" — التفاصيل التقنية للحل الصح).
-- If the extracted content is too thin to teach any of the four lesson fields honestly, write "" for that field rather than inventing detail not supported by the source. This applies especially to lesson_walkthrough_ar: a short, honest walkthrough using only what's really in the article beats a long one padded with invented specifics.`;
+- lesson_cause_ar (4-6 sentences): الـ root cause — إزاي الثغرة دي حصلت أصلاً في تصميم أو تنفيذ النظام؟ ما الافتراض الخاطئ أو الفجوة في الـ logic اللي فتحت الباب؟ اربط كل نقطة بتفصيلة من المقال (endpoint، parameter، سطر كود) كلما أمكن.
+- lesson_walkthrough_ar (THE MAIN EVENT — a Lego-style step-by-step build, 10-20 short numbered steps "الخطوة 1، الخطوة 2..."). Like assembling Lego bricks until the final exploit shape appears: EVERY step has three parts: (أ) عمل الباحث إيه بالظبط، (ب) الكود/الـ payload/الطلب الحرفي من المقال (URL كامل، HTTP request، JSON، snippet — يتحط في سطر لوحده)، (ج) ليه الخطوة دي شغالة — الميكانيزم في جملة أو جملتين (ليه السيرفر استجاب كده؟ إيه الافتراض اللي اتكسر؟). ابدأ من السياق (كان بيفحص إيه وليه)، ثم أول ملاحظة غريبة، ثم كل تجربة بالترتيب الزمني، وانتهي بالـ payload النهائي وإثبات الأثر (وصل لإيه بالظبط). لو المقال فيه مثال تقني محدد لازم يتذكر حرفيًا مش يتلخص.
+- lesson_example_ar (a parallel training example, NOT from the article): مثال مشابه مبسّط من تأليفك لنفس فئة الثغرة على هدف وهمي (استخدم target.example دائمًا)، فيه: سطرين كود ضعيف (vulnerable snippet) + طلب الهجوم + سطر واحد يشرح ليه نجح. ده للتدريب فقط — اكتب المحتوى التعليمي بس من غير أي disclaimer (الموقع بيعرضه في قسم منفصل موسوم "مثال مشابه").
+- lesson_takeaway_ar (3-5 sentences): الدرس العملي لصياد ثغرات — إمتى يدور على النمط ده تاني، وإيه العلامات (signals) اللي تدله إن نفس الفئة موجودة في هدف تاني، وأدوات/كلمات بحث عملية.
+- lesson_fix_ar (4-6 sentences): الإصلاح الصحيح بالتفصيل التقني — ومعاه snippet الكود الصح (fixed code) كلما كان ذلك ممكنًا، مش مجرد "أصلحوها".
+- HONESTY IS MANDATORY: article-derived fields (cause/walkthrough/takeaway/fix) must come ONLY from the extracted content below — never invent endpoints, payloads, or results. If the content is too thin for a field, write "" for it rather than padding. The ONLY field you may compose freely is lesson_example_ar (it's explicitly illustrative, on a fictional target, and displayed as such).`;
 
 export async function classifyAndSummarize(item) {
   if (PROVIDER === "none") return heuristicClassify(item);
@@ -115,6 +116,7 @@ export async function classifyAndSummarize(item) {
       lesson: {
         cause_ar: (parsed.lesson_cause_ar || "").trim() || null,
         walkthrough_ar: (parsed.lesson_walkthrough_ar || "").trim() || null,
+        example_ar: (parsed.lesson_example_ar || "").trim() || null,
         takeaway_ar: (parsed.lesson_takeaway_ar || "").trim() || null,
         fix_ar: (parsed.lesson_fix_ar || "").trim() || null,
       },
@@ -143,10 +145,10 @@ async function callGemini(userPrompt) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    signal: AbortSignal.timeout(60000),
+    signal: AbortSignal.timeout(AI_TIMEOUT_MS),
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: `${PROMPT_INSTRUCTIONS}\n\n${userPrompt}` }] }],
-      generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: 3072 },
+      generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: AI_MAX_TOKENS },
     }),
   });
   if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`);
@@ -175,7 +177,7 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
   const body = (withJsonMode) => ({
     model,
     temperature: 0.2,
-    max_tokens: 3072,
+    max_tokens: AI_MAX_TOKENS,
     ...(withJsonMode ? { response_format: { type: "json_object" } } : {}),
     messages: [
       { role: "system", content: PROMPT_INSTRUCTIONS },
@@ -187,11 +189,24 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
     fetch(endpoint, {
       method: "POST",
       headers,
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(AI_TIMEOUT_MS),
       body: JSON.stringify(body(withJsonMode)),
     });
 
-  let res = await post(true);
+  // Slow endpoints (self-hosted/small models) often just need more time.
+  // Retry a timed-out call ONCE before giving up to heuristic — a transient
+  // stall shouldn't cost the whole teaching read.
+  let res;
+  try {
+    res = await post(true);
+  } catch (err) {
+    if (err?.name === "TimeoutError" || err?.name === "AbortError") {
+      console.warn(`  ${base} timed out after ${AI_TIMEOUT_MS}ms, retrying once`);
+      res = await post(true);
+    } else {
+      throw err;
+    }
+  }
   if (!res.ok) {
     const errText = await res.text();
     // Some OpenAI-compatible servers (older llama.cpp builds, minimal
@@ -265,7 +280,7 @@ export function heuristicClassify(item) {
     // No AI key configured -> can't honestly generate a teaching walkthrough
     // without inventing detail. The writeup page shows a "add a free key" note
     // instead of fabricated content.
-    lesson: { cause_ar: null, walkthrough_ar: null, takeaway_ar: null, fix_ar: null },
+    lesson: { cause_ar: null, walkthrough_ar: null, example_ar: null, takeaway_ar: null, fix_ar: null },
     aiGenerated: false,
   };
 }

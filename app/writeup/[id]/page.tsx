@@ -131,7 +131,21 @@ function LessonSection({ lesson, aiGenerated }: { lesson: Lesson | null; aiGener
           <h2 className="relative mb-3 flex items-center gap-2 text-base font-extrabold text-primary sm:text-lg">
             🛠️ قصة الاكتشاف والاستغلال
           </h2>
-          <p className="relative break-words text-[15px] leading-[1.9] text-ink sm:text-base">{lesson!.walkthrough_ar}</p>
+          <p className="relative whitespace-pre-line break-words text-[15px] leading-[1.9] text-ink sm:text-base">{lesson!.walkthrough_ar}</p>
+        </div>
+      )}
+
+      {lesson?.example_ar && (
+        <div className="relative overflow-hidden rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4 sm:p-6">
+          <h2 className="relative mb-1 flex items-center gap-2 text-base font-extrabold text-primary sm:text-lg">
+            🧪 مثال مشابه للتدريب
+          </h2>
+          <p className="relative mb-3 text-xs text-muted">
+            مثال تعليمي مبسّط لنفس فئة الثغرة على هدف وهمي — ليس من المقال الأصلي.
+          </p>
+          <p className="relative whitespace-pre-line break-words text-[15px] leading-[1.9] sm:text-base">
+            {lesson.example_ar}
+          </p>
         </div>
       )}
 
@@ -142,7 +156,7 @@ function LessonSection({ lesson, aiGenerated }: { lesson: Lesson | null; aiGener
               <h3 className="mb-1.5 text-sm font-bold">
                 {s.icon} {s.title}
               </h3>
-              <p className="break-words text-sm leading-relaxed text-muted">{lesson![s.key]}</p>
+              <p className="whitespace-pre-line break-words text-sm leading-relaxed text-muted">{lesson![s.key]}</p>
             </div>
           ))}
         </div>

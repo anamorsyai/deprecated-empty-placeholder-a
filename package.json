@@ -8,7 +8,8 @@
     "build": "node scripts/buildStaticExtras.mjs && next build",
     "start": "next start",
     "lint": "next lint",
-    "fetch": "node scripts/fetchWriteups.mjs"
+    "fetch": "node scripts/fetchWriteups.mjs",
+    "backfill:lessons": "node scripts/backfillLessons.mjs"
   },
   "dependencies": {
     "fuse.js": "^7.0.0",
