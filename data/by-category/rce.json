@@ -68,6 +68,42 @@
     "score": 60
   },
   {
+    "id": "9ae499604b2e",
+    "title": "Bug Bounty Hunting: Low-Hanging Bugs Beginners Can Easily Find",
+    "url": "https://meetcyber.net/bug-bounty-hunting-low-hanging-bugs-beginners-can-easily-find-235fcd49997c",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Monika"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T10:00:59.000Z",
+    "added_at": "2026-09-23T12:39:16.268Z",
+    "categories": [
+      "idor-bola",
+      "auth-bypass",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "If you’re new to bug bounty hunting, don’t jump straight into chasing complex vulnerabilities like RCE or intricate authentication bypasses.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "If you’re new to bug bounty hunting, don’t jump straight into chasing complex vulnerabilities like RCE or intricate authentication bypasses. There are several bug classes that are commonly found, relatively easy to spot with the right approach, and great for building a strong foundation. Below are some bugs that make excellent starting points but always remember: only test on authorized programs (like HackerOne or Bugcrowd) with explicit scope, since testing without permission is illegal. ### 1. IDOR (Insecure Direct Object Reference) This is one of the most common and beginner-friendly bugs.",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "30206f7aad3e",
     "title": "Apps SDK sandbox escape: *** App reaches native window.Android/window.AndroidBridge JS interfaces — mobile application",
     "url": "https://medium.com/@jokodfir/apps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3",

@@ -1,5 +1,40 @@
 [
   {
+    "id": "e6b7d6b3a63e",
+    "title": "File Upload XSS Beyond SVG: Four Vectors Validation Misses",
+    "url": "https://kd-200.medium.com/file-upload-xss-beyond-svg-four-vectors-validation-misses-3d1cc9df3311",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T11:31:01.000Z",
+    "added_at": "2026-09-23T12:39:09.595Z",
+    "categories": [
+      "xss",
+      "file-upload"
+    ],
+    "severity": "medium",
+    "summary_en": "Day twenty-three. Yesterday was about one file type. Today is about a blind spot that goes much wider, and I want to open with the finding that taught it to me. I was testing a document management product.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Day twenty-three. Yesterday was about one file type. Today is about a blind spot that goes much wider, and I want to open with the finding that taught it to me. I was testing a document management product. Serious upload validation — content types checked properly, magic bytes verified, files converted through a processing pipeline, served from a separate asset domain with an attachment disposition. Everything yesterday’s post says to look for, they had done. I spent an hour trying to get a file through and got nowhere. Good work by their team. Then I uploaded a perfectly ordinary, completely",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4462fb4fb454",
     "title": "They Allowed Five Image Formats. Four Were Pictures.",
     "url": "https://kd-200.medium.com/they-allowed-five-image-formats-four-were-pictures-5052c83f57e6",

@@ -1,5 +1,40 @@
 [
   {
+    "id": "e6b7d6b3a63e",
+    "title": "File Upload XSS Beyond SVG: Four Vectors Validation Misses",
+    "url": "https://kd-200.medium.com/file-upload-xss-beyond-svg-four-vectors-validation-misses-3d1cc9df3311",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T11:31:01.000Z",
+    "added_at": "2026-09-23T12:39:09.595Z",
+    "categories": [
+      "xss",
+      "file-upload"
+    ],
+    "severity": "medium",
+    "summary_en": "Day twenty-three. Yesterday was about one file type. Today is about a blind spot that goes much wider, and I want to open with the finding that taught it to me. I was testing a document management product.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Day twenty-three. Yesterday was about one file type. Today is about a blind spot that goes much wider, and I want to open with the finding that taught it to me. I was testing a document management product. Serious upload validation — content types checked properly, magic bytes verified, files converted through a processing pipeline, served from a separate asset domain with an attachment disposition. Everything yesterday’s post says to look for, they had done. I spent an hour trying to get a file through and got nowhere. Good work by their team. Then I uploaded a perfectly ordinary, completely",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "92541903123a",
     "title": "Day 03 — Bug Bounty: Setting Up Your Hacking Environment",
     "url": "https://iamrudhh.medium.com/day-03-bug-bounty-setting-up-your-hacking-environment-3539f42a405d",
@@ -63,6 +98,42 @@
       "fix_ar": null
     },
     "excerpt": "## **A hidden field carried real server-side application state — and changing the serialized object changed what the backend did next.** Image 4: Ritesh Ritesh 7 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fdc9c93468f50&operation=register&redirect=https%3A%2F%2Fsudo-appsec.medium.com%2Ffrom-a-strange-base64-parameter-to-a-critical-php-deserialization-vulnerability-dc9c93468f50&user=Ritesh&userId=d8f25e83df7c&source=---header_actions--dc9c93468f50---------------------clap_footer--------------------) [](https://medium.com/m/signin?actionU",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "9ae499604b2e",
+    "title": "Bug Bounty Hunting: Low-Hanging Bugs Beginners Can Easily Find",
+    "url": "https://meetcyber.net/bug-bounty-hunting-low-hanging-bugs-beginners-can-easily-find-235fcd49997c",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Monika"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T10:00:59.000Z",
+    "added_at": "2026-09-23T12:39:16.268Z",
+    "categories": [
+      "idor-bola",
+      "auth-bypass",
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "If you’re new to bug bounty hunting, don’t jump straight into chasing complex vulnerabilities like RCE or intricate authentication bypasses.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "If you’re new to bug bounty hunting, don’t jump straight into chasing complex vulnerabilities like RCE or intricate authentication bypasses. There are several bug classes that are commonly found, relatively easy to spot with the right approach, and great for building a strong foundation. Below are some bugs that make excellent starting points but always remember: only test on authorized programs (like HackerOne or Bugcrowd) with explicit scope, since testing without permission is illegal. ### 1. IDOR (Insecure Direct Object Reference) This is one of the most common and beginner-friendly bugs.",
     "ai_generated": false,
     "engagement": null,
     "score": 60
