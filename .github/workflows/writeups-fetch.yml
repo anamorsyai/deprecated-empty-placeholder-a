@@ -2,9 +2,9 @@ name: Fetch bug bounty writeups
 
 on:
   schedule:
-    # Hourly — the per-run item caps in fetchWriteups.mjs are sized for this
-    # cadence (small, frequent batches instead of big infrequent ones).
-    - cron: "0 * * * *"
+    # Every 5 minutes — small frequent batches. Per-run caps below are sized
+    # for this cadence so a slow AI endpoint is never drowned.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
   push:
     paths:
@@ -35,8 +35,8 @@ jobs:
       AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
       AI_USER_AGENT: ${{ secrets.AI_USER_AGENT }}
       AI_TIMEOUT_MS: "150000"
-      MAX_NEW_PER_RUN: "12"
-      MAX_PER_SOURCE_PER_RUN: "4"
+      MAX_NEW_PER_RUN: "3"
+      MAX_PER_SOURCE_PER_RUN: "2"
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
