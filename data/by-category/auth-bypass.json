@@ -204,6 +204,40 @@
     "score": 53
   },
   {
+    "id": "dcccdd68bd7c",
+    "title": "2FA Bypass - IDN Mischief",
+    "url": "https://shahjerry33.medium.com/2fa-bypass-idn-mischief-157f06cb6904",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Jerry Shah (@Jerry)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-23T00:22:54.642Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "summary_en": "A 2FA bypass where an attacker registers a look-alike IDN email (emailOne@gmáil.com) and uses its TOTP code to log into the victim's account (emailOne@gmail.com) — the app normalizes both emails to the same string, so both accounts share the same 2FA seed.",
+    "summary_ar": "ثغرة في تجاوز الـ 2FA: الباحث سجّل حسابًا بإيميل شبيه (emailOne@gmáil.com) واستخدم كود الـ TOTP الخاص به لتسجيل الدخول في حساب الضحية (emailOne@gmail.com) — لأن النظام يوحّد (normalize) الإيميلين في نص واحد فيتشارك الحسابان نفس الـ 2FA seed.",
+    "lesson": {
+      "cause_ar": "الـ root cause هو إن النظام بيعمل normalization للإيميل أثناء عملية الـ 2FA validation، بحيث بيحوّل الأحرف اللي شبه بعضها من أنظمة كتابة مختلفة (زي á و a) إلى أقرب ما يعادلها في ASCII. النتيجة إن emailOne@gmáil.com و emailOne@gmail.com اتعاملوا معاهم كأنهم نفس النص، وبما إن الـ 2FA secret key بيتم استرجاعه بناءً على الإيميل المُوحَّد، الحسابين اتنطبق عليهم نفس الـ seed. الافتراض الخاطئ هنا إن الإيميل معرّف فريد كفاية وإن الـ normalization آمنة في كل مراحل المعالجة — لكن التطبيع ده كسر التفرقة بين حسابين مختلفين فعليًا، فبقى كود 2FA لأي حساب فيهم صالح للتاني.",
+      "walkthrough_ar": "الباحث كان بيفحص آلية الـ 2FA في الموقع، وبدأ يلعب بفكرة إن الإيميل ممكن يكون معرّف غير موثوق لو النظام بيعمل عليه normalization. أول خطوة سجّل حسابين: الأول بإيميل عادي emailOne@gmail.com، والتاني بإيميل شبهه بالظبط لكن فيه حرف IDN بديل emailOne@gmáil.com (بحرف á بدل a). فعّل الـ 2FA على الحسابين الاتنين، فكل حساب استلم secret key خاص بيه في الـ authenticator app. بعدين من متصفح تاني سجّل دخول على الحساب العادي emailOne@gmail.com بالباسورد، ووصل لشاشة إدخال كود الـ 2FA. بدل ما يستخدم كود الحساب العادي، فتح الـ authenticator app واخد كود الحساب الشبيه emailOne@gmáil.com وكتبه. الموقع قبله وسجّله دخول ناجح — يعني الـ 2FA اتقفزت بالكامل. جرّب العكس كمان: سجّل دخول على الحساب الشبيه واستخدم كود الحساب العادي، ولقى إنه بيشتغل برضه، فالثغرة شغالة في الاتجاهين. من منظور المهاجم، الطريقة العملية هي إنه يعمل حساب شبيه بنفسه ويستخدم كوده لتجاوز حماية حساب الضحية. السبب إن النظام بيوحّد الإيميلين في نص واحد وقت الـ 2FA validation، فيسترجي نفس الـ secret key للحسابين، وبالتالي كودات الـ TOTP بتتبادل بينهم.",
+      "takeaway_ar": "لما تلاقي أي تطبيق بيستخدم الإيميل أو الـ username كمفتاح لاسترجاع أسرار أو بيانات (زي 2FA seed، reset tokens، مفاتيح API)، جرّب إنك تسجّل حسابين بإيميلات IDN متشابهة زي gmáil.com و gmail.com ولاحظ لو بيتم معاملتهم كأنهم نفس الحساب. العلامة الأساسية هي وجود أي normalization أو canonicalization للإيميل في أي مرحلة من مراحل الـ flow — حتى لو التسجيل نفسه خزّنهم كحسابين منفصلين. كمان جرّب الـ Unicode homoglyphs في الـ usernames والـ domains بشكل عام، مش بس في الـ 2FA، لأن نفس المشكلة بتظهر في استرجاع كلمة السر، الـ session، أو الـ authorization. لو لقيت إن كود 2FA أو أي secret بيتقبل من حساب تاني، يبقى عندك auth bypass حقيقي يستاهل تقرير.",
+      "fix_ar": "الحل الصح إنك متعملش normalization للإيميل أثناء الـ 2FA validation — استخدم الإيميل زي ما هو بالظبط. والأهم إن الـ 2FA secret key يتبقى ويسترجى بمعرّف مستخدم فريد (user ID) مش بالإيميل، زي ما المقال بيوضح في الكود المحسّن: setup_2fa(user_id) بيولّد الـ seed بناءً على الـ user_id، وvalidate_2fa_code(user_id, input_code) بيجيب الـ secret key بالـ user_id. كده حتى لو في إيميلين متشابهين، كل واحد ليه seed مختلف وبتاعه. على مستوى أوسع، أي عملية بتعتمد على الإيميل كمفتاح لازم تتعامل مع الـ Unicode بعناية: إما ترفض الـ homoglyphs وقت التسجيل، أو تخزّن الإيميل بصيغته الأصلية وتستخدم معرّف داخلي منفصل لكل الحسابات."
+    },
+    "excerpt": "Internationalized Domain Name (IDN) Homograph Attacks involve exploiting similarities between visually identical characters from different writing systems (e.g., Latin ‘a’ and Cyrillic ‘á’). In the context of Two-Factor Authentication (2FA), this vulnerability can occur when an application incorrectly normalizes or fails to distinguish between similar-looking characters in email addresses or usernames. **Description** I found a vulnerability where the website was using 2FA which can be bypassed using IDN homograph attack. I created two accounts on the website using normal and look-a-like email",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "1a94d8e866fb",
     "title": "Double Agent: Exploiting Pass-through Authentication Credential Validation in Azure AD",
     "url": "https://cymulate.com/blog/exploiting-pta-credential-validation-in-azure-ad",

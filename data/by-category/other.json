@@ -662,5 +662,74 @@
     "ai_generated": true,
     "engagement": null,
     "score": 40
+  },
+  {
+    "id": "9e7d2839f708",
+    "title": "SCCMSecrets.py: exploiting SCCM policies distribution for credentials harvesting, initial access and lateral movement",
+    "url": "https://www.synacktiv.com/publications/sccmsecretspy-exploiting-sccm-policies-distribution-for-credentials-harvesting-initial.html",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Quentin Roland (@croco_byte)"
+    ],
+    "program": null,
+    "platform_slug": "synack",
+    "bounty_raw": null,
+    "published_at": "2024-08-14T00:00:00.000Z",
+    "added_at": "2026-09-23T00:23:05.627Z",
+    "categories": [
+      "info-disclosure",
+      "access-control",
+      "other"
+    ],
+    "severity": "high",
+    "summary_en": "French Toggle Dropdown * French * English * RSS * Github * Twitter * Linkedin Image 1: Accueil * Notre Offre » * Test d’intrusion / Red Team * Réponse aux incidents * Reverse-engineering * Développement * Produits * CSIRT * Formations * Nou",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "French Toggle Dropdown * French * English * RSS * Github * Twitter * Linkedin Image 1: Accueil * Notre Offre » * Test d’intrusion / Red Team * Réponse aux incidents * Reverse-engineering * Développement * Produits * CSIRT * Formations * Nous rejoindre * Publications » * Articles * Avis de sécurité * Ressources * La société * Contact * RSS * Github * Twitter * Linkedin # SCCMSecrets.py: exploiting SCCM policies distribution for credentials harvesting, initial access and lateral movement Rédigé par Quentin Roland - 14/08/2024 - dans Pentest - Téléchargement SCCM policies are a prime target for a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "d53185c12155",
+    "title": "Vulnerabilities in NodeJS C/C++ add-on extensions",
+    "url": "https://snyk.io/blog/nodejs-add-on-extensions",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Alessio Della Libera"
+    ],
+    "program": "Node.js third-party modules",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-14T00:00:00.000Z",
+    "added_at": "2026-09-23T00:23:26.288Z",
+    "categories": [
+      "other",
+      "supply-chain"
+    ],
+    "severity": "high",
+    "summary_en": "* Platform * Resources * Company * Pricing * llms.txtSend this to your agent Written for AI, not humans EN Select your language Login Free and Team Plan Customers * Snyk app.snyk.io Enterprise Plan Customers * _🇺🇸_ Snyk US - 1 app.snyk.io",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* Platform * Resources * Company * Pricing * llms.txtSend this to your agent Written for AI, not humans EN Select your language Login Free and Team Plan Customers * Snyk app.snyk.io Enterprise Plan Customers * _🇺🇸_ Snyk US - 1 app.snyk.io * _🇺🇸_ Snyk US - 2 app.us.snyk.io * _🇪🇺_ Snyk EU app.eu.snyk.io * _🇦🇺_ Snyk AU app.au.snyk.io The region where your data is hosted follows local agreements, and it may not align with your own location.Find out more. Snyk API & Web - All Customers * Snyk API & Web (DAST) plus.probely.app Sign upBook a live demo ExploreIntegrationsDeepCode AIEvo Overvie",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
   }
 ]

@@ -2357,6 +2357,40 @@
     "score": 43
   },
   {
+    "id": "dcccdd68bd7c",
+    "title": "2FA Bypass - IDN Mischief",
+    "url": "https://shahjerry33.medium.com/2fa-bypass-idn-mischief-157f06cb6904",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Jerry Shah (@Jerry)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-23T00:22:54.642Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "summary_en": "A 2FA bypass where an attacker registers a look-alike IDN email (emailOne@gmáil.com) and uses its TOTP code to log into the victim's account (emailOne@gmail.com) — the app normalizes both emails to the same string, so both accounts share the same 2FA seed.",
+    "summary_ar": "ثغرة في تجاوز الـ 2FA: الباحث سجّل حسابًا بإيميل شبيه (emailOne@gmáil.com) واستخدم كود الـ TOTP الخاص به لتسجيل الدخول في حساب الضحية (emailOne@gmail.com) — لأن النظام يوحّد (normalize) الإيميلين في نص واحد فيتشارك الحسابان نفس الـ 2FA seed.",
+    "lesson": {
+      "cause_ar": "الـ root cause هو إن النظام بيعمل normalization للإيميل أثناء عملية الـ 2FA validation، بحيث بيحوّل الأحرف اللي شبه بعضها من أنظمة كتابة مختلفة (زي á و a) إلى أقرب ما يعادلها في ASCII. النتيجة إن emailOne@gmáil.com و emailOne@gmail.com اتعاملوا معاهم كأنهم نفس النص، وبما إن الـ 2FA secret key بيتم استرجاعه بناءً على الإيميل المُوحَّد، الحسابين اتنطبق عليهم نفس الـ seed. الافتراض الخاطئ هنا إن الإيميل معرّف فريد كفاية وإن الـ normalization آمنة في كل مراحل المعالجة — لكن التطبيع ده كسر التفرقة بين حسابين مختلفين فعليًا، فبقى كود 2FA لأي حساب فيهم صالح للتاني.",
+      "walkthrough_ar": "الباحث كان بيفحص آلية الـ 2FA في الموقع، وبدأ يلعب بفكرة إن الإيميل ممكن يكون معرّف غير موثوق لو النظام بيعمل عليه normalization. أول خطوة سجّل حسابين: الأول بإيميل عادي emailOne@gmail.com، والتاني بإيميل شبهه بالظبط لكن فيه حرف IDN بديل emailOne@gmáil.com (بحرف á بدل a). فعّل الـ 2FA على الحسابين الاتنين، فكل حساب استلم secret key خاص بيه في الـ authenticator app. بعدين من متصفح تاني سجّل دخول على الحساب العادي emailOne@gmail.com بالباسورد، ووصل لشاشة إدخال كود الـ 2FA. بدل ما يستخدم كود الحساب العادي، فتح الـ authenticator app واخد كود الحساب الشبيه emailOne@gmáil.com وكتبه. الموقع قبله وسجّله دخول ناجح — يعني الـ 2FA اتقفزت بالكامل. جرّب العكس كمان: سجّل دخول على الحساب الشبيه واستخدم كود الحساب العادي، ولقى إنه بيشتغل برضه، فالثغرة شغالة في الاتجاهين. من منظور المهاجم، الطريقة العملية هي إنه يعمل حساب شبيه بنفسه ويستخدم كوده لتجاوز حماية حساب الضحية. السبب إن النظام بيوحّد الإيميلين في نص واحد وقت الـ 2FA validation، فيسترجي نفس الـ secret key للحسابين، وبالتالي كودات الـ TOTP بتتبادل بينهم.",
+      "takeaway_ar": "لما تلاقي أي تطبيق بيستخدم الإيميل أو الـ username كمفتاح لاسترجاع أسرار أو بيانات (زي 2FA seed، reset tokens، مفاتيح API)، جرّب إنك تسجّل حسابين بإيميلات IDN متشابهة زي gmáil.com و gmail.com ولاحظ لو بيتم معاملتهم كأنهم نفس الحساب. العلامة الأساسية هي وجود أي normalization أو canonicalization للإيميل في أي مرحلة من مراحل الـ flow — حتى لو التسجيل نفسه خزّنهم كحسابين منفصلين. كمان جرّب الـ Unicode homoglyphs في الـ usernames والـ domains بشكل عام، مش بس في الـ 2FA، لأن نفس المشكلة بتظهر في استرجاع كلمة السر، الـ session، أو الـ authorization. لو لقيت إن كود 2FA أو أي secret بيتقبل من حساب تاني، يبقى عندك auth bypass حقيقي يستاهل تقرير.",
+      "fix_ar": "الحل الصح إنك متعملش normalization للإيميل أثناء الـ 2FA validation — استخدم الإيميل زي ما هو بالظبط. والأهم إن الـ 2FA secret key يتبقى ويسترجى بمعرّف مستخدم فريد (user ID) مش بالإيميل، زي ما المقال بيوضح في الكود المحسّن: setup_2fa(user_id) بيولّد الـ seed بناءً على الـ user_id، وvalidate_2fa_code(user_id, input_code) بيجيب الـ secret key بالـ user_id. كده حتى لو في إيميلين متشابهين، كل واحد ليه seed مختلف وبتاعه. على مستوى أوسع، أي عملية بتعتمد على الإيميل كمفتاح لازم تتعامل مع الـ Unicode بعناية: إما ترفض الـ homoglyphs وقت التسجيل، أو تخزّن الإيميل بصيغته الأصلية وتستخدم معرّف داخلي منفصل لكل الحسابات."
+    },
+    "excerpt": "Internationalized Domain Name (IDN) Homograph Attacks involve exploiting similarities between visually identical characters from different writing systems (e.g., Latin ‘a’ and Cyrillic ‘á’). In the context of Two-Factor Authentication (2FA), this vulnerability can occur when an application incorrectly normalizes or fails to distinguish between similar-looking characters in email addresses or usernames. **Description** I found a vulnerability where the website was using 2FA which can be bypassed using IDN homograph attack. I created two accounts on the website using normal and look-a-like email",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "1a94d8e866fb",
     "title": "Double Agent: Exploiting Pass-through Authentication Credential Validation in Azure AD",
     "url": "https://cymulate.com/blog/exploiting-pta-credential-validation-in-azure-ad",
@@ -2493,6 +2527,75 @@
     "score": 40
   },
   {
+    "id": "9e7d2839f708",
+    "title": "SCCMSecrets.py: exploiting SCCM policies distribution for credentials harvesting, initial access and lateral movement",
+    "url": "https://www.synacktiv.com/publications/sccmsecretspy-exploiting-sccm-policies-distribution-for-credentials-harvesting-initial.html",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Quentin Roland (@croco_byte)"
+    ],
+    "program": null,
+    "platform_slug": "synack",
+    "bounty_raw": null,
+    "published_at": "2024-08-14T00:00:00.000Z",
+    "added_at": "2026-09-23T00:23:05.627Z",
+    "categories": [
+      "info-disclosure",
+      "access-control",
+      "other"
+    ],
+    "severity": "high",
+    "summary_en": "French Toggle Dropdown * French * English * RSS * Github * Twitter * Linkedin Image 1: Accueil * Notre Offre » * Test d’intrusion / Red Team * Réponse aux incidents * Reverse-engineering * Développement * Produits * CSIRT * Formations * Nou",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "French Toggle Dropdown * French * English * RSS * Github * Twitter * Linkedin Image 1: Accueil * Notre Offre » * Test d’intrusion / Red Team * Réponse aux incidents * Reverse-engineering * Développement * Produits * CSIRT * Formations * Nous rejoindre * Publications » * Articles * Avis de sécurité * Ressources * La société * Contact * RSS * Github * Twitter * Linkedin # SCCMSecrets.py: exploiting SCCM policies distribution for credentials harvesting, initial access and lateral movement Rédigé par Quentin Roland - 14/08/2024 - dans Pentest - Téléchargement SCCM policies are a prime target for a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "d53185c12155",
+    "title": "Vulnerabilities in NodeJS C/C++ add-on extensions",
+    "url": "https://snyk.io/blog/nodejs-add-on-extensions",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Alessio Della Libera"
+    ],
+    "program": "Node.js third-party modules",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-14T00:00:00.000Z",
+    "added_at": "2026-09-23T00:23:26.288Z",
+    "categories": [
+      "other",
+      "supply-chain"
+    ],
+    "severity": "high",
+    "summary_en": "* Platform * Resources * Company * Pricing * llms.txtSend this to your agent Written for AI, not humans EN Select your language Login Free and Team Plan Customers * Snyk app.snyk.io Enterprise Plan Customers * _🇺🇸_ Snyk US - 1 app.snyk.io",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* Platform * Resources * Company * Pricing * llms.txtSend this to your agent Written for AI, not humans EN Select your language Login Free and Team Plan Customers * Snyk app.snyk.io Enterprise Plan Customers * _🇺🇸_ Snyk US - 1 app.snyk.io * _🇺🇸_ Snyk US - 2 app.us.snyk.io * _🇪🇺_ Snyk EU app.eu.snyk.io * _🇦🇺_ Snyk AU app.au.snyk.io The region where your data is hosted follows local agreements, and it may not align with your own location.Find out more. Snyk API & Web - All Customers * Snyk API & Web (DAST) plus.probely.app Sign upBook a live demo ExploreIntegrationsDeepCode AIEvo Overvie",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "ed26cec3a3de",
     "title": "Account takeover on 8 years old public program",
     "url": "https://medium.com/@pranshux0x/account-takeover-on-8-years-old-public-program-c0c0a30cfdd2",
@@ -2526,6 +2629,41 @@
     "ai_generated": true,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "6e07f0bb2e1c",
+    "title": "ArtiPACKED: Hacking Giants Through a Race Condition in GitHub Actions Artifacts",
+    "url": "https://unit42.paloaltonetworks.com/github-repo-artifacts-leak-tokens",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Yaron Avital (@yaronavital)"
+    ],
+    "program": "GitHub, Google (Firebase), Microsoft, AWS, Red Hat, Canonical (Ubuntu Adsys), OWASP",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-13T00:00:00.000Z",
+    "added_at": "2026-09-23T00:24:31.644Z",
+    "categories": [
+      "race-condition",
+      "info-disclosure",
+      "supply-chain"
+    ],
+    "severity": "high",
+    "summary_en": "Unit 42's ArtiPACKED research abused a race condition in GitHub Actions workflow artifacts to leak GitHub and cloud tokens from public repos of Red Hat, Google, AWS, Microsoft, Canonical and OWASP, enabling repo compromise and potential cloud access.",
+    "summary_ar": "بحث ArtiPACKED من Unit 42 استغل Race Condition في GitHub Actions workflow artifacts لتسريب توكنات GitHub وسحابة من ريبوهات عامة لـ Red Hat وGoogle وAWS وMicrosoft وCanonical وOWASP، ما كان ممكن يسمح باختراق الريبوهات والوصول للبيئات السحابية.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن فرق التطوير بتعامل مع workflow artifacts على GitHub Actions كأنها مخرجات build عادية ومؤقتة من غير أي credential hygiene، بينما هي في الحقيقة بتتسرب منها توكنات — سواء توكنات خدمات سحابية تبع طرف تالت أو GitHub tokens — وأي حد عنده read access على الريبو يقدر يستهلكها. الافتراض الغلط إن الـ artifacts مش حساسة ومش متاحة لغير المطوّرين، لكن في الريبوهات العامة أي حد في العالم يقدر يفتحها. ووجود Race Condition في طريقة تعامل GitHub Actions مع الـ artifacts خلّى نافذة الاستغلال أوسع، وده بيتماشى مع OWASP CICD-SEC-06 (Insufficient Credential Hygiene) اللي المقال بيستشهد بيه كأحد أهم مخاطر الـ CI/CD.",
+      "walkthrough_ar": "الباحث Yaron Avital كان متابع حدسه إن في feature مهملة اسمها workflow artifacts على GitHub — المنصة اللي بتستضيف أغلب المشاريع مفتوحة المصدر — وقرر يفحصها. بدأ يستكشف الـ artifacts اللي بتتولّد من workflows الـ CI/CD في ريبوهات عامة لشركات كبيرة، وكان مقتنع إنه هيّلاقي sensitive data أو credentials. النتيجة كانت أكبر من اللي كان متخيله: لقى إن الـ artifacts بتسرّب توكنات، سواء توكنات خدمات سحابية تبع طرف تالت أو GitHub tokens، وكلها متاحة لأي حد عنده read access على الريبو. أكثر تسريب شائع كان GitHub tokens، وده بيخوّل المهاجم يتصرف باسم الريبو اللي شغّل الـ workflow نفسه. من هنا يقدر يدفع malicious code يتدفق للإنتاج عبر الـ CI/CD pipeline، أو يقرا secrets مخزنة في الريبو والـ organization. البحث كشف مشاريع مفتوحة المصدر معروفة جدًا مملوكة لـ Red Hat وGoogle (Firebase) وAWS وMicrosoft وCanonical (Ubuntu Adsys) وOWASP. كل الحالات اتبلّغت للمسؤولين عن المشاريع، وكل الفرق تعاونت بسرعة عشان يخففوا الأثر. التقنية الأساسية اللي اتعملت عليها التسمية ArtiPACKED هي Race Condition في طريقة تعامل GitHub Actions مع الـ artifacts، وده اللي وسّع تأثير التسريب من مجرد توكنات لاختراق محتمل للبيئات السحابية.",
+      "takeaway_ar": "أي وقت تشتغل على هدف فيه CI/CD على GitHub، نزّل workflow artifacts من الـ runs وافحصها بـ grep على أنماط التوكنات المعروفة (ghp_, AKIA, AIza وغيرها). دور على الـ workflows اللي بتستخدم secrets وبعدين بتعمل upload-artifact، وافحص مدة الاحتفاظ بالـ artifacts وإعدادات الوصول ليها. النمط ده بيتكرر في أي نظام بيخزّن مخرجات build وبيستهلكها بعدين عمليات بصلاحيات أعلى — والـ race condition في التعامل مع الملفات المؤقتة دي علامة إن في حاجة ممكن تستغلها. كمان ركّز على الريبوهات العامة لأن الـ read access فيها متاح لأي حد، فالتسريب بيبقى متاح للجميع مش بس للموظفين.",
+      "fix_ar": "الحل الصح مش بس إنهم مسحوا الـ artifacts — لازم من الأساس ممنوع تخزين أي secret جوه artifact؛ استخدم secret manager أو OIDC tokens قصيرة العمر بدل التوكنات طويلة العمر في الـ workflows. فعّل retention قصير للـ artifacts وقيّد الوصول ليها، وضيف فحص تلقائي للـ secrets على أي ملف بيتعمل له upload-artifact قبل ما يخرج من الـ pipeline. وده بالظبط اللي بيقوله OWASP CICD-SEC-06 عن credential hygiene: افصل صلاحيات الـ build عن صلاحيات الإنتاج، وخلّي أي توكن يشتغل بأقل privilege ممكن."
+    },
+    "excerpt": "Cloud Cybersecurity Research # ArtiPACKED: Hacking Giants Through a Race Condition in GitHub Actions Artifacts Image 53: Clock Icon 11 min read Related Products Image 54: Prisma Cloud iconCode to Cloud PlatformImage 55: Prisma Cloud iconPrisma CloudImage 56: Unit 42 Incident Response iconUnit 42 Incident Response * Image 57: Profile Icon By: * Yaron Avital * Image 58: Published IconPublished:August 13, 2024 * Image 59: Tags Icon Categories: * Cloud Cybersecurity Research * Threat Research * Image 60: Tags Icon Tags: * Artifacts * AWS * GitHub * Open source * Red Hat * Ubuntu * Image 61: Downlo",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
   },
   {
     "id": "8088fa5dc7bd",
