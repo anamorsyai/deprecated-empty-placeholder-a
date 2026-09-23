@@ -1,5 +1,40 @@
 [
   {
+    "id": "c42364c6b881",
+    "title": "How I Found a DOM XSS Through a JWT alg:none — and Earned a $400 Bounty",
+    "url": "https://medium.com/@yOnly_/how-i-found-a-dom-xss-through-a-jwt-alg-none-and-earned-a-400-bounty-3595093eacec",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "yOnly"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T08:50:43.000Z",
+    "added_at": "2026-09-23T12:43:02.843Z",
+    "categories": [
+      "xss",
+      "oauth-jwt"
+    ],
+    "severity": "medium",
+    "summary_en": "Bug bounty hunter and security researcher focused on web security. Curious by nature, always learning, exploring, and finding new ways to break things.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Bug bounty hunter and security researcher focused on web security. Curious by nature, always learning, exploring, and finding new ways to break things. writer Image 3: yOnly ## yOnly Bug bounty hunter and security researcher focused on web security. Curious by nature, always learning, exploring, and finding new ways to break things. writer Cybersecurity Bug Bounty Web Security Jwt Ethical Hacking # How I Found a DOM XSS Through a JWT `alg:none` — and Earned a $400 Bounty Image 4: yOnly yOnly 8 min read · 3 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "e5c4d34f1e4a",
     "title": "Insecure Authorization on *** Android — mobile application",
     "url": "https://medium.com/@jokodfir/insecure-authorization-on-android-mobile-application-89472e4f468b",
