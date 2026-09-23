@@ -410,6 +410,42 @@
     "score": 53
   },
   {
+    "id": "939926e6b9ff",
+    "title": "Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server!",
+    "url": "https://blog.orange.tw/2024/08/confusion-attacks-en.html",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Orange Tsai (@orange_8361)"
+    ],
+    "program": "Apache HTTP Server, ModSecurity, Redmine",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-09T00:00:00.000Z",
+    "added_at": "2026-09-23T06:23:07.467Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "ssrf"
+    ],
+    "severity": "critical",
+    "summary_en": "> Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server! Also, I would like to thank Akamai for their friendly outreach! They released mitigation measures immediately after this research was published (details can be",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server! Also, I would like to thank Akamai for their friendly outreach! They released mitigation measures immediately after this research was published (details can be found on Akamai’s blog). # [](https://blog.orange.tw/2024/08/confusion-attacks-en.html#TL-DR \"TL;DR\")TL;DR This article explores architectural issues within the Apache HTTP Server, highlighting several technical debts within Httpd, **including 3 types of Confusion Attacks, 9 new vulnerabilities, 20 exploitation techniques, and over 30 case studies**. The co",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "8088fa5dc7bd",
     "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
     "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",

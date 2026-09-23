@@ -162,5 +162,41 @@
     "ai_generated": false,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "ecae1c939765",
+    "title": "How I got my first $13500 bounty through Parameter Polluting (HPP)",
+    "url": "https://infosecwriteups.com/how-i-got-my-first-13500-bounty-through-parameter-polluting-hpp-179666b8e8bb",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "rAmpancist"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "13,500",
+    "published_at": "2024-08-10T00:00:00.000Z",
+    "added_at": "2026-09-23T06:20:19.265Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "xss"
+    ],
+    "severity": "high",
+    "summary_en": "An HPP/logic flaw in a housing site's registration let the researcher create a host account without a valid host ID, unlocking 4 privileged features. Chaining a public 3-character IDOR (leaking confidential form data) with a self-XSS turned it into reflected XSS — $13,500 in bounties.",
+    "summary_ar": "خلل منطقي (HPP) في تسجيل موقع إسكان خلّى الباحث ينشئ حساب host من غير ID صالح، ففتح له 4 ميزات محمية. وبسلسلة IDOR عام من 3 حروف (تسريب بيانات سرية) مع self-XSS حوّلها لـ reflected XSS — مجموع الـ bounties $13,500.",
+    "lesson": {
+      "cause_ar": "السبب الجذري خلل منطقي في تسجيل الحسابات: السيرفر كان بيقرر إن المستخدم host ولا customer بناءً على وجود باراميتر HostId في الطلب، لكنه كان بيتحقق من صحة الـ HostId فقط لما يكون IsHost=1. النتيجة إن أي حد يقدر يبعت IsHost=0&HostId=123 فيتحول حسابه إلى host من غير أي تحقق من صحة الـ ID. ده فتح 4 ميزات محمية خلف دور الـ host، وكلها كانت مبنية على افتراض إن اللي وصلها host حقيقي. وبعدين الميزات نفسها كانت ناقصة الـ authorization checks: الـ form كان بياخد ID عام من 3 حروف بدون أي حماية، والـ file upload كان بيدي لينك منفصل قابل للتعداد. حتى الـ XSS كانت self-XSS في البداية، لكن الـ IDOR حوّلها إلى reflected XSS لأن الاسم كان بينعكس في صفحة الـ form العامة.",
+      "walkthrough_ar": "الخطوة 1: الباحث كان بيفحص موقع إسكان (housing) معمول من موقع رئيسي فيه نوعين حسابات (host/customer) و subdomain فيه sub-service بياخد بيانات من الموقع الرئيسي.\nالخطوة 2: في نموذج التسجيل بتختار إنك host أو customer وبتدخل الـ ID بتاعك، والموقع المفروض يتحقق إن الـ ID صالح ويجيب معلوماتك.\nالخطوة 3: لاحظ حاجة غريبة: قسم الـ hosting معطل تمامًا — مهما كان الـ ID صالح بيقولك invalid أو مش قادر يجيب المعلومات.\nالخطوة 4: استنتج إن مفيش صياد ثغرات قبله قدر يعمل host account، وإن اللي ورا القسم ده لسه مستكشف.\nالخطوة 5: شكل طلب التسجيل لما تختار host:\nIsHost=1&HostId=123&Email=test%40test.com\nالخطوة 6: وشكل الطلب لما تختار customer:\nIsHost=0&Email=test%40test.com\n(لاحظ: مفيش HostId خالص في حالة customer)\nالخطوة 7: فكّر في الـ logic اللي شغال ورا الكواليس ولقاه:\n- لو HostId موجود و IsHost=1 → دوّر على الـ hostID وفشل.\n- لو HostId مش موجود و IsHost=0 → user عادي وكمّل.\n- لو HostId موجود و IsHost=0 → user هو host بس من غير ما يدور على الـ hostID (!!).\nالخطوة 8: يعني السيرفر بيحدد إنك host من وجود الـ HostId نفسه، لكنه بيعمل التحقق من صحته بس لما IsHost=1.\nالخطوة 9: فبعت طلب تسجيل بالشكل ده:\nIsHost=0&HostId=123&Email=test%40test.com\nالخطوة 10: النتيجة: اتفتح له حساب host صالح بدون أي تحقق من الـ ID — وده جوهر الـ HPP/الخلل المنطقي.\nالخطوة 11: الحساب ده فتح له 4 ميزات جديدة، وبدأ يفحصها واحدة واحدة.\nالخطوة 12: واحدة من الميزات كانت form submission فيه بيانات سرية (بيانات المستخدم + بيانات جاية من الموقع الرئيسي).\nالخطوة 13: لما بتقدم الـ form بيجيلك ID فريد من 3 حروف في الـ URL بيفتح الـ form بتاعك.\nالخطوة 14: الـ ID ده public وبدون أي حماية → IDOR عام: تقدر تشوف forms ناس تانية، وتقدر تبعت رابط لضحية لو لقيت XSS.\nالخطوة 15: كل الـ inputs كانت sanitized صح ومفيش XSS مباشر — بس كان ليه finding قديم: حقل الاسم فيه XSS، لكن الاسم خاص بيه وحده → self-XSS.\nالخطوة 16: الـ chain: الاسم بينعكس في الـ form وفي صفحة الـ 3 حروف، فبفضل الـ IDOR الـ self-XSS اتقلبت reflected XSS — يبعت الرابط للضحية والـ payload يشتغل في سياقها.\nالخطوة 17: الـ form كان فيه file upload بيدي لينك منفصل للملف، واللينك ده كان vulnerable لوحده — تقدر تشوف ملفات ناس تانية (IDOR تاني).\nالخطوة 18: النتيجة النهائية: Main IDOR بـ $12000 (critical لأن البيانات جاية من الموقع الرئيسي)، File IDOR بـ $1000، و XSS بـ $500 — المجموع $13500.",
+      "example_ar": "مثال مشابه على target.example — نفس فكرة الـ HPP في تحديد الدور:\nالكود الضعيف (PHP):\n$isHost = $_POST['IsHost'];\n$hostId = $_POST['HostId'] ?? null;\nif ($isHost == '1' && $hostId) {\n    if (!validateHostId($hostId)) { die('invalid host id'); }\n}\n$role = $hostId ? 'host' : 'customer'; // القرار من وجود الباراميتر مش من التحقق\ncreateAccount($role);\nطلب الهجوم:\nPOST /register HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\nIsHost=0&HostId=999&Email=attacker%40example.com\nليه نجح: السيرفر حدد الدور host لأن HostId موجود، لكنه ساب التحقق لأن IsHost=0 — فاتحساب host من غير ID صالح.",
+      "takeaway_ar": "دور على النمط ده في أي تسجيل أو تغيير دور: لو في باراميتر بيحدد الدور (IsHost, role, type) وباراميتر تاني بيتحقق منه بشكل مشروط، جرّب تفصل بينهم — ابعت الدور customer والـ ID موجود، أو ابعت نفس الباراميتر مرتين (HPP). العلامة الذهبية: لما ميزة معينة تكون معطلة للكل (زي قسم الـ hosting هنا) يبقى غالبًا وراها logic غلط ومفيش حد كشفها. كمان أي ID قصير أو sequential في الـ URL (3 حروف، أرقام صغيرة) يستاهل تجربة enumeration فورًا. ولو لقيت self-XSS متستهونش بيه — دوّر على أي مكان بينعكس فيه الاسم/البيانات دي في صفحة عامة أو قابلة للمشاركة عشان ترفعه لـ reflected. وأخيرًا اختبر الـ file upload links كأهداف مستقلة مش كجزء من الـ form.",
+      "fix_ar": "الإصلاح يبدأ من قرار الدور: مينفعش الدور يتحدد من باراميتر client-side زي وجود HostId — لازم يكون من مصدر موثوق (session/DB) بعد تحقق كامل. التحقق من صحة الـ HostId لازم يتم دائمًا قبل منح دور host، مش شرطًا على قيمة IsHost. كل endpoint للميزات المحمية لازم يعمل authorization check على مستوى الـ object (مين صاحب الـ form/الملف) مش بس على مستوى الـ feature. الـ IDs القصيرة القابلة للتخمين لازم تتبدل بـ UUIDs عشوائية، والـ XSS بيتحل بـ output encoding لكل البيانات المنعكسة. مثال على الكود الصح:\n$isHost = ($_POST['IsHost'] === '1');\n$hostId = $_POST['HostId'] ?? null;\nif ($isHost) {\n    if (!$hostId || !validateHostId($hostId)) { die('invalid host id'); }\n    $role = 'host';\n} else {\n    $role = 'customer';\n}\n// الدور بيتخزن في الـ session، وأي طلب لاحق بياخده من الـ session مش من الـ request"
+    },
+    "excerpt": "This write-up is about 2 IDORs and an XSS I found on a housing website. However what led me into these bugs is the point of this article. The structure revolved around a main website which you had to create your account on, which had different privilege levels based on what you actually want to do, and then a second website which was a subdomain of the main website and included a sub-service which functioned getting help from main website. In main website, you could’ve been a host or a customer. In this sub-service you could’ve used different functionalities depending on whether your main acco",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
   }
 ]

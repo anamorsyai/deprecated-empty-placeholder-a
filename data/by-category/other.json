@@ -731,5 +731,40 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "36a3b733284b",
+    "title": "How i hacked NASA? at NASA VDP",
+    "url": "https://medium.com/@momos1337/how-i-hacked-nasa-bug-bounty-6975b833eb45",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Fadhli Almunawar"
+    ],
+    "program": "NASA",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-10T00:00:00.000Z",
+    "added_at": "2026-09-23T06:20:58.523Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "Remote code execution reported against NASA's VDP scope: a code injection flaw gave the researcher full command execution on a NASA asset.",
+    "summary_ar": "ثغرة Remote Code Execution (RCE) تم الإبلاغ عنها ضمن برنامج NASA VDP: خلل في Code Injection منح الباحث تنفيذ أوامر كامل على أحد أصول ناسا.",
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
   }
 ]

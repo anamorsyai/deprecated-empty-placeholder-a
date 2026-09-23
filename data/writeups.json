@@ -2904,6 +2904,148 @@
     "score": 53
   },
   {
+    "id": "14de5eec2992",
+    "title": "Stored XSS in LibreOffice",
+    "url": "https://bunny0417.medium.com/stored-xss-in-libreoffice-ed4ad22e0f56",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Aayush kumar (@bunny_0417)"
+    ],
+    "program": "LibreOffice",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-11T00:00:00.000Z",
+    "added_at": "2026-09-23T06:18:56.326Z",
+    "categories": [
+      "xss",
+      "file-upload"
+    ],
+    "severity": "high",
+    "summary_en": "A stored XSS was triggered in LibreOffice's extension screenshot feature by embedding a script payload inside an uploaded PNG file, which executed when the file content was reflected into the page. The researcher earned a four-digit bounty on Intigriti.",
+    "summary_ar": "تم تشغيل Stored XSS في ميزة screenshots الخاصة بإضافات LibreOffice عن طريق تضمين payload داخل ملف PNG مرفوع، ونفّذ السكربت لما انعكس محتوى الملف في الصفحة. حصل الباحث على مكافأة من 4 أرقام عبر منصة Intigriti.",
+    "lesson": {
+      "cause_ar": "السبب الجذري إن ميزة رفع الـ screenshots في موقع LibreOffice كانت بتاخد ملف PNG وترجع محتواه في الصفحة من غير أي escaping أو sanitization، فاتعامل مع بايتات الملف على إنها HTML حقيقي. المطوّر افترض إن الملف مجرد بيانات ثنائية (binary data) مش هتتفسر أبدًا ككود، لكن الباحث ضمّن جوه الملف نص `<script>` وعلامات HTML، ولما السيرفر رجّع المحتوى في نقطة الانعكاس اتعدم السكربت. الفكرة نفسها مبنية على تقرير HackerOne رقم 964550 اللي بيوضح إن محتوى الملفات (زي EXIF data) ممكن يبقى ناقل لـ XSS. الباحث ما كشفش نقطة الانعكاس بالظبط لأسباب أمنية، لكن الأثر كان واضح: الـ payload اتنفذ وظهر الـ prompt.",
+      "walkthrough_ar": "الخطوة 1: السياق — LibreOffice أطلق برنامج bug bounty على منصة Intigriti، والباحث قرر يركّز على الأصول الويب (web assets) لأن مفيش خبرة عنده في binary exploitation.\nالخطوة 2: الاستطلاع — خلال حوالي 20 دقيقة لاحظ ميزتين: رفع الإضافات (extensions) وخيار إضافة screenshots للإضافة اللي بيعملها المستخدم.\nالخطوة 3: ربط المعرفة — افتكر تقرير HackerOne رقم 964550 اللي بيوضح إن ممكن تشغّل alert عن طريق تضمين XSS payload جوه ملف (زي تقنية EXIF data).\nالخطوة 4: تجهيز الـ payload — عمل ملف PNG وحط جواه السطر ده حرفيًا:\n`Lol\"><script>alert(prompt('Xss By Bunny0417'))</script>`\nالخطوة 5: ليه الـ payload ده؟ علامة الاقتباس `\"` بتقفل الـ attribute الحالي، و`>` بتقفل الـ tag، فبالتالي `<script>` بيتفسر كـ HTML حقيقي مش نص عادي.\nالخطوة 6: الرفع — رفع ملف الـ PNG في ميزة الـ screenshots.\nالخطوة 7: البحث عن نقطة الانعكاس — بدأ يفحص الصفحات اللي بتعرض الملف المرفوع عشان يلاقي المكان اللي محتوى الملف بيرجع فيه من غير escaping (وما كشفش مكانها لأسباب أمنية).\nالخطوة 8: التأكيد — بعد ما لقى نقطة الانعكاس شاف الـ payload شغال: الـ script اتعدم وظهر الـ prompt.\nالخطوة 9: الإبلاغ — أبلغ عن الثغرة كـ Stored XSS على برنامج LibreOffice في Intigriti.\nالخطوة 10: النتيجة — حصل على أول bounty من 4 أرقام في مسيرته.",
+      "example_ar": "مثال تدريبي على target.example: موقع فيه رفع صورة بروفايل وبيعرض تعليق الـ EXIF بتاع الصورة في صفحة البروفايل.\nالكود الضعيف:\n```php\n<?php\n$exif = exif_read_data($_FILES['avatar']['tmp_name']);\necho \"<img src='/uploads/\".$_FILES['avatar']['name'].\"'>\";\necho \"<div>\".$exif['COMMENT'].\"</div>\"; // غير مُهرَّب\n?>\n```\nطلب الهجوم:\n```\nPOST /upload.php HTTP/1.1\nHost: target.example\nContent-Type: multipart/form-data; boundary=----x\n\n------x\nContent-Disposition: form-data; name=\"avatar\"; filename=\"pic.png\"\nContent-Type: image/png\n\n[بايتات PNG] + EXIF comment: \"><script>alert(document.cookie)</script>\n------x--\n```\nنجح لأن تعليق الـ EXIF اتعرض في الصفحة من غير escaping، فعلامة الاقتباس قفلت الـ attribute والـ script اتعدم في متصفح الضحية.",
+      "takeaway_ar": "أي ميزة رفع ملفات (avatar، screenshot، cover، مرفقات) لازم تختبرها إنك تحط payload جوه الملف نفسه أو جوه الـ metadata بتاعه وتشوف هل محتواه بيرجع في الصفحة ولا لأ. جرّب دائمًا payloads بتكسر الـ attribute زي `\"><script>` لأنها بتشتغل في أكتر من سياق عرض. اقرأ التقارير المنشورة على HackerOne وIntigriti باستمرار — زي تقرير 964550 — لأنها بتعلّمك تقنيات مش هتعرفها لوحدك. وتابع البرامج الجديدة من خلال bbradar.io عشان تكون من أوائل اللي يختبروا ميزة جديدة قبل ما تتصلّح. ركّز على الحقول اللي بتعرض بيانات المستخدم من غير escaping: اسم الملف، الـ EXIF، الـ description، وأي نص بيرجع من الملف المرفوع.",
+      "fix_ar": "الإصلاح الصحيح متعدد الطبقات: أولاً escape كل مخرجات HTML باستخدام htmlspecialchars مع ENT_QUOTES، ثانيًا أعد ترميز الصور (re-encode) بمكتبة زي GD أو Imagick عشان تشيل أي metadata مضمّنة جوه الملف، ثالثًا تحقق من نوع الملف الفعلي من المحتوى مش من الامتداد، ورابعًا اخدم الملفات المرفوعة من domain منفصل أو خزنها مع Content-Disposition: attachment. كمان ضيف CSP صارم يمنع تنفيذ inline scripts. مثال للكود المُصلَّح:\n```php\n// إعادة ترميز الصورة لشيل أي metadata مضمّنة\n$img = imagecreatefrompng($_FILES['avatar']['tmp_name']);\nimagepng($img, 'uploads/'.uniqid().'.png');\n// escape أي نص قبل عرضه في الصفحة\n$comment = $exif['COMMENT'] ?? '';\necho \"<div>\".htmlspecialchars($comment, ENT_QUOTES, 'UTF-8').\"</div>\";\n```"
+    },
+    "excerpt": "Without wasting any time, let’s dive in. Over time, I’ve realized that bug bounty hunting is a blend of luck and hard work. You don’t always have to put in a ton of effort — sometimes, bugs just fall into your lap. One day, I was randomly surfing YouTube and suddenly I got a mail saying that LibreOffice had launched their bug bounty program on Intigriti, which is now closed. I immediately checked the scope, but since I wasn’t familiar with binary exploitation at the time, I decided to focus on the web assets. After about 20 minutes, I noticed an interesting feature that allowed users to upload",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "ecae1c939765",
+    "title": "How I got my first $13500 bounty through Parameter Polluting (HPP)",
+    "url": "https://infosecwriteups.com/how-i-got-my-first-13500-bounty-through-parameter-polluting-hpp-179666b8e8bb",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "rAmpancist"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "13,500",
+    "published_at": "2024-08-10T00:00:00.000Z",
+    "added_at": "2026-09-23T06:20:19.265Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "xss"
+    ],
+    "severity": "high",
+    "summary_en": "An HPP/logic flaw in a housing site's registration let the researcher create a host account without a valid host ID, unlocking 4 privileged features. Chaining a public 3-character IDOR (leaking confidential form data) with a self-XSS turned it into reflected XSS — $13,500 in bounties.",
+    "summary_ar": "خلل منطقي (HPP) في تسجيل موقع إسكان خلّى الباحث ينشئ حساب host من غير ID صالح، ففتح له 4 ميزات محمية. وبسلسلة IDOR عام من 3 حروف (تسريب بيانات سرية) مع self-XSS حوّلها لـ reflected XSS — مجموع الـ bounties $13,500.",
+    "lesson": {
+      "cause_ar": "السبب الجذري خلل منطقي في تسجيل الحسابات: السيرفر كان بيقرر إن المستخدم host ولا customer بناءً على وجود باراميتر HostId في الطلب، لكنه كان بيتحقق من صحة الـ HostId فقط لما يكون IsHost=1. النتيجة إن أي حد يقدر يبعت IsHost=0&HostId=123 فيتحول حسابه إلى host من غير أي تحقق من صحة الـ ID. ده فتح 4 ميزات محمية خلف دور الـ host، وكلها كانت مبنية على افتراض إن اللي وصلها host حقيقي. وبعدين الميزات نفسها كانت ناقصة الـ authorization checks: الـ form كان بياخد ID عام من 3 حروف بدون أي حماية، والـ file upload كان بيدي لينك منفصل قابل للتعداد. حتى الـ XSS كانت self-XSS في البداية، لكن الـ IDOR حوّلها إلى reflected XSS لأن الاسم كان بينعكس في صفحة الـ form العامة.",
+      "walkthrough_ar": "الخطوة 1: الباحث كان بيفحص موقع إسكان (housing) معمول من موقع رئيسي فيه نوعين حسابات (host/customer) و subdomain فيه sub-service بياخد بيانات من الموقع الرئيسي.\nالخطوة 2: في نموذج التسجيل بتختار إنك host أو customer وبتدخل الـ ID بتاعك، والموقع المفروض يتحقق إن الـ ID صالح ويجيب معلوماتك.\nالخطوة 3: لاحظ حاجة غريبة: قسم الـ hosting معطل تمامًا — مهما كان الـ ID صالح بيقولك invalid أو مش قادر يجيب المعلومات.\nالخطوة 4: استنتج إن مفيش صياد ثغرات قبله قدر يعمل host account، وإن اللي ورا القسم ده لسه مستكشف.\nالخطوة 5: شكل طلب التسجيل لما تختار host:\nIsHost=1&HostId=123&Email=test%40test.com\nالخطوة 6: وشكل الطلب لما تختار customer:\nIsHost=0&Email=test%40test.com\n(لاحظ: مفيش HostId خالص في حالة customer)\nالخطوة 7: فكّر في الـ logic اللي شغال ورا الكواليس ولقاه:\n- لو HostId موجود و IsHost=1 → دوّر على الـ hostID وفشل.\n- لو HostId مش موجود و IsHost=0 → user عادي وكمّل.\n- لو HostId موجود و IsHost=0 → user هو host بس من غير ما يدور على الـ hostID (!!).\nالخطوة 8: يعني السيرفر بيحدد إنك host من وجود الـ HostId نفسه، لكنه بيعمل التحقق من صحته بس لما IsHost=1.\nالخطوة 9: فبعت طلب تسجيل بالشكل ده:\nIsHost=0&HostId=123&Email=test%40test.com\nالخطوة 10: النتيجة: اتفتح له حساب host صالح بدون أي تحقق من الـ ID — وده جوهر الـ HPP/الخلل المنطقي.\nالخطوة 11: الحساب ده فتح له 4 ميزات جديدة، وبدأ يفحصها واحدة واحدة.\nالخطوة 12: واحدة من الميزات كانت form submission فيه بيانات سرية (بيانات المستخدم + بيانات جاية من الموقع الرئيسي).\nالخطوة 13: لما بتقدم الـ form بيجيلك ID فريد من 3 حروف في الـ URL بيفتح الـ form بتاعك.\nالخطوة 14: الـ ID ده public وبدون أي حماية → IDOR عام: تقدر تشوف forms ناس تانية، وتقدر تبعت رابط لضحية لو لقيت XSS.\nالخطوة 15: كل الـ inputs كانت sanitized صح ومفيش XSS مباشر — بس كان ليه finding قديم: حقل الاسم فيه XSS، لكن الاسم خاص بيه وحده → self-XSS.\nالخطوة 16: الـ chain: الاسم بينعكس في الـ form وفي صفحة الـ 3 حروف، فبفضل الـ IDOR الـ self-XSS اتقلبت reflected XSS — يبعت الرابط للضحية والـ payload يشتغل في سياقها.\nالخطوة 17: الـ form كان فيه file upload بيدي لينك منفصل للملف، واللينك ده كان vulnerable لوحده — تقدر تشوف ملفات ناس تانية (IDOR تاني).\nالخطوة 18: النتيجة النهائية: Main IDOR بـ $12000 (critical لأن البيانات جاية من الموقع الرئيسي)، File IDOR بـ $1000، و XSS بـ $500 — المجموع $13500.",
+      "example_ar": "مثال مشابه على target.example — نفس فكرة الـ HPP في تحديد الدور:\nالكود الضعيف (PHP):\n$isHost = $_POST['IsHost'];\n$hostId = $_POST['HostId'] ?? null;\nif ($isHost == '1' && $hostId) {\n    if (!validateHostId($hostId)) { die('invalid host id'); }\n}\n$role = $hostId ? 'host' : 'customer'; // القرار من وجود الباراميتر مش من التحقق\ncreateAccount($role);\nطلب الهجوم:\nPOST /register HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\nIsHost=0&HostId=999&Email=attacker%40example.com\nليه نجح: السيرفر حدد الدور host لأن HostId موجود، لكنه ساب التحقق لأن IsHost=0 — فاتحساب host من غير ID صالح.",
+      "takeaway_ar": "دور على النمط ده في أي تسجيل أو تغيير دور: لو في باراميتر بيحدد الدور (IsHost, role, type) وباراميتر تاني بيتحقق منه بشكل مشروط، جرّب تفصل بينهم — ابعت الدور customer والـ ID موجود، أو ابعت نفس الباراميتر مرتين (HPP). العلامة الذهبية: لما ميزة معينة تكون معطلة للكل (زي قسم الـ hosting هنا) يبقى غالبًا وراها logic غلط ومفيش حد كشفها. كمان أي ID قصير أو sequential في الـ URL (3 حروف، أرقام صغيرة) يستاهل تجربة enumeration فورًا. ولو لقيت self-XSS متستهونش بيه — دوّر على أي مكان بينعكس فيه الاسم/البيانات دي في صفحة عامة أو قابلة للمشاركة عشان ترفعه لـ reflected. وأخيرًا اختبر الـ file upload links كأهداف مستقلة مش كجزء من الـ form.",
+      "fix_ar": "الإصلاح يبدأ من قرار الدور: مينفعش الدور يتحدد من باراميتر client-side زي وجود HostId — لازم يكون من مصدر موثوق (session/DB) بعد تحقق كامل. التحقق من صحة الـ HostId لازم يتم دائمًا قبل منح دور host، مش شرطًا على قيمة IsHost. كل endpoint للميزات المحمية لازم يعمل authorization check على مستوى الـ object (مين صاحب الـ form/الملف) مش بس على مستوى الـ feature. الـ IDs القصيرة القابلة للتخمين لازم تتبدل بـ UUIDs عشوائية، والـ XSS بيتحل بـ output encoding لكل البيانات المنعكسة. مثال على الكود الصح:\n$isHost = ($_POST['IsHost'] === '1');\n$hostId = $_POST['HostId'] ?? null;\nif ($isHost) {\n    if (!$hostId || !validateHostId($hostId)) { die('invalid host id'); }\n    $role = 'host';\n} else {\n    $role = 'customer';\n}\n// الدور بيتخزن في الـ session، وأي طلب لاحق بياخده من الـ session مش من الـ request"
+    },
+    "excerpt": "This write-up is about 2 IDORs and an XSS I found on a housing website. However what led me into these bugs is the point of this article. The structure revolved around a main website which you had to create your account on, which had different privilege levels based on what you actually want to do, and then a second website which was a subdomain of the main website and included a sub-service which functioned getting help from main website. In main website, you could’ve been a host or a customer. In this sub-service you could’ve used different functionalities depending on whether your main acco",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "36a3b733284b",
+    "title": "How i hacked NASA? at NASA VDP",
+    "url": "https://medium.com/@momos1337/how-i-hacked-nasa-bug-bounty-6975b833eb45",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Fadhli Almunawar"
+    ],
+    "program": "NASA",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-10T00:00:00.000Z",
+    "added_at": "2026-09-23T06:20:58.523Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "Remote code execution reported against NASA's VDP scope: a code injection flaw gave the researcher full command execution on a NASA asset.",
+    "summary_ar": "ثغرة Remote Code Execution (RCE) تم الإبلاغ عنها ضمن برنامج NASA VDP: خلل في Code Injection منح الباحث تنفيذ أوامر كامل على أحد أصول ناسا.",
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "939926e6b9ff",
+    "title": "Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server!",
+    "url": "https://blog.orange.tw/2024/08/confusion-attacks-en.html",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Orange Tsai (@orange_8361)"
+    ],
+    "program": "Apache HTTP Server, ModSecurity, Redmine",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-09T00:00:00.000Z",
+    "added_at": "2026-09-23T06:23:07.467Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "ssrf"
+    ],
+    "severity": "critical",
+    "summary_en": "> Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server! Also, I would like to thank Akamai for their friendly outreach! They released mitigation measures immediately after this research was published (details can be",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server! Also, I would like to thank Akamai for their friendly outreach! They released mitigation measures immediately after this research was published (details can be found on Akamai’s blog). # [](https://blog.orange.tw/2024/08/confusion-attacks-en.html#TL-DR \"TL;DR\")TL;DR This article explores architectural issues within the Apache HTTP Server, highlighting several technical debts within Httpd, **including 3 types of Confusion Attacks, 9 new vulnerabilities, 20 exploitation techniques, and over 30 case studies**. The co",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "8088fa5dc7bd",
     "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
     "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
