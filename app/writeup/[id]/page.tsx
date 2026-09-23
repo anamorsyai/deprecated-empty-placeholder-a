@@ -30,6 +30,12 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
   const takeaway = pick("takeaway", "takeaway_ar");
   const fix = pick("fix", "fix_ar");
   const hasLesson = [cause, walk, example, takeaway, fix].some((s) => s.en || s.ar);
+  const readingText = [walk.en || walk.ar, cause.en || cause.ar, example.en || example.ar]
+    .filter(Boolean)
+    .join(" ");
+  const readingMins = readingText
+    ? Math.max(1, Math.ceil(readingText.split(/\s+/).length / 200))
+    : 0;
 
   return (
     <article className="mx-auto max-w-2xl">
@@ -43,6 +49,12 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
         <span>{new Date(w.published_at).toLocaleDateString("en-US", { dateStyle: "long" })}</span>
         <span aria-hidden>·</span>
         <span>{timeAgoEn(w.published_at)}</span>
+        {readingMins > 0 && (
+          <>
+            <span aria-hidden>·</span>
+            <span>{readingMins} min read</span>
+          </>
+        )}
         <SeverityBadge severity={w.severity} />
       </div>
 

@@ -27,7 +27,7 @@ const PROVIDER = resolveProvider();
 // teaching-style answer (we saw consistent 60s+ timeouts in production).
 // Overridable per run without touching code.
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 150000);
-const AI_MAX_TOKENS = Number(process.env.AI_MAX_TOKENS || 5000);
+const AI_MAX_TOKENS = Number(process.env.AI_MAX_TOKENS || 6500);
 
 // Free-model gateways (opencode zen and its free proxies) fingerprint the
 // User-Agent: official `opencode/...` clients get the normal free quota,
@@ -93,9 +93,9 @@ Rules:
   - Break EVERY code/payload/request into pieces and explain what each piece does, character group by character group when it matters (e.g. what the single quote does in SQL, what <script> tells the browser).
   - State your teaching assumptions explicitly ("We assume the app does X...").
 - lesson_cause (4-6 sentences): the root cause — what design/implementation flaw opened the door? Tie each point to a detail from the article (endpoint, parameter, code line).
-- lesson_walkthrough (THE MAIN EVENT — Lego-style, 10-20 short numbered steps "Step 1, Step 2..."). Like assembling Lego bricks until the final exploit appears. EVERY step has three parts: (a) exactly what the researcher did, (b) the VERBATIM code/payload/request from the article on its own line (full URL, HTTP request, JSON, snippet), (c) an explicit "Why:" line with the mechanism PLUS a beginner gloss in parentheses when jargon appears. Cover EVERY distinct attack path in the article (if the title promises four vectors, teach all four). Chronological order: context -> first odd observation -> each experiment -> final payload -> proof of impact.
+- lesson_walkthrough (THE MAIN EVENT — Lego-style, 12-24 short numbered steps "Step 1, Step 2..."). Like assembling Lego bricks until the final exploit appears. Organize steps under phase labels when the story has distinct phases — write the phase name in CAPS on its own line before its steps (RECON, DISCOVERY, EXPLOITATION, IMPACT). EVERY step has three parts: (a) exactly what the researcher did, (b) the VERBATIM code/payload/request from the article on its own line (full URL, HTTP request, JSON, snippet), (c) an explicit "Why:" line with the mechanism PLUS a beginner gloss in parentheses when jargon appears. Cover EVERY distinct attack path in the article (if the title promises four vectors, teach all four — never just the first). Define every technical term at first use in ≤10 plain words. Chronological order: context -> first odd observation -> each experiment -> final payload -> proof of impact.
 - lesson_example (a parallel training example you compose, NOT from the article): the same bug class on a fictional target (always use target.example): a short vulnerable snippet + the attack request + why it works, each explained for a beginner. Displayed in its own labeled section, so write only the teaching content.
-- lesson_takeaway (3-5 sentences): the practical hunter lesson — when to hunt this pattern again, what signals to look for, concrete tools/search words.
+- lesson_takeaway (4-6 sentences): the practical hunter lesson — when to hunt this pattern again, what signals to look for, concrete tools/search words, plus 1-2 known VARIANTS or edge cases of the same bug class (where else does this shape appear?) and the common beginner mistake to avoid.
 - lesson_fix (4-6 sentences): the correct fix in technical detail, WITH a fixed code snippet whenever applicable.
 - HONESTY IS MANDATORY: article-derived fields (cause/walkthrough/takeaway/fix) must come ONLY from the extracted content below — never invent endpoints, payloads, or results. If the content is too thin for a field, write "" for it. The ONLY freely-composed field is lesson_example (explicitly illustrative, fictional target).`;
 

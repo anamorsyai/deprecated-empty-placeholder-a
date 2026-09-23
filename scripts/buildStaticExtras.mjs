@@ -83,7 +83,20 @@ function buildFeed(writeups) {
     summary_ar: w.summary_ar,
     excerpt: w.excerpt,
     score: w.score,
+    readingMinutes: readingMinutes(w),
   }));
+}
+
+function readingMinutes(w) {
+  const text = [
+    w.lesson?.walkthrough, w.lesson?.walkthrough_ar,
+    w.lesson?.cause, w.lesson?.cause_ar,
+    w.lesson?.example, w.lesson?.example_ar,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  if (!text) return 0;
+  return Math.max(1, Math.ceil(text.split(/\s+/).length / 200));
 }
 
 function escapeXml(str) {

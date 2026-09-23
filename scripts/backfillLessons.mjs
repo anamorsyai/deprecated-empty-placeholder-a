@@ -34,9 +34,11 @@ async function main() {
   }
   const writeups = JSON.parse(await readFile(WRITEUPS_PATH, "utf8"));
   const queue = writeups
-    .filter((w) => !(w.lesson?.walkthrough || w.lesson?.walkthrough_ar))
+    // Missing an ENGLISH lesson (legacy Arabic-only items count as missing —
+    // they get re-taught by the current prompt while keeping their Arabic).
+    .filter((w) => !w.lesson?.walkthrough)
     .sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""));
-  console.log(`${queue.length} archived item(s) missing a full lesson`);
+  console.log(`${queue.length} archived item(s) missing an ENGLISH lesson`);
 
   let updated = 0;
   let skippedThin = 0;
@@ -66,6 +68,26 @@ async function main() {
   );
   await writeFile(META_PATH, JSON.stringify(meta, null, 2));
   console.log(`Done. ${updated} lesson(s) added, ${skippedThin} skipped (thin/failed).`);
+  const remaining = writeups.filter((w) => !w.lesson?.walkthrough).length;
+  console.log(`Remaining without EN lesson: ${remaining}`);
+  // Self-chain while progress is being made so a big queue drains without
+  // manual re-dispatches. Stops on its own when a run adds nothing (only
+  // thin/failed items left) — those need better source content, not retries.
+  if (updated > 0 && remaining > 0) {
+    console.log("Progress made and queue remains — dispatching the next backfill run.");
+    const repo = process.env.GITHUB_REPOSITORY;
+    const token = process.env.GITHUB_TOKEN;
+    if (repo && token) {
+      const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/lessons-backfill.yml/dispatches`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "content-type": "application/json" },
+        body: JSON.stringify({ ref: "main", inputs: { max_items: String(MAX_PER_RUN) } }),
+      });
+      console.log(`Self-dispatch status: ${res.status}`);
+    } else {
+      console.log("GITHUB_REPOSITORY/TOKEN unavailable — chain stops here.");
+    }
+  }
 }
 
 async function backfillOne(w) {

@@ -56,6 +56,8 @@ export interface WriteupCardData {
   summary_ar: string | null;
   excerpt: string | null;
   score: number;
+  /** Estimated full-breakdown reading time, computed at build time. 0 = no lesson yet. */
+  readingMinutes?: number;
 }
 
 export interface CategoryDef {

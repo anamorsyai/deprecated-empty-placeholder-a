@@ -15,6 +15,12 @@ export default function WriteupCard({ writeup, compact = false }: { writeup: Wri
         <span className="truncate">{writeup.source.name}</span>
         <span aria-hidden>·</span>
         <span className="shrink-0">{timeAgoEn(writeup.published_at)}</span>
+        {typeof writeup.readingMinutes === "number" && writeup.readingMinutes > 0 && (
+          <>
+            <span aria-hidden>·</span>
+            <span className="shrink-0">{writeup.readingMinutes} min read</span>
+          </>
+        )}
         {writeup.bounty_raw && (
           <>
             <span aria-hidden>·</span>
