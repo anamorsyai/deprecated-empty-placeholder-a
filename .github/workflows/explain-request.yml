@@ -16,10 +16,12 @@ permissions:
   actions: write
   issues: write
 
-# Same group as fetch/backfill: data writers never overlap.
-concurrency:
-  group: data-writer
-  cancel-in-progress: false
+# NOTE: deliberately NO concurrency group here while diagnosing instant
+# cancellation of issues-triggered runs. The single-item backfill pulls fresh
+# base right before pushing, so the race window is tiny.
+# concurrency:
+#   group: data-writer
+#   cancel-in-progress: false
 
 jobs:
   teach:
