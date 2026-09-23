@@ -38,6 +38,17 @@ const AI_USER_AGENT =
   process.env.AI_USER_AGENT || "opencode/1.18.27 ai-sdk/provider-utils/4.0.23 runtime/bun/1.3.14";
 const CUSTOM_API_KEY_DEFAULT = "public";
 
+const SESSION_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+// ses_ + 26 random alphanumerics — byte-identical in shape to the
+// anthropic-shim genSessionID() the user runs successfully elsewhere.
+function randomSession() {
+  const b = randomBytes(26);
+  let s = "ses_";
+  for (let i = 0; i < 26; i++) s += SESSION_CHARS[b[i] % 62];
+  return s;
+}
+
 function resolveProvider() {
   const forced = process.env.AI_PROVIDER;
   if (forced) return forced;
@@ -185,8 +196,9 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
     // explicit custom headers still win if the user sets them.
     "user-agent": AI_USER_AGENT,
     // Fresh random session per request, mirroring the official client
-    // (ses_<random>). Overridable via custom headers like everything else.
-    "x-opencode-session": `ses_${randomBytes(12).toString("hex")}`,
+    // (ses_ + 26 alphanumerics, exactly like the anthropic-shim's
+    // genSessionID). Overridable via custom headers like everything else.
+    "x-opencode-session": randomSession(),
     ...extraHeaders,
   };
   // Optional: a self-hosted/local endpoint may need no auth at all — only
