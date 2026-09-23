@@ -68,5 +68,44 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "2b37c0691f6c",
+    "title": "How I Got Critical P2 Bug on Google",
+    "url": "https://medium.com/@rhashibur75/how-i-got-critical-p2-bug-on-google-vrp-165017145af8",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Kazi Hashibur Rahman"
+    ],
+    "program": "Google",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-04T00:00:00.000Z",
+    "added_at": "2026-09-23T16:03:07.053Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "summary_en": "**Summary:** Exposed “Google Cloud RADIS G4 Superset Dashboard” without authentication, potentially revealing sensitive data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Summary:** Exposed “Google Cloud RADIS G4 Superset Dashboard” without authentication, potentially revealing sensitive data. **_The vulnerability is known to third parties!_** **Program:** Google VRP **URL:**http://107.167.xxx.xxx:8080/superset/welcome/ **Vulnerability type:** Critical Sensitive data exposure ## Details I recently discovered a potentially exposed Google Cloud RADIS G4 Superset Dashboard that may present a security risk. The dashboard appears to be publicly accessible without proper authentication or security measures. **Details:** * Type of Issue: **Exposed Google Cloud RADIS",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]
