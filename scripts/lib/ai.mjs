@@ -165,18 +165,42 @@ async function callGemini(userPrompt) {
   // flash generation. A pinned GEMINI_MODEL secret overrides when set.
   const model = process.env.GEMINI_MODEL || "gemini-flash-latest";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    signal: AbortSignal.timeout(AI_TIMEOUT_MS),
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: `${PROMPT_INSTRUCTIONS}\n\n${userPrompt}` }] }],
-      generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: AI_MAX_TOKENS },
-    }),
-  });
-  if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`);
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "";
+  const payload = {
+    contents: [{ role: "user", parts: [{ text: `${PROMPT_INSTRUCTIONS}\n\n${userPrompt}` }] }],
+    generationConfig: { temperature: 0.2, responseMimeType: "application/json", maxOutputTokens: AI_MAX_TOKENS },
+  };
+  // The free tier throws transient 503 demand spikes — wait a beat and retry
+  // once (same policy as the OpenAI-compatible path) instead of dropping the
+  // whole teaching read.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        signal: AbortSignal.timeout(AI_TIMEOUT_MS),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return data.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "";
+      }
+      const errText = await res.text();
+      const retryable = res.status === 429 || (res.status >= 500 && res.status < 600);
+      if (retryable && attempt === 0) {
+        console.warn(`  Gemini HTTP ${res.status}, waiting 20s and retrying once`);
+        await new Promise((r) => setTimeout(r, 20000));
+        continue;
+      }
+      throw new Error(`Gemini HTTP ${res.status}: ${errText}`);
+    } catch (err) {
+      if ((err?.name === "TimeoutError" || err?.name === "AbortError") && attempt === 0) {
+        console.warn(`  Gemini timed out after ${AI_TIMEOUT_MS}ms, retrying once`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error("Gemini gave up after retry");
 }
 
 async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders }) {
