@@ -1,10 +1,10 @@
 {
-  "lastRun": "2026-09-23T20:10:10.922Z",
+  "lastRun": "2026-09-23T20:13:51.022Z",
   "totalItems": 60,
-  "newItemsThisRun": 1,
+  "newItemsThisRun": 0,
   "aiProvider": "custom",
   "aiOkThisRun": 0,
-  "aiFallbackThisRun": 1,
+  "aiFallbackThisRun": 0,
   "aiGeneratedTotal": 20,
   "bySource": {
     "medium-tag-bug-bounty": 10,
