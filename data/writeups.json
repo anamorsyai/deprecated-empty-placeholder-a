@@ -1,5 +1,44 @@
 [
   {
+    "id": "3f5b6587ab06",
+    "title": "The OWASP Top 10 Is Not a Checklist — It’s a Way of Thinking",
+    "url": "https://medium.com/@jakalalokesh07/the-owasp-top-10-is-not-a-checklist-its-a-way-of-thinking-16fea81d6afe",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Jakkali Lokesh"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T18:47:07.000Z",
+    "added_at": "2026-09-23T18:53:45.439Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Cybersecurity & DevOps enthusiast | Bug bounty hunter | Exploring cloud, Kubernetes, automation & web security | Building, breaking & fixing things.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Cybersecurity & DevOps enthusiast | Bug bounty hunter | Exploring cloud, Kubernetes, automation & web security | Building, breaking & fixing things. Cybersecurity Ethical Hacking Bug Bounty Security Information Security # The OWASP Top 10 Is Not a Checklist — It’s a Way of Thinking Image 3: Jakkali Lokesh Jakkali Lokesh 13 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F16fea81d6afe&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40jakalalokesh07%2Fthe-owasp-top-10-is-not-a-checklist-its-a-way-of-thinking-16fea81d6afe&user=Jakkali+",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "b10a4569312e",
     "title": "🔥 IRC Cloudflare Blocklist CTF | Full Penetration Testing Challenge",
     "url": "https://medium.com/@pentesterclubpvtltd/irc-cloudflare-blocklist-ctf-full-penetration-testing-challenge-74aaaefe1d91",
