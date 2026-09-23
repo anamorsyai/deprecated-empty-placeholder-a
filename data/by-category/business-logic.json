@@ -136,5 +136,41 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "b3104cd74453",
+    "title": "Exploring Anti-Phishing Measures in Microsoft 365 – Certitude Blog",
+    "url": "https://certitude.consulting/blog/en/o365-anti-phishing-measures",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "William Moody",
+      "Wolfgang Ettlinger"
+    ],
+    "program": "Microsoft",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-07T00:00:00.000Z",
+    "added_at": "2026-09-23T06:56:35.301Z",
+    "categories": [
+      "other",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "summary_en": "Certitude showed that Microsoft 365's First Contact Safety Tip can be hidden with CSS (white-on-white text) and Outlook's signed/encrypted badges can be spoofed, stripping anti-phishing warnings from emails. Microsoft confirmed the finding via MSRC but declined to fix it, calling it below the servicing bar.",
+    "summary_ar": "أثبت باحثو Certitude أن تنبيه First Contact Safety Tip في Microsoft 365 يمكن إخفاؤه عبر CSS (نص أبيض على خلفية بيضاء)، وأن شارات التوقيع/التشفير في Outlook يمكن تزويرها، ما يزيل تحذيرات مكافحة التصيّد من الرسائل. أكدت Microsoft صحة الاكتشاف عبر MSRC لكنها رفضت إصلاحه باعتباره دون مستوى المعالجة الفورية.",
+    "lesson": {
+      "cause_ar": "السبب الجذري إن First Contact Safety Tip بيتم إلحاقه (prepend) بجسم الإيميل HTML نفسه، يعني التنبيه الأمني بيعيش جوه محتوى يتحكم فيه المهاجم بالكامل. الافتراض الخاطئ في التصميم إن التنبيه اللي بيضيفه السيرفر محمي من العبث، لكن الحقيقة إنه بيترسم من نفس الـ markup اللي بيوصله من المرسل. محرك العرض في Outlook بيمنع قواعد الإخفاء الشائعة زي display:none و opacity:0 بسبب الـ inline CSS والقيود، لكنه مش بيمنع تغيير الألوان، فتحويل النص والخلفية للأبيض بيخلي التنبيه غير مرئي. كمان Outlook بيحوّل أي عنوان إيميل مكتوب بنقطة عادية لرابط mailto تلقائيًا، فاستخدم الباحث Unicode U+2024 بدل النقطة عشان التزوير يفضل متطابق. النتيجة: تحذير أمني موجود في الصفحة لكنه غير مرئي، وشارات التوقيع/التشفير قابلة للتزوير، فبينهار الغرض الكامل من الإجراء.",
+      "walkthrough_ar": "الخطوة 1: السياق — الباحث كان بيفحص إجراءات مكافحة التصيّد في Microsoft 365 (Exchange Online Protection و Defender)، وتحديدًا First Contact Safety Tip اللي بيظهر لما تستلم إيميل من عنوان مش بتتعامل معه عادة، برسالة نصها \"You don't often get email from xyz@example.com\".\nالخطوة 2: الملاحظة الأولى — التنبيه بيتضاف (prepend) لجسم الإيميل HTML نفسه، يعني بيبقى جوه محتوى يتحكم فيه المهاجم، وبالتالي ممكن يتعدل عرضه عبر وسوم CSS style.\nالخطوة 3: التجربة الأولى — حاول يخفي الجدول اللي فيه التنبيه بقواعد CSS شائعة: display: none و height: 0px و opacity: 0.\nالخطوة 4: النتيجة — القواعد دي مش شغالة، إما بسبب الـ inline CSS الموجود في العناصر نفسها أو بسبب عدم دعم محرك العرض اللي Outlook بيستخدمه.\nالخطوة 5: الحل — بدل الإخفاء الكامل، غيّر الألوان: خلفية بيضاء ونص أبيض مع font-size: 0px، فالتنبيه بيترسم لكنه مش بيبان.\nالخطوة 6: الكود المستخدم:\n<head><style> a { display: none; } td div { color: white; font-size: 0px; } table tbody tr td { background-color: white !important; color: white !important; } </style></head>\nالخطوة 7: ليه شغالة — التنبيه لسه موجود في الـ DOM لكن ألوانه بقت مطابقة للخلفية البيضاء، فالعين مش بتلتقطه، و!important بتتغلب على أي أنماط تانية.\nالخطوة 8: إثبات الأثر — الصورة بتوضح إن التنبيه مش ظاهر في جسم الإيميل نهائيًا، لكن الـ preview (المظلل بالأحمر) لسه بيبدأ بنص التنبيه.\nالخطوة 9: خطوة إضافية — تزوير شارات التوقيع/التشفير اللي Outlook بيضيفها للإيميلات الموقّعة، عبر جدول فيه نص \"Signed By nimmerrichtermarc@gmail.com\" وصورتين base64 كشارات.\nالخطوة 10: التفصيلة الذكية — النقطة في العنوان مش نقطة عادية، دي Unicode U+2024، لأن لو اتكتبت نقطة عادية Outlook هيكتشف الإيميل ويعمل له mailto link يبان شكله مختلف عن النص الأصلي اللي بيتزوّر.\nالخطوة 11: النتيجة — الإيميل المزوّر شكله قريب جدًا من الإيميل الموقّع/المشفّر فعلًا، والمستخدم غير المنتبه ممكن يقع، و\"يكفي شخص واحد يقع عشان المهاجم يحصل على موطئ قدم في المؤسسة\".\nالخطوة 12: الإفصاح — تم الإبلاغ عبر Microsoft Researcher Portal (MSRC)، وردت Microsoft: \"الاكتشاف صحيح لكنه لا يصل لمستوى المعالجة الفورية لأنه أساسًا للتصيّد\"، وتم وضع الاكتشاف للمراجعة المستقبلية.",
+      "example_ar": "مثال تدريبي على هدف وهمي target.example — خدمة ويب ميل بتضيف تحذير أمان فوق جسم الإيميل:\n// mail_render.php — الهدف الوهمي target.example\n$body = \"<div id='safety-tip' style='background:#fff8dc;color:#856404;'>تحذير: هذا المرسل غير معروف</div>\" . $userHtml;\necho $body;\nطلب الهجوم:\nPOST /send HTTP/1.1\nHost: target.example\nContent-Type: text/html\n\n<html><head><style>\n#safety-tip { background-color:#fff8dc !important; color:#fff8dc !important; font-size:0px; }\n</style></head><body><h1>عرض خاص!</h1><a href=\"https://evil.example/login\">سجّل دخولك الآن</a></body></html>\nليه نجح: التحذير بيتحط جوه نفس مستند HTML اللي بيوصله من المرسل، فـ CSS بتاع المهاجم وصل للعنصر بالـ selector وغيّر لونه ليطابق الخلفية، فاختفى التحذير وبقى الإيميل يبان عادي.",
+      "takeaway_ar": "دور على أي تحذير أمني أو شارة ثقة بيتم رسمها جوه محتوى يتحكم فيه المستخدم — إيميلات HTML، معاينات إشعارات، صفحات خطأ بتعكس إدخال المستخدم. جرّب حقن CSS بسيط: غيّر لون النص والخلفية لنفس اللون، أو font-size:0، واستخدم !important للتغلب على الأنماط الموجودة. خد بالك من حيل Unicode زي U+2024 اللي بتكسر الـ auto-linking وتخلي النص المزوّر يبان مطابق حرفيًا. عمليًا: ابعت إيميلات اختبار فيها <style> وشوف إزاي بتترسم في العميل الفعلي، وافحص هل التنبيه بيتحط في نفس الـ DOM ولا في طبقة منفصلة — الفرق ده هو اللي بيحدد إمكانية الاستغلال.",
+      "fix_ar": "الإصلاح الجذري إن التنبيه الأمني مايتحطش جوه جسم الإيميل أصلًا — يُرسم في طبقة واجهة منفصلة خارج HTML المرسل، زي ما بيحصل في عملاء البريد الكبار مع تحذيرات الـ phishing. لو لازم يتضاف للجسم، لازم ننضّف HTML الإيميل قبل العرض: شيل وسوم <style> وكل الـ inline style attributes، أو لفّ التنبيه في حاوية معزولة بـ sandbox/CSP تمنع وصول CSS المرسل إليه. يُفضّل كمان تثبيت ألوان وخط التنبيه بـ !important على مستوى أعلى من أي CSS ممكن يوصله، واختبار قواعد الإخفاء الشائعة (display:none, opacity:0, font-size:0) في كل محركات العرض. وزي ما حصل مع Microsoft، لو الشركة رفضت الإصلاح، التوثيق الكامل للـ PoC والإفصاح المسؤول عبر منصة الإبلاغ الرسمية هو اللي بيحفظ حقك ويوثق الأثر.\n// الإصلاح: التنبيه خارج جسم الإيميل — طبقة UI منفصلة\n$tip = \"<div class='safety-tip'>⚠ تحذير: مرسل غير معروف</div>\"; // يُرسم في الواجهة وليس في HTML الإيميل\n$body = sanitize_html($userHtml); // strip <style> و inline style attributes قبل العرض"
+    },
+    "excerpt": "**In this post we will explore some of the anti-phishing measures employed by Microsoft 365 (formally Office 365) as well as their weaknesses. Cert it ude was able to identify an issue in that allows malicious actors to bypass anti-phishing measures.** When an Outlook user receives an e-mail from an address they don’t typically communicate with, Outlook shows an alert which reads _“You don’t often get email from xyz@example.com. Learn why this is important”_. This is what Microsoft calls the _First Contact Safety Tip_, and it is one of the various anti-phishing measures available in Exchange O",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
   }
 ]

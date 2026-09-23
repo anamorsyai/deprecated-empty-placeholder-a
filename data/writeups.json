@@ -3187,6 +3187,149 @@
     "score": 53
   },
   {
+    "id": "4e256aeff8c5",
+    "title": "Living off the VPN — Exploring VPN Post-Exploitation Techniques",
+    "url": "https://www.akamai.com/blog/security-research/2024-august-vpn-post-exploitation-techniques-black-hat",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ori David (@oridavid123)"
+    ],
+    "program": "Ivanti (Connect Secure), Fortinet (Fortigate VPN)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-07T00:00:00.000Z",
+    "added_at": "2026-09-23T06:54:52.964Z",
+    "categories": [
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "medium",
+    "summary_en": "Deploy faster with global cloud infrastructure — no surprise bills, no lock-in, and transparent pricing across every data center.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Deploy faster with global cloud infrastructure — no surprise bills, no lock-in, and transparent pricing across every data center. Try now *SeePromotion Redemption Rules & Conditions * Developers Back Developers Close * Cloud developers * Developer hub * Akamai GitHub repo * docs and guides * Cloud docs * Guides and tutorials * cloud marketplace * Developer apps ## Get started with Akamai Cloud Sign up today and unlock cloud computing, edge and AI tools built for your business. Sign up * Resources Back Resources Close * What’s new * Akamai blog * Events and workshops * Learning * White papers,",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "b3104cd74453",
+    "title": "Exploring Anti-Phishing Measures in Microsoft 365 – Certitude Blog",
+    "url": "https://certitude.consulting/blog/en/o365-anti-phishing-measures",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "William Moody",
+      "Wolfgang Ettlinger"
+    ],
+    "program": "Microsoft",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-07T00:00:00.000Z",
+    "added_at": "2026-09-23T06:56:35.301Z",
+    "categories": [
+      "other",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "summary_en": "Certitude showed that Microsoft 365's First Contact Safety Tip can be hidden with CSS (white-on-white text) and Outlook's signed/encrypted badges can be spoofed, stripping anti-phishing warnings from emails. Microsoft confirmed the finding via MSRC but declined to fix it, calling it below the servicing bar.",
+    "summary_ar": "أثبت باحثو Certitude أن تنبيه First Contact Safety Tip في Microsoft 365 يمكن إخفاؤه عبر CSS (نص أبيض على خلفية بيضاء)، وأن شارات التوقيع/التشفير في Outlook يمكن تزويرها، ما يزيل تحذيرات مكافحة التصيّد من الرسائل. أكدت Microsoft صحة الاكتشاف عبر MSRC لكنها رفضت إصلاحه باعتباره دون مستوى المعالجة الفورية.",
+    "lesson": {
+      "cause_ar": "السبب الجذري إن First Contact Safety Tip بيتم إلحاقه (prepend) بجسم الإيميل HTML نفسه، يعني التنبيه الأمني بيعيش جوه محتوى يتحكم فيه المهاجم بالكامل. الافتراض الخاطئ في التصميم إن التنبيه اللي بيضيفه السيرفر محمي من العبث، لكن الحقيقة إنه بيترسم من نفس الـ markup اللي بيوصله من المرسل. محرك العرض في Outlook بيمنع قواعد الإخفاء الشائعة زي display:none و opacity:0 بسبب الـ inline CSS والقيود، لكنه مش بيمنع تغيير الألوان، فتحويل النص والخلفية للأبيض بيخلي التنبيه غير مرئي. كمان Outlook بيحوّل أي عنوان إيميل مكتوب بنقطة عادية لرابط mailto تلقائيًا، فاستخدم الباحث Unicode U+2024 بدل النقطة عشان التزوير يفضل متطابق. النتيجة: تحذير أمني موجود في الصفحة لكنه غير مرئي، وشارات التوقيع/التشفير قابلة للتزوير، فبينهار الغرض الكامل من الإجراء.",
+      "walkthrough_ar": "الخطوة 1: السياق — الباحث كان بيفحص إجراءات مكافحة التصيّد في Microsoft 365 (Exchange Online Protection و Defender)، وتحديدًا First Contact Safety Tip اللي بيظهر لما تستلم إيميل من عنوان مش بتتعامل معه عادة، برسالة نصها \"You don't often get email from xyz@example.com\".\nالخطوة 2: الملاحظة الأولى — التنبيه بيتضاف (prepend) لجسم الإيميل HTML نفسه، يعني بيبقى جوه محتوى يتحكم فيه المهاجم، وبالتالي ممكن يتعدل عرضه عبر وسوم CSS style.\nالخطوة 3: التجربة الأولى — حاول يخفي الجدول اللي فيه التنبيه بقواعد CSS شائعة: display: none و height: 0px و opacity: 0.\nالخطوة 4: النتيجة — القواعد دي مش شغالة، إما بسبب الـ inline CSS الموجود في العناصر نفسها أو بسبب عدم دعم محرك العرض اللي Outlook بيستخدمه.\nالخطوة 5: الحل — بدل الإخفاء الكامل، غيّر الألوان: خلفية بيضاء ونص أبيض مع font-size: 0px، فالتنبيه بيترسم لكنه مش بيبان.\nالخطوة 6: الكود المستخدم:\n<head><style> a { display: none; } td div { color: white; font-size: 0px; } table tbody tr td { background-color: white !important; color: white !important; } </style></head>\nالخطوة 7: ليه شغالة — التنبيه لسه موجود في الـ DOM لكن ألوانه بقت مطابقة للخلفية البيضاء، فالعين مش بتلتقطه، و!important بتتغلب على أي أنماط تانية.\nالخطوة 8: إثبات الأثر — الصورة بتوضح إن التنبيه مش ظاهر في جسم الإيميل نهائيًا، لكن الـ preview (المظلل بالأحمر) لسه بيبدأ بنص التنبيه.\nالخطوة 9: خطوة إضافية — تزوير شارات التوقيع/التشفير اللي Outlook بيضيفها للإيميلات الموقّعة، عبر جدول فيه نص \"Signed By nimmerrichtermarc@gmail.com\" وصورتين base64 كشارات.\nالخطوة 10: التفصيلة الذكية — النقطة في العنوان مش نقطة عادية، دي Unicode U+2024، لأن لو اتكتبت نقطة عادية Outlook هيكتشف الإيميل ويعمل له mailto link يبان شكله مختلف عن النص الأصلي اللي بيتزوّر.\nالخطوة 11: النتيجة — الإيميل المزوّر شكله قريب جدًا من الإيميل الموقّع/المشفّر فعلًا، والمستخدم غير المنتبه ممكن يقع، و\"يكفي شخص واحد يقع عشان المهاجم يحصل على موطئ قدم في المؤسسة\".\nالخطوة 12: الإفصاح — تم الإبلاغ عبر Microsoft Researcher Portal (MSRC)، وردت Microsoft: \"الاكتشاف صحيح لكنه لا يصل لمستوى المعالجة الفورية لأنه أساسًا للتصيّد\"، وتم وضع الاكتشاف للمراجعة المستقبلية.",
+      "example_ar": "مثال تدريبي على هدف وهمي target.example — خدمة ويب ميل بتضيف تحذير أمان فوق جسم الإيميل:\n// mail_render.php — الهدف الوهمي target.example\n$body = \"<div id='safety-tip' style='background:#fff8dc;color:#856404;'>تحذير: هذا المرسل غير معروف</div>\" . $userHtml;\necho $body;\nطلب الهجوم:\nPOST /send HTTP/1.1\nHost: target.example\nContent-Type: text/html\n\n<html><head><style>\n#safety-tip { background-color:#fff8dc !important; color:#fff8dc !important; font-size:0px; }\n</style></head><body><h1>عرض خاص!</h1><a href=\"https://evil.example/login\">سجّل دخولك الآن</a></body></html>\nليه نجح: التحذير بيتحط جوه نفس مستند HTML اللي بيوصله من المرسل، فـ CSS بتاع المهاجم وصل للعنصر بالـ selector وغيّر لونه ليطابق الخلفية، فاختفى التحذير وبقى الإيميل يبان عادي.",
+      "takeaway_ar": "دور على أي تحذير أمني أو شارة ثقة بيتم رسمها جوه محتوى يتحكم فيه المستخدم — إيميلات HTML، معاينات إشعارات، صفحات خطأ بتعكس إدخال المستخدم. جرّب حقن CSS بسيط: غيّر لون النص والخلفية لنفس اللون، أو font-size:0، واستخدم !important للتغلب على الأنماط الموجودة. خد بالك من حيل Unicode زي U+2024 اللي بتكسر الـ auto-linking وتخلي النص المزوّر يبان مطابق حرفيًا. عمليًا: ابعت إيميلات اختبار فيها <style> وشوف إزاي بتترسم في العميل الفعلي، وافحص هل التنبيه بيتحط في نفس الـ DOM ولا في طبقة منفصلة — الفرق ده هو اللي بيحدد إمكانية الاستغلال.",
+      "fix_ar": "الإصلاح الجذري إن التنبيه الأمني مايتحطش جوه جسم الإيميل أصلًا — يُرسم في طبقة واجهة منفصلة خارج HTML المرسل، زي ما بيحصل في عملاء البريد الكبار مع تحذيرات الـ phishing. لو لازم يتضاف للجسم، لازم ننضّف HTML الإيميل قبل العرض: شيل وسوم <style> وكل الـ inline style attributes، أو لفّ التنبيه في حاوية معزولة بـ sandbox/CSP تمنع وصول CSS المرسل إليه. يُفضّل كمان تثبيت ألوان وخط التنبيه بـ !important على مستوى أعلى من أي CSS ممكن يوصله، واختبار قواعد الإخفاء الشائعة (display:none, opacity:0, font-size:0) في كل محركات العرض. وزي ما حصل مع Microsoft، لو الشركة رفضت الإصلاح، التوثيق الكامل للـ PoC والإفصاح المسؤول عبر منصة الإبلاغ الرسمية هو اللي بيحفظ حقك ويوثق الأثر.\n// الإصلاح: التنبيه خارج جسم الإيميل — طبقة UI منفصلة\n$tip = \"<div class='safety-tip'>⚠ تحذير: مرسل غير معروف</div>\"; // يُرسم في الواجهة وليس في HTML الإيميل\n$body = sanitize_html($userHtml); // strip <style> و inline style attributes قبل العرض"
+    },
+    "excerpt": "**In this post we will explore some of the anti-phishing measures employed by Microsoft 365 (formally Office 365) as well as their weaknesses. Cert it ude was able to identify an issue in that allows malicious actors to bypass anti-phishing measures.** When an Outlook user receives an e-mail from an address they don’t typically communicate with, Outlook shows an alert which reads _“You don’t often get email from xyz@example.com. Learn why this is important”_. This is what Microsoft calls the _First Contact Safety Tip_, and it is one of the various anti-phishing measures available in Exchange O",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "45a90b4cf8d9",
+    "title": "The Butterfly Effect: Turning Overlooked Misconfigurations into Zero Click Account Takeover",
+    "url": "https://oussamarahali.com/blog/butterfly-effect-zero-click-account-takeover",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Oussama Rahali (@ourahali)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-07T00:00:00.000Z",
+    "added_at": "2026-09-23T06:58:28.549Z",
+    "categories": [
+      "graphql",
+      "idor-bola",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "summary_en": "A chain of overlooked GraphQL misconfigurations — enabled suggestions, an IDOR that enumerated students and admins, and a login mutation that accepted an empty password when loggedSSO=true — escalated into zero-click takeover of any account on an e-learning platform.",
+    "summary_ar": "سلسلة من سوء الإعدادات في GraphQL — تفعيل الـ suggestions، وثغرة IDOR لسرد الطلاب والمشرفين، وmutation تسجيل دخول تقبل كلمة مرور فارغة عند تمرير loggedSSO=true — تحوّلت إلى استيلاء كامل (zero-click) على أي حساب في منصة تعليم إلكتروني.",
+    "lesson": {
+      "cause_ar": "السبب الجذري ليس ثغرة واحدة بل سلسلة إعدادات خاطئة تراكمت فوق بعضها. أولاً، خاصية GraphQL suggestions كانت مفعّلة في بيئة الإنتاج، فسرّبت أسماء الـ queries والـ mutations المتاحة للمهاجم. ثانيًا، الـ resolvers الخاصة بـ student(id) و administrator(id) كانت ترجع بيانات أي كائن بمجرد تمرير الـ id من غير أي تحقق أن المستخدم الحالي يملك صلاحية الوصول لهذا الكائن — غياب تام للـ object-level authorization. ثالثًا — والأخطر — الـ backend الخاص بـ loginStudent لم يفرض فعليًا القيد non-nullable على حقل password رغم أن الـ schema يعرّفه بعلامة !، وكان تمرير loggedSSO=true يختصر التحقق من كلمة المرور بالكامل. وأخيرًا، توكن المشرف كان يتطلب claim إضافي اسمه adminLevel داخل الـ JWT، وهذا الـ claim كان متاحًا عبر ثغرة الـ IDOR. كل عنصر لوحده يبدو منخفض الخطورة، لكنه معًا شكّل سلسلة استيلاء كامل على الحسابات.",
+      "walkthrough_ar": "الخطوة 1: السياق — الباحث كان في اختبار اختراق لمنصة تعليم إلكتروني للطلاب (تطوير داخلي) أثناء ترحيلها من مزوّد استضافة خارجي إلى بيئة سحابية جديدة، والهدف foo.target.com. ليه: التطبيقات المطوّرة داخليًا غالبًا مليانة إعدادات مهملة، والترحيل فرصة ذهبية لظهور أخطاء.\nالخطوة 2: أثناء رسم خريطة التطبيق اكتشف أن الـ API مبني على GraphQL. ليه: GraphQL يسمح بطلب بيانات محددة بدقة، وسوء إعداده يفتح أبوابًا كثيرة.\nالخطوة 3: لاحظ أن خاصية GraphQL suggestions مفعّلة في الإنتاج، فبدأت تقترح عليه الـ queries والـ mutations المتاحة. ليه: تسريب بنية الـ schema يساعد المهاجم في صياغة هجمات أدق.\nالخطوة 4: اكتشف IDOR في query باسم student — بجلسة طالب عادية استطاع سرد بيانات أي طالب عبر تغيير الـ id. الطلب:\nPOST /graphql\nHost: foo.target.com\nAuthorization: Bearer [Student JWT]\nContent-Type: application/json\n\n{\n  \"operationName\": \"student\",\n  \"variables\": {},\n  \"query\": \"query student {\\n  student(id:1234) {\\n    firstName\\n    lastName\\n    profile\\n    affiliation\\n    email\\n    createdAt\\n    __typename\\n  }\\n}\"\n}\nالاستجابة رجعت بيانات Alan Turing كاملة (email و affiliation و profile). ليه: الـ resolver بيرجع بيانات أي id من غير ما يتحقق إن الطالب صاحب الجلسة هو نفسه صاحب الـ id.\nالخطوة 5: نفس الفكرة مع administrator(id:500) — سرد بيانات المشرفين ومنها adminLevel و trainerId. الاستجابة رجعت بيانات Linus Torvalds مع adminLevel: 2. ليه: نفس غياب الـ authorization على مستوى الـ object.\nالخطوة 6: حلّل ملفات JavaScript الخاصة بالتطبيق ووجد mutation باسم loginStudent فيها email و password و loggedSSO وكلها معلمة بعلامة ! (non-nullable). ليه: ملفات الـ JS بتسرّب بنية الـ API الداخلية.\nالخطوة 7: جرّب تمرير loggedSSO: true مع إيميل طالب وبدون تعيين كلمة المرور — فوجئ بأن السيرفر أعاد access token للطالب. ليه: الـ backend ما فرضش الـ non-null رغم تعريف الـ schema، وflag الـ loggedSSO اختصر التحقق من كلمة المرور.\nالخطوة 8: الطلب النهائي للاستيلاء على حساب طالب:\nPOST /graphql\nHost: foo.target.tld\nContent-Type: application/json\n\n{\n  \"operationName\": \"LoginStudent\",\n  \"variables\": {\n    \"email\": \"alan.turing@student.tld\",\n    \"password\": \"\",\n    \"loggedSSO\": true\n  },\n  \"query\": \"mutation LoginStudent($email: String, $uid: String, $password: String, $loggedSSO: Boolean!, $dataToUpdate: String) {\\n  loginStudent(\\n    email: $email\\n    uid: $uid\\n    password: $password\\n    loggedSSO: $loggedSSO\\n    dataToUpdate: $dataToUpdate\\n  )\\n}\"\n}\nالاستجابة رجعت JWT يخص الطالب. ليه: كلمة المرور الفارغة مرّت لأن التحقق الفعلي مشغّل على الـ loggedSSO مش على الـ password.\nالخطوة 9: بدمج الـ IDOR مع الـ bypass بقدر ياخد أي حساب طالب بإيميله فقط. ليه: الـ IDOR وفّر قائمة الإيميلات والـ bypass وفّر الدخول.\nالخطوة 10: جرّب نفس الأسلوب بإيميل مشرف — حصل على session token لكنه ما قدرش يستخدم مزايا المشرف. ليه: توكن المشرف لازم يحوي claim إضافي اسمه adminLevel داخل جسم الـ JWT.\nالخطوة 11: عرف من نتيجة الـ IDOR إن الـ adminLevel بيرجع مع بيانات المشرف (مثلاً adminLevel: 2). ليه: الـ claim ده هو اللي بيميّز صلاحيات المشرف.\nالخطوة 12: حاول فرض adminLevel في الطلب لكن بدون نجاح. ليه: السيرفر مش بيقبل claim مفروض من العميل.\nالخطوة 13: جرّب تغيير الـ mutation إلى LoginAdmin — فظهرت رسالة خطأ من GraphQL suggestions: Cannot query field \"LoginAdmin\" on type \"Mutation\". Did you mean \"loginAdmin\" or \"signupAdmin\"? ليه: الـ suggestions كشفت الاسم الصحيح للـ mutation.\nالخطوة 14: استخدم loginAdmin بنفس منطق loggedSSO=true وبدون كلمة مرور — نجح bypass لصلاحيات المشرف. ليه: نفس الخلل في التحقق من كلمة المرور موجود في mutation تسجيل دخول المشرف، فاكتملت السلسلة من IDOR إلى استيلاء كامل على حساب مشرف.",
+      "example_ar": "مثال تدريبي موازٍ على هدف وهمي target.example — نفس فئة ثغرة تخطي التحقق عبر flag في GraphQL:\n\nالكود الضعيف (resolver loginStudent):\n```js\nloginStudent: async (_, { email, password, loggedSSO }) => {\n  const user = await db.users.findByEmail(email);\n  if (loggedSSO) {\n    // بيفترض إن SSO اتأكدت خارجيًا — فيتخطى فحص كلمة المرور\n    return signJwt({ id: user.id, email: user.email });\n  }\n  if (password !== user.passwordHash) throw new Error(\"invalid credentials\");\n  return signJwt({ id: user.id, email: user.email });\n}\n```\n\nطلب الهجوم:\n```\nPOST /graphql\nHost: target.example\nContent-Type: application/json\n\n{\"query\":\"mutation { loginStudent(email: \\\"victim@target.example\\\", password: \\\"\\\", loggedSSO: true) }\"}\n```\n\nنجح لأن الـ flag loggedSSO يختصر التحقق من كلمة المرور، فكلمة المرور الفارغة تمر وتُرجع JWT صالح لحساب الضحية.",
+      "takeaway_ar": "أول ما تشوف GraphQL في هدف، جرّب فورًا الـ introspection والـ suggestions — لو رجّعوا أسماء عمليات، دي إشارة قوية إن الـ schema مسرّب. دوّر في ملفات الـ JS على أسماء mutations خاصة بالدخول، وابحث عن أي parameter من نوع flag (زي loggedSSO أو isSSO أو rememberMe) ممكن يختصر التحقق. قارن دايماً بين تعريف الـ schema (علامة !) والسلوك الفعلي للـ backend — التناقض بينهم كنز حقيقي. ولو لقيت IDOR في query بيرجّع بيانات مستخدمين، استخدمه لبناء قائمة أهداف ثم ادمجه مع أي bypass للدخول. الفكرة الكبرى: ثغرة low severity مش نهاية القصة، جرّب تركّبها مع غيرها.",
+      "fix_ar": "الإصلاح متعدد الطبقات. أولاً، عطّل GraphQL suggestions والـ introspection في الإنتاج حتى لا تتسرب بنية الـ schema. ثانيًا، فرض object-level authorization داخل كل resolver: لازم تتحقق إن المستخدم الحالي يملك صلاحية الوصول للكائن المطلوب قبل إرجاع بياناته. ثالثًا، لا تثق أبدًا في flag من العميل لتخطي التحقق: تحقق من كلمة المرور في الـ backend دائمًا، وإن كان SSO حقيقيًا فيجب التحقق من توكن الـ IdP من جهة الخادم. رابعًا، اجعل الـ schema مطابقًا للتحقق الفعلي، وأضف claims الصلاحيات (مثل adminLevel) داخل الـ JWT من جهة الخادم فقط ولا تقبلها من العميل. مثال على الإصلاح:\n```js\nloginStudent: async (_, { email, password, loggedSSO }, ctx) => {\n  const user = await db.users.findByEmail(email);\n  if (!user) throw new Error(\"invalid credentials\");\n  if (loggedSSO) {\n    const ssoOk = await verifyIdpToken(ctx.headers.authorization); // تحقق حقيقي من IdP\n    if (!ssoOk) throw new Error(\"invalid SSO session\");\n  } else if (!(await bcrypt.compare(password, user.passwordHash))) {\n    throw new Error(\"invalid credentials\");\n  }\n  return signJwt({ id: user.id, email: user.email, adminLevel: user.adminLevel });\n}\n```\nوكذلك عطّل الـ introspection:\n```js\napp.use('/graphql', graphqlHTTP({\n  schema,\n  graphiql: false,\n  validationRules: [NoSchemaIntrospectionCustomRule]\n}));\n```"
+    },
+    "excerpt": "In the world of application security, even low severity misconfigurations can act as a butterfly’s wing flap, triggering a chain reaction that leads to more impactful attack scenarios. Today, I’ll take you on a journey through one such scenario, where low impact vulnerabilities snowball into a full blown zero click account takeover. Along the way, you’ll see how every overlooked detail and misconfiguration can become a stepping stone for a determined attacker. In a recent pentest, I was tasked with assessing a student e-learning platform. The client uses this platform to train new partners and",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "d903612ff256",
+    "title": "Listen to the whispers: web timing attacks that actually work | PortSwigger Research",
+    "url": "https://portswigger.net/research/listen-to-the-whispers-web-timing-attacks-that-actually-work",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "James Kettle (@albinowax)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-07T00:00:00.000Z",
+    "added_at": "2026-09-23T06:59:24.595Z",
+    "categories": [
+      "info-disclosure",
+      "ssrf",
+      "other"
+    ],
+    "severity": "medium",
+    "summary_en": "PortSwigger research demonstrates practical web timing attacks that extract server secrets by measuring sub-millisecond response-time differentials, covering masked misconfigurations, blind data-structure injection, hidden routes to forbidden areas, and invisible attack-surface, each backed by real-world case studies on diverse targets.",
+    "summary_ar": "بحث من PortSwigger يوضح هجمات Timing attack عملية بتستخرج أسرار السيرفر عن طريق قياس فروق زمنية في الاستجابة أقل من جزء من المللي ثانية، وبيغطي masked misconfigurations وblind data-structure injection والمسارات الخفية الممنوعة وسطح الهجوم غير المرئي، مع دراسات حالة حقيقية على أهداف متنوعة.",
+    "lesson": {
+      "cause_ar": "السبب الجذري هو إن مواقع الويب مليانة ما سمّاه البحث \"timing oracles\": نقاط بتتصرف بشكل مختلف زمنيًا حسب حالة السيرفر الداخلية، فالفارق ده في زمن الاستجابة بيبقى قنبلة بيئية (side channel) بتسرب معلومات مخفية. الغلط التصميمي الأساسي هو اعتراض الباحث إن الكشف عن إعدادات مُخفية (masked misconfigurations) أو تجارب blind data-structure injection أو المسارات المحجوبة (hidden routes to forbidden areas) ممكن يتعمل من خارج التطبيق بدون أي واجهة تظهر الخطأ. الحجم الضخم من سط الهجوم Invisible attack-surface بيتأكد إن ثغرات كتير موجودة لكن مش ظاهرة في أي response عادي. والافتراض القديم إن هجمات التوقيت بطيئة وغير دقيقة اتكسر: البحث بيقول إنك دلوقتي تقدر تكتشف فرق أقل من millisecond في عشر ثوانٍ بدون أي إعداد مسبق أو شروط معملية.",
+      "walkthrough_ar": null,
+      "example_ar": "الكود الضعيف في target.example:\n```python\n@app.route('/reset')\ndef reset():\n    token = request.args.get('token')\n    if token in DB_TOKENS:\n        time.sleep(1.5)  # تنفيذ إعادة التعيين\n        return 'ok'\n    return 'invalid', 404\n```\nطلب الهجوم (تكراره 50 مرة لكل حرف ومقارنتهم):\n```\nGET /reset?token=aaaaaaaaaaaaaaaa HTTP/1.1\nHost: target.example\n```\nليه نجح: وجود التوكن الصحيح بيدفع السيرفر للدخول في فرع `sleep` فمتوسط زمن الاستجابة بيزيد بشكل واضح عن فرع الـ 404، فبالتالي نستخرج التوكن حرفًا حرفًا من خلال فرق التوقيت.",
+      "takeaway_ar": "الدرس العملي إن الـ timing side-channel كان مهملًا لوقت طويل وهو من أقوى الأدوات الجانبية المتاحة، خصوصًا إن البحث بيؤكد إن الدقة بقت عملية: رصد فرق أقل من millisecond في عشر ثوانٍ بدون lab conditions. ابدأ بقياس خط الأساس أولًا (baseline) وكرر الطلبات واحسب الإحصاء بدل الاعتماد على قياس واحد، وابحث عن أي فرع في الكود بيستهلك وقت متغير (sleep، regex معقد، استعلام ثقيل، محاولة اتصال خارجي) مرتبط بمدخل المستخدم. العلامات اللي تدل على نفس الفئة: اختلاف واضح في زمن الرد عند تغيير قيمة parameter واحدة، أو أخطاء بتظهر بس بعد delay، أو endpoints بطيئة بشكل غير متناسب. عمليًا: استخدم أدوات الـ timing المفتوحة المصدر اللي ذكرها البحث مع سكربتات مخصصة لتجربة المسارات المخفية وعينات الـ injection، وطبّق نفس منهجية تحويل فكرة نظرية إلى تجربة قابلة للقياس على آلاف المواقع.",
+      "fix_ar": null
+    },
+    "excerpt": "Products Solutions ResearchAcademySupport Company CustomersAboutBlogCareersLegalContactResellers My accountCustomersAboutBlogCareersLegalContactResellers Image 1: Burp AT**Burp AT**Agentic AI that extends human-led pentesting.Image 2: Burp Suite DAST**Burp Suite DAST**The enterprise-enabled dynamic web vulnerability scanner.Image 3: Burp Suite Professional**Burp Suite Professional**The world's #1 web penetration testing toolkit.Image 4: Burp Suite Community Edition**Burp Suite Community Edition**The best manual tools to start web security testing.View all product editions **Burp Scanner** Burp",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "8088fa5dc7bd",
     "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
     "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
