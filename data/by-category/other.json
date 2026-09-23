@@ -395,5 +395,44 @@
     "ai_generated": false,
     "engagement": null,
     "score": 40
+  },
+  {
+    "id": "5a09690bf75c",
+    "title": "CVE-2023-42929: Why do we need the App Container Protection",
+    "url": "https://jhftss.github.io/CVE-2023-42929-Why-Do-We-Need-The-App-Container-Protection",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Mickey Jin (@patch1t)"
+    ],
+    "program": "Apple (macOS)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-07-30T00:00:00.000Z",
+    "added_at": "2026-09-23T17:15:02.543Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Starting with macOS **Sonoma 14.0**, Apple has introduced a new TCC category **kTCCServiceSystemPolicyAppData** to protect the **App Container Data**.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Starting with macOS **Sonoma 14.0**, Apple has introduced a new TCC category **kTCCServiceSystemPolicyAppData** to protect the **App Container Data**. This is designed to address one of my reports (aka **CVE-2023-42929**): Image 2: image-20240730150311114 I will talk about why it is necessary to implement this feature by analyzing this vulnerability. Then I discovered some new methods to bypass the new TCC protection. One of them is the **CVE-2024-27871**, which was addressed in the latest macOS 14.6 yesterday. # Background Prior to the release of macOS Sonoma, only a handful of Apple’s applic",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
   }
 ]
