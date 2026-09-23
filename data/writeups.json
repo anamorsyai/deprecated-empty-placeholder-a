@@ -1,5 +1,73 @@
 [
   {
+    "id": "92541903123a",
+    "title": "Day 03 — Bug Bounty: Setting Up Your Hacking Environment",
+    "url": "https://iamrudhh.medium.com/day-03-bug-bounty-setting-up-your-hacking-environment-3539f42a405d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "iamrudhh"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T10:39:46.000Z",
+    "added_at": "2026-09-23T11:26:36.663Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "medium",
+    "summary_en": "If you’re serious about bug bounty hunting, your environment matters as much as your skills. Before you touch your first target, get your setup right. Here’s what Day 03 of the series covers.",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "If you’re serious about bug bounty hunting, your environment matters as much as your skills. Before you touch your first target, get your setup right. Here’s what Day 03 of the series covers. Press enter or click to view image in full size Image 4 ## 1. Install Burp Suite Burp Suite is the core tool for intercepting and manipulating web traffic. It sits between your browser and the target application, letting you inspect, modify, and replay requests before they hit the server. * Download Burp Suite Community Edition (free tier is enough to start) * Understand its core modules: Proxy, Repeater,",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "c7effe690926",
+    "title": "From a Strange Base64 Parameter to a Critical PHP Deserialization Vulnerability",
+    "url": "https://babycoder143.medium.com/from-a-strange-base64-parameter-to-a-critical-php-deserialization-vulnerability-dc9c93468f50",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Ritesh"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T10:39:08.000Z",
+    "added_at": "2026-09-23T11:26:41.797Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "## **A hidden field carried real server-side application state — and changing the serialized object changed what the backend did next.** Image 4: Ritesh Ritesh 7 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmed",
+    "summary_ar": null,
+    "lesson": {
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "## **A hidden field carried real server-side application state — and changing the serialized object changed what the backend did next.** Image 4: Ritesh Ritesh 7 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fdc9c93468f50&operation=register&redirect=https%3A%2F%2Fsudo-appsec.medium.com%2Ffrom-a-strange-base64-parameter-to-a-critical-php-deserialization-vulnerability-dc9c93468f50&user=Ritesh&userId=d8f25e83df7c&source=---header_actions--dc9c93468f50---------------------clap_footer--------------------) [](https://medium.com/m/signin?actionU",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "30206f7aad3e",
     "title": "Apps SDK sandbox escape: *** App reaches native window.Android/window.AndroidBridge JS interfaces — mobile application",
     "url": "https://medium.com/@jokodfir/apps-sdk-sandbox-escape-app-reaches-native-window-android-window-androidbridge-de7ef00e4bc3",
