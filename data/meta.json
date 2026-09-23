@@ -1,6 +1,6 @@
 {
-  "lastRun": "2026-09-23T14:30:15.873Z",
-  "totalItems": 117,
+  "lastRun": "2026-09-23T14:33:48.156Z",
+  "totalItems": 118,
   "newItemsThisRun": 1,
   "aiProvider": "custom",
   "aiOkThisRun": 0,
@@ -12,12 +12,12 @@
     "medium-tag-writeup": 8,
     "infosec-writeups": 4,
     "intigriti-blog": 2,
-    "pentesterland": 82,
+    "pentesterland": 83,
     "assetnote": 1
   },
   "byCategory": {
     "idor-bola": 9,
-    "access-control": 19,
+    "access-control": 20,
     "recon": 6,
     "other": 29,
     "xss": 16,

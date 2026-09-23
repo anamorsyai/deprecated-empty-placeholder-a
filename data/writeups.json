@@ -3795,6 +3795,45 @@
     "score": 47
   },
   {
+    "id": "f40addf8d859",
+    "title": "Vestaboard: Exploring Broken Access Controls and Privilege Escalation",
+    "url": "https://rhinosecuritylabs.com/research/vestaboard-vulnerabilities",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Tyler Ramsbey (@Tyler_Ramsbey)"
+    ],
+    "program": "Vestaboard",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-06T00:00:00.000Z",
+    "added_at": "2026-09-23T14:33:47.442Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "summary_en": "During research on the Vestaboard web platform, the Rhino research team identified three instances of Broken Access Controls. 1. Read-Access to other Vestaboards. 2. Ability to update names of other users. 3.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During research on the Vestaboard web platform, the Rhino research team identified three instances of Broken Access Controls. 1. Read-Access to other Vestaboards. 2. Ability to update names of other users. 3. Privilege escalation from Admin to Owner. Upon disclosure, Vestaboard responded promptly and fully remediated the identified vulnerabilities. ## What is Vestaboard? Vestaboard is a smart messaging display that allows users to send and display messages. Unlike traditional displays, Vestaboard combines physical and digital elements to create a unique visual experience. Users can send messag",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "8088fa5dc7bd",
     "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
     "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
