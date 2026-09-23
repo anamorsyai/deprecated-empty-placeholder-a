@@ -1,5 +1,44 @@
 [
   {
+    "id": "a119c8489c54",
+    "title": "When a UUID Becomes a Password: Principal-Unbound Capabilities in Nezha",
+    "url": "https://medium.com/@Uhudsavasindankacanokcu2/when-a-uuid-becomes-a-password-principal-unbound-capabilities-in-nezha-1a83ba3abecc",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Berkan SAL"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T19:30:07.000Z",
+    "added_at": "2026-09-23T19:39:38.732Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "medium",
+    "summary_en": "Security researcher exploring CVEs, web security, AI systems, and novel attack surfaces. Writing the reasoning behind real-world findings.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Security researcher exploring CVEs, web security, AI systems, and novel attack surfaces. Writing the reasoning behind real-world findings. writer Member-only story Cybersecurity Web Security Authorization Bug Bounty Vulnerability Research # When a UUID Becomes a Password: Principal-Unbound Capabilities in Nezha Image 3: Berkan SAL Berkan SAL 11 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F1a83ba3abecc&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40Uhudsavasindankacanokcu2%2Fwhen-a-uuid-becomes-a-password-principal-unbound-cap",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "997a0069b2df",
     "title": "52 Request Smuggling Reports. Two Rules Decide the Payout.",
     "url": "https://infosecwriteups.com/52-request-smuggling-reports-two-rules-decide-the-payout-901479562df9",
