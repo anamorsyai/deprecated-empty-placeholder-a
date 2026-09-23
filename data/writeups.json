@@ -1639,6 +1639,45 @@
     "score": 47
   },
   {
+    "id": "0e99a46d6632",
+    "title": "Stealing First Party Access Token of Facebook Users: Meta Bug Bounty",
+    "url": "https://iamsaugat.medium.com/stealing-first-party-access-token-of-facebook-users-meta-bug-bounty-44b3b2e87d07",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Saugat Pokharel (@saugatscript)"
+    ],
+    "program": "Meta / Facebook",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-07-30T00:00:00.000Z",
+    "added_at": "2026-09-23T17:07:32.352Z",
+    "categories": [
+      "oauth-jwt"
+    ],
+    "severity": "critical",
+    "summary_en": "Hi, I am Saugat Pokharel from Kathmandu, Nepal. I am going to talk about one of my findings on Facebook. The vulnerability led to the stealing of 1st party access tokens without the knowledge of Facebook users. So, let’s begin.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hi, I am Saugat Pokharel from Kathmandu, Nepal. I am going to talk about one of my findings on Facebook. The vulnerability led to the stealing of 1st party access tokens without the knowledge of Facebook users. So, let’s begin. During BountyCon 2022 event in Singapore, One of the Facebook security engineers advised me to look into business integrity issues. I was particularly interested in it after knowing the scope of the Integrity Safeguard Program. The Integrity program had scopes like bypassing different business checkpoints and settings. Examples: Using a fake payment method to run ads, g",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "40f1475e1100",
     "title": "Interesting Business Logic Error leads to Pre-Account Takeover via Verification bypass on GoogleVRP",
     "url": "https://medium.com/@jerryhackgather/interesting-business-logic-error-leads-to-pre-account-takeover-via-verification-bypass-on-googlevrp-d362f9469e3d",
