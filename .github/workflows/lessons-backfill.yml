@@ -31,6 +31,7 @@ jobs:
     timeout-minutes: 40
     env:
       AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+      AI_USER_AGENT: ${{ secrets.AI_USER_AGENT }}
       AI_TIMEOUT_MS: "150000"
       BACKFILL_MAX: ${{ inputs.max_items }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

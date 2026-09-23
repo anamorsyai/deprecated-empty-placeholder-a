@@ -33,6 +33,7 @@ jobs:
     # Shared by the pipeline step and the conflict-recovery re-run below.
     env:
       AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+      AI_USER_AGENT: ${{ secrets.AI_USER_AGENT }}
       AI_TIMEOUT_MS: "150000"
       MAX_NEW_PER_RUN: "12"
       MAX_PER_SOURCE_PER_RUN: "4"

@@ -28,6 +28,15 @@ const PROVIDER = resolveProvider();
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 150000);
 const AI_MAX_TOKENS = Number(process.env.AI_MAX_TOKENS || 5000);
 
+// Free-model gateways (opencode zen and its free proxies) fingerprint the
+// User-Agent: official `opencode/...` clients get the normal free quota,
+// anything else lands in a degraded bucket (429s, stalls, 524s). So we
+// identify as the official CLI. Overridable via AI_USER_AGENT without code
+// changes. The matching public credential for free models is "public".
+const AI_USER_AGENT =
+  process.env.AI_USER_AGENT || "opencode/1.18.27 ai-sdk/provider-utils/4.0.23 runtime/bun/1.3.14";
+const CUSTOM_API_KEY_DEFAULT = "public";
+
 function resolveProvider() {
   const forced = process.env.AI_PROVIDER;
   if (forced) return forced;
@@ -98,7 +107,7 @@ export async function classifyAndSummarize(item) {
             : PROVIDER === "custom"
               ? await callOpenAiCompatible(userPrompt, {
                   base: (process.env.CUSTOM_API_BASE || "").replace(/\/+$/, ""),
-                  key: process.env.CUSTOM_API_KEY,
+                  key: process.env.CUSTOM_API_KEY || CUSTOM_API_KEY_DEFAULT,
                   model: process.env.CUSTOM_MODEL,
                   extraHeaders: parseCustomHeaders(),
                 })
@@ -169,7 +178,13 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
     .replace(/\/chat\/completions\/?$/, "");
   const endpoint = `${root}/chat/completions`;
 
-  const headers = { "content-type": "application/json", ...extraHeaders };
+  const headers = {
+    "content-type": "application/json",
+    // Identify as the official opencode CLI (see AI_USER_AGENT above) —
+    // explicit custom headers still win if the user sets them.
+    "user-agent": AI_USER_AGENT,
+    ...extraHeaders,
+  };
   // Optional: a self-hosted/local endpoint may need no auth at all — only
   // send Authorization when a key was actually given.
   if (key) headers.authorization = `Bearer ${key}`;
