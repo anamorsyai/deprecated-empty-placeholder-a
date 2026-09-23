@@ -1130,6 +1130,45 @@
     "score": 60
   },
   {
+    "id": "67c219abfa16",
+    "title": "No Database No Table, how do you do MSSQL Injection?",
+    "url": "https://cyku.tw/no-database-mssql-injection",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Cyku (@cyku_tw)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-04T00:00:00.000Z",
+    "added_at": "2026-09-23T16:10:53.049Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "summary_en": "One day, while reviewing the code of an ASP.NET website, I came across a special case of SQL Injection with Microsoft SQL Server, basically the form of SQL Injection is like this: ```C# string sql = string.Format( \"SELECT ReportsDB..{0}.* \"",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "One day, while reviewing the code of an ASP.NET website, I came across a special case of SQL Injection with Microsoft SQL Server, basically the form of SQL Injection is like this: ```C# string sql = string.Format( \"SELECT ReportsDB..{0}.* \" + \"FROM ReportsDB..{0} \" + \"WHERE ReportsDB..{0}.Id = 1 \" , Request[\"table\"]); // ReportsDB doesn't exist ``` 1 2 3 4 5 6 The first time I saw it, I thought it was just a simple SQL Injection that I could exploit as usual, I could be wrong. This code was found in a legacy API, there's actually no database called \"ReportsDB\" in that MSSQL server. If we try t",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "2b37c0691f6c",
     "title": "How I Got Critical P2 Bug on Google",
     "url": "https://medium.com/@rhashibur75/how-i-got-critical-p2-bug-on-google-vrp-165017145af8",
