@@ -19,20 +19,20 @@
       "xss",
       "file-upload"
     ],
-    "severity": "medium",
-    "summary_en": "Day twenty-three. Yesterday was about one file type. Today is about a blind spot that goes much wider, and I want to open with the finding that taught it to me. I was testing a document management product.",
-    "summary_ar": null,
+    "severity": "high",
+    "summary_en": "A stored XSS vulnerability was discovered in a document management system where the application validated file contents but failed to sanitize the filename, allowing malicious scripts to execute when the file list was rendered.",
+    "summary_ar": "تم اكتشاف ثغرة XSS مخزنة في نظام إدارة مستندات، حيث قام التطبيق بفحص محتوى الملفات بدقة ولكنه فشل في تنقية اسم الملف (filename)، مما سمح بتنفيذ أكواد خبيثة عند عرض قائمة الملفات.",
     "lesson": {
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "example_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
+      "cause_ar": "السبب الجذري هو التركيز الأحادي على أمن محتوى الملف (File Content) وإهمال البيانات الوصفية (Metadata) مثل اسم الملف كمدخل للمستخدم. المطورون افترضوا أن التحقق من الـ magic bytes ونوع الملف (Content-Type) كافٍ لتأمين عملية الرفع. الفجوة حدثت عندما تم استرجاع اسم الملف من قاعدة البيانات وعرضه مباشرة في واجهة المستخدم (UI) داخل قائمة المستندات دون عمل HTML escaping. هذا النوع من 'العمى الأمني' يحدث عندما يتم توجيه كل الدفاعات نحو التهديد الأكثر وضوحاً ونسيان أن اسم الملف هو أيضاً User Input.",
+      "walkthrough_ar": "الخطوة 1: بدأ الباحث بفحص نظام إدارة مستندات يحتوي على دفاعات قوية جداً ضد رفع الملفات الضارة.\nالخطوة 2: لاحظ أن النظام يتحقق من الـ Magic Bytes ونوع الملف ويقوم بمعالجته عبر Pipeline خاص.\nالخطوة 3: حاول الباحث رفع ملفات بصيغ مختلفة أو محتوى ملغوم وفشل بسبب قوة الفلاتر.\nالخطوة 4: قرر الباحث تغيير استراتيجيته من استهداف 'محتوى' الملف إلى استهداف 'اسم' الملف.\nالخطوة 5: قام الباحث بتجهيز ملف PDF عادي وسليم تماماً من الناحية التقنية.\nالخطوة 6: قام بتغيير اسم الملف ليحتوي على كود JavaScript (Payload) بسيط.\nالخطوة 7: الاسم المستخدم كان:\n<script>alert(1)</script>.pdf\nالخطوة 8: قام برفع الملف عبر طلب HTTP POST المعتاد للرفع.\nالخطوة 9: مر الملف من جميع الفلاتر الأمنية لأن محتواه (PDF) كان سليماً تماماً.\nالخطوة 10: انتقل الباحث إلى صفحة 'قائمة المستندات' (Documents List) حيث يتم عرض الملفات المرفوعة.\nالخطوة 11: عند تحميل الصفحة، قام المتصفح بتفسير اسم الملف ككود HTML بدلاً من نص عادي.\nالخطوة 12: اشتغل الـ Payload وظهر تنبيه alert(1) على الشاشة.\nالخطوة 13: أثبت الباحث أن الثغرة هي Stored XSS لأن الاسم مخزن في قاعدة البيانات ويظهر لكل من يشاهد القائمة.",
+      "example_ar": "تخيل تطبيقاً في target.example يسمح للمستخدمين برفع صور شخصية.\nالكود الضعيف:\necho \"<div>اسم الملف: \" . $file['name'] . \"</div>\";\nطلب الهجوم:\nتغيير اسم الصورة قبل الرفع إلى:\n\"><img src=x onerror=alert(document.domain)>.jpg\nينجح الهجوم لأن المطور طبع اسم الملف مباشرة في الـ HTML دون استخدام دالة تنقية.",
+      "takeaway_ar": "لا تحصر تفكيرك في محتوى الملف فقط عند فحص ميزات الـ File Upload. ابحث دائماً عن كيفية عرض 'اسم الملف' في لوحة التحكم، أو في رسائل الخطأ، أو حتى في الـ Alt text للصور. إذا وجدت أن اسم الملف يظهر كما هو في الـ Source Code الخاص بالصفحة، فهذه إشارة قوية لوجود XSS. استخدم أدوات مثل Burp Suite لتعديل الـ filename parameter في طلب الـ POST يدوياً لتجاوز أي قيود قد تفرضها واجهة المستخدم.",
+      "fix_ar": "الإصلاح يتطلب معاملة اسم الملف كأي مدخل مستخدم آخر غير موثوق. يجب أولاً تنقية اسم الملف عند الرفع لإزالة الرموز الخاصة، والأهم من ذلك هو عمل HTML Encoding عند عرض الاسم في المتصفح.\nالكود المصلح:\necho \"<div>اسم الملف: \" . htmlspecialchars($file['name'], ENT_QUOTES, 'UTF-8') . \"</div>\";\nبالإضافة إلى ذلك، يفضل إعادة تسمية الملفات على السيرفر بأسماء عشوائية (UUIDs) وتخزين الاسم الأصلي في قاعدة البيانات مع عرضه بشكل آمن فقط."
     },
     "excerpt": "Day twenty-three. Yesterday was about one file type. Today is about a blind spot that goes much wider, and I want to open with the finding that taught it to me. I was testing a document management product. Serious upload validation — content types checked properly, magic bytes verified, files converted through a processing pipeline, served from a separate asset domain with an attachment disposition. Everything yesterday’s post says to look for, they had done. I spent an hour trying to get a file through and got nowhere. Good work by their team. Then I uploaded a perfectly ordinary, completely",
-    "ai_generated": false,
+    "ai_generated": true,
     "engagement": null,
-    "score": 47
+    "score": 53
   },
   {
     "id": "c42364c6b881",

@@ -5,7 +5,7 @@
   "aiProvider": "gemini",
   "aiOkThisRun": 0,
   "aiFallbackThisRun": 2,
-  "aiGeneratedTotal": 29,
+  "aiGeneratedTotal": 30,
   "bySource": {
     "medium-tag-bug-bounty": 14,
     "reddit-netsec": 1,
@@ -37,5 +37,6 @@
     "xxe": 1,
     "business-logic": 5,
     "race-condition": 2
-  }
+  },
+  "backfilledThisRun": 1
 }
