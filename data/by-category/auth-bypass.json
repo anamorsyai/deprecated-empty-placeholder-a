@@ -276,5 +276,45 @@
     "ai_generated": true,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "3dedb5bb721d",
+    "title": "how I Bypassed SAML Authentication, and had access to Admin Panel.",
+    "url": "https://medium.com/@0x_xnum/saml-authentication-bypass-leading-to-admin-panel-access-24f23812ed76",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ahmed Tarek"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-01T00:00:00.000Z",
+    "added_at": "2026-09-23T16:40:53.272Z",
+    "categories": [
+      "auth-bypass",
+      "oauth-jwt"
+    ],
+    "severity": "critical",
+    "summary_en": "It’s your buddy Ahmed Tarek again with a new interesting finding. I’ve discovered a critical security flaw in the SAML authentication system.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "It’s your buddy Ahmed Tarek again with a new interesting finding. I’ve discovered a critical security flaw in the SAML authentication system. This vulnerability can allow an attacker to bypass authentication and gain unauthorized access to the system, including potential administrative privileges. Grab ur coffe, **and let’s get started! 😉** ### What is SAML Authentication? SAML (Security Assertion Markup Language) is used for Single Sign-On (SSO). it is a feature that allows users to access multiple services without logging in multiple times, For example, if you are logged into facebook.com,",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
   }
 ]
