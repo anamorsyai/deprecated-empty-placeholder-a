@@ -2,8 +2,9 @@ name: Fetch bug bounty writeups
 
 on:
   schedule:
-    # Every 5 minutes — small frequent batches. Per-run caps below are sized
-    # for this cadence so a slow AI endpoint is never drowned.
+    # Backup cadence only: the GitHub scheduler fires far less often than
+    # asked, so the run chain below ("Queue next cycle") is what actually
+    # keeps the ~5-minute rhythm. Kept so a broken chain restarts itself.
     - cron: "*/5 * * * *"
   workflow_dispatch:
   push:
@@ -49,18 +50,36 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Kill-switch for the self-perpetuating loop below: create an empty
+      # file data/PAUSED in the repo and running cycles stop after the
+      # current one (delete it to resume). The bot never touches this file.
+      - name: Check loop flag
+        id: loop
+        run: |
+          if [ -f data/PAUSED ]; then echo "paused=true"; echo "paused=true" >> "$GITHUB_OUTPUT"; else echo "paused=false" >> "$GITHUB_OUTPUT"; fi
+
+      # Spaces chained runs ~5 minutes apart (the GitHub scheduler alone
+      # fires far less often than the cron asks; chained dispatches would
+      # otherwise run back-to-back with no pause).
+      - name: Pace the loop
+        if: steps.loop.outputs.paused != 'true'
+        run: sleep 180
+
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
       - run: npm ci
+        if: steps.loop.outputs.paused != 'true'
 
       - name: Run the aggregation pipeline
+        if: steps.loop.outputs.paused != 'true'
         run: npm run fetch
 
       - name: Commit updated data
         id: commit
+        if: steps.loop.outputs.paused != 'true'
         run: |
           git config user.name "writeups-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -93,4 +112,18 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-deploy.yml/dispatches" \
+            -d '{"ref":"main"}'
+
+      # Self-perpetuating 5-minute loop: the GitHub scheduler fires far less
+      # often than our cron asks (observed: ~3 runs/day instead of ~288), so
+      # every finished cycle queues the next one. Queued by the shared
+      # data-writer group, never overlapping. `always()` keeps the chain
+      # alive even when a run fails; data/PAUSED stops it gracefully.
+      - name: Queue next cycle
+        if: always() && steps.loop.outputs.paused != 'true'
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-fetch.yml/dispatches" \
             -d '{"ref":"main"}'
