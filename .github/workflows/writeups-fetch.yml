@@ -34,6 +34,7 @@ jobs:
     env:
       AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
       AI_USER_AGENT: ${{ secrets.AI_USER_AGENT }}
+      GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
       AI_TIMEOUT_MS: "150000"
       MAX_NEW_PER_RUN: "3"
       MAX_PER_SOURCE_PER_RUN: "2"

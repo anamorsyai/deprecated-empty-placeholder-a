@@ -161,7 +161,9 @@ function buildUserPrompt(item) {
 }
 
 async function callGemini(userPrompt) {
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  // 2.0-flash is retired for new keys; -latest always tracks the current
+  // flash generation. A pinned GEMINI_MODEL secret overrides when set.
+  const model = process.env.GEMINI_MODEL || "gemini-flash-latest";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
   const res = await fetch(url, {
     method: "POST",
