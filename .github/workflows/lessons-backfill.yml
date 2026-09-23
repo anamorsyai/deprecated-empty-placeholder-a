@@ -19,6 +19,12 @@ permissions:
   # (GitHub loop protection), so we dispatch it explicitly below.
   actions: write
 
+# Same group as the hourly fetch: serialize data writers so their
+# data/writeups.json commits can never rebase-conflict each other.
+concurrency:
+  group: data-writer
+  cancel-in-progress: false
+
 jobs:
   backfill:
     runs-on: ubuntu-latest

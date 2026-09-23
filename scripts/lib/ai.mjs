@@ -193,34 +193,36 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
       body: JSON.stringify(body(withJsonMode)),
     });
 
-  // Slow endpoints (self-hosted/small models) often just need more time.
-  // Retry a timed-out call ONCE before giving up to heuristic — a transient
-  // stall shouldn't cost the whole teaching read.
-  let res;
-  try {
-    res = await post(true);
-  } catch (err) {
-    if (err?.name === "TimeoutError" || err?.name === "AbortError") {
-      console.warn(`  ${base} timed out after ${AI_TIMEOUT_MS}ms, retrying once`);
-      res = await post(true);
-    } else {
+  // Slow/overloaded endpoints (self-hosted, free shared proxies) need
+  // patience: retry ONCE on timeout or 5xx (Cloudflare 524s from an
+  // overloaded origin are the classic case) before giving up to heuristic.
+  // A transient stall shouldn't cost the whole teaching read.
+  let res = null;
+  let jsonMode = true;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      res = await post(jsonMode);
+    } catch (err) {
+      if ((err?.name === "TimeoutError" || err?.name === "AbortError") && attempt === 0) {
+        console.warn(`  ${base} timed out after ${AI_TIMEOUT_MS}ms, retrying once`);
+        continue;
+      }
       throw err;
     }
-  }
-  if (!res.ok) {
+    if (res.ok) break;
     const errText = await res.text();
-    // Some OpenAI-compatible servers (older llama.cpp builds, minimal
-    // proxies) 400 on response_format. Retry once as plain JSON and let
-    // parseModelJson() extract the object — better than losing the AI
-    // read for the whole item.
-    if (res.status === 400 && /response_format|json/i.test(errText)) {
+    if (res.status === 400 && jsonMode && /response_format|json/i.test(errText)) {
       console.warn(`  ${base} rejected json mode, retrying without it`);
-      res = await post(false);
-      if (!res.ok) throw new Error(`${base} HTTP ${res.status}: ${await res.text()}`);
-    } else {
-      throw new Error(`${base} HTTP ${res.status}: ${errText}`);
+      jsonMode = false;
+      continue;
     }
+    if (res.status >= 500 && res.status < 600 && attempt === 0) {
+      console.warn(`  ${base} HTTP ${res.status}, retrying once`);
+      continue;
+    }
+    throw new Error(`${base} HTTP ${res.status}: ${errText}`);
   }
+  if (!res || !res.ok) throw new Error(`${base} gave up after retry`);
   const data = await res.json();
   return data.choices?.[0]?.message?.content || "";
 }

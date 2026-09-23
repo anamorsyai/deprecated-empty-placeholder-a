@@ -20,7 +20,10 @@ permissions:
   actions: write
 
 concurrency:
-  group: writeups-fetch
+  # Shared with lessons-backfill.yml: only one data-writing job at a time.
+  # Both jobs append to data/writeups.json, so overlapping runs rebase-conflict
+  # and die (this already lost finished work twice). Queued, never cancelled.
+  group: data-writer
   cancel-in-progress: false
 
 jobs:
