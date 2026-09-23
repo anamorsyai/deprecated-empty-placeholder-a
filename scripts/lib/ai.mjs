@@ -1,4 +1,5 @@
 import taxonomy from "../../taxonomy.json" with { type: "json" };
+import { randomBytes } from "node:crypto";
 
 // Pluggable AI layer. Picks a provider from env vars, all of which have real free
 // tiers as of writing:
@@ -183,6 +184,9 @@ async function callOpenAiCompatible(userPrompt, { base, key, model, extraHeaders
     // Identify as the official opencode CLI (see AI_USER_AGENT above) —
     // explicit custom headers still win if the user sets them.
     "user-agent": AI_USER_AGENT,
+    // Fresh random session per request, mirroring the official client
+    // (ses_<random>). Overridable via custom headers like everything else.
+    "x-opencode-session": `ses_${randomBytes(12).toString("hex")}`,
     ...extraHeaders,
   };
   // Optional: a self-hosted/local endpoint may need no auth at all — only
