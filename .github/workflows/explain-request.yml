@@ -117,3 +117,18 @@ jobs:
             gh issue comment "${{ github.event.issue.number }}" --body "Couldn't produce a lesson this time (thin source content or AI hiccup) — it stays queued for the automatic backfill." --repo "${{ github.repository }}"
           fi
           gh issue close "${{ github.event.issue.number }}" --repo "${{ github.repository }}"
+
+      # Pass the baton back to the fetch loop so the self-driving cycle
+      # survives on-request runs. Gated to avoid queued-run pile-ups.
+      - name: Resume fetch loop
+        if: always()
+        run: |
+          QUEUED=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=30" | \
+            python3 -c "import json,sys; print(sum(1 for r in json.load(sys.stdin)['workflow_runs'] if r['status']=='queued'))")
+          if [ "$QUEUED" != "0" ]; then echo "something already queued, skipping"; exit 0; fi
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-fetch.yml/dispatches" \
+            -d '{"ref":"main"}'

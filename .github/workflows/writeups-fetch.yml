@@ -114,16 +114,30 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-deploy.yml/dispatches" \
             -d '{"ref":"main"}'
 
-      # Self-perpetuating 5-minute loop: the GitHub scheduler fires far less
-      # often than our cron asks (observed: ~3 runs/day instead of ~288), so
-      # every finished cycle queues the next one. Queued by the shared
-      # data-writer group, never overlapping. `always()` keeps the chain
-      # alive even when a run fails; data/PAUSED stops it gracefully.
+      # Self-driving loop (single dispatcher): GitHub fires our cron far less
+      # often than asked AND cancels all but the newest queued run in a
+      # concurrency group — so chained self-dispatches used to starve every
+      # other data-writer. This step is the ONLY place that queues the next
+      # cycle, and it first checks nothing else is already queued (else it
+      # would cancel that run). It sends the baton to backfill while lessons
+      # are missing, otherwise to the next fetch. Cron above is just a backup.
       - name: Queue next cycle
         if: always() && steps.loop.outputs.paused != 'true'
         run: |
+          QUEUED=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=30" | \
+            python3 -c "import json,sys; print(sum(1 for r in json.load(sys.stdin)['workflow_runs'] if r['status']=='queued'))")
+          if [ "$QUEUED" != "0" ]; then echo "another run is queued, skipping self-dispatch"; exit 0; fi
+          MISSING=$(node -e "const d=require('./data/writeups.json');console.log(d.filter(w=>!((w.lesson||{}).walkthrough)).length)")
+          if [ "$MISSING" -gt 5 ]; then
+            WF=lessons-backfill.yml; DATA='{"ref":"main","inputs":{"max_items":"10"}}'
+            echo "missing lessons: $MISSING -> dispatching backfill"
+          else
+            WF=writeups-fetch.yml; DATA='{"ref":"main"}'
+            echo "missing lessons: $MISSING -> dispatching fetch"
+          fi
           curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-fetch.yml/dispatches" \
-            -d '{"ref":"main"}'
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/$WF/dispatches" \
+            -d "$DATA"

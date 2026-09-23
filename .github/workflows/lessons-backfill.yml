@@ -86,3 +86,19 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-deploy.yml/dispatches" \
             -d '{"ref":"main"}'
+
+      # Pass the baton back to the fetch loop (which decides fetch-vs-backfill
+      # each cycle). Gated so we never pile up queued runs — GitHub cancels all
+      # but the newest queued run in this situation.
+      - name: Resume fetch loop
+        if: always()
+        run: |
+          QUEUED=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=30" | \
+            python3 -c "import json,sys; print(sum(1 for r in json.load(sys.stdin)['workflow_runs'] if r['status']=='queued'))")
+          if [ "$QUEUED" != "0" ]; then echo "something already queued, skipping"; exit 0; fi
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/writeups-fetch.yml/dispatches" \
+            -d '{"ref":"main"}'

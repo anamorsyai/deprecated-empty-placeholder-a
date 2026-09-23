@@ -76,24 +76,10 @@ async function main() {
   console.log(`Done. ${updated} lesson(s) added, ${skippedThin} skipped (thin/failed).`);
   const remaining = writeups.filter((w) => !w.lesson?.walkthrough).length;
   console.log(`Remaining without EN lesson: ${remaining}`);
-  // Self-chain while progress is being made so a big queue drains without
-  // manual re-dispatches. Stops on its own when a run adds nothing (only
-  // thin/failed items left) — those need better source content, not retries.
-  if (updated > 0 && remaining > 0) {
-    console.log("Progress made and queue remains — dispatching the next backfill run.");
-    const repo = process.env.GITHUB_REPOSITORY;
-    const token = process.env.GITHUB_TOKEN;
-    if (repo && token) {
-      const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/lessons-backfill.yml/dispatches`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "content-type": "application/json" },
-        body: JSON.stringify({ ref: "main", inputs: { max_items: String(MAX_PER_RUN) } }),
-      });
-      console.log(`Self-dispatch status: ${res.status}`);
-    } else {
-      console.log("GITHUB_REPOSITORY/TOKEN unavailable — chain stops here.");
-    }
-  }
+  // NOTE: no self-dispatch here on purpose — the fetch loop's "Queue next
+  // cycle" step is the single dispatcher (it sends the baton back to
+  // backfill while lessons are missing). Two dispatchers create queued-run
+  // pile-ups that GitHub resolves by cancelling runs.
 }
 
 async function backfillOne(w) {
