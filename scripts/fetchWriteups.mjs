@@ -224,6 +224,7 @@ async function processCandidate(candidate) {
     added_at: new Date().toISOString(),
     categories: ai.categories,
     severity: ai.severity,
+    difficulty: ai.difficulty ?? null,
     summary_en: ai.summary_en,
     summary_ar: ai.summary_ar,
     lesson: ai.lesson || null,

@@ -29,6 +29,8 @@ export interface Writeup {
   added_at: string;
   categories: string[];
   severity: Severity;
+  /** How hard the writeup is to follow (AI-assigned). Null for heuristic/legacy items. */
+  difficulty?: "beginner" | "intermediate" | "advanced" | null;
   summary_en: string;
   summary_ar: string | null;
   lesson: Lesson | null;

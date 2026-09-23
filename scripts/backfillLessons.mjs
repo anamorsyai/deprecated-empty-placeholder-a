@@ -24,6 +24,11 @@ const META_PATH = path.join(DATA_DIR, "meta.json");
 const BY_CATEGORY_DIR = path.join(DATA_DIR, "by-category");
 
 const MAX_PER_RUN = Number(process.env.BACKFILL_MAX || 10);
+// Single-item mode for the on-request flow: ONLY_IDS=id1,id2 — only those
+// archived items are considered (still skipping ones already taught).
+const ONLY_IDS = new Set(
+  (process.env.ONLY_IDS || "").split(",").map((s) => s.trim()).filter(Boolean)
+);
 const PER_ITEM_DELAY_MS = 700;
 
 async function main() {
@@ -37,6 +42,7 @@ async function main() {
     // Missing an ENGLISH lesson (legacy Arabic-only items count as missing —
     // they get re-taught by the current prompt while keeping their Arabic).
     .filter((w) => !w.lesson?.walkthrough)
+    .filter((w) => ONLY_IDS.size === 0 || ONLY_IDS.has(w.id))
     .sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""));
   console.log(`${queue.length} archived item(s) missing an ENGLISH lesson`);
 
@@ -126,6 +132,7 @@ async function backfillOne(w) {
   w.summary_ar = w.summary_ar || null;
   w.excerpt = enriched.excerpt || w.excerpt;
   w.platform_slug = detectPlatform({ ...enriched, sourceName: w.source?.name });
+  w.difficulty = ai.difficulty ?? null;
   w.ai_generated = true;
   w.score = computeScore(w);
   return true;

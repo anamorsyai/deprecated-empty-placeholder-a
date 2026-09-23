@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getAllWriteups, getCategory, getPlatform, getWriteup } from "@/lib/data";
 import { SeverityBadge, Tag } from "@/components/Badge";
 import TranslateSection from "@/components/TranslateSection";
+import WriteupCard from "@/components/WriteupCard";
 import { timeAgoEn } from "@/lib/format";
 import type { Lesson } from "@/lib/types";
 
@@ -30,6 +31,14 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
   const takeaway = pick("takeaway", "takeaway_ar");
   const fix = pick("fix", "fix_ar");
   const hasLesson = [cause, walk, example, takeaway, fix].some((s) => s.en || s.ar);
+  const repo = process.env.NEXT_PUBLIC_REPO || "";
+  const related = getAllWriteups()
+    .filter((x) => x.id !== w.id && w.categories.length > 0 && x.categories.includes(w.categories[0]))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4);
+  const requestUrl = repo
+    ? `https://github.com/${repo}/issues/new?title=${encodeURIComponent("[explain] " + w.id)}&body=${encodeURIComponent("id: " + w.id + "\ntitle: " + w.title + "\n\nPlease teach this writeup.")}`
+    : "";
   const readingText = [walk.en || walk.ar, cause.en || cause.ar, example.en || example.ar]
     .filter(Boolean)
     .join(" ");
@@ -56,6 +65,11 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
           </>
         )}
         <SeverityBadge severity={w.severity} />
+        {w.difficulty && (
+          <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
+            {w.difficulty === "beginner" ? "Beginner" : w.difficulty === "intermediate" ? "Intermediate" : "Advanced"}
+          </span>
+        )}
       </div>
 
       <h1 className="mb-4 break-words text-xl font-extrabold leading-snug sm:text-2xl" dir="auto">
@@ -149,12 +163,35 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
       ) : (
         <div className="mb-6 rounded-xl border border-dashed border-border bg-surface/50 p-4 text-sm leading-relaxed text-muted sm:p-5">
           <h2 className="mb-1 text-sm font-bold">📚 Full breakdown</h2>
-          <p>
+          <p className="mb-3">
             The detailed explanation (root cause, step-by-step discovery story, takeaway, fix) is generated
             automatically and hasn&apos;t been produced for this writeup yet. Check back after the next
-            pipeline run.
+            pipeline run — or request it right now and the teaching bot will prioritize it:
           </p>
+          {requestUrl ? (
+            <a
+              href={requestUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[44px] items-center rounded-lg bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition hover:bg-primary/20"
+            >
+              ⚡ Request full explanation
+            </a>
+          ) : (
+            <p className="text-xs">Explanation requests open automatically once deployed.</p>
+          )}
         </div>
+      )}
+
+      {related.length > 0 && (
+        <section className="mb-6">
+          <h2 className="mb-3 text-base font-extrabold sm:text-lg">Related writeups</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {related.map((r) => (
+              <WriteupCard key={r.id} writeup={r} compact />
+            ))}
+          </div>
+        </section>
       )}
 
       <a

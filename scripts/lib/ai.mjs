@@ -81,12 +81,13 @@ const PROMPT_INSTRUCTIONS = `You are two things at once for a bug bounty writeup
 (2) a professional teacher writing in ENGLISH for a reader who knows NOTHING — assume they never wrote a line of code and never studied security. Your job: take them from zero to fully understanding this vulnerability, while giving working professionals the exact payloads and code to review.
 
 Return ONLY minified JSON, no markdown fences, matching exactly:
-{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"summary_en":string,"lesson_cause":string,"lesson_walkthrough":string,"lesson_example":string,"lesson_takeaway":string,"lesson_fix":string}
+{"is_bug_bounty":boolean,"categories":[string,...max 3],"severity":"critical"|"high"|"medium"|"low"|null,"difficulty":"beginner"|"intermediate"|"advanced"|null,"summary_en":string,"lesson_cause":string,"lesson_walkthrough":string,"lesson_example":string,"lesson_takeaway":string,"lesson_fix":string}
 
 Rules:
 - is_bug_bounty: true ONLY if this describes a real vulnerability found and reported against a specific target/program (bug bounty platform report, responsible disclosure, or an independent researcher's disclosed finding with a named target). false for CTF/TryHackMe/HackTheBox writeups, generic tutorials, interviews, news, opinion/career pieces, or vendor advisories with no bounty/disclosure context. When false, every field below is an empty string except categories/severity (best-effort).
 - categories must be chosen from this exact list: ${CATEGORY_SLUGS.join(", ")}
 - severity: your best judgement of real-world impact ("critical" for RCE/full account takeover/mass data breach, "high" for auth bypass/significant data exposure, "medium"/"low" otherwise, null if you truly cannot tell).
+- difficulty: how hard is this writeup to FOLLOW for a beginner (not how severe the bug is): "beginner" for single-step bugs with a clear payload, "intermediate" for chained steps or mild prerequisites, "advanced" for complex chains, deep protocol/format knowledge, or heavy code reading. Null if you cannot tell.
 - summary_en: 1-2 punchy sentences in English describing the vulnerability and impact (no fluff, no "this writeup discusses"). Used on list/card views.
 - All lesson_* fields are in ENGLISH, written for a ZERO-KNOWLEDGE reader who is also useful to a pro. Hard requirements:
   - Define EVERY technical term the first time it appears (one short plain-English line each): HTTP request, parameter, payload, XSS, SQL query, authentication, cookie, header, endpoint... Assume nothing.
@@ -135,6 +136,7 @@ export async function classifyAndSummarize(item) {
       isBugBounty: parsed.is_bug_bounty !== false,
       categories: sanitizeCategories(parsed.categories),
       severity: sanitizeSeverity(parsed.severity),
+      difficulty: sanitizeDifficulty(parsed.difficulty),
       summary_en: (parsed.summary_en || "").trim() || heuristicSummary(item),
       // Arabic comes from the on-site translation service, never the AI.
       summary_ar: null,
@@ -326,6 +328,10 @@ function sanitizeSeverity(sev) {
   return ["critical", "high", "medium", "low"].includes(sev) ? sev : null;
 }
 
+function sanitizeDifficulty(d) {
+  return ["beginner", "intermediate", "advanced"].includes(d) ? d : null;
+}
+
 // ---- Heuristic fallback (no AI key configured) ----
 
 export function heuristicClassify(item) {
@@ -352,6 +358,7 @@ export function heuristicClassify(item) {
     isBugBounty: true,
     categories: categories.length ? categories : ["other"],
     severity,
+    difficulty: null,
     summary_en: heuristicSummary(item),
     summary_ar: null,
     // No AI key configured -> can't honestly generate a teaching walkthrough
