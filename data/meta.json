@@ -1,6 +1,6 @@
 {
-  "lastRun": "2026-09-23T17:15:03.255Z",
-  "totalItems": 48,
+  "lastRun": "2026-09-23T17:18:48.893Z",
+  "totalItems": 49,
   "newItemsThisRun": 1,
   "aiProvider": "custom",
   "aiOkThisRun": 0,
@@ -9,16 +9,16 @@
   "bySource": {
     "medium-tag-bug-bounty": 4,
     "infosec-writeups": 1,
-    "pentesterland": 43
+    "pentesterland": 44
   },
   "byCategory": {
-    "rce": 13,
+    "rce": 14,
     "xss": 7,
-    "file-upload": 2,
+    "file-upload": 3,
     "other": 12,
     "cache-smuggling": 1,
     "access-control": 10,
-    "oauth-jwt": 6,
+    "oauth-jwt": 7,
     "auth-bypass": 9,
     "sqli": 3,
     "info-disclosure": 3,
