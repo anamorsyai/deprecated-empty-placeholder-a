@@ -374,6 +374,45 @@
     "score": 53
   },
   {
+    "id": "0647df70bde8",
+    "title": "Bypass Plan Restriction & Get 350$ Bounty",
+    "url": "https://medium.com/@a13h1/bypass-plan-restriction-get-350-bounty-2df24f406462",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Abhi Sharma (@a13h1_)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": "350",
+    "published_at": "2024-07-29T00:00:00.000Z",
+    "added_at": "2026-09-23T17:30:09.591Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "critical",
+    "summary_en": "Hi Everyone, Today, I’m excited to share insights into a recent discovery I made regarding a security vulnerability in ExamenTry that allows users to bypass the required Team plan for enabling code coverage insights.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hi Everyone, Today, I’m excited to share insights into a recent discovery I made regarding a security vulnerability in ExamenTry that allows users to bypass the required Team plan for enabling code coverage insights. This loophole enables unauthorized access to premium features, highlighting the importance of robust security practices in software platforms. > **Understanding the Target:** ExamenTry, a leading platform in error monitoring and software analytics, serves as a critical tool for developers and organizations to track and manage application errors effectively. It offers comprehensive",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "59c51c662ccb",
     "title": "Blog not found",
     "url": "https://secreltyhiddenwriteups.blogspot.com/2024/07/a-creative-way-to-get-someones-youtube.html",
