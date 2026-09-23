@@ -1,6 +1,6 @@
 {
-  "lastRun": "2026-09-23T14:50:14.850Z",
-  "totalItems": 23,
+  "lastRun": "2026-09-23T14:54:01.321Z",
+  "totalItems": 24,
   "newItemsThisRun": 1,
   "aiProvider": "custom",
   "aiOkThisRun": 0,
@@ -9,7 +9,7 @@
   "bySource": {
     "medium-tag-bug-bounty": 3,
     "infosec-writeups": 1,
-    "pentesterland": 19
+    "pentesterland": 20
   },
   "byCategory": {
     "xss": 5,
@@ -26,6 +26,7 @@
     "race-condition": 3,
     "supply-chain": 1,
     "idor-bola": 2,
-    "graphql": 1
+    "graphql": 1,
+    "cors": 1
   }
 }
