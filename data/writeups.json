@@ -2357,6 +2357,75 @@
     "score": 43
   },
   {
+    "id": "1a94d8e866fb",
+    "title": "Double Agent: Exploiting Pass-through Authentication Credential Validation in Azure AD",
+    "url": "https://cymulate.com/blog/exploiting-pta-credential-validation-in-azure-ad",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ilan Kalendarov (@IKalendarov)",
+      "Elad Beber"
+    ],
+    "program": "Microsoft (Entra ID / Azure AD)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-23T00:13:13.509Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "critical",
+    "summary_en": "A design flaw in Azure AD Pass-through Authentication lets an attacker with local admin on a PTA agent server hook the ValidateCredentials function and force it to always return True — logging in as any synced AD user, including a global admin, without knowing their password.",
+    "summary_ar": "ثغرة في تصميم Azure AD Pass-through Authentication بتخلي مهاجم معاه local admin على سيرفر الـ PTA agent يعمل hook لدالة ValidateCredentials ويجبرها ترجع True دايماً — فبيقدر يسجّل دخول كأي مستخدم synced، حتى global admin، من غير ما يعرف الباسورد.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن تصميم PTA بيعتمد على Service Bus queue واحدة بتخدم كل الـ agents، وأي agent بيقدر يسحب أي طلب مصادقة من الـ queue من غير ما يتحقق إن المستخدم ده أصلاً من الـ domain بتاعه. الافتراض الغلط كان إن كل طلب هيوصل للـ agent الصح، لكن في الحقيقة الطلب ممكن يتسحب من agent تابع لـ domain تاني، فيحاول يتحقق من المستخدم على الـ AD بتاعه ويفشل. المشكلة الأعمق إن قيمة الـ return من دالة ValidateCredentials بتتاخد كحكم نهائي من غير أي إثبات إن المستخدم فعلاً بينتمي للـ domain اللي اتعمل عليه الـ validation. ده خلّى التحكم في قيمة الـ return كفاية لتزوير المصادقة بالكامل.",
+      "walkthrough_ar": "الباحثين بدأوا بحثهم باستكشاف تقنيات معروفة لإساءة استخدام بيئات Azure، ولقوا blog لـ Adam Chester على الرابط https://blog.xpnsec.com/azuread-connect-for-redteam/ عن Azure AD Connect للـ red teaming. بعدها نزلوا على الـ PTA agent نفسه وبدأوا يفكّوه بـ dnSpy عشان يفهموا الـ flow بالظبط. أول حاجة غريبة لفتت نظرهم: لما يسجّلوا الدخول كمستخدم synced، كان بيجيلهم خطأ wrong password بشكل عشوائي، وبعد محاولات كتير يدخلوا بنفس الباسورد. فكروا الأول إن الـ browser agent هو اللي بيأثر على وجهة الطلب، لكن بعدين أدركوا إن ده مجرد تجربة استخدام وحشة — طلبات الـ login بتتسحب بشكل عشوائي من الـ queue بواسطة الـ PTA agents المختلفة. لو الطلب اتسحب بواسطة agent تابع لـ domain مختلف — زي ما حصل لما كانوا تحت domain اسمه cymattack وجالهم credentials بتاعة domain اسمه cymtown — الـ agent بيفضّل الطلب على الـ AD بتاعه، والـ AD مش بيعرف المستخدم فبيرجع False من دالة LogonUser. في الـ POC حقنوا unmanaged DLL في عملية الـ PTA agent، والـ DLL استخدم الـ CLR الموجود جوه العملية عشان يحمّل managed DLL. الـ managed DLL استخدم مكتبة HarmonyLib عشان يعمل hook لدالة ValidateCredentials في أولها وفي آخرها، فبقى عندهم تحكم كامل في قيمة الـ return. الكود استهدف الـ method بالظبط بكود زي namespace Captain_HooK مع GetMethod(\"ValidateCredentials\", BindingFlags.Public | BindingFlags.Instance) على typeof(Microsoft.ApplicationProxy.Connector.DirectoryHelpers.ActiveDirectoryDomainContext)، وكتبوا log في C:\\Users\\Public\\hook.txt. بدل ما الدالة ترجع نتيجة الـ AD الحقيقية، أجبروها ترجع True دايماً. النتيجة إنهم قدروا يسجّلوا دخول كأي مستخدم من أي domain synced من غير ما يعرفوا الباسورد الأصلي — وده ممكن يوصلهم لحساب global admin لو الصلاحية دي متعطاة، مع إمكانية lateral movement بين الـ domains. والـ attack كله محتاج local admin على السيرفر اللي شغال عليه الـ PTA agent.",
+      "takeaway_ar": "أول signal تدور عليه: بيئة hybrid identity فيها أكتر من on-prem domain متزامن على tenant واحد — ده بيكسّر افتراض الـ trust بين الـ agents والـ queue المشتركة. تاني signal: سلوك login متقلب — نفس الباسورد الصح بيفشل أحياناً وبينجح أحياناً من غير سبب واضح — ده غالباً معناه إن الطلبات بتتوزع على أكتر من agent. عامةً، أي مكوّن بيعمل credential validation نيابة عن الـ IdP (زي PTA agent أو AAD Connect) هو هدف عالي القيمة: لو قدرت توصل ليه بـ local admin، جرّب الـ DLL injection أو الـ hooking للدوال اللي بترجّع نتيجة الـ validation. ولما تلاقي دالة بتاخد قرار أمني مبني على return value من غير إثبات للـ domain أو الهوية، دي نقطة تلاعب محتملة تستاهل تختبرها.",
+      "fix_ar": "الإصلاح الجوهري إن الـ agent يبقى domain-aware: قبل ما يتحقق من الـ credentials لازم يتأكد إن المستخدم بينتمي فعلاً للـ domain اللي هو شغال عليه، أو إن الـ request يتوجّه بس للـ agent التابع لنفس domain المستخدم. كمان نتيجة الـ validation لازم تكون مربوطة بإثبات إن المستخدم اتلقى في الـ AD ده، مش مجرد True/False من غير سياق. على مستوى التحصين، لازم تقيّد الـ local admin على سيرفرات الـ PTA agent لأن الـ attack كله بيبدأ من الصلاحية دي، وتراقب أي DLL injection أو سلوك غير معتاد على العملية. وميكروسوفت نفسها محتاجة تضمن إن الـ queue والـ routing ما يسمحوش لأي agent يستلم طلبات مستخدمين مش من domain بتاعه."
+    },
+    "excerpt": "Today’s enterprise security architecture demands seamless authentication across various systems. To accomplish this, many organizations use Azure Active Directory (AAD) to sync their on-premises environments to the cloud to manage user access across environments. (Note: Azure Active Directory has been rebranded as Microsoft Entra ID, but we’ll continue to call it AAD throughout this blog for simplicity.) However, our recent investigation uncovered a vulnerability in AAD when syncing multiple on-premises AD domains to a single Azure tenant. This issue arises when authentication requests are mis",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "7295c892de7f",
+    "title": "Zero Day Initiative — CVE-2024-38213: Copy2Pwn Exploit Evades Windows Web Protections",
+    "url": "https://www.zerodayinitiative.com/blog/2024/8/14/cve-2024-38213-copy2pwn-exploit-evades-windows-web-protections",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Peter Girnus (@gothburz)"
+    ],
+    "program": "Microsoft (Windows)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-23T00:13:52.784Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "ZDI researchers found that files copied and pasted from WebDAV shares on Windows were never tagged with Mark-of-the-Web, letting attackers drop payloads that bypass SmartScreen and Office Protected View and achieve remote code execution (CVE-2024-38213, patched June 2024).",
+    "summary_ar": "باحثو ZDI اكتشفوا إن الملفات اللي بتتنسخ وتتلصق من WebDAV shares على ويندوز كانت بتوصل من غير Mark-of-the-Web، فبيقدر المهاجم ينفذ كود من غير تحذيرات SmartScreen أو Protected View (CVE-2024-38213 واتصلحت في يونيو 2024).",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي إن Windows تاريخيًا كان بيعامل WebDAV shares كأنها SMB shares مش كـ HTTP web servers. الافتراض الخاطئ كان إن أي ملف بيوصل من مصدر غير موثوق هياخد MotW تلقائيًا، لكن مسار copy-and-paste من WebDAV كان خارج المنطق ده تمامًا. النتيجة إن الملفات اللي بتتنسخ وتتلصق من الـ share كانت بتوصل للـ desktop من غير Zone.Identifier ADS، فبتتفلت من Windows Defender SmartScreen و Microsoft Office Protected View. الفجوة كانت في معالجة النظام لمسار وصول مختلف (copy/paste) لنفس المصدر غير الموثوق، وده فتح الباب لتنفيذ كود من غير أي تحذير.",
+      "walkthrough_ar": "في مارس 2024، كان فريق ZDI Threat Hunting التابع لـ Trend Micro بيحلل عينات مرتبطة بنشاط DarkGate، وهم مجموعة كانت بتستخدم عمليات copy-and-paste لإصابة الضحايا. الحملة دي كانت تطوير لحملة أقدم استغلت zero-day اسمها CVE-2024-21412، واللي ZDI كانوا كشفوها لمايكروسوفت قبل كده. أثناء التحقيق، لاحظ الفريق إن الملفات اللي بتتنسخ وتتلصق من WebDAV shares بتتصرف بشكل مختلف عن الملفات اللي بتتنزّل من المتصفح. عشان تفهم الفرق: لما تفتح share على شكل `http://10.37.129.2/example_webdav_folder/somefile` من Edge أو Chrome، الملف بيتعامل كأي ملف منزّل من الويب وبياخد Mark-of-the-Web. لكن لما تفتح نفس الـ share عبر UNC path زي `\\10.37.129.2@80\\.example_webdav_folder` من Windows Explorer، فالنظام هو اللي بيتعامل مع الملفات مباشرة مش المتصفح — وهنا بدأ الشك. الفريق اكتشف إن الملفات اللي بتتنسخ وتتلصق من WebDAV share لم تكن بتاخد MotW خالص، يعني مفيش ADS باسم Zone.Identifier فيه `ZoneId=3` اللي بيحدد إن الملف من مصدر غير موثوق. وده معناه إن SmartScreen و Protected View مش هيتفعلوا، فمفيش فحص reputation أو signature على الـ executables. الاستغلال الكامل كان بيعتمد على إن المهاجم يستضيف الـ payload على WebDAV share، ويستخدم Windows search protocol عشان يفتح الـ share في Windows Explorer، وبيصمّم الـ search query بحيث يعرض ملف واحد بس زي `poc.lnk.zip`. وباستخدام أنواع ملفات زي Internet Shortcut (.url) أو Shortcut (.lnk) بيغيّر الأيقونة عشان يخلي الملف يبان نوع تاني ويخدع الضحية. لما الضحية تنسخ الملف وتلصقه على الـ desktop وتفتحه، بيتنفذ الكود من غير أي تحذير — وده اللي سموه copy2pwn، واتبلغت لمايكروسوفت واتصلحت في يونيو 2024.",
+      "takeaway_ar": "لما تيجي تفحص هدف، دور على الفروق في معالجة نفس المورد حسب طريقة الوصول — download من متصفح مقابل copy/paste مقابل mount عبر UNC. علامة الخطر إن ملف من مصدر غير موثوق بيوصل من غير Zone.Identifier ADS أو من غير أي تحذير SmartScreen. كمان راقب أي تقارير عن WebDAV/SMB handling في Windows لأنها أرض خصبة لـ MotW bypasses — شوف CVE-2023-36025 و CVE-2024-21412 و CVE-2024-29988 كأمثلة على نفس العيلة. ولو لقيت مسار بيسمح بتنفيذ ملف من غير تحذير، جرّب توصله بسلسلة كاملة من WebDAV share لحد RCE.",
+      "fix_ar": "الإصلاح الصح من مايكروسوفت (اللي نزل في يونيو 2024) كان إن الملفات اللي بتتنسخ وتتلصق من WebDAV shares بقت بتاخد Mark-of-the-Web زي أي ملف منزّل من الويب. المبدأ العام: أي ملف بيخرج من مصدر غير موثوق لازم يتوسم بـ Zone.Identifier ADS فيه `ZoneId=3` بغض النظر عن طريقة الوصول — download أو copy/paste أو drag-and-drop. كمان لازم يتأكد إن SmartScreen و Protected View شغالين على أي ملف موسوم بـ MotW، وإن معالجة WebDAV متبقاش معاملة SMB. ولو في منتج تاني بيعالج ملفات من مصادر خارجية، راجع كل مسارات النسخ واللصق عشان تتأكد إن الـ taint بيتمسك في كل حتة."
+    },
+    "excerpt": "_Zero Day Initiative threat researchers discovered CVE-2024-38213, a simple and effective way to bypass Windows mark-of-the-web protections leading to remote code execution._ In March 2024, Trend Micro’s Zero Day Initiative Threat Hunting team started analyzing samples connected to the activity carried out by DarkGate operators to infect users through copy-and-paste operations. This DarkGate campaign was an update from a [previous campaign](https://www.trendmicro.com/en_us/research/24/c/cve-2024-21412--darkgate-operators-exploit-microsoft-windows-sma.html) in which the DarkGate operators were",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "35cccfd073c8",
     "title": "Addressed AWS defaults risks: OIDC, Terraform and Anonymous to AdministratorAccess",
     "url": "https://hacktodef.com/addressed-aws-defaults-risks-oidc-terraform-and-anonymous-to-administratoraccess",
@@ -2422,6 +2491,41 @@
     "ai_generated": true,
     "engagement": null,
     "score": 40
+  },
+  {
+    "id": "ed26cec3a3de",
+    "title": "Account takeover on 8 years old public program",
+    "url": "https://medium.com/@pranshux0x/account-takeover-on-8-years-old-public-program-c0c0a30cfdd2",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Priyanshu Shakya (@pranshux0x)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-14T00:00:00.000Z",
+    "added_at": "2026-09-23T00:14:34.509Z",
+    "categories": [
+      "race-condition",
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "critical",
+    "summary_en": "A race condition in the email-verification flow plus Unicode normalization let an attacker take over any developer account on an 8-year-old public program: they verified an email containing a form-feed character (%0f) that the system treated as identical to the victim's address, then signed in as the victim.",
+    "summary_ar": "ثغرة race condition في تدفّق التحقق من البريد الإلكتروني مع مشكلة تطبيع Unicode خلّت الباحث يقدر ياخد تحكم كامل في أي حساب developer على برنامج عام عمره 8 سنين: اتأكد من إيميل فيه حرف تحكم %0f النظام عامله زي إيميل الضحية بالظبط، وبعدين سجّل الدخول بحساب الضحية.",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي إن نظام التحقق من الإيميل في developer.example.com بيثق في إن إيميل الحساب الأساسي متأكد منه، لكن عملية التحقق مربوطة بنص الإيميل وقت الطلب مش بمعرّف الحساب نفسه. أول ثغرة كانت race condition: الباحث غيّر الإيميل وبعت طلب التحقق في نفس اللحظة بالتوازي، فالنظام أكّد إيميل جديد عمره ما عدّى فحص التحقق الحقيقي. تاني مشكلة إن النظام قبل إيميل فيه حرف تحكم زي %0f (form feed) وخزّنه كحساب مختلف عن victim@gmail.com، لكن في مرحلة تسجيل الدخول على developer.example.com طابقه مع إيميل الضحية كأنهم نفس الحساب. الافتراض الغلط إن تطبيع الإيميل بيحصل بشكل متسق في كل مراحل التطبيق، وده فتح الباب لـ account takeover كامل.",
+      "walkthrough_ar": "الباحث كان بيفحص برنامج عام قديم عمره 8 سنين فيه موقع أساسي www.example.com وموقع تاني للمطورين developer.example.com، والدخول على موقع المطورين بيتم باختيار حسابك من الموقع الأساسي وبعدها لازم تتأكد من إيميلك. أول حاجة جربها إنه يبايپاس خطوة التحقق دي: عمل حساب بإيميل just@gmail.com، ودخل على developer.example.com وضغط send verification email، وفتح رابط التحقق وهو ماسك الترافيك في Burp، وحوّل طلب التحقق لـ Repeater وDrop الطلب الأصلي. بعدها راح للموقع الأساسي وغيّر إيميله لـ just1@gmail.com، وحوّل طلب تغيير الإيميل كمان لـ Repeater وDrop. عمل group في Repeater وحط الطلبين جنب بعض وبعتهم في نفس اللحظة بالتوازي (parallel)، فالنظام خلّص الحساب بإيميل just1@gmail.com متأكد منه من غير ما الإيميل ده يعدّي أي فحص حقيقي. بلّغ الثغرة دي واتقبلت كـ P4 بمكافأة $200. بعدها فكّر: لو نقدر نعمل حساب developer بإيميل الضحية، نقدر نتأكد منه بنفس الاستغلال السابق وده معناه account takeover. جرّب يغيّر إيميله على الموقع الأساسي لـ victim@gmail.com فجاله error 'something went wrong'. فبدأ يـ fuzz الإيميل بحروف Unicode باستخدام أداة recollapse، ولقى إن الإيميل victim@gmail.com%0f اتقبل. كده عنده حساب بإيميل victim@gmail.com%0f وحساب الضحية victim@gmail.com، وهم حسابين مختلفين تمامًا ومحدش يقدر يوصل لحساب التاني. سجّل دخوله على developer.example.com بإيميل victim@gmail.com%0f، ظهرله email verification prompt، اتأكد من الإيميل بنفس استغلال الـ race condition السابق، وBoom! دخل على حساب الضحية في developer.example.com — account takeover كامل.",
+      "takeaway_ar": "الدرس هنا إن أي flow فيه تحقق من الإيميل أو تغيير إيميل لازم تختبره كـ race condition: لو في طلبين (تغيير إيميل + تأكيد) ممكن يتسلسلوا بالتوازي، جرّبهم في Burp Repeater group. كمان أي حقل إيميل بيقبل إدخال فيه حروف تحكم أو Unicode غريبة هو إشارة قوية لمشكلة تطبيع — جرّب fuzzing بحروف زي %0f و%0a و%09 وعلامات التشكيل. العلامة اللي تدلّك إن الفئة دي موجودة: رسالة خطأ عامة زي 'something went wrong' مع الإيميل النضيف، ونجاح مع نسخة فيها حرف مخفي. أدوات زي recollapse بتوفّر عليك وقت كبير في توليد الـ payloads دي.",
+      "fix_ar": "الحل الصح يبدأ من إن التحقق من الإيميل لازم يكون مربوط بمعرّف الحساب (account ID) مش بنص الإيميل، وأي تغيير للإيميل لازم يلغي أي verification token قديم فورًا. كمان لازم يكون فيه تطبيع موحّد للإيميلات قبل التخزين والمقارنة: شيل حروف التحكم زي %0f، حوّل للحروف الصغيرة، وطبّق punycode على الـ Unicode — بحيث victim@gmail.com%0f يتبقى نفس victim@gmail.com أو يُرفض كإدخال غير صالح. عملية تغيير الإيميل مع التأكيد لازم تتحط في transaction واحدة atomic عشان مفيش حالة وسطية يتسجل فيها إيميل جديد متأكد. وفي النهاية validation على مستوى الإدخال يرفض أي حرف تحكم في حقل الإيميل من الأساس."
+    },
+    "excerpt": "* 0xacb ( [https://x.com/0xacb](https://x.com/0xacb)) for his tool recollapse * Portswigger ([https://x.com/PortSwigger](https://x.com/PortSwigger)) for their wonderful race condition tooling in burp and research . This is the story of the account takeover that I found on 8 years old public program. There is a main website [www.example.com](http://www.example.com/) , you can create your account here and login into your account. There is another website for developers developer.example.com, you can login into your developer account using your main account. Understand the flow of login into deve",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
   },
   {
     "id": "8088fa5dc7bd",

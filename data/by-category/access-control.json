@@ -362,6 +362,41 @@
     "score": 60
   },
   {
+    "id": "1a94d8e866fb",
+    "title": "Double Agent: Exploiting Pass-through Authentication Credential Validation in Azure AD",
+    "url": "https://cymulate.com/blog/exploiting-pta-credential-validation-in-azure-ad",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Ilan Kalendarov (@IKalendarov)",
+      "Elad Beber"
+    ],
+    "program": "Microsoft (Entra ID / Azure AD)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-23T00:13:13.509Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "critical",
+    "summary_en": "A design flaw in Azure AD Pass-through Authentication lets an attacker with local admin on a PTA agent server hook the ValidateCredentials function and force it to always return True — logging in as any synced AD user, including a global admin, without knowing their password.",
+    "summary_ar": "ثغرة في تصميم Azure AD Pass-through Authentication بتخلي مهاجم معاه local admin على سيرفر الـ PTA agent يعمل hook لدالة ValidateCredentials ويجبرها ترجع True دايماً — فبيقدر يسجّل دخول كأي مستخدم synced، حتى global admin، من غير ما يعرف الباسورد.",
+    "lesson": {
+      "cause_ar": "الـ root cause إن تصميم PTA بيعتمد على Service Bus queue واحدة بتخدم كل الـ agents، وأي agent بيقدر يسحب أي طلب مصادقة من الـ queue من غير ما يتحقق إن المستخدم ده أصلاً من الـ domain بتاعه. الافتراض الغلط كان إن كل طلب هيوصل للـ agent الصح، لكن في الحقيقة الطلب ممكن يتسحب من agent تابع لـ domain تاني، فيحاول يتحقق من المستخدم على الـ AD بتاعه ويفشل. المشكلة الأعمق إن قيمة الـ return من دالة ValidateCredentials بتتاخد كحكم نهائي من غير أي إثبات إن المستخدم فعلاً بينتمي للـ domain اللي اتعمل عليه الـ validation. ده خلّى التحكم في قيمة الـ return كفاية لتزوير المصادقة بالكامل.",
+      "walkthrough_ar": "الباحثين بدأوا بحثهم باستكشاف تقنيات معروفة لإساءة استخدام بيئات Azure، ولقوا blog لـ Adam Chester على الرابط https://blog.xpnsec.com/azuread-connect-for-redteam/ عن Azure AD Connect للـ red teaming. بعدها نزلوا على الـ PTA agent نفسه وبدأوا يفكّوه بـ dnSpy عشان يفهموا الـ flow بالظبط. أول حاجة غريبة لفتت نظرهم: لما يسجّلوا الدخول كمستخدم synced، كان بيجيلهم خطأ wrong password بشكل عشوائي، وبعد محاولات كتير يدخلوا بنفس الباسورد. فكروا الأول إن الـ browser agent هو اللي بيأثر على وجهة الطلب، لكن بعدين أدركوا إن ده مجرد تجربة استخدام وحشة — طلبات الـ login بتتسحب بشكل عشوائي من الـ queue بواسطة الـ PTA agents المختلفة. لو الطلب اتسحب بواسطة agent تابع لـ domain مختلف — زي ما حصل لما كانوا تحت domain اسمه cymattack وجالهم credentials بتاعة domain اسمه cymtown — الـ agent بيفضّل الطلب على الـ AD بتاعه، والـ AD مش بيعرف المستخدم فبيرجع False من دالة LogonUser. في الـ POC حقنوا unmanaged DLL في عملية الـ PTA agent، والـ DLL استخدم الـ CLR الموجود جوه العملية عشان يحمّل managed DLL. الـ managed DLL استخدم مكتبة HarmonyLib عشان يعمل hook لدالة ValidateCredentials في أولها وفي آخرها، فبقى عندهم تحكم كامل في قيمة الـ return. الكود استهدف الـ method بالظبط بكود زي namespace Captain_HooK مع GetMethod(\"ValidateCredentials\", BindingFlags.Public | BindingFlags.Instance) على typeof(Microsoft.ApplicationProxy.Connector.DirectoryHelpers.ActiveDirectoryDomainContext)، وكتبوا log في C:\\Users\\Public\\hook.txt. بدل ما الدالة ترجع نتيجة الـ AD الحقيقية، أجبروها ترجع True دايماً. النتيجة إنهم قدروا يسجّلوا دخول كأي مستخدم من أي domain synced من غير ما يعرفوا الباسورد الأصلي — وده ممكن يوصلهم لحساب global admin لو الصلاحية دي متعطاة، مع إمكانية lateral movement بين الـ domains. والـ attack كله محتاج local admin على السيرفر اللي شغال عليه الـ PTA agent.",
+      "takeaway_ar": "أول signal تدور عليه: بيئة hybrid identity فيها أكتر من on-prem domain متزامن على tenant واحد — ده بيكسّر افتراض الـ trust بين الـ agents والـ queue المشتركة. تاني signal: سلوك login متقلب — نفس الباسورد الصح بيفشل أحياناً وبينجح أحياناً من غير سبب واضح — ده غالباً معناه إن الطلبات بتتوزع على أكتر من agent. عامةً، أي مكوّن بيعمل credential validation نيابة عن الـ IdP (زي PTA agent أو AAD Connect) هو هدف عالي القيمة: لو قدرت توصل ليه بـ local admin، جرّب الـ DLL injection أو الـ hooking للدوال اللي بترجّع نتيجة الـ validation. ولما تلاقي دالة بتاخد قرار أمني مبني على return value من غير إثبات للـ domain أو الهوية، دي نقطة تلاعب محتملة تستاهل تختبرها.",
+      "fix_ar": "الإصلاح الجوهري إن الـ agent يبقى domain-aware: قبل ما يتحقق من الـ credentials لازم يتأكد إن المستخدم بينتمي فعلاً للـ domain اللي هو شغال عليه، أو إن الـ request يتوجّه بس للـ agent التابع لنفس domain المستخدم. كمان نتيجة الـ validation لازم تكون مربوطة بإثبات إن المستخدم اتلقى في الـ AD ده، مش مجرد True/False من غير سياق. على مستوى التحصين، لازم تقيّد الـ local admin على سيرفرات الـ PTA agent لأن الـ attack كله بيبدأ من الصلاحية دي، وتراقب أي DLL injection أو سلوك غير معتاد على العملية. وميكروسوفت نفسها محتاجة تضمن إن الـ queue والـ routing ما يسمحوش لأي agent يستلم طلبات مستخدمين مش من domain بتاعه."
+    },
+    "excerpt": "Today’s enterprise security architecture demands seamless authentication across various systems. To accomplish this, many organizations use Azure Active Directory (AAD) to sync their on-premises environments to the cloud to manage user access across environments. (Note: Azure Active Directory has been rebranded as Microsoft Entra ID, but we’ll continue to call it AAD throughout this blog for simplicity.) However, our recent investigation uncovered a vulnerability in AAD when syncing multiple on-premises AD domains to a single Azure tenant. This issue arises when authentication requests are mis",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "35cccfd073c8",
     "title": "Addressed AWS defaults risks: OIDC, Terraform and Anonymous to AdministratorAccess",
     "url": "https://hacktodef.com/addressed-aws-defaults-risks-oidc-terraform-and-anonymous-to-administratoraccess",

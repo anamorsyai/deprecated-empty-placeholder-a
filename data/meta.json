@@ -1,26 +1,26 @@
 {
-  "lastRun": "2026-09-22T23:34:40.699Z",
-  "totalItems": 78,
-  "newItemsThisRun": 6,
+  "lastRun": "2026-09-23T00:14:41.744Z",
+  "totalItems": 81,
+  "newItemsThisRun": 3,
   "aiProvider": "custom",
-  "aiOkThisRun": 6,
+  "aiOkThisRun": 3,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 11,
+  "aiGeneratedTotal": 14,
   "bySource": {
     "medium-tag-bug-bounty": 7,
     "medium-tag-writeup": 8,
     "infosec-writeups": 4,
     "intigriti-blog": 2,
-    "pentesterland": 56,
+    "pentesterland": 59,
     "assetnote": 1
   },
   "byCategory": {
-    "other": 20,
+    "other": 21,
     "cache-smuggling": 2,
-    "access-control": 12,
+    "access-control": 13,
     "oauth-jwt": 3,
-    "auth-bypass": 8,
-    "rce": 33,
+    "auth-bypass": 10,
+    "rce": 34,
     "mass-assignment": 2,
     "sqli": 4,
     "recon": 4,
@@ -34,6 +34,7 @@
     "info-disclosure": 5,
     "csrf": 3,
     "xxe": 1,
-    "business-logic": 1
+    "business-logic": 2,
+    "race-condition": 1
   }
 }

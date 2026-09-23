@@ -33,5 +33,40 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "ed26cec3a3de",
+    "title": "Account takeover on 8 years old public program",
+    "url": "https://medium.com/@pranshux0x/account-takeover-on-8-years-old-public-program-c0c0a30cfdd2",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Priyanshu Shakya (@pranshux0x)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-14T00:00:00.000Z",
+    "added_at": "2026-09-23T00:14:34.509Z",
+    "categories": [
+      "race-condition",
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "critical",
+    "summary_en": "A race condition in the email-verification flow plus Unicode normalization let an attacker take over any developer account on an 8-year-old public program: they verified an email containing a form-feed character (%0f) that the system treated as identical to the victim's address, then signed in as the victim.",
+    "summary_ar": "ثغرة race condition في تدفّق التحقق من البريد الإلكتروني مع مشكلة تطبيع Unicode خلّت الباحث يقدر ياخد تحكم كامل في أي حساب developer على برنامج عام عمره 8 سنين: اتأكد من إيميل فيه حرف تحكم %0f النظام عامله زي إيميل الضحية بالظبط، وبعدين سجّل الدخول بحساب الضحية.",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي إن نظام التحقق من الإيميل في developer.example.com بيثق في إن إيميل الحساب الأساسي متأكد منه، لكن عملية التحقق مربوطة بنص الإيميل وقت الطلب مش بمعرّف الحساب نفسه. أول ثغرة كانت race condition: الباحث غيّر الإيميل وبعت طلب التحقق في نفس اللحظة بالتوازي، فالنظام أكّد إيميل جديد عمره ما عدّى فحص التحقق الحقيقي. تاني مشكلة إن النظام قبل إيميل فيه حرف تحكم زي %0f (form feed) وخزّنه كحساب مختلف عن victim@gmail.com، لكن في مرحلة تسجيل الدخول على developer.example.com طابقه مع إيميل الضحية كأنهم نفس الحساب. الافتراض الغلط إن تطبيع الإيميل بيحصل بشكل متسق في كل مراحل التطبيق، وده فتح الباب لـ account takeover كامل.",
+      "walkthrough_ar": "الباحث كان بيفحص برنامج عام قديم عمره 8 سنين فيه موقع أساسي www.example.com وموقع تاني للمطورين developer.example.com، والدخول على موقع المطورين بيتم باختيار حسابك من الموقع الأساسي وبعدها لازم تتأكد من إيميلك. أول حاجة جربها إنه يبايپاس خطوة التحقق دي: عمل حساب بإيميل just@gmail.com، ودخل على developer.example.com وضغط send verification email، وفتح رابط التحقق وهو ماسك الترافيك في Burp، وحوّل طلب التحقق لـ Repeater وDrop الطلب الأصلي. بعدها راح للموقع الأساسي وغيّر إيميله لـ just1@gmail.com، وحوّل طلب تغيير الإيميل كمان لـ Repeater وDrop. عمل group في Repeater وحط الطلبين جنب بعض وبعتهم في نفس اللحظة بالتوازي (parallel)، فالنظام خلّص الحساب بإيميل just1@gmail.com متأكد منه من غير ما الإيميل ده يعدّي أي فحص حقيقي. بلّغ الثغرة دي واتقبلت كـ P4 بمكافأة $200. بعدها فكّر: لو نقدر نعمل حساب developer بإيميل الضحية، نقدر نتأكد منه بنفس الاستغلال السابق وده معناه account takeover. جرّب يغيّر إيميله على الموقع الأساسي لـ victim@gmail.com فجاله error 'something went wrong'. فبدأ يـ fuzz الإيميل بحروف Unicode باستخدام أداة recollapse، ولقى إن الإيميل victim@gmail.com%0f اتقبل. كده عنده حساب بإيميل victim@gmail.com%0f وحساب الضحية victim@gmail.com، وهم حسابين مختلفين تمامًا ومحدش يقدر يوصل لحساب التاني. سجّل دخوله على developer.example.com بإيميل victim@gmail.com%0f، ظهرله email verification prompt، اتأكد من الإيميل بنفس استغلال الـ race condition السابق، وBoom! دخل على حساب الضحية في developer.example.com — account takeover كامل.",
+      "takeaway_ar": "الدرس هنا إن أي flow فيه تحقق من الإيميل أو تغيير إيميل لازم تختبره كـ race condition: لو في طلبين (تغيير إيميل + تأكيد) ممكن يتسلسلوا بالتوازي، جرّبهم في Burp Repeater group. كمان أي حقل إيميل بيقبل إدخال فيه حروف تحكم أو Unicode غريبة هو إشارة قوية لمشكلة تطبيع — جرّب fuzzing بحروف زي %0f و%0a و%09 وعلامات التشكيل. العلامة اللي تدلّك إن الفئة دي موجودة: رسالة خطأ عامة زي 'something went wrong' مع الإيميل النضيف، ونجاح مع نسخة فيها حرف مخفي. أدوات زي recollapse بتوفّر عليك وقت كبير في توليد الـ payloads دي.",
+      "fix_ar": "الحل الصح يبدأ من إن التحقق من الإيميل لازم يكون مربوط بمعرّف الحساب (account ID) مش بنص الإيميل، وأي تغيير للإيميل لازم يلغي أي verification token قديم فورًا. كمان لازم يكون فيه تطبيع موحّد للإيميلات قبل التخزين والمقارنة: شيل حروف التحكم زي %0f، حوّل للحروف الصغيرة، وطبّق punycode على الـ Unicode — بحيث victim@gmail.com%0f يتبقى نفس victim@gmail.com أو يُرفض كإدخال غير صالح. عملية تغيير الإيميل مع التأكيد لازم تتحط في transaction واحدة atomic عشان مفيش حالة وسطية يتسجل فيها إيميل جديد متأكد. وفي النهاية validation على مستوى الإدخال يرفض أي حرف تحكم في حقل الإيميل من الأساس."
+    },
+    "excerpt": "* 0xacb ( [https://x.com/0xacb](https://x.com/0xacb)) for his tool recollapse * Portswigger ([https://x.com/PortSwigger](https://x.com/PortSwigger)) for their wonderful race condition tooling in burp and research . This is the story of the account takeover that I found on 8 years old public program. There is a main website [www.example.com](http://www.example.com/) , you can create your account here and login into your account. There is another website for developers developer.example.com, you can login into your developer account using your main account. Understand the flow of login into deve",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
   }
 ]

@@ -1018,6 +1018,40 @@
     "score": 60
   },
   {
+    "id": "7295c892de7f",
+    "title": "Zero Day Initiative — CVE-2024-38213: Copy2Pwn Exploit Evades Windows Web Protections",
+    "url": "https://www.zerodayinitiative.com/blog/2024/8/14/cve-2024-38213-copy2pwn-exploit-evades-windows-web-protections",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Peter Girnus (@gothburz)"
+    ],
+    "program": "Microsoft (Windows)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-15T00:00:00.000Z",
+    "added_at": "2026-09-23T00:13:52.784Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "summary_en": "ZDI researchers found that files copied and pasted from WebDAV shares on Windows were never tagged with Mark-of-the-Web, letting attackers drop payloads that bypass SmartScreen and Office Protected View and achieve remote code execution (CVE-2024-38213, patched June 2024).",
+    "summary_ar": "باحثو ZDI اكتشفوا إن الملفات اللي بتتنسخ وتتلصق من WebDAV shares على ويندوز كانت بتوصل من غير Mark-of-the-Web، فبيقدر المهاجم ينفذ كود من غير تحذيرات SmartScreen أو Protected View (CVE-2024-38213 واتصلحت في يونيو 2024).",
+    "lesson": {
+      "cause_ar": "الـ root cause الحقيقي إن Windows تاريخيًا كان بيعامل WebDAV shares كأنها SMB shares مش كـ HTTP web servers. الافتراض الخاطئ كان إن أي ملف بيوصل من مصدر غير موثوق هياخد MotW تلقائيًا، لكن مسار copy-and-paste من WebDAV كان خارج المنطق ده تمامًا. النتيجة إن الملفات اللي بتتنسخ وتتلصق من الـ share كانت بتوصل للـ desktop من غير Zone.Identifier ADS، فبتتفلت من Windows Defender SmartScreen و Microsoft Office Protected View. الفجوة كانت في معالجة النظام لمسار وصول مختلف (copy/paste) لنفس المصدر غير الموثوق، وده فتح الباب لتنفيذ كود من غير أي تحذير.",
+      "walkthrough_ar": "في مارس 2024، كان فريق ZDI Threat Hunting التابع لـ Trend Micro بيحلل عينات مرتبطة بنشاط DarkGate، وهم مجموعة كانت بتستخدم عمليات copy-and-paste لإصابة الضحايا. الحملة دي كانت تطوير لحملة أقدم استغلت zero-day اسمها CVE-2024-21412، واللي ZDI كانوا كشفوها لمايكروسوفت قبل كده. أثناء التحقيق، لاحظ الفريق إن الملفات اللي بتتنسخ وتتلصق من WebDAV shares بتتصرف بشكل مختلف عن الملفات اللي بتتنزّل من المتصفح. عشان تفهم الفرق: لما تفتح share على شكل `http://10.37.129.2/example_webdav_folder/somefile` من Edge أو Chrome، الملف بيتعامل كأي ملف منزّل من الويب وبياخد Mark-of-the-Web. لكن لما تفتح نفس الـ share عبر UNC path زي `\\10.37.129.2@80\\.example_webdav_folder` من Windows Explorer، فالنظام هو اللي بيتعامل مع الملفات مباشرة مش المتصفح — وهنا بدأ الشك. الفريق اكتشف إن الملفات اللي بتتنسخ وتتلصق من WebDAV share لم تكن بتاخد MotW خالص، يعني مفيش ADS باسم Zone.Identifier فيه `ZoneId=3` اللي بيحدد إن الملف من مصدر غير موثوق. وده معناه إن SmartScreen و Protected View مش هيتفعلوا، فمفيش فحص reputation أو signature على الـ executables. الاستغلال الكامل كان بيعتمد على إن المهاجم يستضيف الـ payload على WebDAV share، ويستخدم Windows search protocol عشان يفتح الـ share في Windows Explorer، وبيصمّم الـ search query بحيث يعرض ملف واحد بس زي `poc.lnk.zip`. وباستخدام أنواع ملفات زي Internet Shortcut (.url) أو Shortcut (.lnk) بيغيّر الأيقونة عشان يخلي الملف يبان نوع تاني ويخدع الضحية. لما الضحية تنسخ الملف وتلصقه على الـ desktop وتفتحه، بيتنفذ الكود من غير أي تحذير — وده اللي سموه copy2pwn، واتبلغت لمايكروسوفت واتصلحت في يونيو 2024.",
+      "takeaway_ar": "لما تيجي تفحص هدف، دور على الفروق في معالجة نفس المورد حسب طريقة الوصول — download من متصفح مقابل copy/paste مقابل mount عبر UNC. علامة الخطر إن ملف من مصدر غير موثوق بيوصل من غير Zone.Identifier ADS أو من غير أي تحذير SmartScreen. كمان راقب أي تقارير عن WebDAV/SMB handling في Windows لأنها أرض خصبة لـ MotW bypasses — شوف CVE-2023-36025 و CVE-2024-21412 و CVE-2024-29988 كأمثلة على نفس العيلة. ولو لقيت مسار بيسمح بتنفيذ ملف من غير تحذير، جرّب توصله بسلسلة كاملة من WebDAV share لحد RCE.",
+      "fix_ar": "الإصلاح الصح من مايكروسوفت (اللي نزل في يونيو 2024) كان إن الملفات اللي بتتنسخ وتتلصق من WebDAV shares بقت بتاخد Mark-of-the-Web زي أي ملف منزّل من الويب. المبدأ العام: أي ملف بيخرج من مصدر غير موثوق لازم يتوسم بـ Zone.Identifier ADS فيه `ZoneId=3` بغض النظر عن طريقة الوصول — download أو copy/paste أو drag-and-drop. كمان لازم يتأكد إن SmartScreen و Protected View شغالين على أي ملف موسوم بـ MotW، وإن معالجة WebDAV متبقاش معاملة SMB. ولو في منتج تاني بيعالج ملفات من مصادر خارجية، راجع كل مسارات النسخ واللصق عشان تتأكد إن الـ taint بيتمسك في كل حتة."
+    },
+    "excerpt": "_Zero Day Initiative threat researchers discovered CVE-2024-38213, a simple and effective way to bypass Windows mark-of-the-web protections leading to remote code execution._ In March 2024, Trend Micro’s Zero Day Initiative Threat Hunting team started analyzing samples connected to the activity carried out by DarkGate operators to infect users through copy-and-paste operations. This DarkGate campaign was an update from a [previous campaign](https://www.trendmicro.com/en_us/research/24/c/cve-2024-21412--darkgate-operators-exploit-microsoft-windows-sma.html) in which the DarkGate operators were",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "8088fa5dc7bd",
     "title": "High Signal Detection and Exploitation of Ivanti's Pulse Connect Secure Auth Bypass & RCE",
     "url": "https://blog.assetnote.io/2024/01/19/ivanti-pulse-connect-secure-auth-bypass-rce",
