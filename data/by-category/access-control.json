@@ -579,6 +579,46 @@
     "score": 60
   },
   {
+    "id": "aa7bc8ea343e",
+    "title": "UnOAuthorized: Privilege Elevation Through Microsoft Applications",
+    "url": "https://www.semperis.com/blog/unoauthorized-privilege-elevation-through-microsoft-applications",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Eric Woodruff (@ericonidentity)"
+    ],
+    "program": "Microsoft (Entra ID / Azure AD)",
+    "platform_slug": "other",
+    "bounty_raw": null,
+    "published_at": "2024-08-07T00:00:00.000Z",
+    "added_at": "2026-09-23T14:30:15.160Z",
+    "categories": [
+      "access-control",
+      "oauth-jwt"
+    ],
+    "severity": "high",
+    "summary_en": "UnOAuthorized: Privilege Elevation Through Microsoft Applications",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b9da9e97a206",
     "title": "Splitting the email atom: exploiting parsers to bypass access controls",
     "url": "https://portswigger.net/research/splitting-the-email-atom",
