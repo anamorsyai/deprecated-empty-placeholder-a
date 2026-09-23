@@ -891,6 +891,45 @@
     "score": 47
   },
   {
+    "id": "71a54e53c10d",
+    "title": "Unveiling Remote Code Execution in AI chatbot workflows 💵",
+    "url": "https://infosecwriteups.com/unveiling-remote-code-execution-in-ai-chatbot-workflows-3c7f633f63c3",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Anurag__Verma"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-05T00:00:00.000Z",
+    "added_at": "2026-09-23T15:09:21.321Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "summary_en": "Hi Readers 👋, this article goes through a remote code execution finding worth $$$$ that I found on one of the popular chatbot platforms so let's get started.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hi Readers 👋, this article goes through a remote code execution finding worth $$$$ that I found on one of the popular chatbot platforms so let's get started. **Introduction:** In recent years, AI chatbots have become increasingly popular across various industries, providing efficient customer service, enhancing user engagement, and streamlining business operations. These intelligent systems, driven by complex algorithms and natural language processing capabilities, are designed to interact with users seamlessly. However, like any software, they are not immune to security vulnerabilities. One",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "8d20686388ab",
     "title": "Exploiting authorization by nonce in WordPress plugins",
     "url": "https://nowotarski.info/wordpress-nonce-authorization",
