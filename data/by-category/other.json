@@ -35,6 +35,45 @@
     "score": 53
   },
   {
+    "id": "6a7c38a556ee",
+    "title": "Just a moment...",
+    "url": "https://infosecwriteups.com/insecure-firestore-security-rules-pii-exposure-762763ac577f",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Sangharsha Upadhyaya"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-08T14:56:29.000Z",
+    "added_at": "2026-09-23T14:45:28.830Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "summary_en": "Insecure Firestore Security Rules & PII Exposure",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": false,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "9257b52a9d97",
     "title": "World of SELECT-only PostgreSQL Injections",
     "url": "http://phrack.org/issues/71/8.html",

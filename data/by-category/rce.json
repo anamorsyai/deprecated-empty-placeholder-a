@@ -101,5 +101,45 @@
     "ai_generated": true,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "a87cd8b929fc",
+    "title": "GitHub Actions exploitation: Dependabot",
+    "url": "https://www.synacktiv.com/publications/github-actions-exploitation-dependabot",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "Hugo Vincent (@hugow_vincent)"
+    ],
+    "program": "Spring, tRPC",
+    "platform_slug": "synack",
+    "bounty_raw": null,
+    "published_at": "2024-08-06T00:00:00.000Z",
+    "added_at": "2026-09-23T14:45:48.405Z",
+    "categories": [
+      "rce",
+      "oauth-jwt"
+    ],
+    "severity": "medium",
+    "summary_en": "French Toggle Dropdown * French * English * RSS * Github * Twitter * Linkedin Image 1: Accueil * Notre Offre » * Test d’intrusion / Red Team * Réponse aux incidents * Reverse-engineering * Développement * Produits * CSIRT * Formations * Nou",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "French Toggle Dropdown * French * English * RSS * Github * Twitter * Linkedin Image 1: Accueil * Notre Offre » * Test d’intrusion / Red Team * Réponse aux incidents * Reverse-engineering * Développement * Produits * CSIRT * Formations * Nous rejoindre * Publications » * Articles * Avis de sécurité * Ressources * La société * Contact * RSS * Github * Twitter * Linkedin # GitHub Actions exploitation: Dependabot Rédigé par Hugo Vincent - 06/08/2024 - dans Pentest - Téléchargement Following our GitHub action exploitation series, we found a new GitHub action exploitation technique leveraging the De",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
   }
 ]
