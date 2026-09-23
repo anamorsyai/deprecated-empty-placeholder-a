@@ -1247,6 +1247,45 @@
     "score": 60
   },
   {
+    "id": "c1d7fa1f2c4c",
+    "title": "Beyond the Limit: Expanding single-packet race condition with a first sequence sync for breaking the 65,535 byte limit",
+    "url": "https://flatt.tech/research/posts/beyond-the-limit-expanding-single-packet-race-condition-with-first-sequence-sync",
+    "source": {
+      "slug": "pentesterland",
+      "name": "Pentester Land"
+    },
+    "authors": [
+      "RyotaK (@ryotkak)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2024-08-02T00:00:00.000Z",
+    "added_at": "2026-09-23T16:22:10.647Z",
+    "categories": [
+      "race-condition"
+    ],
+    "severity": "medium",
+    "summary_en": "##### Posted on August 2, 2024 • 12 minutes • 2429 words Table of contents * Introduction * TL;DR * Limitation of single-packet attack * Fragmentation of IP packet * TCP and Sequence Number * First Sequence Sync * Combining IP fragmentation",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "##### Posted on August 2, 2024 • 12 minutes • 2429 words Table of contents * Introduction * TL;DR * Limitation of single-packet attack * Fragmentation of IP packet * TCP and Sequence Number * First Sequence Sync * Combining IP fragmentation and First Sequence Sync * Limiting factors * Demonstration * Further Improvements * Conclusion * Shameless plug ## Introduction Hello, I’m RyotaK (@ryotkak ), a security engineer at Flatt Security Inc. In 2023, James Kettle of PortSwigger published an excellent paper titled `Smashing the state machine: the true potential of web race conditions`. In the pape",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c985f143e7d1",
     "title": "Auditing Atlassian Plugins, 53 0-Days Later",
     "url": "https://cyllective.com/blog/posts/atlassian-audit-plugins",
