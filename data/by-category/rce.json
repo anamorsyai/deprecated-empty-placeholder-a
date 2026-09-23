@@ -1,5 +1,45 @@
 [
   {
+    "id": "343dc3bd040f",
+    "title": "We Trusted Telegram With Our Research to Protect Users — and Were Written Out of the Story",
+    "url": "https://medium.com/@expatch/we-trusted-telegram-with-our-research-to-protect-users-and-were-written-out-of-the-story-8e64d0e58972",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "ExPatch Security"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T22:26:50.000Z",
+    "added_at": "2026-09-23T22:28:00.184Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "_NTLM relay, repeatable heap-memory disclosure, a laboratory-validated RCE chain, and the documented Telegram and Qt remediation timeline._ **ExPatch Vulnerability Research — Alexander Rostilov and Denis Rostilov** > “Our experience is shap",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_NTLM relay, repeatable heap-memory disclosure, a laboratory-validated RCE chain, and the documented Telegram and Qt remediation timeline._ **ExPatch Vulnerability Research — Alexander Rostilov and Denis Rostilov** > “Our experience is shaped by our mission to protect our users in authoritarian regimes.” — Pavel Durov, September 5, 2024; original post. Press enter or click to view image in full size Image 3 _Editorial excerpt from Pavel Durov’s original post: the author header, quoted paragraph, and publication metadata are preserved; omitted passages are marked with ellipses._ We agree with t",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "6cf86f800123",
     "title": "I Bypassed OTP Verification by Changing One Response",
     "url": "https://medium.com/@sahilmaurya2575/i-bypassed-otp-verification-by-changing-one-response-c54ec1db8876",
