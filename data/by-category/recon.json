@@ -1,5 +1,45 @@
 [
   {
+    "id": "41a1926ae824",
+    "title": "httpx: A Deep Dive Into the HTTP Probing Engine",
+    "url": "https://pwnxotus.medium.com/httpx-a-deep-dive-into-the-http-probing-engine-359f29662b24",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "PWNXOTUS"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-23T22:58:44.000Z",
+    "added_at": "2026-09-24T01:24:45.995Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": "medium",
+    "difficulty": null,
+    "summary_en": "Cybersecurity student | Ethical Hacker | Passionate learner exploring web security, penetration testing, OSINT, CTFs, and security research.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Cybersecurity student | Ethical Hacker | Passionate learner exploring web security, penetration testing, OSINT, CTFs, and security research. writer Press enter or click to view image in full size Image 3 Bug Bounty Bug Bounty Tips Httpx Reconnaissance Cybersecurity # httpx: A Deep Dive Into the HTTP Probing Engine Image 4: PWNXOTUS PWNXOTUS 8 min read · 2 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F359f29662b24&operation=register&redirect=https%3A%2F%2Fpwnxotus.medium.com%2Fhttpx-a-deep-dive-into-the-http-probing-engine-359f29662b24&user=PWNXOTU",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "b10a4569312e",
     "title": "🔥 IRC Cloudflare Blocklist CTF | Full Penetration Testing Challenge",
     "url": "https://medium.com/@pentesterclubpvtltd/irc-cloudflare-blocklist-ctf-full-penetration-testing-challenge-74aaaefe1d91",
