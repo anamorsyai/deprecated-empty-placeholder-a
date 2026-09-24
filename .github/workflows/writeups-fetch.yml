@@ -41,6 +41,7 @@ jobs:
       MAX_PER_SOURCE_PER_RUN: "2"
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GROQ_MODEL: ${{ secrets.GROQ_MODEL }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       CUSTOM_API_BASE: ${{ secrets.CUSTOM_API_BASE }}
       CUSTOM_API_KEY: ${{ secrets.CUSTOM_API_KEY }}
