@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getAllWriteups, getCategory, getPlatform, getWriteup } from "@/lib/data";
 import { SeverityBadge, Tag } from "@/components/Badge";
 import TranslateSection from "@/components/TranslateSection";
+import InstantExplain from "@/components/InstantExplain";
 import WriteupCard from "@/components/WriteupCard";
 import { timeAgoEn } from "@/lib/format";
 import type { Lesson } from "@/lib/types";
@@ -31,14 +32,10 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
   const takeaway = pick("takeaway", "takeaway_ar");
   const fix = pick("fix", "fix_ar");
   const hasLesson = [cause, walk, example, takeaway, fix].some((s) => s.en || s.ar);
-  const repo = process.env.NEXT_PUBLIC_REPO || "";
   const related = getAllWriteups()
     .filter((x) => x.id !== w.id && w.categories.length > 0 && x.categories.includes(w.categories[0]))
     .sort((a, b) => b.score - a.score)
     .slice(0, 4);
-  const requestUrl = repo
-    ? `https://github.com/${repo}/issues/new?title=${encodeURIComponent("[explain] " + w.id)}&body=${encodeURIComponent("id: " + w.id + "\ntitle: " + w.title + "\n\nPlease teach this writeup.")}`
-    : "";
   const readingText = [walk.en || walk.ar, cause.en || cause.ar, example.en || example.ar]
     .filter(Boolean)
     .join(" ");
@@ -161,26 +158,13 @@ export default function WriteupPage({ params }: { params: { id: string } }) {
           )}
         </div>
       ) : (
-        <div className="mb-6 rounded-xl border border-dashed border-border bg-surface/50 p-4 text-sm leading-relaxed text-muted sm:p-5">
-          <h2 className="mb-1 text-sm font-bold">📚 Full breakdown</h2>
-          <p className="mb-3">
-            The detailed explanation (root cause, step-by-step discovery story, takeaway, fix) is generated
-            automatically and hasn&apos;t been produced for this writeup yet. Check back after the next
-            pipeline run — or request it right now and the teaching bot will prioritize it:
-          </p>
-          {requestUrl ? (
-            <a
-              href={requestUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center rounded-lg bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition hover:bg-primary/20"
-            >
-              ⚡ Request full explanation
-            </a>
-          ) : (
-            <p className="text-xs">Explanation requests open automatically once deployed.</p>
-          )}
-        </div>
+        <InstantExplain
+          title={w.title}
+          url={w.url}
+          excerpt={w.excerpt}
+          program={w.program}
+          categories={w.categories}
+        />
       )}
 
       {related.length > 0 && (
