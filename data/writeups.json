@@ -1,5 +1,87 @@
 [
   {
+    "id": "ead6baef59ac",
+    "title": "Why Security Headers Matter — And What Happens When They’re Missing",
+    "url": "https://medium.com/@shrutishinde1319/why-security-headers-matter-and-what-happens-when-theyre-missing-25ec91881094",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Shruti Vijay Shinde"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T07:10:30.000Z",
+    "added_at": "2026-09-24T08:31:29.807Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "But there’s another part of a web application that is easy to overlook: **security headers**. They might not seem exciting. You don’t get a shell from them, and they usually don’t give you an instant critical vulnerability.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "But there’s another part of a web application that is easy to overlook: **security headers**. They might not seem exciting. You don’t get a shell from them, and they usually don’t give you an instant critical vulnerability. Still, security headers are important because they give the browser **extra instructions about how to safely handle a web page**. And the best part? They’re often simple to configure sometimes just a few lines on the server. When they’re missing or configured incorrectly, they can make other vulnerabilities easier to exploit. In this article, we’ll understand: * What securi",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "b6533c5f8b6b",
+    "title": "I Verified One Email and Claimed Another’s Invitation",
+    "url": "https://scriptjacker.medium.com/i-verified-one-email-and-claimed-anothers-invitation-5c372c83ba77",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Parth Narula"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T06:22:38.000Z",
+    "added_at": "2026-09-24T08:31:54.737Z",
+    "categories": [
+      "business-logic",
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A business logic flaw in the invitation flow allowed an attacker to claim an invitation sent to one email address using a completely different, uninvited email address. This resulted in an identity mismatch where the attacker gained access to a community role intended for someone else.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application failed to enforce a strict link between the invitation token and the specific email address it was issued to. While the invitation was sent to Email A, the registration form allowed the user to edit the email field to Email B. The server-side logic then processed the registration for Email B but associated it with the permissions and metadata (like the displayed profile email) of the original invitation for Email A.",
+      "walkthrough": "RECON\n1. The researcher identified a member management feature where a 'circle' (a community group) owner can invite new members.\n2. The researcher sent an invitation to a test email address: scriptjacker+pentester@gmail.com.\n\nDISCOVERY\n3. The researcher received an invitation email containing an 'Accept invitation' button.\n4. The button linked to a specific URL containing an invitation ID and a secret token (a unique string of characters used as a temporary key).\nhttps://REDACTED/circles/{circle_slug}/membership-invitations/{id}?token={token}\nWhy: This URL identifies which specific invitation is being accepted. (URL: A web address used to locate a resource).\n5. Upon clicking the link, the application redirected to an authentication service ( a separate system that handles logins).\n6. The researcher noticed the email field was pre-filled with the invited email but remained editable.\n\nEXPLOITATION\n7. The researcher manually changed the email in the browser field from the invited address to a different one: scriptjacker+anotheremail@gmail.com.\n8. The researcher clicked 'Continue' to proceed with the registration using the new email.\n9. The system sent a verification code (a short numeric password) to the new, uninvited email address.\n10. The researcher entered the code and set a password for the new account.\n11. The application completed the onboarding process (the initial setup for a new user) without checking if the new email matched the invited one.\n\nIMPACT\n12. The researcher checked the circle's member list and saw the new member was added with the 'Contributor' role.\n13. Crucially, the member list still displayed the original invited email (Email A), even though the researcher used Email B to sign in.\n14. The researcher attempted to log in with Email A and failed, proving the account was not actually tied to that address.\n15. The researcher logged in with Email B and successfully accessed the circle and the profile, which still incorrectly displayed Email A's address.\nWhy: The application logic correctly verified the second email but incorrectly linked that verified identity to the invitation intended for the first email.",
+      "example": "Imagine a fictional site 'target.example' that lets managers invite employees to a private project. The manager invites 'boss@target.example'. The attacker receives the link (perhaps via a leaked Slack message) and clicks it. The site shows a form: 'Register for Boss's Invite'. The attacker changes the email field from 'boss@target.example' to 'attacker@gmail.com' and submits. The site sends a code to 'attacker@gmail.com'. The attacker enters it and is now logged into the project with 'Boss' permissions, even though the project settings still say 'boss@target.example' is the member. This happens because the server only checks if the token is valid, not if the person using the token is the person the token was made for.",
+      "takeaway": "Always test 'pre-filled' forms in invitation or password reset flows. If an application fills in a piece of data for you (like an email or username), try to change it before submitting the request. This is a classic 'Business Logic' flaw where the developer assumes the user will follow the intended path. Look for 'IDOR-adjacent' behavior where a token for Resource A (the invite) is used to create Resource B (the user account) without a cross-check. A common mistake is trusting the client-side input (the email field) over the server-side record associated with the token.",
+      "fix": "To fix this, the server must validate that the email address being registered matches the email address stored in the database for that specific invitation token. If they do not match, the registration should be rejected. Additionally, the email field on the registration page should be read-only or not present at all, as the identity is already defined by the invitation. \n\nExample fix (Pseudo-code):\nif (invitation.token == provided_token) {\n  if (invitation.email != user_submitted_email) {\n    return Error('Email mismatch: This invitation is for a different address.');\n  }\n  // Proceed with registration\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hey Hackers, I am Parth Narula. A penetration tester, bug hunter, red teamer and overall a security researcher. I live for those moments where a bit of out of the box thinking cracks open a critical vulnerability. This is the story of a business logic flaw I found in an invitation flow. The application invited one email address, but allowed me to complete registration using another. I verified my second email, created a password, and entered the circle under the original invited address. No warning about the different email. No request to sign in as the invited user. It started when I was exam",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d78d47075392",
     "title": "From Admin to Owner: How I Discovered a Critical Full Organization Takeover",
     "url": "https://medium.com/@ankitrathva/from-admin-to-owner-how-i-discovered-a-critical-full-organization-takeover-610a1aa013a7",
