@@ -65,6 +65,7 @@ async function main() {
   await writeByCategoryFiles(writeups);
 
   const meta = JSON.parse(await readFile(META_PATH, "utf8"));
+  meta.aiProvider = activeProvider;
   meta.aiGeneratedTotal = writeups.filter((x) => x.ai_generated).length;
   meta.backfilledThisRun = updated;
   meta.bySource = countBy(writeups, (x) => x.source.slug);

@@ -17,11 +17,10 @@ import { randomBytes } from "node:crypto";
 //   CUSTOM_API_HEADERS     -> optional JSON object string of extra headers,
 //                          e.g. '{"api-key":"..."}' for Azure OpenAI, merged
 //                          in on top of content-type/authorization
-// AI_PROVIDER can force one of "gemini" | "groq" | "openrouter" | "custom" | "none".
-// With no key configured at all, classifyAndSummarize() falls back to a
-// deterministic keyword heuristic so the pipeline still runs end-to-end for free.
-
-const PROVIDER = resolveProvider();
+// AI_PROVIDER can force a primary out of "gemini" | "groq" | "openrouter" | "custom" | "none"
+// (falling through to the rest on failure). With no key configured at all,
+// classifyAndSummarize() falls back to a deterministic keyword heuristic so
+// the pipeline still runs end-to-end for free.
 
 // Slow/self-hosted endpoints regularly need more than a minute for a long
 // teaching-style answer (we saw consistent 60s+ timeouts in production).
@@ -57,16 +56,22 @@ function randomSession() {
   return s;
 }
 
-function resolveProvider() {
+// Ordered provider chain with automatic failover. Free tiers hiccup
+// constantly (429s, 503s, stalls), so instead of betting a whole teaching
+// read on one provider, we walk the configured ones until one delivers.
+// AI_PROVIDER forces a primary (still falls through to the rest on failure);
+// "none" disables AI entirely. Priority among unforced providers matches the
+// old behavior: custom first (deliberate choice), then gemini/groq/openrouter.
+function configuredProviders() {
+  const avail = [];
+  if (process.env.CUSTOM_API_BASE) avail.push("custom");
+  if (process.env.GEMINI_API_KEY) avail.push("gemini");
+  if (process.env.GROQ_API_KEY) avail.push("groq");
+  if (process.env.OPENROUTER_API_KEY) avail.push("openrouter");
   const forced = process.env.AI_PROVIDER;
-  if (forced) return forced;
-  // Checked first: setting a base URL is a deliberate, specific choice, so it
-  // wins over a merely-present key for one of the built-in providers.
-  if (process.env.CUSTOM_API_BASE) return "custom";
-  if (process.env.GEMINI_API_KEY) return "gemini";
-  if (process.env.GROQ_API_KEY) return "groq";
-  if (process.env.OPENROUTER_API_KEY) return "openrouter";
-  return "none";
+  if (forced === "none") return [];
+  if (forced) return [forced, ...avail.filter((p) => p !== forced)];
+  return avail;
 }
 
 function parseCustomHeaders() {
@@ -109,26 +114,42 @@ Rules:
 - HONESTY IS MANDATORY: article-derived fields (cause/walkthrough/takeaway/fix) must come ONLY from the extracted content below — never invent endpoints, payloads, or results. If the content is too thin for a field, write "" for it. The ONLY freely-composed field is lesson_example (explicitly illustrative, fictional target).`;
 
 export async function classifyAndSummarize(item) {
-  if (PROVIDER === "none") return heuristicClassify(item);
+  const chain = configuredProviders();
+  for (const provider of chain) {
+    try {
+      const out = await classifyWith(provider, item);
+      if (out && out.aiGenerated) {
+        if (provider !== chain[0]) console.log(`  AI read succeeded via fallback ${provider} for ${item.url}`);
+        return out;
+      }
+      throw new Error("unusable model output");
+    } catch (err) {
+      console.warn(`  AI classify (${provider}) failed for ${item.url}: ${err.message} — trying next provider`);
+    }
+  }
+  if (chain.length > 0) console.warn(`  all AI providers failed for ${item.url} — falling back to heuristic`);
+  return heuristicClassify(item);
+}
 
-  try {
+async function classifyWith(provider, item) {
+  {
     const userPrompt = buildUserPrompt(item);
     const raw =
-      PROVIDER === "gemini"
+      provider === "gemini"
         ? await callGemini(userPrompt)
-        : PROVIDER === "groq"
+        : provider === "groq"
           ? await callOpenAiCompatible(userPrompt, {
               base: "https://api.groq.com/openai/v1",
               key: process.env.GROQ_API_KEY,
-              model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
+              model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
             })
-          : PROVIDER === "openrouter"
+          : provider === "openrouter"
             ? await callOpenAiCompatible(userPrompt, {
                 base: "https://openrouter.ai/api/v1",
                 key: process.env.OPENROUTER_API_KEY,
                 model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free",
               })
-            : PROVIDER === "custom"
+            : provider === "custom"
               ? await callOpenAiCompatible(userPrompt, {
                   base: (process.env.CUSTOM_API_BASE || "").replace(/\/+$/, ""),
                   key: process.env.CUSTOM_API_KEY || CUSTOM_API_KEY_DEFAULT,
@@ -138,7 +159,7 @@ export async function classifyAndSummarize(item) {
               : null;
 
     const parsed = raw ? parseModelJson(raw) : null;
-    if (!parsed) return heuristicClassify(item);
+    if (!parsed) throw new Error("unparseable model output");
 
     return {
       isBugBounty: parsed.is_bug_bounty !== false,
@@ -162,10 +183,8 @@ export async function classifyAndSummarize(item) {
         fix_ar: null,
       },
       aiGenerated: true,
+      aiProvider: provider,
     };
-  } catch (err) {
-    console.warn(`  AI classify (${PROVIDER}) failed for ${item.url}: ${err.message} — falling back to heuristic`);
-    return heuristicClassify(item);
   }
 }
 
@@ -407,4 +426,6 @@ export function detectPlatform(item) {
   return item.program ? "other" : "self-disclosed";
 }
 
-export const activeProvider = PROVIDER;
+// Primary provider for display/meta (first in chain). Individual reads may
+// transparently fall back to later providers; those are logged per item.
+export const activeProvider = configuredProviders()[0] ?? "none";
