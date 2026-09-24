@@ -1,5 +1,85 @@
 [
   {
+    "id": "f6b065c67575",
+    "title": "Critical Remote Code Execution via Insecure Deserialization in Custom Cloud Storage Sync Service",
+    "url": "https://medium.com/@t4nv1/critical-remote-code-execution-via-insecure-deserialization-in-custom-cloud-storage-sync-service-264f5a997848",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T19:11:01.000Z",
+    "added_at": "2026-09-24T20:08:20.278Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A custom cloud storage sync daemon accepted unauthenticated Java serialized objects, allowing an attacker to craft a malicious gadget chain that executed code as root.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The core synchronization daemon listened on port 9090 and directly deserialized incoming Java objects. The service performed no cryptographic signature verification on the serialized data, meaning any client could submit arbitrary objects. It also lacked class filtering, so the deserializer could instantiate any class present on the server’s classpath. Because Java deserialization executes code in object constructors and readObject methods, an attacker could build a malicious gadget chain using libraries already loaded. When the daemon deserialized this crafted payload, it executed the attacker‑controlled code with root privileges.",
+      "walkthrough": null,
+      "example": "**Fictional vulnerable service (target.example:9090)**\n```java\n// vulnerable Java daemon listening on TCP\nServerSocket ss = new ServerSocket(9090);\nwhile (true) {\n    Socket s = ss.accept();\n    ObjectInputStream ois = new ObjectInputStream(s.getInputStream());\n    // No signature check, no class whitelist\n    Object obj = ois.readObject(); // deserialization occurs here\n    // ... further processing ...\n}\n```\n**Attack payload** (Commons Collections gadget that runs `calc.exe` on Windows):\n```java\n// generated with ysoserial\nbyte[] payload = org.apache.commons.collections.functors.InvokerTransformer\n    .getInstance(\"exec\", new Class[]{String.class}, new Object[]{\"calc.exe\"});\n```\n**What the attacker sends** (raw bytes over TCP):\n```\n[serialized object bytes]\n```\n**Why it works**: The daemon reads the raw bytes and calls `readObject()`. Because there is no verification, the attacker’s serialized gadget chain is instantiated. The gadget’s `readObject` method triggers `Runtime.getRuntime().exec(\"calc.exe\")`, executing the command on the server. This demonstrates insecure deserialization leading to remote code execution.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While performing an unauthenticated perimeter assessment on a major enterprise cloud infrastructure platform (`cloud-storage.target.com`), I identified a proprietary binary service listening on non-standard port `9090`. By reverse-engineering the custom network protocol, I discovered that the daemon accepted serialized Java objects without cryptographic signature verification or class filtering. By constructing a custom gadget chain targeting dependencies present in the application classpath, I achieved **unauthenticated Remote Code Execution (RCE) with**`root`**privileges** on the core synchr",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "c602fb6d5c6c",
+    "title": "One Tap Too Far: Using Shortcuts to Bypass Chrome for iOS Call Prompts",
+    "url": "https://www.reddit.com/r/netsec/comments/1wp56y2/one_tap_too_far_using_shortcuts_to_bypass_chrome",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/nibblesec"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T15:45:32.000Z",
+    "added_at": "2026-09-24T20:11:02.818Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher leveraged iOS Shortcuts to bypass Chrome for iOS’s call prompt, allowing calls to be placed without user interaction.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "70c3e6c30ab9",
     "title": "The Callback That Arrived at 2 A.M., Eleven Days Later",
     "url": "https://kd-200.medium.com/the-callback-that-arrived-at-2-a-m-eleven-days-later-aa99c4cd8781",

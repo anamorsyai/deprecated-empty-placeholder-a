@@ -1,5 +1,45 @@
 [
   {
+    "id": "c602fb6d5c6c",
+    "title": "One Tap Too Far: Using Shortcuts to Bypass Chrome for iOS Call Prompts",
+    "url": "https://www.reddit.com/r/netsec/comments/1wp56y2/one_tap_too_far_using_shortcuts_to_bypass_chrome",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/nibblesec"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T15:45:32.000Z",
+    "added_at": "2026-09-24T20:11:02.818Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher leveraged iOS Shortcuts to bypass Chrome for iOS’s call prompt, allowing calls to be placed without user interaction.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "513db08efc2a",
     "title": "The Removed Email That Led to a $500 Account Takeover",
     "url": "https://medium.com/@muralidharan1530/the-removed-email-that-led-to-a-500-account-takeover-acb60b10b106",
