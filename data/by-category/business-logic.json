@@ -1,5 +1,46 @@
 [
   {
+    "id": "513db08efc2a",
+    "title": "The Removed Email That Led to a $500 Account Takeover",
+    "url": "https://medium.com/@muralidharan1530/the-removed-email-that-led-to-a-500-account-takeover-acb60b10b106",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Murali Dharan"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T11:25:34.000Z",
+    "added_at": "2026-09-24T12:00:05.949Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A removed email address could still receive password‑reset links, allowing an attacker who still controls that email to take over the account. The bug was reported and earned a $500 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application kept two separate workflows: one for email management and another for password recovery. When an email was removed, the email‑management code marked it as \"Removed\" but the password‑reset code never checked that status. Consequently the reset service still considered the old address a valid recovery destination. The flaw stems from not synchronising the user’s current email list with the list used to generate reset tokens. This inconsistency let an attacker trigger a reset for the current email while the link was sent to the previously removed address.",
+      "walkthrough": "RECON\nStep 1: Create a new account using attacker@example.com.\n   (No code needed – just fill the registration form.)\n   Why: This gives us control of an email that we can later use to receive reset links.\n\nStep 2: Add a second email secondary@example.com and verify it.\n   (Again, use the UI to add and confirm the secondary address.)\n   Why: The app now stores two emails for the same account.\n\nStep 3: Change the primary email to secondary@example.com.\n   (Select secondary@example.com as the primary in the account settings.)\n   Why: The account now treats secondary@example.com as the current login email.\n\nStep 4: Remove attacker@example.com from the account.\n   (Click the delete/remove button for the old email.)\n   Why: The old address is marked as removed, but the app does not purge it from recovery logic.\n\nEXPLOITATION\nStep 5: Open the Forgot Password page.\n   (Navigate to the password‑reset endpoint, usually /forgot-password.)\n   Why: This initiates the password‑reset workflow.\n\nStep 6: Submit secondary@example.com as the email to reset.\n   \n   Why: The system looks up the account by the current email and generates a reset token.\n\nStep 7: Observe that the reset link is sent to attacker@example.com (the removed address).\n   \n   Why: The reset service still uses the old email list, so the token is mailed to the deleted address.\n\nStep 8: Open the reset link from attacker@example.com and set a new password.\n   \n   Why: The token is valid, allowing the attacker to change the password and take over the account.\n\nIMPACT\nStep 9: Log in with the new password using secondary@example.com.\n   \n   Why: The attacker now has full access, confirming an account takeover.",
+      "example": "**Fictional target:** https://target.example\n**Vulnerable flow:**\n1. Register user with primary email user1@target.example.\n2. Add secondary email user2@target.example and verify it.\n3. Change primary to user2@target.example.\n4. Delete user1@target.example.\n5. Use the Forgot Password form and enter user2@target.example.\n6. The system sends the reset link to user1@target.example (the deleted address).\n7. Clicking the link lets the attacker set a new password and log in as the user.\n**Why it works:** The password‑reset service does not re‑query the current email list; it uses a stale record that still contains the deleted address, so the reset token is delivered to an email the attacker still controls.",
+      "takeaway": "When testing account‑management features, always verify that removing or changing an authentication factor (like an email) is reflected in every related workflow, especially password recovery. Look for inconsistencies between user profile updates and recovery endpoints; tools like Burp Suite can help capture where reset emails are sent. Similar bugs appear in phone‑number removal, security‑question changes, or OAuth redirect updates. A common mistake is assuming that a UI‑level delete automatically revokes backend privileges – always confirm with actual requests and email logs.",
+      "fix": "Update the password‑reset implementation to first fetch the current list of verified emails for the account and ensure the reset token is only sent to addresses that are still marked as active. Pseudo‑code:\n```python\nactive_emails = db.query(UserEmails).filter(user_id=uid, status='verified')\nif request.email not in active_emails:\n    return error('Email not associated')\n# generate token\nsend_reset(email=request.email, token)\n```\nAdditionally, when an email is removed, invalidate any pending reset tokens that reference it and add regression tests that simulate the add‑verify‑primary‑remove‑reset sequence to catch regressions.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing a web application, I found an issue in the **email management and password-reset functionality** that allowed a previously removed email address to receive a valid password-reset link. The vulnerability resulted in **Account Takeover (ATO)** and was rewarded with a **$500 bounty**. 💰 Press enter or click to view image in full size Image 4 ## 🔎 What I Found I created an account with: attacker@example.com Then I added and verified: secondary@example.com I changed `secondary@example.com` to the primary email and removed: attacker@example.com At this point, the old email was no lon",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b6533c5f8b6b",
     "title": "I Verified One Email and Claimed Another’s Invitation",
     "url": "https://scriptjacker.medium.com/i-verified-one-email-and-claimed-anothers-invitation-5c372c83ba77",
