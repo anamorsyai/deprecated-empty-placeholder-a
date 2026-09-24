@@ -1,5 +1,85 @@
 [
   {
+    "id": "d78d47075392",
+    "title": "From Admin to Owner: How I Discovered a Critical Full Organization Takeover",
+    "url": "https://medium.com/@ankitrathva/from-admin-to-owner-how-i-discovered-a-critical-full-organization-takeover-610a1aa013a7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Ankit Rathva aka Gujarati Hacker"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T06:13:53.000Z",
+    "added_at": "2026-09-24T06:19:27.375Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "Ethical Hacker | Bug Bounty Hunter | Security Researcher | Red teamer 👨‍💻 | THM top 2% | HOF at EC-Council, Olark, Tripadvisor, UxCam and more...",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Ethical Hacker | Bug Bounty Hunter | Security Researcher | Red teamer 👨‍💻 | THM top 2% | HOF at EC-Council, Olark, Tripadvisor, UxCam and more... writer Image 3: Ankit Rathva aka Gujarati Hacker ## Ankit Rathva aka Gujarati Hacker Ethical Hacker | Bug Bounty Hunter | Security Researcher | Red teamer 👨‍💻 | THM top 2% | HOF at EC-Council, Olark, Tripadvisor, UxCam and more... writer Bug Bounty Hackerone Bug Bounty Writeup Broken Access Control Privilege Escalation # From Admin to Owner: How I Discovered a Critical Full Organization Takeover Image 4: Ankit Rathva aka Gujarati Hacker Ankit Rat",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "df87d99320b2",
+    "title": "Unauthenticated Email Injection: Turning a Transactional Email Endpoint into a Phishing Delivery…",
+    "url": "https://medium.com/@redhunter01/unauthenticated-email-injection-turning-a-transactional-email-endpoint-into-a-phishing-delivery-cefcfe7e39ab",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "redhunter01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-24T04:31:09.000Z",
+    "added_at": "2026-09-24T06:20:00.208Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": null,
+    "summary_en": "Transactional email endpoints are an interesting target during a bug bounty assessment because they often sit at the intersection of **authentication, authorization, user-controlled data, and trusted infrastructure**.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Transactional email endpoints are an interesting target during a bug bounty assessment because they often sit at the intersection of **authentication, authorization, user-controlled data, and trusted infrastructure**. An endpoint that appears to simply “send a confirmation email” can become significantly more dangerous when: * it is accessible without authentication; * the recipient address is controlled by the request; * email content is populated from client-controlled parameters; * the message is sent from the organization’s legitimate domain; and * security controls such as WAF URL filteri",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "a119c8489c54",
     "title": "When a UUID Becomes a Password: Principal-Unbound Capabilities in Nezha",
     "url": "https://medium.com/@Uhudsavasindankacanokcu2/when-a-uuid-becomes-a-password-principal-unbound-capabilities-in-nezha-1a83ba3abecc",
