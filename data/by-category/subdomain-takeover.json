@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "b1466d31bb4d",
+    "title": "The Forgotten Bucket: How a 404 Became a High-Severity Subdomain Takeover",
+    "url": "https://0xkrishn.medium.com/the-forgotten-bucket-how-a-404-became-a-high-severity-subdomain-takeover-739a0c4e5cab",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Krishn Babariya"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-25T11:41:15.000Z",
+    "added_at": "2026-09-25T12:10:50.046Z",
+    "categories": [
+      "subdomain-takeover"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A trusted authentication subdomain was found pointing to a deleted Amazon S3 bucket, allowing an attacker to claim the bucket and host malicious content on the company's official domain.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability occurred because of a 'dangling' DNS or CDN configuration. The company had a subdomain (auth.target.tld) configured to pull content from an Amazon S3 bucket (a cloud storage container). When the S3 bucket was deleted, the DNS record pointing to it remained active. Because S3 bucket names are globally unique, any user could create a new bucket with that exact name and effectively take control of the content served on the company's trusted subdomain.",
+      "walkthrough": "RECON\n1. The researcher identified a live subdomain used for authentication purposes.\nhttps://auth.target.tld\nWhy: Subdomains (prefixes to a main domain) often host sensitive services like logins.\n\nDISCOVERY\n2. The researcher sent a standard HTTP request (a message asking a server for data) to the subdomain.\nGET / HTTP/2\nHost: auth.target.tld\nWhy: To see what content or service is currently running on that address.\n3. The server responded with a 404 Not Found error containing a specific XML body.\n<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>auth.target.tld</BucketName></Error>\nWhy: The 'NoSuchBucket' error is a specific signal from Amazon S3 (a cloud storage service) that the requested storage container is missing.\n\nVERIFICATION\n4. The researcher performed a direct check against Amazon's infrastructure, bypassing the company's domain.\ncurl.exe -I \"https://s3.amazonaws.com/auth.target.tld/\"\nWhy: This confirms that the bucket is truly missing from Amazon's global namespace and isn't just a private bucket (which would return a 403 Access Denied error).\n5. The researcher verified the parent domain against the Public Suffix List (a list of all 'official' domain endings like .com or .co.uk).\nWhy: To determine if the subdomain could potentially steal or inject cookies (small data files used for sessions) from the main domain.\n\nIMPACT ASSESSMENT\n6. The researcher analyzed the hostname's purpose.\nauth.target.tld\nWhy: Because the name includes 'auth', users are highly likely to trust it with login credentials if an attacker hosts a fake login page there.",
+      "example": "Imagine a company 'shop.example.com' uses a cloud provider to store product images in a folder called 'shop-assets'. Later, they stop using that cloud provider and delete the 'shop-assets' folder, but they forget to update their website settings. An attacker sees that 'shop.example.com' is still looking for 'shop-assets'. The attacker goes to the same cloud provider, creates a new folder named 'shop-assets', and puts a fake login page inside it. Now, anyone visiting 'shop.example.com' sees the attacker's fake page instead of the company's site, and the attacker can steal their passwords.",
+      "takeaway": "Always look for specific cloud error messages like 'NoSuchBucket' (AWS), 'NoSuchKey' (AWS), or '404 Not Found' on subdomains that seem abandoned. This 'dangling' resource pattern is common when infrastructure is moved or deleted but DNS records (the internet's phonebook) are not cleaned up. A common mistake is assuming a 404 error means a site is 'dead' and safe; in the cloud, a 404 often means an opportunity for a takeover. Use automated scanners to find these, but always verify manually by checking the cloud provider's API directly.",
+      "fix": "The fix is to ensure that the lifecycle of the DNS record matches the lifecycle of the resource it points to. If an S3 bucket is deleted, the CNAME or Alias record in the DNS settings (like Cloudflare or Route53) must be removed immediately. Alternatively, if the subdomain must remain active, the bucket should be recreated and kept under the organization's control to prevent others from claiming the name. \n\nExample of a 'dangling' record to remove:\nauth.target.tld. 300 IN CNAME auth.target.tld.s3.amazonaws.com",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "But while testing a bug bounty program recently, I found an authentication-related subdomain that failed in a way that made me stop and look twice. For this write-up, I will call it: https://auth.target.tld The host was alive. HTTPS worked. Traffic was going through Cloudflare. But instead of an application, the response contained this: <Error> <Code>NoSuchBucket</Code> <Message>The specified bucket does not exist</Message> <BucketName>auth.target.tld</BucketName> </Error> That changed the question immediately. I was no longer asking: > _Why is this page returning 404?_ I was asking: > _Why is",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  }
+]

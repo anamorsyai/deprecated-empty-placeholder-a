@@ -1,18 +1,19 @@
 {
-  "lastRun": "2026-09-25T06:36:16.423Z",
-  "totalItems": 70,
-  "newItemsThisRun": 0,
+  "lastRun": "2026-09-25T12:12:02.009Z",
+  "totalItems": 71,
+  "newItemsThisRun": 1,
   "aiProvider": "custom",
-  "aiOkThisRun": 0,
+  "aiOkThisRun": 1,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 25,
+  "aiGeneratedTotal": 26,
   "bySource": {
-    "medium-tag-bug-bounty": 19,
+    "medium-tag-bug-bounty": 20,
     "reddit-netsec": 2,
     "infosec-writeups": 1,
     "pentesterland": 48
   },
   "byCategory": {
+    "subdomain-takeover": 1,
     "rce": 17,
     "auth-bypass": 12,
     "xss": 9,
