@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "id": "0ee9cf962952",
+    "title": "$17,000 for Walking a Class Hierarchy: Escaping a Template Sandbox to Full RCE",
+    "url": "https://medium.com/@t4nv1/17-000-for-walking-a-class-hierarchy-escaping-a-template-sandbox-to-full-rce-2c8483e62935",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-25T19:16:01.000Z",
+    "added_at": "2026-09-25T20:30:16.718Z",
+    "categories": [
+      "ssti",
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A flawed template sandbox in Solmark allowed attackers to traverse the class hierarchy and achieve full remote code execution.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The developers built a sandbox around the Jinja2‑style template engine but only restricted the top‑level template syntax. They failed to block attribute access and Python’s class hierarchy, so a crafted {{ ... }} expression could reach built‑in objects and invoke arbitrary code. The sandbox therefore stopped at the wrong layer, leaving the underlying interpreter exposed. This design oversight let an attacker escape the intended safe environment.",
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (Python Flask)**\n```python\nfrom flask import Flask, request, render_template_string\napp = Flask(__name__)\n@app.route('/report')\ndef report():\n    # user‑supplied template from query parameter tmpl\n    tmpl = request.args.get('tmpl')\n    # naive sandbox: only allow letters and spaces\n    if not tmpl.replace(' ', '').isalpha():\n        return 'Invalid template', 400\n    # render with Jinja2\n    return render_template_string(tmpl, name='Alice')\n```\n**Attack request**\n```\nGET /report?tmpl={{%20self.__init__.__globals__['os'].popen('id').read()%20}} HTTP/1.1\nHost: target.example\n```\n**Why it works**\n- `{{ … }}` tells Jinja2 to evaluate the expression inside (template injection). \n- `self.__init__.__globals__` walks from the template object to the global namespace where the `os` module lives. \n- `os.popen('id').read()` runs the shell command `id` on the server and returns its output, which Jinja2 inserts into the response. \nBecause the sandbox only checked characters and never blocked attribute access, the attacker could reach the `os` module and execute commands, achieving full RCE.",
+      "takeaway": "When hunting template engines, look for any user‑controlled double‑curly‑brace expressions. Verify that the sandbox blocks attribute access (`.__*__`) and the ability to reach built‑in modules. Tools like `gobuster` or custom fuzzers can inject `{{ self.__init__.__globals__ }}` payloads. Variants appear in Jinja2, Twig, and Liquid engines where object traversal is possible. Beginners often forget that simple regex filters are insufficient; the engine can still access the interpreter runtime.",
+      "fix": "Replace the custom sandbox with the template engine’s built‑in sandbox (e.g., Jinja2’s `SandboxedEnvironment`). Explicitly disable attribute access by setting `environment.is_safe_attribute = lambda obj, attr, value: False`. Alternatively, render templates in a separate process with limited OS permissions and no access to the interpreter’s globals. A fixed snippet:\n```python\nfrom jinja2.sandbox import SandboxedEnvironment\nenv = SandboxedEnvironment()\nresult = env.from_string(tmpl).render(name='Alice')\n```\nThis ensures only safe filters and variables are usable, preventing class‑hierarchy traversal and RCE.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Sandboxes exist because someone already knew this feature was dangerous. That’s what made this target interesting from the start — Solmark hadn’t made the beginner’s mistake of handing raw template syntax to a full-privilege engine. They’d actually sandboxed it. The bug wasn’t that they forgot to think about this risk. It was that the sandbox they built stopped at the wrong layer. The target, which I’ll call **Solmark** here per their program’s disclosure requirements, is a B2B reporting platform that lets customers define custom report templates — inserting merge fields for things like `{{ cu",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  }
+]
