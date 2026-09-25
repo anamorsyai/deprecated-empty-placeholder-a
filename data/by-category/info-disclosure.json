@@ -1,5 +1,47 @@
 [
   {
+    "id": "91edf67a8f6c",
+    "title": "Telegram Desktop: From Proxy to RCE in 35 Seconds",
+    "url": "https://medium.com/@expatch/telegram-desktop-from-proxy-to-rce-in-35-seconds-64de025fb0b4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "ExPatch Security"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-25T15:52:23.000Z",
+    "added_at": "2026-09-25T17:12:10.085Z",
+    "categories": [
+      "auth-bypass",
+      "rce",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A malicious proxy can force Telegram Desktop on Windows to automatically perform NTLM authentication, letting an attacker capture NTLM hashes and relay them to internal services for remote code execution with SYSTEM privileges. A separate Qt bug also leaks process memory through authentication responses.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is Telegram Desktop’s use of the Qt networking library, which automatically answers NTLM challenges from a proxy using the logged‑in Windows account without prompting the user. This lack of user consent allows a malicious proxy to obtain the victim’s NTLM hash. A second flaw is a Qt bug where authentication responses embed raw process memory, leaking up to 65 KB per request. Both issues stem from insufficient validation and isolation of proxy‑originated data inside the client.",
+      "walkthrough": "RECON\nStep 1: The researcher observed that Telegram Desktop supports custom proxy settings. (Why: the app’s proxy feature lets users route traffic through any server.)\n\nStep 2: The researcher set up a malicious proxy server that could issue NTLM challenges. (Why: NTLM is a Windows authentication protocol; a challenge forces the client to prove its identity.)\n\nEXPLOITATION\nStep 3: The victim opened Telegram Desktop on Windows and entered the malicious proxy address. (Why: the app connects to the proxy for all network traffic.)\n\nStep 4: The proxy sent an NTLM challenge to the client. (Why: the challenge triggers the client to generate a response using the current Windows credentials.)\n\nStep 5: Qt automatically generated the NTLM response using the logged‑in user’s credentials and sent it back to the proxy. (Why: Qt’s implementation does not ask the user for consent before using Windows credentials.)\n\nStep 6: The proxy captured the NTLM response (NetNTLMv2 hash). (Why: the hash can be used to authenticate elsewhere without knowing the password.)\n\nStep 7: The attacker relayed the captured NTLM hash to an internal certificate service that accepted NTLM authentication. (Why: NTLM relay attacks reuse a captured hash to log into another service.)\n\nStep 8: The certificate service issued a client certificate for the victim’s account. (Why: the certificate proves identity to other Windows services.)\n\nStep 9: Using the certificate, the attacker authenticated to the domain controller and executed commands with SYSTEM privileges. (Why: the domain controller trusts the certificate, granting full control.)\n\nMEMORY_LEAK\nStep 10: The proxy triggered another authentication response that unintentionally included raw process memory. (Why: a Qt bug copies memory buffers into the response.)\n\nStep 11: The attacker captured ~65 KB of memory from a single response. (Why: the leaked data can contain usernames, passwords, API keys, etc.)\n\nStep 12: Repeating the request 100 times yielded ~6.5 MB of data in five minutes. (Why: each response leaks additional memory contents.)",
+      "example": "**Fictional target:** target.example runs a chat client that uses the same Qt networking library. The client allows users to set a custom proxy. The proxy sends an NTLM challenge. Qt automatically replies with the logged‑in Windows user’s NTLM response. The attacker captures the hash and relays it to an internal SMB server that accepts NTLM, gaining a shell as SYSTEM. **Why it works:** the client does not require user consent before using Windows credentials, and the NTLM hash is reusable for relay attacks. The same memory‑leak bug would expose parts of the client’s memory in each authentication response.",
+      "takeaway": "Hunters should test any application that forwards proxy‑originated authentication challenges to see if it automatically uses the current Windows credentials. Look for NTLM or Kerberos challenges in proxy traffic and verify whether the client prompts the user. Tools like Wireshark or mitmproxy can capture these exchanges. Variants include other Windows auth protocols (e.g., Negotiate) and similar auto‑auth behavior in libraries like libcurl. A common mistake is assuming that because a proxy is user‑configured, the client will not expose credentials; always verify the authentication flow.",
+      "fix": "Telegram should modify the Qt integration to require explicit user consent before responding to NTLM challenges from a proxy, or simply disable NTLM for in‑app proxies. The fix can be implemented by checking a flag before calling the Windows SSPI API and prompting the user if the proxy requests authentication. Additionally, the memory‑leak bug must be patched by ensuring that authentication response buffers are zero‑cleared and do not include unrelated memory regions before being sent. Telegram 6.9.2 implements these changes: NTLM is disabled for proxies configured inside the app, and the response‑building code was hardened to prevent accidental memory exposure.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Offensive security research by ExPatch LLC. Vulnerability write-ups, red teaming, and coordinated disclosure. Boston, MA. https://expatch.com writer Telegram Cybersecurity Information Security Bug Bounty Ethical Hacking # **Telegram Desktop: From Proxy to RCE in 35 Seconds** Image 3: ExPatch Security ExPatch Security 5 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F64de025fb0b4&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40expatch%2Ftelegram-desktop-from-proxy-to-rce-in-35-seconds-64de025fb0b4&user=ExPatch+Security&userId=fe",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "deb9cf380c18",
     "title": "$1600 Bounty on a Main Domain",
     "url": "https://medium.com/@debu8er/1600-bounty-on-a-main-domain-8c30557c0f64",

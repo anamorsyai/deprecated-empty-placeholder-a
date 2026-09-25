@@ -1,5 +1,47 @@
 [
   {
+    "id": "ae5262552484",
+    "title": "The Illusion of Instant Block",
+    "url": "https://medium.com/@yosefmostef99/the-illusion-of-instant-block-4620220283f9",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yosef Mostef :)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-25T14:16:36.000Z",
+    "added_at": "2026-09-25T17:15:52.235Z",
+    "categories": [
+      "access-control",
+      "mass-assignment",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A blocked user could maintain their session to perform administrative actions and unblock themselves by exploiting a mass assignment vulnerability in the profile update endpoint.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application suffered from two main implementation flaws. First, it failed to invalidate active sessions upon account deactivation, meaning the server only checked the 'blocked' status during the initial login (authentication) but not for subsequent actions (authorization). Second, the profile update endpoint was vulnerable to Mass Assignment, where the server-side code mapped incoming JSON data directly to the database model. This allowed the researcher to identify the 'status' parameter in a server response and then send it back with a modified value. Because the application did not filter which fields a user could update, it blindly accepted the new status.",
+      "walkthrough": "RECON\n1. Researcher identifies a feature that allows Admins to block or deactivate users.\n2. Researcher sets up two accounts: an Admin account and a target User account.\nDISCOVERY\n3. Admin blocks the User account to test if the restriction is immediate.\n4. User checks if their session (a digital 'handshake' that keeps you logged in) is still valid by attempting to browse the site.\nEXPLOITATION\n5. User sends an HTTP request (a message sent from your computer to a server) to change their profile name while supposedly blocked.\nPOST /api/profile/edit HTTP/1.1 ... {\"name\":\"Hacker\"}\n6. Why: The server fails to verify the account's status for this specific endpoint (a specific URL that performs an action), allowing the request to succeed.\n7. User attempts to delete other admins using the active session to prove high impact.\nPOST /api/admin/delete-user HTTP/1.1 ... {\"id\":\"admin_id\"}\n8. Why: The session remains fully privileged because the server didn't revoke (cancel or invalidate) the session when the block occurred.\n9. User observes the response (data sent back by the server after a request) from the name-change request.\n{\"name\":\"Hacker\", \"status\":\"BLOCKED\"}\n10. Why: The response contains a 'status' parameter (a label for a piece of data) which reveals the internal field name used to track the block.\n11. User sends a new request including the 'status' parameter set to 'ACTIVE' to attempt to unblock themselves.\nPOST /api/profile/edit HTTP/1.1 ... {\"name\":\"Hacker\", \"status\":\"ACTIVE\"}\n12. Why: This exploits Mass Assignment (when a program takes a list of data and saves it to a database without checking permissions for each item).\nIMPACT\n13. User verifies they have successfully unblocked themselves by checking the Admin panel.\n14. Why: The server blindly accepted the user-provided 'status' value and updated the account record in the database.",
+      "example": "A fictional website target.example allows users to update their profile. The server-side code looks like this: 'user.update(params[:user_data])'. An attacker notices that when they view their profile, the server sends back a JSON response: '{\"username\":\"bob\", \"is_admin\":false}'. The attacker sends a request: 'PUT /api/settings {\"user_data\": {\"is_admin\":true}}'. Because the server takes the entire 'user_data' block from the request and saves it to the database without checking if 'is_admin' should be editable by the user, the attacker becomes an administrator.",
+      "takeaway": "Always test if a session survives an account status change like being blocked, deactivated, or changing a password. Look for sensitive fields in JSON responses, such as 'role', 'status', 'permissions', or 'is_admin', and try to include them in 'update' or 'edit' requests. A common variant is 'Over-posting', where you add fields to a request that aren't present in the visual web form. Avoid the mistake of assuming that data not visible in the user interface is safe from modification; attackers can see and modify every part of an HTTP request.",
+      "fix": "To fix this, first ensure that all active sessions are revoked (invalidated) immediately when a user's status changes to 'blocked' or 'deactivated'. Second, use an allow-list (a list of safe fields) when updating user data to prevent Mass Assignment. Instead of 'user.update(params)', use a method that only accepts specific fields: 'user.update(name: params[:name], bio: params[:bio])'. This ensures that sensitive fields like 'status' can only be changed by authorized administrative processes, never by the user's own profile update request.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيمِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى النَّبِيِّ الْمُجَاهِدِ الشَّهِيدِ…اللَّهُمَّ انصُرْ أَهْلَ غَزَّةَ وَفِلَسْطِينَ وَالسُّودَانَ، وَطَهِّرِ الْأَقْصَى مِنْ دَنَسِ الْيَهُودِ… أَمَّا بَعْدُ Hey folks, I’m back after quite a long hiatus… and honestly, it’s good to be back. Oh man, I’d almost forgotten how to write writeups :’( Press enter or click to view image in full size Image 4 Very sad :’( Anyway, enough of that. As usual, on just another random day, I was doing what I love — putting security systems to the test — and I stumbled on a vulnerability built",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b6533c5f8b6b",
     "title": "I Verified One Email and Claimed Another’s Invitation",
     "url": "https://scriptjacker.medium.com/i-verified-one-email-and-claimed-anothers-invitation-5c372c83ba77",

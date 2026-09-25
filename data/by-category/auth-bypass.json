@@ -1,5 +1,89 @@
 [
   {
+    "id": "91edf67a8f6c",
+    "title": "Telegram Desktop: From Proxy to RCE in 35 Seconds",
+    "url": "https://medium.com/@expatch/telegram-desktop-from-proxy-to-rce-in-35-seconds-64de025fb0b4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "ExPatch Security"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-25T15:52:23.000Z",
+    "added_at": "2026-09-25T17:12:10.085Z",
+    "categories": [
+      "auth-bypass",
+      "rce",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A malicious proxy can force Telegram Desktop on Windows to automatically perform NTLM authentication, letting an attacker capture NTLM hashes and relay them to internal services for remote code execution with SYSTEM privileges. A separate Qt bug also leaks process memory through authentication responses.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is Telegram Desktop’s use of the Qt networking library, which automatically answers NTLM challenges from a proxy using the logged‑in Windows account without prompting the user. This lack of user consent allows a malicious proxy to obtain the victim’s NTLM hash. A second flaw is a Qt bug where authentication responses embed raw process memory, leaking up to 65 KB per request. Both issues stem from insufficient validation and isolation of proxy‑originated data inside the client.",
+      "walkthrough": "RECON\nStep 1: The researcher observed that Telegram Desktop supports custom proxy settings. (Why: the app’s proxy feature lets users route traffic through any server.)\n\nStep 2: The researcher set up a malicious proxy server that could issue NTLM challenges. (Why: NTLM is a Windows authentication protocol; a challenge forces the client to prove its identity.)\n\nEXPLOITATION\nStep 3: The victim opened Telegram Desktop on Windows and entered the malicious proxy address. (Why: the app connects to the proxy for all network traffic.)\n\nStep 4: The proxy sent an NTLM challenge to the client. (Why: the challenge triggers the client to generate a response using the current Windows credentials.)\n\nStep 5: Qt automatically generated the NTLM response using the logged‑in user’s credentials and sent it back to the proxy. (Why: Qt’s implementation does not ask the user for consent before using Windows credentials.)\n\nStep 6: The proxy captured the NTLM response (NetNTLMv2 hash). (Why: the hash can be used to authenticate elsewhere without knowing the password.)\n\nStep 7: The attacker relayed the captured NTLM hash to an internal certificate service that accepted NTLM authentication. (Why: NTLM relay attacks reuse a captured hash to log into another service.)\n\nStep 8: The certificate service issued a client certificate for the victim’s account. (Why: the certificate proves identity to other Windows services.)\n\nStep 9: Using the certificate, the attacker authenticated to the domain controller and executed commands with SYSTEM privileges. (Why: the domain controller trusts the certificate, granting full control.)\n\nMEMORY_LEAK\nStep 10: The proxy triggered another authentication response that unintentionally included raw process memory. (Why: a Qt bug copies memory buffers into the response.)\n\nStep 11: The attacker captured ~65 KB of memory from a single response. (Why: the leaked data can contain usernames, passwords, API keys, etc.)\n\nStep 12: Repeating the request 100 times yielded ~6.5 MB of data in five minutes. (Why: each response leaks additional memory contents.)",
+      "example": "**Fictional target:** target.example runs a chat client that uses the same Qt networking library. The client allows users to set a custom proxy. The proxy sends an NTLM challenge. Qt automatically replies with the logged‑in Windows user’s NTLM response. The attacker captures the hash and relays it to an internal SMB server that accepts NTLM, gaining a shell as SYSTEM. **Why it works:** the client does not require user consent before using Windows credentials, and the NTLM hash is reusable for relay attacks. The same memory‑leak bug would expose parts of the client’s memory in each authentication response.",
+      "takeaway": "Hunters should test any application that forwards proxy‑originated authentication challenges to see if it automatically uses the current Windows credentials. Look for NTLM or Kerberos challenges in proxy traffic and verify whether the client prompts the user. Tools like Wireshark or mitmproxy can capture these exchanges. Variants include other Windows auth protocols (e.g., Negotiate) and similar auto‑auth behavior in libraries like libcurl. A common mistake is assuming that because a proxy is user‑configured, the client will not expose credentials; always verify the authentication flow.",
+      "fix": "Telegram should modify the Qt integration to require explicit user consent before responding to NTLM challenges from a proxy, or simply disable NTLM for in‑app proxies. The fix can be implemented by checking a flag before calling the Windows SSPI API and prompting the user if the proxy requests authentication. Additionally, the memory‑leak bug must be patched by ensuring that authentication response buffers are zero‑cleared and do not include unrelated memory regions before being sent. Telegram 6.9.2 implements these changes: NTLM is disabled for proxies configured inside the app, and the response‑building code was hardened to prevent accidental memory exposure.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Offensive security research by ExPatch LLC. Vulnerability write-ups, red teaming, and coordinated disclosure. Boston, MA. https://expatch.com writer Telegram Cybersecurity Information Security Bug Bounty Ethical Hacking # **Telegram Desktop: From Proxy to RCE in 35 Seconds** Image 3: ExPatch Security ExPatch Security 5 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F64de025fb0b4&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40expatch%2Ftelegram-desktop-from-proxy-to-rce-in-35-seconds-64de025fb0b4&user=ExPatch+Security&userId=fe",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "ae5262552484",
+    "title": "The Illusion of Instant Block",
+    "url": "https://medium.com/@yosefmostef99/the-illusion-of-instant-block-4620220283f9",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yosef Mostef :)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-25T14:16:36.000Z",
+    "added_at": "2026-09-25T17:15:52.235Z",
+    "categories": [
+      "access-control",
+      "mass-assignment",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A blocked user could maintain their session to perform administrative actions and unblock themselves by exploiting a mass assignment vulnerability in the profile update endpoint.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application suffered from two main implementation flaws. First, it failed to invalidate active sessions upon account deactivation, meaning the server only checked the 'blocked' status during the initial login (authentication) but not for subsequent actions (authorization). Second, the profile update endpoint was vulnerable to Mass Assignment, where the server-side code mapped incoming JSON data directly to the database model. This allowed the researcher to identify the 'status' parameter in a server response and then send it back with a modified value. Because the application did not filter which fields a user could update, it blindly accepted the new status.",
+      "walkthrough": "RECON\n1. Researcher identifies a feature that allows Admins to block or deactivate users.\n2. Researcher sets up two accounts: an Admin account and a target User account.\nDISCOVERY\n3. Admin blocks the User account to test if the restriction is immediate.\n4. User checks if their session (a digital 'handshake' that keeps you logged in) is still valid by attempting to browse the site.\nEXPLOITATION\n5. User sends an HTTP request (a message sent from your computer to a server) to change their profile name while supposedly blocked.\nPOST /api/profile/edit HTTP/1.1 ... {\"name\":\"Hacker\"}\n6. Why: The server fails to verify the account's status for this specific endpoint (a specific URL that performs an action), allowing the request to succeed.\n7. User attempts to delete other admins using the active session to prove high impact.\nPOST /api/admin/delete-user HTTP/1.1 ... {\"id\":\"admin_id\"}\n8. Why: The session remains fully privileged because the server didn't revoke (cancel or invalidate) the session when the block occurred.\n9. User observes the response (data sent back by the server after a request) from the name-change request.\n{\"name\":\"Hacker\", \"status\":\"BLOCKED\"}\n10. Why: The response contains a 'status' parameter (a label for a piece of data) which reveals the internal field name used to track the block.\n11. User sends a new request including the 'status' parameter set to 'ACTIVE' to attempt to unblock themselves.\nPOST /api/profile/edit HTTP/1.1 ... {\"name\":\"Hacker\", \"status\":\"ACTIVE\"}\n12. Why: This exploits Mass Assignment (when a program takes a list of data and saves it to a database without checking permissions for each item).\nIMPACT\n13. User verifies they have successfully unblocked themselves by checking the Admin panel.\n14. Why: The server blindly accepted the user-provided 'status' value and updated the account record in the database.",
+      "example": "A fictional website target.example allows users to update their profile. The server-side code looks like this: 'user.update(params[:user_data])'. An attacker notices that when they view their profile, the server sends back a JSON response: '{\"username\":\"bob\", \"is_admin\":false}'. The attacker sends a request: 'PUT /api/settings {\"user_data\": {\"is_admin\":true}}'. Because the server takes the entire 'user_data' block from the request and saves it to the database without checking if 'is_admin' should be editable by the user, the attacker becomes an administrator.",
+      "takeaway": "Always test if a session survives an account status change like being blocked, deactivated, or changing a password. Look for sensitive fields in JSON responses, such as 'role', 'status', 'permissions', or 'is_admin', and try to include them in 'update' or 'edit' requests. A common variant is 'Over-posting', where you add fields to a request that aren't present in the visual web form. Avoid the mistake of assuming that data not visible in the user interface is safe from modification; attackers can see and modify every part of an HTTP request.",
+      "fix": "To fix this, first ensure that all active sessions are revoked (invalidated) immediately when a user's status changes to 'blocked' or 'deactivated'. Second, use an allow-list (a list of safe fields) when updating user data to prevent Mass Assignment. Instead of 'user.update(params)', use a method that only accepts specific fields: 'user.update(name: params[:name], bio: params[:bio])'. This ensures that sensitive fields like 'status' can only be changed by authorized administrative processes, never by the user's own profile update request.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيمِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى النَّبِيِّ الْمُجَاهِدِ الشَّهِيدِ…اللَّهُمَّ انصُرْ أَهْلَ غَزَّةَ وَفِلَسْطِينَ وَالسُّودَانَ، وَطَهِّرِ الْأَقْصَى مِنْ دَنَسِ الْيَهُودِ… أَمَّا بَعْدُ Hey folks, I’m back after quite a long hiatus… and honestly, it’s good to be back. Oh man, I’d almost forgotten how to write writeups :’( Press enter or click to view image in full size Image 4 Very sad :’( Anyway, enough of that. As usual, on just another random day, I was doing what I love — putting security systems to the test — and I stumbled on a vulnerability built",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c602fb6d5c6c",
     "title": "One Tap Too Far: Using Shortcuts to Bypass Chrome for iOS Call Prompts",
     "url": "https://www.reddit.com/r/netsec/comments/1wp56y2/one_tap_too_far_using_shortcuts_to_bypass_chrome",
