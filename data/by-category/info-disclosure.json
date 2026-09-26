@@ -1,5 +1,47 @@
 [
   {
+    "id": "6025b1c305da",
+    "title": "From Leaked API Key to Full Account Takeover: Uncovering a Mass PII Vulnerability",
+    "url": "https://medium.com/@Brian_Bange/from-leaked-api-key-to-full-account-takeover-uncovering-a-mass-pii-vulnerability-228a4a3d6bef",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Brian Bange"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-26T03:52:31.000Z",
+    "added_at": "2026-09-26T06:45:34.480Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A hardcoded OAuth2 client secret in a public JavaScript bundle allowed an attacker to generate production tokens, brute-force 4-digit OTPs without rate limits, and exfiltrate full KYC data for any merchant.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by hardcoding production OAuth2 credentials (client_id and client_secret) directly in the frontend JavaScript code, which is accessible to any visitor. This was compounded by a weak 4-digit numeric One-Time Password (OTP) system that lacked rate limiting (a security mechanism that restricts the number of attempts a user can make), allowing an attacker to guess the code within minutes. Finally, the backend trusted the resulting session ID to return sensitive PII (Personally Identifiable Information) without verifying if the requester should have access to that specific record.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher examines the public JavaScript bundle (a large file containing the website's code) at business.example.com.\n2. They search for authentication patterns and find hardcoded credentials inside an Axios (a tool used to send data between a browser and a server) configuration.\n\"auth: { username: 'live_client_id_8f92j3k4', password: 'live_secret_938jf4k2l1' }\"\nWhy: Developers mistakenly included secret keys in the public code. An API key is like a secret password for software to talk to other software.\n\nTOKEN GENERATION\n3. The researcher uses the cURL tool (a command-line program for making web requests) to send these credentials to the authentication server.\ncurl -X GET \"https://api.example-gateway.com/oauth/cors/v1/generate?grant_type=client_credentials\" -H \"Authorization: Basic bGl2ZV9jbGllbnRfaWRfOGY5Mmo...==\"\nWhy: The server validates the leaked keys and returns a Bearer token (a digital key that grants access to specific functions).\n\nOTP TRIGGERING\n4. Using the new token, the researcher calls the generate-otp endpoint ( a specific web address for a task) to send an SMS to a target phone number.\ncurl -X POST \"https://business.example.com/api/generate-otp\" -d '{\"msisdn\": \"07XXXXXXXX\", \"token\": \"Bearer eyJ...\"}'\nWhy: The API trusts the token and sends a real SMS code to the phone number provided in the payload (the data sent in the request).\n\nBRUTE-FORCE ATTACK\n5. The researcher attempts to guess the 4-digit code by sending requests to the validate-otp endpoint.\ncurl -X POST \"https://business.example.com/api/validate-otp\" -d '{\"otp\": \"0000\", \"msisdn\": \"07XXXXXXXX\"}'\nWhy: The server returns an error for wrong guesses but does not block the user from trying again immediately.\n6. Because there are only 10,000 possible 4-digit codes (0000-9999), the researcher automates the process to try every combination.\nWhy: Lack of rate limiting (limiting how fast you can guess) makes it possible to find the correct code in about 33 minutes.\n\nIMPACT\n7. When the correct code is guessed, the server returns a sessionId.\n{\"body\": {\"sessionId\": \"b49d70a0-abcd-4596-87a9-8a2f7efc6262\"}}\nWhy: The server believes the user has successfully verified their identity via SMS.\n8. The researcher uses this sessionId to request KYC (Know Your Customer) data for the target merchant.\ncurl -X POST \"https://api.example-gateway.com/api/v2/get/applications/msisdn\" -d '{\"phoneNumber\": \"07XXXXXXXX\", \"sessionId\": \"b49d70a0...\"}'\nWhy: The server returns full PII (names, IDs, addresses) because it incorrectly assumes the possessor of the sessionId is the owner of the data.",
+      "example": "Suppose a fictional site target.example has a 'forgot password' feature. A researcher finds a hardcoded 'Firebase API Key' in the site's main.js file. They use this key with a script to connect directly to the site's database. They find an endpoint called /api/verify-code that checks a 3-digit code sent to users' emails. Because the code is only 3 digits (1,000 possibilities) and the server doesn't stop them after 10 wrong guesses, the researcher writes a loop to try every number from 000 to 999. Once they hit the right number, the server gives them a 'reset_token' which they use to change any user's password. This works because the developer put the secret key in the browser and forgot to limit how many times the verification endpoint could be called.",
+      "takeaway": "Always inspect client-side JavaScript bundles for sensitive strings like 'key', 'secret', or 'token'. Use automated tools to scan for these patterns during the reconnaissance phase (the initial information gathering). When you find an OTP (One-Time Password) field, always test for rate limiting by sending multiple incorrect guesses rapidly; if the server doesn't block you, it is likely vulnerable to brute-force. A common mistake is assuming that short-lived tokens or 'frontend-only' keys are harmless; in reality, they often provide the initial access needed to exploit deeper backend flaws.",
+      "fix": "To fix this, move all sensitive API credentials to a backend server. The frontend should never hold secrets; instead, it should authenticate to your own backend, which then communicates with the third-party API. Additionally, upgrade OTPs to at least 6 digits to increase the number of combinations to 1,000,000, and implement strict rate limiting (e.g., block an IP or account after 5 failed attempts). Finally, implement Object-Level Authorization to ensure that a session ID can only access data belonging to that specific user.\n\n// Example of a secure backend proxy approach:\n// Instead of the browser calling the API with a secret, it calls your server:\nrouter.post('/get-token', async (req, res) => {\n  // The secret is stored safely in server environment variables\n  const secret = process.env.API_SECRET;\n  const token = await callExternalAPI(secret);\n  res.json({ token });\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hardcoded frontend secrets are often treated as minor hygiene flaws — until they sit at the entrance of a chain that blows open entire customer databases. Recently, while auditing a major enterprise financial services portal operated by a leading telecommunications provider, I stumbled across a classic developer shortcut in a frontend JavaScript chunk. What started as exposed OAuth2 credentials quickly cascaded into an unauthenticated full account takeover and mass KYC data exfiltration affecting every registered merchant. Here is the technical breakdown of how a single client-side leak disman",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "91edf67a8f6c",
     "title": "Telegram Desktop: From Proxy to RCE in 35 Seconds",
     "url": "https://medium.com/@expatch/telegram-desktop-from-proxy-to-rce-in-35-seconds-64de025fb0b4",
