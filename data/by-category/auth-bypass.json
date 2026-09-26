@@ -1,5 +1,47 @@
 [
   {
+    "id": "c5ecffa5526d",
+    "title": "Predictable Account-Activation Token: Email-Ownership Verification Bypass",
+    "url": "https://medium.com/@redhunter01/predictable-account-activation-token-email-ownership-verification-bypass-0eead49d4f1d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "redhunter01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-26T22:20:05.000Z",
+    "added_at": "2026-09-26T23:52:31.596Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can bypass email verification by calculating the account activation token offline using a simple SHA-1 hash of the user's email address. This allows for full account activation and session hijacking without requiring access to the victim's email inbox.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a deterministic token generation design where the 'secret' activation token was merely a SHA-1 hash of the user's lowercase email address. Because the email address is public knowledge, the token contains zero entropy (unpredictability), allowing anyone to recreate it. Furthermore, the registration API endpoint leaked the 'membershipGuid' (a unique identifier) in its response, providing the attacker with all necessary components to build a valid activation request. The application failed to include a server-side secret or random salt in the hashing process.",
+      "walkthrough": "RECON\nStep 1: The researcher initiates a registration request to the public API.\nPOST /api/account/register\nWhy: To observe how the system handles new accounts and what data it returns. (An HTTP request is a message sent from your computer to a server asking for an action).\nStep 2: The researcher analyzes the JSON response from the server.\n{\"resultCode\": 1, \"membershipGuid\": \"<membership-guid>\", \"accessToken\": null}\nWhy: The response provides the 'membershipGuid' needed for later steps and confirms the account is inactive because 'accessToken' is null. (JSON is a text format used to organize and send data).\nDISCOVERY\nStep 3: The researcher identifies the activation parameters required by the app.\nmid = membership identifier, act = activation token\nWhy: These two pieces of data are the 'keys' needed to unlock the account. (A parameter is a specific piece of information sent to a web address).\nStep 4: The researcher collects multiple tokens from different test accounts to find a pattern.\n[Token A, Token B, Token C]\nWhy: Comparing multiple results helps identify if the tokens are random or follow a formula. (A token is a unique string of characters used for security).\nStep 5: The researcher tests if the token is a hash of the email.\nSHA1(lowercase(\"test@example.com\"))\nWhy: SHA-1 is a common mathematical formula that turns text into a 40-character code; researchers often check if developers used it lazily. (SHA-1 is a hashing function that creates a unique digital fingerprint of data).\nEXPLOITATION\nStep 6: The researcher calculates the SHA-1 hash for a target email address offline.\nSHA1(\"victim@example.com\") -> 40-character hex string\nWhy: This creates the 'secret' activation code without ever seeing the actual email sent by the server. (Offline calculation means doing work on your own computer instead of asking the server).\nStep 7: The researcher tests an intentionally incorrect token first.\n/activate?mid=123&act=wrong_token\nWhy: To confirm the server actually checks the token and doesn't just activate every account. (Validation is the process of a server checking if data is correct).\nStep 8: The researcher submits the final exploit request using the calculated hash.\nGET /api/account/activate?mid=<membership-guid>&act=<calculated-sha1>\nWhy: This sends the guessed 'secret' to the server to prove 'ownership' of the email. (A GET request is a way to ask a server for a specific page or action via a URL).\nIMPACT\nStep 9: The server accepts the token and redirects to the success flow.\nHTTP 302 Redirect\nWhy: The server was tricked into thinking the researcher clicked the link in the real email. (A redirect tells your browser to go to a different web page automatically).\nStep 10: The researcher checks the new cookies issued by the server.\naccess_token=<new-session-token>\nWhy: The server now treats the researcher as a logged-in user. (A cookie is a small piece of data a server gives you to remember who you are).\nStep 11: The researcher decodes the new access token to verify identity.\n{\"sub\": \"user_id_123\", \"role\": \"user\"}\nWhy: To prove that the bypass resulted in a real, functioning user session. (An access token is a digital key that grants you entry to protected parts of a site).\nStep 12: The researcher confirms the email is now marked as 'verified' in the system.\nEmail Status: Verified\nWhy: This completes the bypass, showing that the security check was successfully defeated. (Verification is the proof that a user actually owns the email address they provided).",
+      "example": "We assume a fictional site 'target.example' uses MD5 hashes of usernames for password reset links. (MD5 is an older, faster hashing formula). If a user 'admin' forgets their password, the site sends a link like: target.example/reset?user=admin&token=21232f297a57a5a743894a0e4a801fc3. An attacker knows the username is 'admin'. They calculate MD5('admin') which equals '21232f297a57a5a743894a0e4a801fc3'. The attacker then visits that URL directly. Because the token is just a hash of the name, the server accepts it, allowing the attacker to set a new password for the admin account without ever seeing the reset email.",
+      "takeaway": "When hunting for verification bypasses, always collect 3-5 tokens and check them against common hashing algorithms (MD5, SHA-1, SHA-256) using the email, username, or timestamp as inputs. Use tools like 'Hash Identifier' or online 'CrackStation' to see if the token looks like a known hash format. A major signal is if the token length is always exactly 32, 40, or 64 characters. A common variant is 'Time-Based Tokens' where the token is a hash of the minute the request was made. Avoid the mistake of assuming a long string of characters is 'random' just because it looks complex; if you can recreate it, it isn't random.",
+      "fix": "To fix this, the application must use a Cryptographically Secure Pseudo-Random Number Generator (CSPRNG) to create tokens that are impossible to guess. Instead of hashing the email, generate a long, random string (at least 32 characters) and store it in the database linked to the user's account. When the user clicks the link, compare the provided token to the one stored in the database. Example fix in Python: \nimport secrets\ntoken = secrets.token_urlsafe(32)\n# Store 'token' in DB associated with the user\n# Send 'token' in the email link",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m Arshia, founder of RedHunter and a full-time bug bounty hunter. arshia.heravi5@gmail.comhttps://hackerone.com/redhunter01 writer Bug Bounty Ethical Hacking Web Hacking Penetration Testing Cybersecurity # Predictable Account-Activation Token: Email-Ownership Verification Bypass Image 3: redhunter01 redhunter01 8 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F0eead49d4f1d&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40redhunter01%2Fpredictable-account-activation-token-email-ownership-verification-bypass-0eead49d4f1d&user=re",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "6025b1c305da",
     "title": "From Leaked API Key to Full Account Takeover: Uncovering a Mass PII Vulnerability",
     "url": "https://medium.com/@Brian_Bange/from-leaked-api-key-to-full-account-takeover-uncovering-a-mass-pii-vulnerability-228a4a3d6bef",
