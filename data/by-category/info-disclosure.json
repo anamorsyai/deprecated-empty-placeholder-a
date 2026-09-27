@@ -1,5 +1,46 @@
 [
   {
+    "id": "b6df16395528",
+    "title": "A Simple Question That Led to a Five-Digit Bounty",
+    "url": "https://medium.com/@NarayananM/a-simple-question-that-led-to-a-five-digit-bounty-d38dd892e809",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Narayanan M"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-27T15:30:31.000Z",
+    "added_at": "2026-09-27T17:49:28.411Z",
+    "categories": [
+      "idor-bola",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "The API returns full customer details for any supplied account_no without verifying the requester’s ownership, resulting in an IDOR information‑disclosure vulnerability.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a missing server‑side authorization check. The backend endpoint /plan_change/Plans/LoginV2Rewamp accepts an \"account_no\" parameter and returns customer data based solely on that value. No code verifies that the caller owns or is allowed to view the requested account. Because the check is absent, any attacker who can send a request with a different account_no receives that account’s private information. This design flaw turns a legitimate lookup feature into an unrestricted data leak.",
+      "walkthrough": "RECON\nStep 1: Identify the target endpoint. The researcher saw a POST request to /plan_change/Plans/LoginV2Rewamp (an HTTP request is a message a client sends to a server). The request body was JSON (JavaScript Object Notation, a text format for data). \nWhy: Knowing the URL and method is the first brick in the attack.\n\nStep 2: Observe the request payload. The JSON contained a single parameter \"account_no\" (a parameter is a named value the server reads). Example payload:\n{\n \"account_no\": \"1234567890\"\n}\nWhy: The parameter is the knob the attacker can turn.\n\nDISCOVERY\nStep 3: Send a valid account_no belonging to the logged‑in user. The server responded with HTTP/1.1 200 OK and a JSON body that included fields like \"mobile_num\", \"email_id\", \"fullname\", and a \"token\". (HTTP response is the server’s answer; status 200 means success.)\nWhy: Confirms the endpoint returns personal data.\n\nStep 4: Remove any client‑side checks (the article notes many apps only validate in the browser). The researcher sent the same request without being logged in and still received data.\nWhy: Shows the server does not enforce authentication.\n\nEXPLOITATION\nStep 5: Change the \"account_no\" value to another known or guessed identifier (e.g., \"9876543210\").\nPayload:\n{\n \"account_no\": \"9876543210\"\n}\nWhy: Because the server does not verify ownership, it returns the other account’s details.\n\nStep 6: Repeat with many identifiers to enumerate accounts and harvest names, phone numbers, emails, and authentication tokens.\nWhy: This is the information‑disclosure impact.\n\nIMPACT\nStep 7: Collect the disclosed data. The response includes personally identifiable information (PII) and a token that could be reused elsewhere.\nWhy: Attackers can use PII for phishing, social engineering, or further attacks.",
+      "example": "Assume a fictional service at https://target.example/api/getUser. The server code (pseudo‑code) does:\nfunction getUser(req) {\n    var id = req.body.account_no; // reads the supplied parameter\n    var user = database.findById(id); // fetches record\n    return {status:true, data:user}; // returns everything\n}\nBecause there is no check that req.session.userId == id, any caller can supply any account_no.\nAttack request (HTTP POST):\nPOST https://target.example/api/getUser HTTP/1.1\nContent-Type: application/json\n\n{\"account_no\":\"555555\"}\nThe server replies with the full record for account 555555, exposing name, email, phone, etc. The exploit works because the server trusts the supplied identifier without verifying ownership.",
+      "takeaway": "When you see an endpoint that returns user data based on an identifier, assume it may lack proper authorization. Look for JSON POST bodies that contain an \"id\" or \"account_no\" field and test with values you do not own. Tools like Burp Suite or curl make it easy to replay and modify the payload. Variants of this bug appear in URLs (e.g., /user/123) or in GraphQL queries that accept an ID argument. A common beginner mistake is to assume that a 403 or 401 error means the check is present; many APIs simply return 200 with empty data, which can still be abused if the check is missing.",
+      "fix": "Add a server‑side ownership check before returning data. Pseudo‑code fix:\nfunction getUser(req) {\n    var id = req.body.account_no;\n    var caller = req.session.userId; // authenticated user\n    if (caller !== id) {\n        return {status:false, error:\"Unauthorized\"}; // HTTP 403\n    }\n    var user = database.findById(id);\n    return {status:true, data:user};\n}\nAlso ensure that authentication is required (return 401 if no session) and that sensitive fields like tokens are never exposed in public endpoints. Validate the parameter type and length to prevent injection attacks.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "One of the most rewarding aspects of bug bounty hunting is that impactful vulnerabilities often begin with a simple question. Not every finding requires complex payloads or advanced exploitation techniques. Sometimes, understanding application logic and questioning assumptions is enough to uncover a serious security issue. This article shares my journey of discovering a high-severity Information Disclosure vulnerability during an authorized bug bounty assessment. ## The Initial Observation While exploring a customer self-service portal, I came across a feature that retrieved account-related in",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "6025b1c305da",
     "title": "From Leaked API Key to Full Account Takeover: Uncovering a Mass PII Vulnerability",
     "url": "https://medium.com/@Brian_Bange/from-leaked-api-key-to-full-account-takeover-uncovering-a-mass-pii-vulnerability-228a4a3d6bef",
