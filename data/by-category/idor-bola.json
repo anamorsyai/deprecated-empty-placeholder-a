@@ -1,5 +1,46 @@
 [
   {
+    "id": "36702c7223a4",
+    "title": "From Payment Metadata to Unauthorized Subscription Access",
+    "url": "https://medium.com/@nader3bnaser/from-payment-metadata-to-unauthorized-subscription-access-2ace7bc7bd69",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nader Abdelnaser"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-28T20:45:37.000Z",
+    "added_at": "2026-09-28T21:50:04.984Z",
+    "categories": [
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated API endpoint returns subscription records based on payment metadata, and the returned subscription IDs can be reused in another endpoint to fetch full subscription details, resulting in an access‑control breach.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The API treats payment‑metadata fields (first six digits, last four digits, expiration date, amount) as an authorization boundary, but these values do not prove ownership of a subscription. The first endpoint returns subscription objects that include a raw identifier (\"Id\": \"sc_...\") without checking who is making the request. The second endpoint accepts that identifier as input and returns the full subscription record, again without any ownership or session verification. Because the server never validates that the caller owns the subscription, the identifier becomes an insecure direct object reference (IDOR). The root cause is a missing server‑side ownership/authorization check before exposing subscription data.",
+      "walkthrough": "RECON\nStep 1: The researcher sent an unauthenticated request to the lookup endpoint with payment metadata.\n{ \"firstSix\": \"424242\", \"lastFour\": \"4242\", \"expDateMonth\": 12, \"expDateYear\": 2030, \"amount\": 100 }\nWhy: HTTP request = data sent to a server; JSON payload = structured data; the fields look like card details but no Authorization header, cookie, or token is present, so the server cannot know who is calling.\n\nStep 2: The server responded with a JSON array of subscription objects, each containing an \"Id\" like \"sc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx\".\nWhy: The response shows that the endpoint returns multiple records; the identifier is a reference to a subscription resource.\n\nDISCOVERY\nStep 3: The researcher noted the \"Id\" field and hypothesised it could be used elsewhere.\nWhy: In many APIs, a resource ID can be supplied to other endpoints to retrieve more data; this is a typical IDOR pattern.\n\nStep 4: By browsing the API documentation (or fuzzing), the researcher found another endpoint that accepts a subscription ID.\nWhy: Finding a second endpoint that consumes the same identifier is the key to crossing an authorization boundary.\n\nEXPLOITATION\nStep 5: The researcher sent an unauthenticated POST request to /subscription/get with the discovered ID.\nPOST /subscription/get HTTP/1.1\\nHost: target.example\\nContent-Type: application/json\\n\\n{ \"id\": \"sc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx\" }\nWhy: The request body (payload) supplies the raw ID; no Authorization header or session cookie is included, so the server processes it as any other caller.\n\nStep 6: The server returned the full subscription details (amount, currency, status, next transaction date, etc.).\nWhy: Because the server trusts the ID without verifying ownership, it leaks sensitive subscription information to anyone who knows the ID.\n\nIMPACT\nStep 7: The attacker now has unauthorized access to subscription metadata for many users, including future billing dates and merchant context.\nWhy: This data exposure can be used for profiling, phishing, or further attacks against the affected merchants and customers.",
+      "example": "Assume a fictional service at https://target.example. The API has two endpoints:\n1. POST /api/subscriptions/search accepts {\"cardBin\":\"123456\",\"cardLast4\":\"7890\",\"expMonth\":12,\"expYear\":2025,\"amount\":50} and returns [{\"Id\":\"sub_abc123\",\"Amount\":50,\"Status\":\"Active\"}, {\"Id\":\"sub_def456\",\"Amount\":75,\"Status\":\"Active\"}].\n2. POST /api/subscriptions/get accepts {\"id\":\"sub_abc123\"} and returns the full record.\nIf an attacker calls the first endpoint without any auth, they receive the IDs. They then call the second endpoint with one of those IDs, also without auth, and receive the full subscription data. The vulnerability exists because the server never checks that the caller owns \"sub_abc123\" before returning its details.",
+      "takeaway": "When hunting APIs, look for endpoints that return resource identifiers without requiring authentication. Follow those identifiers to other endpoints that accept them as input – this often reveals IDOR or missing access‑control checks. Tools like Burp Suite's Intruder or OWASP ZAP can automate the search for ID parameters. Variants include using order numbers, invoice IDs, or user IDs as keys. A common beginner mistake is to assume that because an endpoint requires \"payment metadata\" it is safe; always verify that ownership is enforced on every subsequent request.",
+      "fix": "Implement server‑side authorization for every subscription‑related endpoint. Before returning data, fetch the subscription record and verify that the authenticated user (or API client) is the owner, e.g., if (subscription.ownerId != request.userId) { return 403 Forbidden; }. Do not rely on client‑provided payment metadata as proof of ownership. Treat the subscription ID as an opaque reference, not an authentication token. A corrected pseudo‑code snippet:\nfunction getSubscription(req){\n  const sub = db.findSubscription(req.body.id);\n  if (!req.user || sub.ownerId !== req.user.id){\n    return res.status(403).send('Forbidden');\n  }\n  return res.json(sub);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing a subscription management API, I came across an interesting behavior that initially looked like a normal lookup mechanism. The application allowed a client to search for subscriptions using a combination of payment-related parameters. The interesting part was that this functionality was available without an authenticated session.😃 I decided to look beyond the initial response and check whether the returned subscription identifiers could be used elsewhere in the API. That led to the actual issue. --- The Initial Discovery The API exposed an endpoint that accepted the following pa",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b6df16395528",
     "title": "A Simple Question That Led to a Five-Digit Bounty",
     "url": "https://medium.com/@NarayananM/a-simple-question-that-led-to-a-five-digit-bounty-d38dd892e809",
