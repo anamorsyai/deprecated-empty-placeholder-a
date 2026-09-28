@@ -1,5 +1,46 @@
 [
   {
+    "id": "8e78173cf69d",
+    "title": "Broken Access Control Leading to Exposure of 7,000+ PII Records on a Jakarta Government Subdomain.",
+    "url": "https://medium.com/@adtynll/broken-access-control-leading-to-exposure-of-7-000-pii-records-on-a-jakarta-government-subdomain-8ebcee110ceb",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Aditya Nail Emery"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-28T07:22:01.000Z",
+    "added_at": "2026-09-28T07:46:38.663Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A misconfigured subdomain allowed direct download of PDF files containing over 7,000 personal records, exposing sensitive PII without any authentication.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server returned a 403 Forbidden for the root path, but static PDF files were served without any access‑control checks. The web server’s configuration treated the PDFs as public resources, bypassing the intended authorization mechanism. No authentication or permission validation was performed before reading the files from disk. This design flaw let anyone request the PDF URLs directly and retrieve the data.",
+      "walkthrough": "RECON\nStep 1: Run subdomain enumeration tools to discover hidden hosts.\nCommand: subfinder -d jakarta.go.id\nWhy: subfinder sends DNS queries to find subdomains (a subdomain is a part of a larger domain, like \"test.example.com\").\n\nStep 2: Verify which subdomains respond over HTTP.\nCommand: httpx -domains discovered.txt\nWhy: httpx makes HTTP requests (a request is a message sent to a web server) to see if a site is reachable.\n\nStep 3: Identify the target subdomain that returns 403 on the root.\nObservation: redacted.jakarta.go.id returns \"403 Forbidden\" (HTTP status 403 means access is denied).\nWhy: The server blocks the root path but may not protect other resources.\n\nDISCOVERY\nStep 4: Collect all known URLs for the subdomain.\nCommand: gau redacted.jakarta.go.id\nWhy: GAU (Get All URLs) queries public sources (search engines, archives) to list every URL the site has ever exposed.\n\nStep 5: Scan the GAU output for PDF files.\nObservation: Several entries end with \".pdf\" indicating PDF documents.\nWhy: File extensions tell the browser what type of file to expect; \".pdf\" is a Portable Document Format.\n\nStep 6: Open one PDF URL directly in a browser.\nAction: Paste the URL into the address bar and press Enter.\nWhy: The browser sends an HTTP GET request (GET asks the server to return the resource) to fetch the file.\n\nStep 7: Observe that the PDF loads despite the root being blocked.\nResult: The PDF is displayed, revealing personal data.\nWhy: The server did not enforce authentication for that path.\n\nEXPANSION\nStep 8: Use a search‑engine dork to find more PDFs on the same host.\nQuery: site:redacted.jakarta.go.id .pdf\nWhy: \"site:\" limits results to the domain, and \".pdf\" filters for PDF files.\n\nStep 9: Review the search results; multiple PDF links appear.\nWhy: Indicates a systematic exposure, not a single mistake.\n\nIMPACT\nStep 10: Download a PDF to confirm it contains PII (full names, NIK, birth place, etc.).\nWhy: Demonstrates the real‑world impact – personal data can be harvested.\n\nStep 11: Document the findings and report them responsibly to the security team.\nWhy: Responsible disclosure ensures the issue is fixed without further harm.\n\nStep 12: Receive acknowledgment and a certificate of appreciation.\nWhy: Shows the program’s bug‑bounty process works.",
+      "example": "**Fictional Target:** files.example.com\n**Vulnerable Setup:** The web server serves files from \"/var/www/files\" and has the following Apache config:\n```\n<Directory \"/var/www/files\">\n    Require all denied\n</Directory>\n\nAlias \"/public/\" \"/var/www/files/\"\n```\nThe `Require all denied` line blocks the root, but the `Alias` makes every file under \"/public/\" publicly reachable without authentication.\n**Attack Request:**\n```\nGET /public/records.pdf HTTP/1.1\nHost: files.example.com\n```\n**Why it works:** The `Alias` directive maps the URL path \"/public/\" directly to the filesystem folder, bypassing the `Require all denied` rule. The server returns the PDF to anyone who knows the URL, exposing any data inside.",
+      "takeaway": "When a site returns 403 on the homepage, still probe for static resources like PDFs, images, or documents; they may be unintentionally public. Use tools like GAU, waybackurls, or search‑engine dorks (e.g., `site:target.com filetype:pdf`) to enumerate hidden files. This pattern often appears in misconfigured cloud storage buckets, S3 static sites, or web servers that separate authentication logic from static asset serving. Beginners should avoid assuming a 403 response protects all content – always test individual paths.",
+      "fix": "Configure the web server to enforce authentication before serving any file under the protected directory. For Apache, place the `Require all denied` rule inside the same `<Directory>` block that serves the files, or use `<Location>` with proper access controls. Move sensitive PDFs out of the web‑accessible directory or store them behind an application that checks user sessions before delivering the file. Additionally, enable directory‑level access logs to detect unauthorized downloads and regularly scan for publicly exposed files using automated tools.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "In this writeup, I will share how I discovered a Broken Access Control vulnerability that resulted in the exposure of more than 7,000 Personally Identifiable Information (PII) records on a subdomain belonging to `jakarta.go.id`. ## Reconnaissance As usual, I started with basic reconnaissance. I used several tools, including: * `subfinder` * `assetfinder` * `dnsx` * `httpx` During the reconnaissance process, I discovered several interesting subdomains. One of them is: **_redacted.jakarta.go.id_** When accessing the root of the subdomain, the server returned: Press enter or click to view image i",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b6df16395528",
     "title": "A Simple Question That Led to a Five-Digit Bounty",
     "url": "https://medium.com/@NarayananM/a-simple-question-that-led-to-a-five-digit-bounty-d38dd892e809",
