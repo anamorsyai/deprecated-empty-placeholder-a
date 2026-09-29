@@ -1,5 +1,88 @@
 [
   {
+    "id": "7320a58aad8c",
+    "title": "Broken Access Control: Unauthenticated Read/Write Access to Every Conversation in an Tiktok AI…",
+    "url": "https://medium.com/@ayedmostafa330/broken-access-control-unauthenticated-read-write-access-to-every-conversation-in-an-tiktok-ai-0a6eb481f5fd",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mostafa Ayed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-29T01:08:48.000Z",
+    "added_at": "2026-09-29T01:21:30.124Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "Multiple endpoints in the TikTok AI chatbot failed to enforce authentication, allowing anyone to list recent conversation IDs and read or send messages to any user's chat history without a login.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a complete failure to implement authentication checks on several backend API endpoints. While the application appeared to check for data ownership when a user provided a session cookie (a small file used to remember your login), it completely skipped all security checks if the cookie was missing entirely. This 'fail-open' logic meant that the server assumed any request without a login was safe to process, likely because developers assumed the conversation IDs (unique identification strings) were secret enough to prevent guessing. Additionally, the existence of a global '/conversations' endpoint that listed the 20 most recent chat IDs without any user-specific filtering allowed for easy discovery of other people's private data.",
+      "walkthrough": "RECON\n1. Open the chatbot interface and use a proxy tool to capture the HTTP requests (messages sent from your browser to the server).\n2. Identify the endpoint used to create a new chat session.\nPOST /.../agent/coze/conversation/create HTTP/1.1\nWhy: This request initializes a new chat and generates a unique ID for the conversation (a unique identification string).\n3. Identify the endpoint used to send a message to the AI.\nPOST /.../agent/coze/chat HTTP/1.1\nWhy: This sends the user's text to the chatbot backend.\n4. Identify the endpoint used to retrieve the chat history.\nPOST /.../agent/coze/conversation/message/list HTTP/1.1\nWhy: This loads previous messages so the user can see their conversation history.\nDISCOVERY\n5. Attempt an IDOR (Insecure Direct Object Reference - a bug where you access data by changing an ID) by keeping your login cookie but changing the 'conversation_id' to one you don't own.\n{ \"conversation_id\": \"<foreign_id>\" }\nWhy: To see if the server checks if the logged-in user actually owns that specific chat.\n6. Observe that the server returns an empty list, which initially suggests that security checks are in place.\nEXPLOITATION\n7. Perform a 'no-auth' test by removing the Cookie header (the part of the request that proves you are logged in) and resending the history request.\nPOST /.../agent/coze/conversation/message/list HTTP/1.1 (No Cookie Header)\nWhy: To check if the server requires a login at all (Authentication: the process of verifying who a user is).\n8. Observe that the server returns the full chat history, proving that authentication is not enforced.\n9. Search for more sensitive endpoints by guessing variations of the URL, such as changing '/conversation/create' to '/conversations'.\nPOST /.../agent/coze/conversations HTTP/1.1\nWhy: Pluralized endpoints often list multiple items; the researcher hoped to find a list of all chats.\n10. Observe the response containing a list of the 20 most recent conversation IDs from other users globally.\n11. Copy a 'conversation_id' belonging to a different user from that list.\nIMPACT\n12. Send a message to that foreign ID without being logged in.\nPOST /.../agent/coze/chat HTTP/1.1 with { \"conversation_id\": \"<stolen_id>\", \"content\": \"hi\" }\nWhy: To prove that an attacker can write data (Integrity: the assurance that data is not altered by unauthorized people) to any chat.\n13. Request the message history for that same foreign ID.\nPOST /.../agent/coze/conversation/message/list HTTP/1.1 with { \"conversation_id\": \"<stolen_id>\" }\nWhy: To prove that an attacker can read data (Confidentiality: keeping data secret from unauthorized people) from any chat.\n14. Confirm the response contains the injected message and the AI's reply, verifying full unauthorized access.",
+      "example": "Imagine a fictional site 'support-bot.target.example' that lets users chat with a help agent. When you chat, your browser sends a request to 'https://support-bot.target.example/api/get_history?chat_id=99'. Normally, your browser also sends a header like 'Authorization: Bearer xyz123' to prove it is you. An attacker notices this and tries to change the ID to 'chat_id=100' while keeping their token, but the server says 'Access Denied'. However, when the attacker uses a tool to send the request 'GET /api/get_history?chat_id=100' with NO Authorization header at all, the server mistakenly thinks it is a public request and returns the full private chat history of user 100. This happens because the code only checks 'Does this token own this ID?' but forgets to check 'Is there even a token present?' before showing the data.",
+      "takeaway": "The most important lesson is to always test endpoints by completely removing authentication headers, not just by swapping user accounts. Developers sometimes implement complex logic to check if 'User A' owns 'Object B', but forget to apply a global 'Is the user logged in?' check (Middleware: code that runs before the main logic to verify security). Look for pluralized endpoints (like /users instead of /user) or administrative-sounding paths, as these are often overlooked during security reviews. A common mistake is assuming that 'unguessable' IDs like long strings of random characters are a substitute for real authentication; they are not.",
+      "fix": "The developers must implement a mandatory authentication middleware that runs for every request to the '/agent/' and '/conversation/' paths. This middleware should verify that a valid session exists before any other logic is executed; if no session is found, the request must be rejected with a '401 Unauthorized' error. Furthermore, the database query for retrieving messages should always include a filter for the 'user_id' derived from the authenticated session, like 'SELECT * FROM messages WHERE conversation_id = ? AND owner_id = ?'. This ensures that even if a user is logged in, they can only see conversations that belong to their specific account ID. Finally, the global '/conversations' list endpoint should be restricted to administrative users or removed entirely if not needed for the application's functionality.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I opened the chatbot and started interacting with it as a normal, authenticated user, capturing the requests it fired off in order: 1. `.../conversation/create` — creates a new conversation 2. `.../agent/coze/chat` — starts the actual chat / sends the message 3. `.../conversation/message/list` — loads the message history 4. `.../bot-config` — loads the bot configuration 5. A few other supporting requests (token issuance, etc.) All of these worked fine and behaved as expected under my session, so at first glance nothing looked wrong. Then it occurred to me to test for IDOR: I kept my own valid",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "7b68a8fc98de",
+    "title": "How a Flawed OTP Flow Led to Full Account Takeover",
+    "url": "https://medium.com/@kingsamoray50/how-a-flawed-otp-flow-led-to-full-account-takeover-3a398b4df5ff",
+    "source": {
+      "slug": "medium-tag-bugbounty",
+      "name": "Medium — #bugbounty"
+    },
+    "authors": [
+      "EL_SHE5"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-28T19:18:56.000Z",
+    "added_at": "2026-09-29T01:24:06.084Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A flawed OTP flow let an attacker generate unlimited valid one‑time passwords and brute‑force them, resulting in full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The platform only attached a cooldown timer to the “Resend OTP” button on the verification page, not to the initial email submission. By navigating back and resubmitting the email, the backend generated a new OTP without any rate‑limit check (cooldown bypass). The server never invalidated previously issued OTPs, so each new code co‑existed with all older ones (state‑management failure). Each OTP remained valid for ten minutes, giving an attacker a large pool of active codes (long TTL). Together these design flaws broke the intended security model of the OTP system.",
+      "walkthrough": "RECON\nStep 1: Enter the victim’s email address on the login page to start the passwordless flow.\n\nWhy: This sends an HTTP request that tells the server to generate a 6‑digit OTP for that email.\nStep 2: Observe that the server redirects to a verification page that contains a “Resend OTP” button.\n\nWhy: The verification page is where the user would normally type the received code.\nEXPLOITATION\nStep 3: Click the browser’s Back button to return to the original email‑entry page.\n\nWhy: Going back bypasses the front‑end cooldown that only protects the “Resend OTP” button.\nStep 4: Resubmit the same email address repeatedly, as fast as possible.\n\nWhy: Each submission triggers the backend to generate a fresh OTP instantly, because the server does not enforce a rate limit on this endpoint.\nStep 5: Note that previously generated OTPs remain valid; the system does not invalidate older codes.\n\nWhy: This is the missing OTP invalidation flaw, so all generated codes stay active simultaneously.\nStep 6: Open Burp Suite’s Intruder and configure it to send OTP verification requests with random 6‑digit codes.\n\nWhy: The attacker now has a large pool of valid codes, so guessing any one of them will succeed.\nStep 7: Rotate IP addresses (switch Wi‑Fi, use a mobile hotspot, or a proxy pool) when the firewall returns a 502 Bad Gateway for too many wrong guesses.\n\nWhy: The firewall blocks a single IP after many failures; changing IPs avoids the block.\nStep 8: Continue brute‑forcing until the server accepts a code and returns an authenticated session cookie.\n\nWhy: Once a valid OTP is submitted, the server creates a session, granting full account access.",
+      "example": "Target: target.example offers passwordless login via email OTP.\nVulnerable endpoint: POST https://target.example/api/auth/request-otp with JSON {\"email\":\"user@target.example\"}.\nThe server creates a 6‑digit code, stores it, and returns 200, but does not limit how often the endpoint can be called and does not invalidate previous codes.\nAn attacker can call the endpoint 5,000 times, obtaining 5,000 active codes that stay valid for 10 minutes.\nThen they brute‑force the verification endpoint POST https://target.example/api/auth/verify-otp with {\"email\":\"user@target.example\",\"code\":\"123456\"} until a match is found, gaining full account access.",
+      "takeaway": "Hunters should look for OTP endpoints that allow repeated email submissions without server‑side cooldown or OTP invalidation. Test the “Back” button or send direct POST requests to the email‑submission endpoint to see if new codes are issued each time. Verify that generating a new OTP revokes previous ones and that the validity window is short (e.g., 2‑5 minutes). Similar issues appear in password‑reset flows and magic‑link login systems. A common mistake is assuming the front‑end cooldown is enforced server‑side; always test the server directly.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "When testing OTP (One-Time Password) flows, I always map out the entire lifecycle of the token. I started by entering my email address on the login page. The platform redirected me to the verification page and emailed me a standard 6-digit code. On the verification page, there was a “Resend OTP” button. Naturally, I clicked it several times to see if I could spam the system. The platform had a defense mechanism: a cooldown timer that increased every time I clicked “Resend.” However, this got me thinking: _What if I completely ignore this page, hit the “Back” button on my browser, and just subm",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c5ecffa5526d",
     "title": "Predictable Account-Activation Token: Email-Ownership Verification Bypass",
     "url": "https://medium.com/@redhunter01/predictable-account-activation-token-email-ownership-verification-bypass-0eead49d4f1d",

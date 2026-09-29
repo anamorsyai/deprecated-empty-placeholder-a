@@ -1,5 +1,46 @@
 [
   {
+    "id": "7b68a8fc98de",
+    "title": "How a Flawed OTP Flow Led to Full Account Takeover",
+    "url": "https://medium.com/@kingsamoray50/how-a-flawed-otp-flow-led-to-full-account-takeover-3a398b4df5ff",
+    "source": {
+      "slug": "medium-tag-bugbounty",
+      "name": "Medium — #bugbounty"
+    },
+    "authors": [
+      "EL_SHE5"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-28T19:18:56.000Z",
+    "added_at": "2026-09-29T01:24:06.084Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A flawed OTP flow let an attacker generate unlimited valid one‑time passwords and brute‑force them, resulting in full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The platform only attached a cooldown timer to the “Resend OTP” button on the verification page, not to the initial email submission. By navigating back and resubmitting the email, the backend generated a new OTP without any rate‑limit check (cooldown bypass). The server never invalidated previously issued OTPs, so each new code co‑existed with all older ones (state‑management failure). Each OTP remained valid for ten minutes, giving an attacker a large pool of active codes (long TTL). Together these design flaws broke the intended security model of the OTP system.",
+      "walkthrough": "RECON\nStep 1: Enter the victim’s email address on the login page to start the passwordless flow.\n\nWhy: This sends an HTTP request that tells the server to generate a 6‑digit OTP for that email.\nStep 2: Observe that the server redirects to a verification page that contains a “Resend OTP” button.\n\nWhy: The verification page is where the user would normally type the received code.\nEXPLOITATION\nStep 3: Click the browser’s Back button to return to the original email‑entry page.\n\nWhy: Going back bypasses the front‑end cooldown that only protects the “Resend OTP” button.\nStep 4: Resubmit the same email address repeatedly, as fast as possible.\n\nWhy: Each submission triggers the backend to generate a fresh OTP instantly, because the server does not enforce a rate limit on this endpoint.\nStep 5: Note that previously generated OTPs remain valid; the system does not invalidate older codes.\n\nWhy: This is the missing OTP invalidation flaw, so all generated codes stay active simultaneously.\nStep 6: Open Burp Suite’s Intruder and configure it to send OTP verification requests with random 6‑digit codes.\n\nWhy: The attacker now has a large pool of valid codes, so guessing any one of them will succeed.\nStep 7: Rotate IP addresses (switch Wi‑Fi, use a mobile hotspot, or a proxy pool) when the firewall returns a 502 Bad Gateway for too many wrong guesses.\n\nWhy: The firewall blocks a single IP after many failures; changing IPs avoids the block.\nStep 8: Continue brute‑forcing until the server accepts a code and returns an authenticated session cookie.\n\nWhy: Once a valid OTP is submitted, the server creates a session, granting full account access.",
+      "example": "Target: target.example offers passwordless login via email OTP.\nVulnerable endpoint: POST https://target.example/api/auth/request-otp with JSON {\"email\":\"user@target.example\"}.\nThe server creates a 6‑digit code, stores it, and returns 200, but does not limit how often the endpoint can be called and does not invalidate previous codes.\nAn attacker can call the endpoint 5,000 times, obtaining 5,000 active codes that stay valid for 10 minutes.\nThen they brute‑force the verification endpoint POST https://target.example/api/auth/verify-otp with {\"email\":\"user@target.example\",\"code\":\"123456\"} until a match is found, gaining full account access.",
+      "takeaway": "Hunters should look for OTP endpoints that allow repeated email submissions without server‑side cooldown or OTP invalidation. Test the “Back” button or send direct POST requests to the email‑submission endpoint to see if new codes are issued each time. Verify that generating a new OTP revokes previous ones and that the validity window is short (e.g., 2‑5 minutes). Similar issues appear in password‑reset flows and magic‑link login systems. A common mistake is assuming the front‑end cooldown is enforced server‑side; always test the server directly.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "When testing OTP (One-Time Password) flows, I always map out the entire lifecycle of the token. I started by entering my email address on the login page. The platform redirected me to the verification page and emailed me a standard 6-digit code. On the verification page, there was a “Resend OTP” button. Naturally, I clicked it several times to see if I could spam the system. The platform had a defense mechanism: a cooldown timer that increased every time I clicked “Resend.” However, this got me thinking: _What if I completely ignore this page, hit the “Back” button on my browser, and just subm",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c5ecffa5526d",
     "title": "Predictable Account-Activation Token: Email-Ownership Verification Bypass",
     "url": "https://medium.com/@redhunter01/predictable-account-activation-token-email-ownership-verification-bypass-0eead49d4f1d",
