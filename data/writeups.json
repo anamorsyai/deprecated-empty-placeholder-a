@@ -1,5 +1,45 @@
 [
   {
+    "id": "bcb92055fa02",
+    "title": "$5,800 for a Negative Number: Manipulating Checkout Totals Through Business Logic Alone",
+    "url": "https://medium.com/@t4nv1/5-800-for-a-negative-number-manipulating-checkout-totals-through-business-logic-alone-8d95bc737287",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-29T19:31:01.000Z",
+    "added_at": "2026-09-29T23:01:35.251Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A negative quantity can be submitted to the checkout API, causing the cart total to become negative and granting the attacker a monetary credit. The flaw stems from missing server‑side validation of numeric inputs.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The checkout endpoint trusts the quantity value sent by the client and performs a simple multiplication to compute the order total. The front‑end UI shows a numeric input that cannot be decreased below 1, so the developers assumed the server would never receive a value less than 1. No server‑side validation checks that the quantity is a positive integer. Because the arithmetic routine does not guard against negative numbers, a negative quantity makes the total negative, effectively giving the attacker a credit. This logical oversight is the root cause of the vulnerability.",
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (target.example)**\n```js\n// Express.js route handling checkout\napp.post('/checkout', (req, res) => {\n    const price = 100;                     // price of one item in dollars\n    const qty = parseInt(req.body.quantity); // quantity comes from client\n    const total = price * qty;             // calculate total\n    // ...process payment for `total`\n    res.json({total});\n});\n```\n**Attack request**\n```\nPOST /checkout HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"quantity\": -5}\n```\n**Why it works**: The server multiplies 100 $ by -5, resulting in a total of -500 $. Because there is no check that `quantity` must be ≥ 1, the negative total is accepted and the payment processor treats it as a credit, giving the attacker $500 for free. Each part of the request is explained: `POST` is the HTTP method that sends data, `/checkout` is the endpoint, `Content-Type` tells the server the body is JSON, and `{\"quantity\": -5}` is the JSON payload where `-5` is the negative number that triggers the bug.",
+      "takeaway": "When testing e‑commerce flows, always try to submit values that lie outside the UI limits, such as negative numbers, zero, or extremely large quantities. Look for parameters that are used in arithmetic on the server without additional checks; tools like Burp Suite Intruder can automate sending out‑of‑range numbers. Business‑logic bugs like this often appear in checkout, discount, loyalty‑points, or refund APIs. Variants include sending negative prices, negative coupon values, or manipulating timestamps to create credit. A common beginner mistake is to trust the front‑end controls and stop testing once the UI blocks an input; always verify server‑side validation.",
+      "fix": "Add strict server‑side validation that enforces `quantity` to be a positive integer greater than zero before any calculation. For example, in the Express.js route:\n```js\napp.post('/checkout', (req, res) => {\n    const qty = parseInt(req.body.quantity);\n    if (!Number.isInteger(qty) || qty < 1) {\n        return res.status(400).json({error: 'Invalid quantity'});\n    }\n    const price = 100;\n    const total = price * qty;\n    // continue with payment processing\n    res.json({total});\n});\n```\nThis rejects negative, zero, or non‑numeric values, preventing the total from becoming negative and eliminating the business‑logic flaw.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "No injection. No broken authentication. No parser doing something it shouldn’t. This bug lived entirely in a spreadsheet-simple arithmetic assumption that nobody had ever tested with an input the checkout form itself didn’t offer — and it’s exactly the kind of finding that reminds me why business logic testing deserves as much attention as anything with a CVE-friendly name attached to it. The target, which I’ll call **Cobalt Mercantile** here per their program’s anonymization requirement, is a mid-size e-commerce platform selling home goods, with a fairly standard cart-and-checkout flow: add i",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d2c8ab93485d",
     "title": "How a Simple Negative Quantity Exposed a Serious Checkout Logic Flaw",
     "url": "https://medium.com/@kittubadri22/how-a-simple-negative-quantity-exposed-a-serious-checkout-logic-flaw-0ba3298cb622",
