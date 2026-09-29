@@ -1,5 +1,86 @@
 [
   {
+    "id": "d2c8ab93485d",
+    "title": "How a Simple Negative Quantity Exposed a Serious Checkout Logic Flaw",
+    "url": "https://medium.com/@kittubadri22/how-a-simple-negative-quantity-exposed-a-serious-checkout-logic-flaw-0ba3298cb622",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Kittubadri"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-29T18:10:18.000Z",
+    "added_at": "2026-09-29T19:15:44.007Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A negative quantity value in the checkout request bypasses validation, creates a negative subtotal and forces the payable amount to zero while keeping the cart active, enabling free purchases.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a missing server‑side validation rule for the *quantity* field. The backend accepts any integer, including negative numbers, and stores it in the cart. Because the pricing engine blindly multiplies *unit price* by *quantity*, a negative quantity produces a negative subtotal. The application then fails to reject a negative subtotal and sets *total_payable* to 0.0, leaving the cart in a normal *CART* state. Additionally, the checkout operation relied on a public session identifier without an authorization header, allowing the manipulated cart to be used without proper ownership checks.",
+      "walkthrough": "RECON\nStep 1: Capture a normal checkout request.\nPayload:\n{ \"items\": [ { \"quantity\": 1 } ] }\nWhy: This is the typical *HTTP request* body sent to the *endpoint* that processes the cart; it shows the expected *parameter* structure.\n\nStep 2: Identify the *quantity* parameter inside the JSON.\nWhy: *Parameter* is a named value the server reads; here it controls how many units are bought.\n\nDISCOVERY\nStep 3: Modify the *quantity* to a negative number.\nPayload:\n{ \"items\": [ { \"quantity\": -1 } ] }\nWhy: Sending *-1* tests how the server handles unexpected numeric input; *-* is the minus sign indicating a negative integer.\n\nStep 4: Send the modified request and observe the response.\nResponse (excerpt):\n{ \"subtotal\": -12,581,990,881.20, \"total_payable\": 0.0, \"status\": \"CART\" }\nWhy: The server accepted the request, persisted the negative *quantity*, and calculated a *negative subtotal* (sum of *unit price × quantity*). The *total_payable* field became 0.0, meaning no money is required.\n\nEXPLOITATION\nStep 5: Reload the checkout page (a new *HTTP GET* to the cart endpoint) using the same session.\nWhy: To verify persistence; the server should retrieve the stored cart data.\n\nStep 6: Observe that the cart still shows the negative quantity and a “FREE!” total.\nWhy: The malicious value was saved in the database, so subsequent reads return the corrupted state.\n\nIMPACT\nStep 7: Note that the cart remains in the *CART* state, not an error state.\nWhy: The application does not perform a final validation before allowing the order to proceed, so the attacker could potentially complete the purchase at zero cost.\n\n(Each technical term—*HTTP request*, *parameter*, *payload*, *endpoint*, *JSON*, *subtotal*, *total_payable*, *session*—was defined at first appearance.)",
+      "example": "Assume a fictional shop at https://target.example/api/cart that accepts a JSON body with an *items* array. Vulnerable code (pseudo‑Python):\n\n```python\ndef add_to_cart(request):\n    data = request.json()\n    for item in data['items']:\n        cart.add(item['product_id'], item['quantity'])  # No check on quantity\n    subtotal = sum(p.price * q for p,q in cart.items())\n    total = max(subtotal, 0)  # Incorrectly forces negative totals to 0\n    return {'subtotal': subtotal, 'total_payable': total}\n```\n\nAttack request:\n\n```json\n{ \"items\": [ { \"product_id\": 42, \"quantity\": -5 } ] }\n```\n\nWhy it works: The server stores *-5* without validation, the *subtotal* becomes negative (price × -5), and the *total_payable* is forced to 0, letting the attacker obtain the product for free. The cart stays active because no error is raised.",
+      "takeaway": "When hunting e‑commerce platforms, always test numeric fields (quantity, price, discount) with negative and zero values. Look for missing server‑side checks that allow such values to be persisted. Tools like Burp Intruder or OWASP ZAP can automate the injection of -1, -999, etc. Variants include negative discounts, negative loyalty points, or overflowed integer quantities that wrap to negative. A common beginner mistake is to assume the front‑end validation is sufficient; always verify the back‑end enforces business rules.",
+      "fix": "Add strict validation on the server before any calculation. Example (pseudo‑JavaScript):\n\n```javascript\nfunction validateItem(item){\n  if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > MAX_PER_ITEM){\n    throw new Error('Invalid quantity');\n  }\n}\n```\nReject the request if validation fails. After recalculating the cart, ensure the *subtotal* is non‑negative; if it is negative, abort the operation. Verify the session belongs to the authenticated user and include an *Authorization* header for state‑changing endpoints. Use integer (cents) arithmetic instead of floating‑point to avoid rounding issues.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While performing authorized security testing on an e-commerce checkout flow, I was examining the requests sent when products were added or modified in a cart. Everything looked normal at first. Then I noticed a `quantity` parameter and asked a simple question: > **_What happens if the server receives a negative quantity?_** That small test uncovered an interesting business-logic vulnerability. I deliberately stopped before placing an order. No goods were received, and no other user’s data was accessed. ## The Normal Request A simplified checkout request looked like: { \"items\": [ { \"quantity\":",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "bddb94071a52",
+    "title": "How a Simple Business Logic Flaw Allowed Arbitrary Price Manipulation",
+    "url": "https://medium.com/@elahefahimi2004/how-a-simple-business-logic-flaw-allowed-arbitrary-price-manipulation-c40d554cdca0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "V ForVendetta"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-29T17:26:04.000Z",
+    "added_at": "2026-09-29T19:16:01.327Z",
+    "categories": [
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A business logic flaw allowed users to manipulate the price of services during checkout by tampering with the 'amount' parameter in the HTTP request, enabling the purchase of expensive hosting for negligible sums.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's backend trusted the client-side browser to provide the correct price for a transaction. Specifically, the /gateway/process endpoint accepted an 'amount' parameter directly from the user's POST request (a message sent to the server to submit data). Instead of the server looking up the verified price in its own database using the 'invoiceid', it blindly accepted whatever number the user provided and passed it to the payment gateway.",
+      "walkthrough": "RECON\n1. The researcher selected a hosting service and generated an invoice on the platform.\n2. They navigated to the checkout view at the endpoint (a specific web address) /viewinvoice.php.\nDISCOVERY\n3. The researcher opened Burp Suite (a tool used to intercept and modify web traffic) to monitor the communication between their browser and the server.\n4. They clicked the payment button and intercepted the outgoing POST request (a type of HTTP request used to send data to a server).\n5. They inspected the request body to identify how the price was being sent.\nPOST /gateway/process HTTP/2\nHost: redacted.example.com\ninvoiceid=REDACTED&amount=4606800000&email=user%40example.com&pay=Submit\nWhy: This revealed that the 'amount' (the price) was being sent as a parameter (a piece of data) that could be easily edited by the user.\nEXPLOITATION\n6. The researcher sent the intercepted request to the Burp Suite Repeater tool to modify it.\n7. They changed the 'amount' value from 4606800000 to a much smaller number.\namount=50000\nWhy: This tests if the backend (the server-side code) validates the price against the database or trusts the user's input.\n8. They forwarded the modified request to the server.\n9. The server responded with a 302 Found (a redirect instruction telling the browser to go to a new page).\nHTTP/2 302 Found\nLocation: https://paymentgateway.example.com/payment/token_id\nWhy: The server accepted the fake price and generated a valid session with the third-party payment provider.\nIMPACT\n10. The researcher followed the redirect in their browser to the payment gateway.\n11. They observed that the payment gateway was now asking for only 50,000 IRR instead of the original price.\nWhy: This confirms that an attacker could pay a fraction of the cost to receive full services.",
+      "example": "Imagine a fictional site target.example that sells digital gift cards. When you click 'Buy', your browser sends this request: POST /buy-card HTTP/1.1 Host: target.example card_type=gold&price=100.00. A beginner attacker uses a proxy tool to catch this message before it leaves their computer. They change 'price=100.00' to 'price=0.01' and click send. Because the server at target.example just takes that 'price' value and sends it to PayPal, the attacker gets a $100 gift card for one cent. The server should have only asked for the 'card_type' and looked up the price itself in its secure database.",
+      "takeaway": "Always look for financial values (price, discount, quantity) being passed in HTTP requests during checkout or cart updates. Use a proxy tool like Burp Suite to see if changing these values results in a lower total at the final payment step. A common signal is seeing both an ID (like invoice_id) and a value (like price) in the same request; the server should only need the ID. A variant of this is 'negative quantities,' where adding -1 of an item might reduce the total price of other items in the cart. Avoid the mistake of assuming that because a field is 'hidden' in the HTML, it cannot be changed by the user.",
+      "fix": "The server must never trust the price sent from the client. The payment initiation endpoint should only accept an invoice identifier. The backend should then fetch the correct amount from the database and send that verified amount to the payment gateway. Additionally, when the payment is finished, the server must verify the 'callback' (the confirmation message from the payment provider) to ensure the amount actually paid matches the amount owed.\n\n# Secure implementation concept\ninvoice = db.get_invoice(request.params['invoice_id'])\npayable_amount = invoice.total_due\ngateway_session = create_gateway_session(invoice.id, payable_amount)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A technical breakdown of parameter tampering during checkout and why client-side trust leads to critical financial risks. ## 1. Introduction Business logic vulnerabilities occur when an application’s workflow allows an attacker to manipulate its intended behavior. Unlike technical flaws such as SQL Injection or Cross-Site Scripting (XSS), logic flaws often bypass automated vulnerability scanners because they rely on valid application functionality. ## Get V ForVendetta’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "7320a58aad8c",
     "title": "Broken Access Control: Unauthenticated Read/Write Access to Every Conversation in an Tiktok AI…",
     "url": "https://medium.com/@ayedmostafa330/broken-access-control-unauthenticated-read-write-access-to-every-conversation-in-an-tiktok-ai-0a6eb481f5fd",
