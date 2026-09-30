@@ -1,5 +1,45 @@
 [
   {
+    "id": "2ea796fbb1a6",
+    "title": "Reflected XSS in a Public Event Waitlist Application",
+    "url": "https://medium.com/@redhunter01/reflected-xss-in-a-public-event-waitlist-application-d1ef92f10e21",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "redhunter01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T05:48:19.000Z",
+    "added_at": "2026-09-30T07:46:46.217Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A reflected Cross‑Site Scripting (XSS) flaw in the public waitlist page’s lang parameter lets an attacker break out of an HTML attribute and execute arbitrary JavaScript in the victim’s browser under the application’s origin.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server takes the value of the lang parameter directly from the HTTP request and concatenates it into an HTML attribute without any encoding. The generated markup looks like <input type=\"hidden\" name=\"lang\" value=\"USER_INPUT\">, so the attacker‑controlled string becomes part of a quoted attribute. Because there is no allow‑list validation, any string—including characters that close the attribute—can be supplied. The lack of contextual output encoding means the browser will treat the injected characters as markup rather than data. This combination of unsanitised input and unsafe insertion creates the attribute‑breakout XSS vector.",
+      "walkthrough": "RECON\nStep 1: The researcher opened the public waitlist page in a browser. (What: opened URL; Why: to see how the page works.)\nStep 2: They inspected the network request and saw the query string /event-waitlist?event=<EVENT>&lang=<LANGUAGE>. (HTTP request = a message a browser sends to a server; parameter = a name‑value pair in the URL.)\n\nDISCOVERY\nStep 3: They replaced the expected language code with a unique marker TEST123 and reloaded the page. (What: changed the lang parameter value.)\nStep 4: The server response contained the string TEST123, confirming reflection. (Why: the server echoed the input back, proving the value is reflected.)\nStep 5: By viewing the page source they located the reflected value inside an HTML attribute: <input type=\"hidden\" name=\"lang\" value=\"USER_INPUT\">. (HTML attribute = a name‑value pair inside a tag; this is the injection context.)\n\nEXPLOITATION\nStep 6: To break out of the attribute they crafted the prefix \">. (What: created a payload that closes the quote and the tag.)\nStep 7: They extended the payload with an image tag that triggers JavaScript on error: <img src=x onerror=\"window.__xss_fired='XSS_CONFIRMED_'+document.domain\">. (payload = data sent to the server to exploit; <img> creates an image element; onerror = an event that runs when the image fails to load; window.__xss_fired is a custom variable.)\nStep 8: The full payload became:\n\"><img src=x onerror=\"window.__xss_fired='XSS_CONFIRMED_'+document.domain\">\nWhy: \" closes the original value attribute, > ends the input tag, and the <img> element introduces executable JavaScript (the onerror handler runs because src=x is invalid). (breakout = escaping the intended context.)\nStep 9: They URL‑encoded the payload (replacing special characters with %XX codes) and sent it as the lang parameter:\n/event-waitlist?event=demo&lang=%22%3Cimg%20src%3Dx%20onerror%3D%22window.__xss_fired%3D%27XSS_CONFIRMED_%27%2Bdocument.domain%22%3E\nWhy: URL‑encoding ensures the browser transmits the characters correctly inside the URL.\n\nVALIDATION\nStep 10: The researcher opened the crafted URL in a real Chromium browser. (What: visited the malicious link.)\nStep 11: In DevTools console they executed window.__xss_fired and saw a value containing the page’s origin. (Why: the onerror handler ran, setting the variable, proving JavaScript execution under the vulnerable origin.)\n\nIMPACT\nStep 12: They noted that the page had no restrictive Content‑Security‑Policy, so the inline onerror handler was allowed. (CSP = a header that tells the browser which scripts may run.)\nStep 13: Although no authentication cookies were exposed, the attacker now controls the page’s DOM and can perform phishing, form manipulation, or defacement. (DOM = the page’s structure that JavaScript can modify.)",
+      "example": "Assume a fictional site https://target.example/waitlist that renders the language selector as:\n```php\n<?php\n$lang = $_GET['lang']; // HTTP request parameter\necho \"<input type='hidden' name='lang' value='\" . $lang . \"'>\";\n?>\n```\nThe code takes the lang parameter from the URL and inserts it directly into an HTML attribute without encoding. An attacker can craft the URL:\nhttps://target.example/waitlist?lang=%22%3E%3Cscript%3Ealert('XSS')%3C%2Fscript%3E\nDecoded payload: \"><script>alert('XSS')</script>\nWhen the page is rendered the markup becomes:\n```html\n<input type='hidden' name='lang' value='\"> <script>alert('XSS')</script>'>\n```\nThe injected <script> tag is parsed as a new element and the alert runs, demonstrating reflected XSS. The exploit works because the server does not validate or encode the lang parameter before embedding it in an HTML attribute.",
+      "takeaway": "When hunting for reflected XSS, always look for user‑controlled parameters that are reflected inside HTML attributes (e.g., value=\"…\", src=\"…\"). Tools like Burp Intruder or OWASP ZAP can automate injection of quote‑breakout payloads such as \"> or \"></script>. Variants include injection into event‑handler attributes (onmouseover=…) or into CSS contexts (style=\"…\"). A common beginner mistake is to test only for simple script tags; attribute‑breakout payloads are often more reliable because many pages quote the value. Remember to check the page’s Content‑Security‑Policy – a permissive CSP will make the XSS trivial to exploit.",
+      "fix": "Validate the lang parameter against an allow‑list of known language codes and reject anything else. For example:\n```php\n$allowed = ['en','de','fr'];\n$lang = $_GET['lang'];\nif (!in_array($lang, $allowed)) {\n    $lang = 'en'; // fallback\n}\necho \"<input type='hidden' name='lang' value='\" . htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') . \"'>\";\n```\nThe fix does two things: (1) strict allow‑listing prevents unexpected characters, and (2) htmlspecialchars encodes special HTML characters (\", ', <, >) so they are treated as data, not markup. Deploying a restrictive Content‑Security‑Policy that disallows inline event handlers (e.g., script-src 'self') adds defense‑in‑depth.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a security assessment of a public-facing event waitlist application, I discovered a reflected Cross-Site Scripting vulnerability in a language-selection parameter. The vulnerability allowed an attacker to construct a malicious link that caused attacker-controlled JavaScript to execute in a victim’s browser under the application’s origin. The interesting part of this finding was not simply discovering that a parameter was reflected. The key was identifying that the parameter was reflected **inside an HTML attribute without proper contextual encoding**, allowing the attribute to be termin",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "70c3e6c30ab9",
     "title": "The Callback That Arrived at 2 A.M., Eleven Days Later",
     "url": "https://kd-200.medium.com/the-callback-that-arrived-at-2-a-m-eleven-days-later-aa99c4cd8781",

