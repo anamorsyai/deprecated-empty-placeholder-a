@@ -1,5 +1,46 @@
 [
   {
+    "id": "03f258cab8e3",
+    "title": "The API Was Never Invisible",
+    "url": "https://medium.com/@Lh1l0v3/the-api-was-never-invisible-4c05042da1ce",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Lh1l0v3"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T14:00:28.000Z",
+    "added_at": "2026-09-30T14:21:37.964Z",
+    "categories": [
+      "idor-bola",
+      "file-upload"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An unauthenticated IDOR in the project‑read endpoint lets any logged‑in user fetch full metadata of another user’s project by supplying an arbitrary projectId, and the file‑upload endpoint permits overwriting a verified document, exposing sensitive data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a missing ownership check in the GET /v1/sms/onboarding/status/{projectId} endpoint – the server returns project metadata without verifying that the authenticated user owns the projectId. This lack of object‑level access control allows IDOR. The file‑upload flow also lacks integrity checks: the backend accepts a second upload of the same document type and silently overwrites the stored file, because it does not enforce a one‑time‑only rule or validate that the project is still under review. Both flaws stem from trusting client‑side state (project status) instead of re‑checking on the server.",
+      "walkthrough": "RECON\nStep 1: Open the web application in a browser with DevTools open.\nWhy: DevTools (browser tool) lets us see every network request the frontend makes.\nStep 2: Perform every user workflow (onboarding, document upload, etc.) while recording.\nWhy: Capturing all actions ensures we see all API calls the app uses.\nStep 3: Export the captured session as a HAR file (HTTP Archive, a JSON log of requests and responses).\nWhy: HAR contains URL, method, headers, body, and response for each call.\nStep 4: Feed the HAR file to an LLM (Claude) and ask it to list endpoints, methods, parameters, and auth details.\nWhy: The LLM parses the JSON and produces a readable inventory of the API surface.\n\nDISCOVERY\nStep 5: Review the generated inventory and locate the endpoint \"GET /v1/sms/onboarding/status/{projectId}\".\nWhy: This endpoint returns project metadata and includes a path parameter {projectId} that can be manipulated.\n\nEXPLOITATION – IDOR\nStep 6: Use curl with Account 1’s session cookie to request its own project (baseline).\nGET /v1/sms/onboarding/status/12345\nHost: api.target.com\nCookie: access_token=AAA; refresh_token=BBB\nWhy: Baseline shows the normal successful response for a legitimate request.\nStep 7: Switch to Account 2’s session cookie and replace the projectId with Account 1’s ID.\nGET /v1/sms/onboarding/status/12345\nHost: api.target.com\nCookie: access_token=CCC; refresh_token=DDD\nWhy: If the server does not verify ownership, it returns Account 1’s metadata (IDOR).\nStep 8: Observe the response contains Account 1’s name, internal identifier, and timestamps.\nWhy: This confirms the missing authorization check and data leakage.\n\nEXPLOITATION – FILE UPLOAD OVERWRITE\nStep 9: Use curl to upload a valid Word document as the business verification file for Account 1.\n[no verbatim request provided in source]\nWhy: The server accepts the file and stores it on the CDN.\nStep 10: While the application is still under review, use curl to upload a second Word document of the same type.\n[no verbatim request provided in source]\nWhy: The backend silently overwrites the original file without changing the database timestamp.\nStep 11: Download the file from the CDN and see that the content is the second document.\nWhy: Overwrite allows an attacker to replace a trusted document with malicious content.\n\nIMPACT\nStep 12: Combine the IDOR data with the overwritten document to profile another user and potentially deliver malicious Office files.\nWhy: Access to another user’s metadata plus a replaceable document creates a privacy and malware risk.",
+      "example": "**Fictional target:** https://api.target.example\n**Vulnerable endpoint:** GET /v1/projects/{projectId}\n**Bug:** The handler returns project details without checking that `req.user.id` matches the owner of `projectId`.\n```js\n// Vulnerable Node/Express code\napp.get('/v1/projects/:projectId', (req, res) => {\n  const project = db.projects.find(p => p.id === req.params.projectId);\n  // No ownership check!\n  res.json(project);\n});\n```\n**Exploit request (Account B):**\n```\ncurl -X GET \"https://api.target.example/v1/projects/42\" \\\n  -H \"Cookie: access_token=tokenB\"\n```\n**Why it works:** The server looks up project 42 and returns it even though the cookie belongs to Account B. No comparison between `req.user.id` and `project.ownerId` is performed, so any authenticated user can read any project.\n**Result:** Account B receives Account A’s project name, internal IDs, and timestamps.\n**Fix:** Add an ownership check before sending the response (see lesson_fix).",
+      "takeaway": "When hunting APIs, always enumerate endpoints that accept an identifier (ID) in the path or query string and test them with a second user’s credentials – this is the classic IDOR pattern. Use HAR files or proxy logs to build a complete map before testing. Tools like Burp Suite, OWASP ZAP, or simple curl scripts help automate the cross‑account requests. Variants include missing checks on parent resources (as in the project read endpoint) and indirect IDOR via filtered lists. Beginners often assume a 401 response on a related endpoint means the whole API is safe; always verify each endpoint individually.",
+      "fix": "Add object‑level access control to the project‑read handler: compare the authenticated user’s ID with the project’s owner ID and return 403 Forbidden if they differ. Example fix in Node/Express:\n```js\napp.get('/v1/projects/:projectId', (req, res) => {\n  const project = db.projects.find(p => p.id === req.params.projectId);\n  if (!project) return res.sendStatus(404);\n  if (project.ownerId !== req.user.id) return res.sendStatus(403);\n  res.json(project);\n});\n```\nFor the file‑upload flow, enforce a one‑time‑only rule: reject any upload when the application status is not \"pending\" and store files with immutable names or versioning. Validate file type on the server and reject overwrites by checking existing records before saving. These checks ensure only authorized users can read or modify their own resources.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I posted on X a few days ago saying I had read an article about extracting APIs without documentation and had used the technique during a real application security assessment. I said I would write about my reconnaissance process because in my experience, about 70% of application testing is reconnaissance. That is not a number from a study. It is just how the work feels to me. The exploitation is usually the shorter part. This is me making good on that. Press enter or click to view image in full size Image 4 Someone gave me an application to test. No rules of engagement document with a list of",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "2235492f9c8f",
     "title": "$10,000 Bounty: How I Chained Weak APK Encryption and a JWT Cookie for Full Admin Access",
     "url": "https://medium.com/@DarkyOS/10-000-bounty-how-i-chained-weak-apk-encryption-and-a-jwt-cookie-for-full-admin-access-fccd7496a650",
