@@ -1,5 +1,47 @@
 [
   {
+    "id": "b8eb6ef16a87",
+    "title": "When a Production Backend Has No Authentication: Internal Disclosure and Unauthenticated State…",
+    "url": "https://medium.com/@redhunter01/when-a-production-backend-has-no-authentication-internal-disclosure-and-unauthenticated-state-2a8d5a68c2c6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "redhunter01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T01:45:30.000Z",
+    "added_at": "2026-09-30T01:57:34.377Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A Spring Boot commerce backend exposed its OpenAPI spec and all business endpoints without any authentication, allowing anyone to read internal details and submit orders anonymously.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was the complete absence of an authentication layer. The OpenAPI document (/v3/api-docs) did not define any security scheme, so the server advertised no auth requirement. Each business operation, including the order‑submission endpoint, also lacked code that checks for a valid session, token, or API key. Because the developers relied on the OpenAPI spec to convey security, they never added runtime checks. Consequently, the service treated every HTTP request as trusted, exposing both data and state‑changing actions to the public internet.",
+      "walkthrough": "RECON\nStep 1: Identify the target host and base path.\nGET https://example.com/v3/api-docs\nWhy: Sends an HTTP GET request (a request to retrieve data) to the OpenAPI endpoint; the response code 200 shows the service is reachable without credentials.\nStep 2: Examine the returned OpenAPI JSON for a \"security\" field.\nWhy: The OpenAPI spec defines authentication requirements; the absence of a \"security\" object confirms no auth is required (no \"Authorization\" header needed).\nDISCOVERY\nStep 3: List all paths from the OpenAPI document.\nWhy: The spec lists every endpoint (e.g., /order, /metrics); this gives a map of the application without guessing URLs.\nStep 4: Locate a state‑changing endpoint such as the order‑submission path.\nWhy: Business operations are described in the spec; finding a POST method indicates a write operation.\nEXPLOITATION\nStep 5: Craft an HTTP POST request to the order endpoint with a JSON body you control.\nPOST https://example.com/order\nContent-Type: application/json\n{ \"product_id\": \"123\", \"quantity\": 1 }\nWhy: Sends a payload (data sent to the server) that the endpoint accepts; no Authorization header is needed, so the request is accepted anonymously.\nStep 6: Observe the HTTP 200 response with an acknowledgement message.\nWhy: The server returns a success code, proving the operation succeeded without authentication.\nIMPACT\nStep 7: Note that internal diagnostics (e.g., /actuator/info, /actuator/metrics, /actuator/peer-info) also return data without auth.\nWhy: These endpoints expose build metadata, internal IPs, and service dependencies, giving an attacker a detailed view of the environment.",
+      "example": "**Fictional vulnerable service**: https://target.example/api\n- Vulnerable endpoint: POST /api/create‑order\n- Expected auth: Bearer token in Authorization header (but missing).\n- Attack request:\nPOST https://target.example/api/create-order\nContent-Type: application/json\n{ \"item\":\"widget\", \"qty\":5 }\nWhy it works: The server does not check for an Authorization header, so the JSON payload is processed as a legitimate order. The response contains \"order received\" confirming the state change.",
+      "takeaway": "When an API publishes its OpenAPI/Swagger spec publicly, always verify the \"security\" section; a missing scheme often means the endpoints are unauthenticated. Look for unauthenticated access to /actuator/*, /metrics, or any POST/PUT routes. Tools like `curl`, `httpie`, or Burp Suite can quickly fetch the spec and test endpoints. Variants include services that rely on network‑level firewalls instead of auth, or that expose admin consoles without login. Beginners often forget to test POST endpoints after seeing a public spec, assuming they are protected; always try them.",
+      "fix": "Add a global authentication requirement in the Spring Boot configuration (e.g., `spring.security.enabled=true`). Define a security scheme in the OpenAPI spec and enforce it at runtime with Spring Security filters that reject requests lacking a valid token or session cookie. Restrict actuator endpoints to internal IPs or require authentication (`management.endpoints.web.exposure.include=health,info` only). Remove or protect build‑metadata endpoints (`/actuator/info`) and ensure they are not exposed publicly. Finally, verify the OpenAPI document reflects the actual security controls to avoid mismatches.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m Arshia, founder of RedHunter and a full-time bug bounty hunter. arshia.heravi5@gmail.comhttps://hackerone.com/redhunter01 Cybersecurity Bug Bounty Ethical Hacking Penetration Testing Web Hacking # When a Production Backend Has No Authentication: Internal Disclosure and Unauthenticated State Changes Image 3: redhunter01 redhunter01 8 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F2a8d5a68c2c6&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40redhunter01%2Fwhen-a-production-backend-has-no-authentication-internal-disclosure-and-u",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "bcb92055fa02",
     "title": "$5,800 for a Negative Number: Manipulating Checkout Totals Through Business Logic Alone",
     "url": "https://medium.com/@t4nv1/5-800-for-a-negative-number-manipulating-checkout-totals-through-business-logic-alone-8d95bc737287",
