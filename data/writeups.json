@@ -1,5 +1,46 @@
 [
   {
+    "id": "236719415888",
+    "title": "I Found an OTP Bypass Bug in Mahindra’s Account Creation System",
+    "url": "https://medium.com/@Falgun_Sondagar/i-found-an-otp-bypass-bug-in-mahindras-account-creation-system-05ae67c940c6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Falgun Sondagar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T06:13:27.000Z",
+    "added_at": "2026-10-01T08:52:24.010Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An OTP verification bypass let attackers create accounts on Mahindra’s international website without a valid one‑time password, effectively skipping the identity check.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The account‑creation endpoint did not properly enforce OTP validation, so the server accepted the registration request even when the OTP field was empty or incorrect. This design flaw let the registration flow finish without confirming ownership of the phone or email, opening a bypass path.",
+      "walkthrough": null,
+      "example": "**Fictional vulnerable code (target.example)**\n```js\n// Express.js route handling signup\napp.post('/api/signup', (req, res) => {\n  const {email, phone, otp} = req.body; // otp = one‑time password sent to user\n  // BUG: The OTP is only logged, never verified!\n  console.log('Received OTP:', otp);\n  // Create user record without checking otp\n  createUser({email, phone});\n  res.json({status:'ok'});\n});\n```\n**Exploit request**\n```\nPOST https://target.example/api/signup HTTP/1.1\nContent-Type: application/json\n\n{\"email\":\"attacker@example.com\",\"phone\":\"1234567890\",\"otp\":\"000000\"}\n```\n**Why it works**: The server reads the `otp` field but never compares it to the value it generated. Because there is no verification step, any string (even a dummy like `000000`) is accepted, and the account is created. (The term *endpoint* is the URL that receives the request; *payload* is the data sent in the request body.)",
+      "takeaway": "When hunting for OTP bypasses, always check whether the server actually validates the one‑time password before completing registration. Look for missing or commented‑out verification logic, or endpoints that accept an OTP parameter but never compare it to a stored value. Tools like Burp Suite or OWASP ZAP can help replay signup requests with altered OTPs. Variants include email‑verification bypasses and password‑reset token skips. A common beginner mistake is assuming that the presence of an OTP field means it is enforced, without confirming the server‑side check.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Security research often starts with curiosity a simple “what happens if I try this?” moment. That’s exactly how this discovery began. While exploring the account creation flow on **Mahindra’s international website**, I noticed something in the OTP (One-Time Password) verification process that seemed… off. A few tests later, I had confirmed a critical authentication bypass vulnerability that allowed accounts to be created **without valid OTP verification**. This is the story of that discovery, the frustrating silence that followed, and how responsible disclosure through **CERT-In (Indian Comput",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "82dd537defa4",
     "title": "How a “homemade” signature can bring your entire authentication system to its knees. #1",
     "url": "https://medium.com/@brendaawb/how-a-homemade-signature-can-bring-your-entire-authentication-system-to-its-knees-1-fac634d85277",
