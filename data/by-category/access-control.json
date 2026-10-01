@@ -1,5 +1,46 @@
 [
   {
+    "id": "edaf1111d44f",
+    "title": "How Changing a POST Request to GET Exposed Users’ PII and Earned Me a $5,000 Bounty",
+    "url": "https://medium.com/@papjm/how-changing-a-post-request-to-get-exposed-users-pii-and-earned-me-a-5-000-bounty-a9980c5b7df0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Adini Rodini Rodney"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T15:17:28.000Z",
+    "added_at": "2026-10-01T15:48:53.508Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "Changing a POST request to a GET request on the privacy‑request endpoint returned other users’ personal data, exposing a broken access‑control flaw.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The endpoint that processes privacy‑request records accepted both POST and GET methods but only enforced authorization on the POST path. When the researcher switched the HTTP method from POST to GET, the server skipped the user‑identity check. The request body, which normally contained the authenticated user’s ID, was removed, so the backend had no way to know who was asking. Because the code relied on the presence of a POST payload to enforce access, any GET request without a body was treated as a generic query and returned all matching records. This design flaw allowed unauthenticated enumeration of other users’ privacy requests.",
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (fictional target.example)**\n```python\n# Flask‑like pseudo code\n@app.route('/api/privacy', methods=['POST','GET'])\ndef privacy():\n    if request.method == 'POST':\n        user_id = request.json.get('user_id')   # only POST reads body\n        # correct: verify user_id belongs to authenticated session\n    else:  # GET\n        # BUG: no authentication check here\n        records = db.query('SELECT * FROM privacy_requests')\n        return json.dumps(records)\n```\n**Attack request**\n```\nGET https://target.example/api/privacy HTTP/1.1\nHost: target.example\n```\n**Why it works**: The GET request reaches the same endpoint but the code never checks who is calling, so the database returns every privacy‑request record. Because no body is sent, the server cannot infer a user identity, yet it still returns data, leaking PII.",
+      "takeaway": "When testing APIs, never assume that an endpoint is safe just because the application uses a specific HTTP method. Look for endpoints that accept multiple methods and try each one, especially GET, which is often cached and may bypass auth checks. Review API documentation for filtering or pagination parameters – they can be abused to pull large data sets. Tools like Burp Suite or OWASP ZAP make it easy to replay a request with a different method. Variants of this bug appear in services that treat GET as a read‑only shortcut without re‑checking authentication, such as analytics dashboards or export endpoints. Beginners often forget to test method changes, missing this simple yet powerful flaw.",
+      "fix": "Add a strict authorization check that runs for every HTTP method, not just POST. The server should verify the caller’s session or token before querying any records, and it must bind the query to the authenticated user’s ID. If the endpoint is intended to be write‑only, configure the router to reject GET requests with a 405 Method Not Allowed response. Additionally, enforce least‑privilege by limiting returned fields to only what the requester is allowed to see. After the fix, a GET request without proper credentials should return an error instead of the full data set.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I discovered a broken access-control vulnerability in a company’s privacy-request portal. By changing a legitimate `POST` request to `GET` and removing the request body, I could retrieve privacy requests belonging to other users. The exposed records contained sensitive personally identifiable information, including contact details submitted by people making deletion and other privacy-related requests. ## Discovery I started by submitting a deletion request using my own information. While reviewing the network traffic, I noticed a request being sent to the platform’s privacy-request API. I forw",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "c08b5010e2ae",
     "title": "When Deleting the Default Workspace Made the Entire Account Unusable",
     "url": "https://medium.com/@ankitrathva/when-deleting-the-default-workspace-made-the-entire-account-unusable-9f7950e60054",
