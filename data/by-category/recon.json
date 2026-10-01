@@ -1,5 +1,45 @@
 [
   {
+    "id": "5ca682a242f4",
+    "title": "I Didn’t Find a Bug on Shodan. I Found a Lead.",
+    "url": "https://medium.com/@bughunt3r1985/i-didnt-find-a-bug-on-shodan-i-found-a-lead-b5039ec43ac4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Pratham"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T20:05:40.000Z",
+    "added_at": "2026-10-01T02:09:23.203Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": null,
+    "difficulty": "beginner",
+    "summary_en": "A methodology for using Shodan to identify organizational assets, exposed services, and outdated software versions to generate high-quality leads for further security research.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause of these findings is poor Asset Management (the process of tracking all company-owned hardware and software). Organizations often unintentionally expose internal services, development environments, or legacy systems to the public internet because of misconfigured firewalls (security rules that control network traffic) or forgotten infrastructure. These exposed services are then indexed by Shodan, a search engine for internet-connected devices, making them visible to anyone.",
+      "walkthrough": "RECON\n1. Use the 'org' filter in Shodan to find all IP addresses (unique numerical labels for devices) associated with a specific company.\norg:\"Target Organization\"\nWhy: This identifies the organization's public footprint by searching for their name in network records.\n2. Narrow the results to only show web services by filtering for Port 443 (the standard virtual doorway for secure web traffic).\norg:\"Target Organization\" port:443\nWhy: This removes non-web noise and focuses on HTTPS services that likely host web applications.\n3. Filter for a specific software product used by the organization to find potential targets.\norg:\"Target Organization\" product:\"Target Product\"\nWhy: This isolates specific technologies that may have unique vulnerabilities or misconfigurations.\n\nDISCOVERY\n4. Identify the version number of the software from the service banner (a text response from a server identifying itself).\nWhy: Version numbers are clues that help determine if the software is outdated and potentially vulnerable.\n5. Check if the discovered hostname (a human-readable name for an IP) or IP is within the bug bounty scope.\nWhy: Scope refers to the specific assets a company has given permission to test; testing outside this is unauthorized.\n6. Verify if the service is still 'alive' by attempting to connect to it directly.\nWhy: Shodan data can be cached (stored old data), so you must confirm the server is currently online.\n\nRESEARCH\n7. Investigate the purpose of the service (e.g., is it a VPN, a database, or an admin panel?).\nWhy: Understanding the context helps determine the potential impact if the service is compromised.\n8. Search for known vulnerabilities associated with the specific product and version found.\nWhy: This turns a 'lead' into a potential exploit path by finding documented security flaws.\n9. Document the findings and prepare to prove the security impact safely.\nWhy: A report is only valuable if it demonstrates a real risk to the organization.",
+      "example": "Suppose a researcher is hunting on target.example. They use Shodan to find exposed development tools.\n\nQuery: org:\"Example Corp\" product:\"Jenkins\"\n\nThis query returns an IP address: 192.0.2.15 running Jenkins (an automation server) on port 8080. \n\nThe researcher visits http://192.0.2.15:8080 and finds that the 'Manage Jenkins' dashboard is accessible without a password. This is a 'lead' because Jenkins often has access to sensitive source code and deployment credentials. \n\nBy clicking 'Script Console', the researcher proves they can execute commands on the server. This confirms the lead is a critical vulnerability (Remote Code Execution) caused by missing authentication (the process of verifying a user's identity).",
+      "takeaway": "Shodan should be used to find 'questions' rather than immediate bugs. Look for anomalies like development servers, admin panels on non-standard ports, or software versions that are several years old. Always verify the 'lead' by checking if the asset is in scope and if the version reported is actually accurate. A common beginner mistake is reporting an 'outdated version' without proving it is actually exploitable or has a security impact.",
+      "fix": "Organizations should implement strict Attack Surface Management (ASM) to maintain an inventory of all internet-facing assets. Use firewalls to block access to sensitive ports and internal services from the public internet. Ensure all software is regularly patched to the latest version and that administrative interfaces require strong authentication (like Multi-Factor Authentication).",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "subdomains endpoints APIs directories technologies But I also want to see what sits underneath that public surface. So I start simple: org:\"Target Organization\" I don’t immediately start exploiting anything. I look. What ports are open? What products are showing up? Are there services I wasn’t expecting? Are there systems that look different from the main web application? I’m building a picture of the target. ## Then I Narrow the Search Let’s say I want to look at HTTPS services: org:\"Target Organization\" port:443 Now the noise starts dropping. Maybe I find a product I didn’t know the company",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "41a1926ae824",
     "title": "httpx: A Deep Dive Into the HTTP Probing Engine",
     "url": "https://pwnxotus.medium.com/httpx-a-deep-dive-into-the-http-probing-engine-359f29662b24",

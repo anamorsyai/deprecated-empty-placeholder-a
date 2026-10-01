@@ -1,5 +1,45 @@
 [
   {
+    "id": "82dd537defa4",
+    "title": "How a “homemade” signature can bring your entire authentication system to its knees. #1",
+    "url": "https://medium.com/@brendaawb/how-a-homemade-signature-can-bring-your-entire-authentication-system-to-its-knees-1-fac634d85277",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Brenda Wai"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T01:19:50.000Z",
+    "added_at": "2026-10-01T02:09:05.703Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A weak HS256 signing secret allowed the researcher to crack the JWT key offline, forge an admin token and access privileged endpoints, compromising the entire authentication system.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application used HS256, which relies on a shared secret for the signature. The secret was a short, predictable word (\"secret\") that was hard‑coded and never rotated. Because the secret is the same for every token, cracking it once gives an attacker the ability to sign any payload. The server also trusted the \"role\" claim inside the JWT without verifying it against a database, allowing role escalation. These design choices together opened a path to full authentication bypass.",
+      "walkthrough": "RECON\nStep 1: Capture a legitimate JWT.\n- Action: Log in as a normal user and intercept the HTTP request.\n- Payload: (example) Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJ0ZXN0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3OTA4MTI2MDh9.wDCDyirRMPirVpPxgETXOt1ZuD8Hw2fVkYBd9GdE9cs\n- Why: The JWT is sent in the Authorization header (a HTTP header that carries credentials). Capturing it gives the attacker the three parts needed for cracking.\n\nDISCOVERY\nStep 2: Crack the signing secret with hashcat.\n- Action: Run hashcat in JWT mode against the captured token using a wordlist.\n- Payload: hashcat -a 0 -m 16500 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJ0ZXN0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3OTA4MTI2MDh9.wDCDyirRMPirVpPxgETXOt1ZuD8Hw2fVkYBd9GdE9cs /usr/share/wordlists/rockyou.txt\n- Why: hashcat (a password‑cracking tool) with mode 16500 knows how to treat the JWT as an HMAC‑SHA256 hash, trying each word from the list until the correct secret is found.\n\nStep 3: Observe the cracked secret.\n- Action: Hashcat reports the secret.\n- Payload: secret\n- Why: The word \"secret\" is the shared key that the server uses to verify signatures; once known, the attacker can create any valid JWT.\n\nEXPLOITATION\nStep 4: Build a forged admin JWT.\n- Action: Create a new payload with admin claims and sign it using the cracked secret.\n- Payload: {\n  \"id\": 1,\n  \"username\": \"admin\",\n  \"role\": \"admin\",\n  \"iat\": 1790812608\n}\n- Why: The payload is a JSON object (plain‑text data) that will become the middle part of the JWT. Changing \"role\" to \"admin\" tells the server the user is an administrator.\n\nStep 5: Sign the new token (using jwt.io or jwt_tool).\n- Action: Paste the header ({\"alg\":\"HS256\",\"typ\":\"JWT\"}) and the forged payload into jwt.io, provide the secret \"secret\", and obtain a new token.\n- Payload: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MDgxMjYwOH0.<signature>\n- Why: The signature is HMAC‑SHA256 of the base64url‑encoded header and payload using the secret; the server will accept it as authentic.\n\nStep 6: Replace the original token with the forged one and request a protected endpoint.\n- Action: Send an HTTP request to /api/admin/stats with the forged token in the Authorization header.\n- Payload: GET /api/admin/stats HTTP/1.1\\nHost: target.example\\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...<signature>\n- Why: The server validates the signature (which now matches) and trusts the \"role\":\"admin\" claim, granting access to the admin statistics endpoint.\n\nIMPACT\nStep 7: Receive the admin data (the flag).\n- Action: Observe the response containing privileged information.\n- Payload: (screenshot shows the flag)\n- Why: The attacker has fully bypassed authentication and obtained data reserved for administrators.",
+      "example": "**Vulnerable snippet (target.example)**\n```js\n// Node.js Express route that trusts the JWT role claim\nconst jwt = require('jsonwebtoken');\nconst SECRET = 'weakkey'; // hard‑coded, short, dictionary word\napp.get('/admin/secret', (req, res) => {\n  const token = req.headers.authorization?.split(' ')[1];\n  const payload = jwt.verify(token, SECRET); // verifies signature only\n  if (payload.role === 'admin') {\n    res.send('TOP‑SECRET DATA');\n  } else {\n    res.status(403).send('Forbidden');\n  }\n});\n```\n**Attack request**\n1. Capture a normal user token.\n2. Crack the secret \"weakkey\" with hashcat.\n3. Forge a token with `{ \"role\": \"admin\" }` and sign it using \"weakkey\".\n4. Send:\n```\nGET /admin/secret HTTP/1.1\nHost: target.example\nAuthorization: Bearer <forged‑token>\n```\n**Why it works**: The server only checks the signature (which is valid because the secret is known) and then trusts the `role` field without consulting a database, so the forged token is accepted as admin.",
+      "takeaway": "When you see a JWT that uses HS256, always test whether the signing secret is weak. Look for hard‑coded keys, short strings, or secrets that might appear in public repositories. Tools like hashcat with mode 16500 can crack such keys offline in seconds if they are dictionary‑based. Remember that trusting claims (e.g., \"role\") inside the token without server‑side verification enables privilege escalation. Variants include using other symmetric algorithms (HS384, HS512) with weak keys or using the \"none\" algorithm when the server fails to enforce a signature. A common beginner mistake is assuming the JWT library automatically validates user roles; you must verify them against your own data store.",
+      "fix": "Replace the symmetric HS256 key with a strong, randomly generated secret of at least 256 bits (32 bytes) and store it securely (e.g., environment variable, secret manager). Rotate the secret regularly and invalidate existing tokens on rotation. Do not embed the secret in source code or commit it to version control. Additionally, never trust the `role` claim from the token alone; after verifying the signature, fetch the user's role from the database and enforce authorization based on that authoritative source.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "header.payload.signature * The header specifies the algorithm (often `HS256`). * The payload holds the user data (id, username, role…). * The signature guarantees nobody tampered with the first two blocks. Here’s the catch: with `HS256`, the signature relies on a shared secret, a simple string known only to the server. If that key is weak, predictable, or sitting in a common wordlist... it becomes crackable offline, with no rate limit, no logs, no alerts. An attacker's dream. ## Step 1: Grab the Token. Nothing fancy here: I log in with a regular user account, intercept the request, and grab my",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "2235492f9c8f",
     "title": "$10,000 Bounty: How I Chained Weak APK Encryption and a JWT Cookie for Full Admin Access",
     "url": "https://medium.com/@DarkyOS/10-000-bounty-how-i-chained-weak-apk-encryption-and-a-jwt-cookie-for-full-admin-access-fccd7496a650",

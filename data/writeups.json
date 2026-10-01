@@ -1,5 +1,85 @@
 [
   {
+    "id": "82dd537defa4",
+    "title": "How a “homemade” signature can bring your entire authentication system to its knees. #1",
+    "url": "https://medium.com/@brendaawb/how-a-homemade-signature-can-bring-your-entire-authentication-system-to-its-knees-1-fac634d85277",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Brenda Wai"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T01:19:50.000Z",
+    "added_at": "2026-10-01T02:09:05.703Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A weak HS256 signing secret allowed the researcher to crack the JWT key offline, forge an admin token and access privileged endpoints, compromising the entire authentication system.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application used HS256, which relies on a shared secret for the signature. The secret was a short, predictable word (\"secret\") that was hard‑coded and never rotated. Because the secret is the same for every token, cracking it once gives an attacker the ability to sign any payload. The server also trusted the \"role\" claim inside the JWT without verifying it against a database, allowing role escalation. These design choices together opened a path to full authentication bypass.",
+      "walkthrough": "RECON\nStep 1: Capture a legitimate JWT.\n- Action: Log in as a normal user and intercept the HTTP request.\n- Payload: (example) Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJ0ZXN0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3OTA4MTI2MDh9.wDCDyirRMPirVpPxgETXOt1ZuD8Hw2fVkYBd9GdE9cs\n- Why: The JWT is sent in the Authorization header (a HTTP header that carries credentials). Capturing it gives the attacker the three parts needed for cracking.\n\nDISCOVERY\nStep 2: Crack the signing secret with hashcat.\n- Action: Run hashcat in JWT mode against the captured token using a wordlist.\n- Payload: hashcat -a 0 -m 16500 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJ0ZXN0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3OTA4MTI2MDh9.wDCDyirRMPirVpPxgETXOt1ZuD8Hw2fVkYBd9GdE9cs /usr/share/wordlists/rockyou.txt\n- Why: hashcat (a password‑cracking tool) with mode 16500 knows how to treat the JWT as an HMAC‑SHA256 hash, trying each word from the list until the correct secret is found.\n\nStep 3: Observe the cracked secret.\n- Action: Hashcat reports the secret.\n- Payload: secret\n- Why: The word \"secret\" is the shared key that the server uses to verify signatures; once known, the attacker can create any valid JWT.\n\nEXPLOITATION\nStep 4: Build a forged admin JWT.\n- Action: Create a new payload with admin claims and sign it using the cracked secret.\n- Payload: {\n  \"id\": 1,\n  \"username\": \"admin\",\n  \"role\": \"admin\",\n  \"iat\": 1790812608\n}\n- Why: The payload is a JSON object (plain‑text data) that will become the middle part of the JWT. Changing \"role\" to \"admin\" tells the server the user is an administrator.\n\nStep 5: Sign the new token (using jwt.io or jwt_tool).\n- Action: Paste the header ({\"alg\":\"HS256\",\"typ\":\"JWT\"}) and the forged payload into jwt.io, provide the secret \"secret\", and obtain a new token.\n- Payload: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MDgxMjYwOH0.<signature>\n- Why: The signature is HMAC‑SHA256 of the base64url‑encoded header and payload using the secret; the server will accept it as authentic.\n\nStep 6: Replace the original token with the forged one and request a protected endpoint.\n- Action: Send an HTTP request to /api/admin/stats with the forged token in the Authorization header.\n- Payload: GET /api/admin/stats HTTP/1.1\\nHost: target.example\\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...<signature>\n- Why: The server validates the signature (which now matches) and trusts the \"role\":\"admin\" claim, granting access to the admin statistics endpoint.\n\nIMPACT\nStep 7: Receive the admin data (the flag).\n- Action: Observe the response containing privileged information.\n- Payload: (screenshot shows the flag)\n- Why: The attacker has fully bypassed authentication and obtained data reserved for administrators.",
+      "example": "**Vulnerable snippet (target.example)**\n```js\n// Node.js Express route that trusts the JWT role claim\nconst jwt = require('jsonwebtoken');\nconst SECRET = 'weakkey'; // hard‑coded, short, dictionary word\napp.get('/admin/secret', (req, res) => {\n  const token = req.headers.authorization?.split(' ')[1];\n  const payload = jwt.verify(token, SECRET); // verifies signature only\n  if (payload.role === 'admin') {\n    res.send('TOP‑SECRET DATA');\n  } else {\n    res.status(403).send('Forbidden');\n  }\n});\n```\n**Attack request**\n1. Capture a normal user token.\n2. Crack the secret \"weakkey\" with hashcat.\n3. Forge a token with `{ \"role\": \"admin\" }` and sign it using \"weakkey\".\n4. Send:\n```\nGET /admin/secret HTTP/1.1\nHost: target.example\nAuthorization: Bearer <forged‑token>\n```\n**Why it works**: The server only checks the signature (which is valid because the secret is known) and then trusts the `role` field without consulting a database, so the forged token is accepted as admin.",
+      "takeaway": "When you see a JWT that uses HS256, always test whether the signing secret is weak. Look for hard‑coded keys, short strings, or secrets that might appear in public repositories. Tools like hashcat with mode 16500 can crack such keys offline in seconds if they are dictionary‑based. Remember that trusting claims (e.g., \"role\") inside the token without server‑side verification enables privilege escalation. Variants include using other symmetric algorithms (HS384, HS512) with weak keys or using the \"none\" algorithm when the server fails to enforce a signature. A common beginner mistake is assuming the JWT library automatically validates user roles; you must verify them against your own data store.",
+      "fix": "Replace the symmetric HS256 key with a strong, randomly generated secret of at least 256 bits (32 bytes) and store it securely (e.g., environment variable, secret manager). Rotate the secret regularly and invalidate existing tokens on rotation. Do not embed the secret in source code or commit it to version control. Additionally, never trust the `role` claim from the token alone; after verifying the signature, fetch the user's role from the database and enforce authorization based on that authoritative source.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "header.payload.signature * The header specifies the algorithm (often `HS256`). * The payload holds the user data (id, username, role…). * The signature guarantees nobody tampered with the first two blocks. Here’s the catch: with `HS256`, the signature relies on a shared secret, a simple string known only to the server. If that key is weak, predictable, or sitting in a common wordlist... it becomes crackable offline, with no rate limit, no logs, no alerts. An attacker's dream. ## Step 1: Grab the Token. Nothing fancy here: I log in with a regular user account, intercept the request, and grab my",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "5ca682a242f4",
+    "title": "I Didn’t Find a Bug on Shodan. I Found a Lead.",
+    "url": "https://medium.com/@bughunt3r1985/i-didnt-find-a-bug-on-shodan-i-found-a-lead-b5039ec43ac4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Pratham"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-09-30T20:05:40.000Z",
+    "added_at": "2026-10-01T02:09:23.203Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": null,
+    "difficulty": "beginner",
+    "summary_en": "A methodology for using Shodan to identify organizational assets, exposed services, and outdated software versions to generate high-quality leads for further security research.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause of these findings is poor Asset Management (the process of tracking all company-owned hardware and software). Organizations often unintentionally expose internal services, development environments, or legacy systems to the public internet because of misconfigured firewalls (security rules that control network traffic) or forgotten infrastructure. These exposed services are then indexed by Shodan, a search engine for internet-connected devices, making them visible to anyone.",
+      "walkthrough": "RECON\n1. Use the 'org' filter in Shodan to find all IP addresses (unique numerical labels for devices) associated with a specific company.\norg:\"Target Organization\"\nWhy: This identifies the organization's public footprint by searching for their name in network records.\n2. Narrow the results to only show web services by filtering for Port 443 (the standard virtual doorway for secure web traffic).\norg:\"Target Organization\" port:443\nWhy: This removes non-web noise and focuses on HTTPS services that likely host web applications.\n3. Filter for a specific software product used by the organization to find potential targets.\norg:\"Target Organization\" product:\"Target Product\"\nWhy: This isolates specific technologies that may have unique vulnerabilities or misconfigurations.\n\nDISCOVERY\n4. Identify the version number of the software from the service banner (a text response from a server identifying itself).\nWhy: Version numbers are clues that help determine if the software is outdated and potentially vulnerable.\n5. Check if the discovered hostname (a human-readable name for an IP) or IP is within the bug bounty scope.\nWhy: Scope refers to the specific assets a company has given permission to test; testing outside this is unauthorized.\n6. Verify if the service is still 'alive' by attempting to connect to it directly.\nWhy: Shodan data can be cached (stored old data), so you must confirm the server is currently online.\n\nRESEARCH\n7. Investigate the purpose of the service (e.g., is it a VPN, a database, or an admin panel?).\nWhy: Understanding the context helps determine the potential impact if the service is compromised.\n8. Search for known vulnerabilities associated with the specific product and version found.\nWhy: This turns a 'lead' into a potential exploit path by finding documented security flaws.\n9. Document the findings and prepare to prove the security impact safely.\nWhy: A report is only valuable if it demonstrates a real risk to the organization.",
+      "example": "Suppose a researcher is hunting on target.example. They use Shodan to find exposed development tools.\n\nQuery: org:\"Example Corp\" product:\"Jenkins\"\n\nThis query returns an IP address: 192.0.2.15 running Jenkins (an automation server) on port 8080. \n\nThe researcher visits http://192.0.2.15:8080 and finds that the 'Manage Jenkins' dashboard is accessible without a password. This is a 'lead' because Jenkins often has access to sensitive source code and deployment credentials. \n\nBy clicking 'Script Console', the researcher proves they can execute commands on the server. This confirms the lead is a critical vulnerability (Remote Code Execution) caused by missing authentication (the process of verifying a user's identity).",
+      "takeaway": "Shodan should be used to find 'questions' rather than immediate bugs. Look for anomalies like development servers, admin panels on non-standard ports, or software versions that are several years old. Always verify the 'lead' by checking if the asset is in scope and if the version reported is actually accurate. A common beginner mistake is reporting an 'outdated version' without proving it is actually exploitable or has a security impact.",
+      "fix": "Organizations should implement strict Attack Surface Management (ASM) to maintain an inventory of all internet-facing assets. Use firewalls to block access to sensitive ports and internal services from the public internet. Ensure all software is regularly patched to the latest version and that administrative interfaces require strong authentication (like Multi-Factor Authentication).",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "subdomains endpoints APIs directories technologies But I also want to see what sits underneath that public surface. So I start simple: org:\"Target Organization\" I don’t immediately start exploiting anything. I look. What ports are open? What products are showing up? Are there services I wasn’t expecting? Are there systems that look different from the main web application? I’m building a picture of the target. ## Then I Narrow the Search Let’s say I want to look at HTTPS services: org:\"Target Organization\" port:443 Now the noise starts dropping. Maybe I find a product I didn’t know the company",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "03f258cab8e3",
     "title": "The API Was Never Invisible",
     "url": "https://medium.com/@Lh1l0v3/the-api-was-never-invisible-4c05042da1ce",
