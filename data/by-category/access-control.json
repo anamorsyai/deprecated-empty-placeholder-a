@@ -41,6 +41,48 @@
     "score": 60
   },
   {
+    "id": "47bfc0531e96",
+    "title": "Exposure of Shareable AWS S3 Pre-Signed Download URLs for Paid Digital Products",
+    "url": "https://medium.com/@apop69166/exposure-of-shareable-aws-s3-pre-signed-download-urls-for-paid-digital-products-8e7dbef9fab3",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahemd ashraf"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T14:48:37.000Z",
+    "added_at": "2026-10-01T20:37:24.158Z",
+    "categories": [
+      "access-control",
+      "graphql",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A GraphQL API endpoint leaked AWS S3 pre-signed URLs for paid digital products, allowing anyone to download restricted content without payment or authentication for up to 24 hours.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's GraphQL API was designed to return a pre-signed S3 download URL in the 'listing.url' field by default when retrieving product information. The root cause was a failure to verify if the requesting user had actually purchased the product before generating this temporary access link. Because the URL functioned as a 'bearer token' (possession equals access), the application relied on the secrecy of the URL rather than proper authorization logic. Additionally, the URL expiration was set to a very long duration (86400 seconds), increasing the window for unauthorized access.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher accessed the Linktree platform and navigated to the digital products section where creators sell files.\n2. They used a proxy tool to intercept the HTTP requests (messages sent by your computer to a server asking for data) between the browser and the server.\n\nDISCOVERY\n3. The researcher identified a GraphQL request (a specific way for apps to ask for exactly the data they need) used to fetch product details.\n4. They inspected the response from the server and found a field named 'listing.url'.\nlisting.url\nWhy: This field contained a long web address pointing directly to Amazon's storage service (AWS S3).\n5. The researcher analyzed the URL and found several AWS signing parameters (special codes that grant temporary permission to a file).\n?X-Amz-Algorithm=...&X-Amz-Credential=...&X-Amz-Date=...&X-Amz-Expires=86400&X-Amz-Signature=...\nWhy: These parameters prove to Amazon that the person who generated the link has permission to share the file. The 'X-Amz-Expires=86400' part means the link stays active for 86,400 seconds (24 hours).\n\nEXPLOITATION\n6. The researcher copied the entire URL from the GraphQL response.\n7. They opened a new 'Incognito' or private browser window where they were NOT logged into Linktree.\n8. They pasted the URL directly into the address bar and pressed Enter.\nhttps://[bucket-name].s3.amazonaws.com/[file-path]?X-Amz-Algorithm=...[rest of signature]\nWhy: This tests if the link is a 'bearer credential' (a key that works for anyone who holds it, regardless of their identity).\n\nIMPACT\n9. The browser immediately began downloading the digital product (e.g., a PDF or image) that was supposed to be behind a paywall.\n10. The researcher confirmed that no Linktree session or cookie (a small file used to remember your login status) was required to access the file.\n11. This proved that any user—even one who hadn't paid—could obtain and share these links to bypass the store's payment system.",
+      "example": "Imagine a fictional site called 'DigitalArtStore.example'. When you click on a painting to see its price, the website sends a request to get the painting's details. \n\nVulnerable Code (Server-side):\nfunction getProductDetails(productId) {\n  const product = db.find(productId);\n  // VULNERABILITY: Generating the download link for EVERYONE who views the product page\n  const downloadUrl = s3.generatePresignedUrl(product.filePath, { expires: 3600 });\n  return { name: product.name, price: product.price, url: downloadUrl };\n}\n\nAttack Request:\nPOST /graphql\nContent: { \"query\": \"{ product(id: 50) { name price url } }\" }\n\nResponse:\n{ \"data\": { \"product\": { \"name\": \"Sunset.jpg\", \"price\": \"$50.00\", \"url\": \"https://s3.example/Sunset.jpg?sig=abc123...\" } } }\n\nWhy it works: The server generates the 'url' (the secret download link) and sends it to the user's browser before checking if the user has actually paid the $50.00. The attacker simply copies the 'url' from the background data and downloads the image for free.",
+      "takeaway": "When hunting for bugs, always inspect API responses (especially GraphQL and JSON) for long URLs containing 'Amz-Signature' or 'Signature'. These are often pre-signed URLs. Always test if these URLs can be opened in a private browser window without being logged in. If the URL points to content that should be paid or private, you have found a vulnerability. A common mistake is assuming that because a URL is long and 'random-looking,' it is secure; in reality, if the API gives it to an unauthorized user, the security is broken. Look for 'Expires' values—longer durations (like 24 hours) significantly increase the severity of the leak.",
+      "fix": "The application must separate 'viewing product info' from 'downloading the product.' The GraphQL query for product details should not include the download URL. Instead, the URL should only be generated through a specific 'Download' endpoint that first checks the database to ensure the current user has a valid purchase record for that specific item. Additionally, the 'X-Amz-Expires' value should be set to a very short time (e.g., 60 to 300 seconds) to minimize the risk of link sharing.\n\nFixed Logic:\n1. User requests product info -> Server returns name and price (NO URL).\n2. User clicks 'Download' -> Server checks: 'Has this user paid?'\n3. If yes -> Server generates a 5-minute pre-signed URL and sends it.\n4. If no -> Server returns '403 Forbidden'.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing Linktree’s digital-product functionality, I identified an issue where GraphQL responses exposed AWS S3 pre-signed download URLs associated with digital products. The URLs were returned as part of the product/listing data and contained AWS S3 signing parameters. ## Discovery During testing of the digital-product functionality, I inspected the GraphQL responses returned when retrieving product information. A field similar to: `listing.url` contained an AWS S3 pre-signed URL. The URL included AWS signing parameters such as: * `X-Amz-Algorithm` * `X-Amz-Credential` * `X-Amz-Date` * `",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c08b5010e2ae",
     "title": "When Deleting the Default Workspace Made the Entire Account Unusable",
     "url": "https://medium.com/@ankitrathva/when-deleting-the-default-workspace-made-the-entire-account-unusable-9f7950e60054",
