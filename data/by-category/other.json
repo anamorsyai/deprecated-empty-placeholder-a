@@ -1,5 +1,47 @@
 [
   {
+    "id": "1f1fb4f363ce",
+    "title": "HTTP Request Smuggling (TE.CL) to Session Hijacking via GraphQL",
+    "url": "https://gentilsecurity.medium.com/http-request-smuggling-te-cl-to-session-hijacking-via-graphql-303f14dcec82",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Gentil Security"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-02T14:05:38.000Z",
+    "added_at": "2026-10-02T16:47:52.960Z",
+    "categories": [
+      "access-control",
+      "graphql",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "An HTTP Request Smuggling vulnerability allowed an attacker to poison a back-end connection and capture a victim's full request. By redirecting this data into a GraphQL mutation, the attacker stored the victim's session cookies in their own support chat history.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a TE.CL desynchronization (a state where two servers disagree on where a request ends) between a front-end proxy and a back-end server. The front-end prioritized the Transfer-Encoding header (a header telling the server data is sent in pieces), while the back-end prioritized the Content-Length header (a header telling the server the exact size of the data). This mismatch allowed the researcher to leave a 'partial' request hanging on the back-end connection. Furthermore, the /graphql endpoint (a specific web address for data queries) accepted form-encoded data, which is less strict than JSON, allowing the next user's request to be appended to a text parameter without crashing the application.",
+      "walkthrough": "RECON\nStep 1: The researcher identified the target's infrastructure, noting a front-end proxy (a middleman server) and a back-end application server.\nStep 2: They tested for Request Smuggling (a technique to interfere with how a website processes sequences of HTTP requests).\nDISCOVERY\nStep 3: The researcher confirmed a TE.CL mismatch where the front-end used Transfer-Encoding and the back-end used Content-Length.\nStep 4: They attempted to smuggle a request to a standard JSON API endpoint.\nStep 5: They observed that the JSON parser (a tool that reads data in a specific structured format) failed because the victim's request broke the JSON structure.\nStep 6: They searched for alternative endpoints and found /graphql, which accepted application/x-www-form-urlencoded data (a format where data is sent as key-value pairs like name=value).\nEXPLOITATION\nStep 7: The researcher crafted a 'trigger' request to desynchronize the connection.\nPOST /api/stich_transitionState?localeCode=en-US HTTP/1.1\nHost: target.example.com\nTransfer-Encoding: chunked\nContent-Length: [Calculated Length]\n\n0\nWhy: The front-end sees the '0' and thinks the request is finished, but the back-end is told by Content-Length to keep waiting for more data.\nStep 8: They appended a second, 'smuggled' request immediately after the trigger.\nPOST /graphql HTTP/1.1\nHost: target.example.com\nContent-Type: application/x-www-form-urlencoded\nWhy: This smuggled request (a hidden request tucked inside another) is what the back-end will process next.\nStep 9: They used a GraphQL mutation (a type of request used to change or save data) that updates a support message.\noperationName=updateMobileContact_deprecated&variables[request][message][text]=HIJACKED_REQUEST_BEGINS:\nWhy: This parameter (a piece of data sent to the server) will act as a container for the victim's data.\nStep 10: They set a very large Content-Length for the smuggled GraphQL request.\nContent-Length: [SMUGGLED_BODY_LENGTH + VICTIM_REQUEST_LENGTH]\nWhy: This makes the back-end 'hungry,' meaning it stays open and waits to swallow the next request that arrives on the connection.\nStep 11: The researcher sent the combined payload (the actual malicious data being sent) to the server.\nStep 12: A victim user sent a legitimate request to the server on the same connection.\nGET /path/inbox HTTP/1.1\nHost: target.example.com\nCookie: session_cookie=VICTIM_SESSION_VALUE\nWhy: Because the back-end was still 'hungry' from Step 10, it treated the victim's request as the continuation of the attacker's message text.\nIMPACT\nStep 13: The application processed the mutation, saving the attacker's message.\nStep 14: The saved message now contained the victim's full request, including their Cookie (a small ID tag used to identify a logged-in user).\nStep 15: The researcher logged into their own account and opened the support conversation.\nStep 16: They viewed the message and successfully extracted the victim's session cookie.\nStep 17: Using the stolen cookie, the researcher performed session hijacking (taking over another user's active session) to access the victim's account.",
+      "example": "Imagine a fictional site target.example.com that has a 'Update Profile Bio' feature. The server is vulnerable to TE.CL smuggling. An attacker sends a request to update their bio, but sets the Content-Length to be 500 bytes larger than the actual bio text. The request ends with 'bio=My bio is: '. When a victim user visits the site and their browser sends a request like 'GET /dashboard HTTP/1.1' followed by their private 'Cookie: session=12345', the server thinks this text is part of the attacker's bio. The attacker then simply views their own profile, and their bio now displays the victim's full request and session cookie.",
+      "takeaway": "When hunting for request smuggling, always look for endpoints that store user-supplied text, such as chat systems, profile bios, or support tickets. These are perfect 'sinks' for capturing smuggled data. If a JSON endpoint fails because the smuggled data is not valid JSON, look for form-encoded or GraphQL alternatives which are often more flexible. Use tools like Burp Suite's HTTP Request Smuggler to automate the detection of TE.CL and CL.TE mismatches. A common mistake is assuming a '400 Bad Request' means the site is not vulnerable; it often just means your payload needs adjustment to be syntactically valid for the application layer.",
+      "fix": "To fix this, the organization should ensure that the front-end proxy and the back-end server use the same HTTP parsing library or configuration to avoid desynchronization. The most effective solution is to use HTTP/2 for the entire connection chain, as it uses a binary framing mechanism that eliminates the ambiguity of request boundaries. Additionally, the back-end should be configured to reject any request that contains both a Content-Length and a Transfer-Encoding header. Example fix in a configuration: 'http_protocol_options { strict_header_validation: true; }' or ensuring the proxy normalizes requests before forwarding them.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A request parser disagreement between a front-end proxy and a back-end server can look like a simple `400 Bad Request` or connection desynchronization issue. The real security impact appears when that desynchronization can be turned into a reliable cross-request interaction. During an authorized assessment of web application, I found a TE.CL HTTP Request Smuggling condition. The front-end processed the request using: httpTransfer-Encoding: chunked while the back-end interpreted the request boundary using: httpContent-Length That mismatch allowed a crafted request to desynchronize the back-end",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "ead6baef59ac",
     "title": "Why Security Headers Matter — And What Happens When They’re Missing",
     "url": "https://medium.com/@shrutishinde1319/why-security-headers-matter-and-what-happens-when-theyre-missing-25ec91881094",

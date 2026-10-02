@@ -1,5 +1,46 @@
 [
   {
+    "id": "061527f90250",
+    "title": "The Verizon Report Just Proved Something Terrifying: Attackers Are Using AI to Exploit Bugs in…",
+    "url": "https://medium.com/@riyalimba/the-verizon-report-just-proved-something-terrifying-attackers-are-using-ai-to-exploit-bugs-in-f0a1a4d2ead3",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Riya Limba"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-02T16:02:26.000Z",
+    "added_at": "2026-10-02T16:45:58.423Z",
+    "categories": [
+      "rce",
+      "supply-chain"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "Researchers used AI to identify and exploit an unpatched image-processing library on OpenAI's forum server, gaining full remote control and internal code access.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a 'missing backport' of a security patch in libheif, an image parsing library (a collection of pre-written code used to read image files). While a fix for a known security hole existed, the server's operating system (Debian) had not yet updated the library. This created a 'dependency version gap,' where the application relied on an old, insecure component, allowing attackers to use a known exploit (a tool used to take advantage of a bug) to gain control.",
+      "walkthrough": "RECON\n1. Researchers used AI to analyze Docker images (packages containing software and its environment) used by OpenAI.\n`docker pull [openai-forum-image]`\nWhy: To inspect the exact versions of software libraries installed on the server to find outdated code.\n2. The AI identified that the libheif library was missing a critical security patch (a software update that fixes a security hole).\n`dpkg -l | grep libheif`\nWhy: To check the version of the image-parsing tool against a database of known vulnerabilities (a vulnerability is a weakness in code).\nDISCOVERY\n3. The researchers analyzed the specific code gap between the current version and the patched version.\n`diff libheif_old.c libheif_patched.c`\nWhy: To understand exactly what code was changed in the fix, which reveals how to trigger the original bug (triggering means making the bug happen).\nEXPLOITATION\n4. AI was used to build a working exploit tailored to the server's specific architecture (the way the computer's hardware and software are organized).\n`./exploit-builder --target libheif --arch x64`\nWhy: To create a custom 'payload' (malicious data) that forces the server to execute unauthorized commands.\n5. The exploit was sent to the forum server, likely through an image upload endpoint (a specific web address on a server that receives data).\n`POST /forum/upload HTTP/1.1` \nWhy: To deliver the malicious image file to the vulnerable libheif library for processing.\nIMPACT\n6. The researchers gained Remote Code Execution (RCE), allowing them to run any command on the server.\n`whoami` \nWhy: To prove they have control over the system (RCE is a bug that lets you run your own code on a remote computer).\n7. From the forum server, they moved laterally (moving from one compromised system to another) to access internal code repositories.\n`git clone https://internal-repo.openai.com/` \nWhy: To demonstrate that a single unpatched library can lead to the exposure of sensitive company secrets.",
+      "example": "A fictional website target.example allows users to upload profile pictures. The site uses an old version of 'ImageMagick' (a library for editing images). An attacker discovers this version has a bug called 'ImageTragick.' The attacker creates a text file disguised as an image containing the payload: `fill 'url(https://example.com/\"|touch /tmp/hacked\")'`. When the server tries to 'resize' this fake image, it accidentally runs the `touch` command, creating a file on the server. This works because the server didn't check if the image content was safe before letting the library process it.",
+      "takeaway": "Always check the versions of third-party libraries (dependencies) used by a target, especially those that process complex files like images, PDFs, or videos. Use tools like 'nuclei' or 'retire.js' to identify outdated components. A common signal is a server running an older operating system version which may have delayed security updates. A variant of this is 'Dependency Confusion,' where attackers trick a system into downloading a malicious library instead of a real one. A common beginner mistake is assuming that if a website looks modern, its underlying server software is also up-to-date.",
+      "fix": "The correct fix is to implement an automated dependency scanning process using tools like Snyk, GitHub Dependabot, or OWASP Dependency-Check. These tools automatically flag outdated libraries and suggest updates. In this specific case, the fix involved updating the operating system packages to ensure the patched version of libheif was installed.\n\n```bash\n# Update package lists and upgrade the specific vulnerable library\nsudo apt-get update && sudo apt-get install --only-upgrade libheif1\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The report analyzed 31,000+ security incidents and 22,000+ confirmed breaches across 145 countries. The headline finding: vulnerability exploitation has overtaken stolen credentials as the primary initial access vector — for the first time in DBIR history. That alone is significant. But the sentence that stopped me was this: “Attackers are now able to compromise systems within hours instead of the months previously required.” I read it four times. Then I closed the laptop and sat there for a minute. ## What I’ve Been Doing for 8 Months I’ve been learning bug bounty at human speed. Reading docs",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "c7994b75cb2a",
     "title": "Critical Server-Side Template Injection (SSTI) to Remote Code Execution in Enterprise Reporting…",
     "url": "https://medium.com/@t4nv1/critical-server-side-template-injection-ssti-to-remote-code-execution-in-enterprise-reporting-e0d3d80f0ec3",
