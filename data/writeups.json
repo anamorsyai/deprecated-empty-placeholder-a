@@ -41,6 +41,47 @@
     "score": 60
   },
   {
+    "id": "8bdda7a2cb43",
+    "title": "Broken Object Level Authorization (BOLA / IDOR) in Linktree GraphQL API Allows Unauthorized…",
+    "url": "https://medium.com/@apop69166/broken-object-level-authorization-bola-idor-in-linktree-graphql-api-allows-unauthorized-93c233e5a357",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahemd ashraf"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T14:53:23.000Z",
+    "added_at": "2026-10-02T00:14:33.348Z",
+    "categories": [
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A Broken Object Level Authorization (BOLA/IDOR) in Linktree’s GraphQL API lets an authenticated user modify a Link belonging to another workspace by swapping the Link ID in a mutation request.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server trusts the client‑provided Link identifier without checking that the authenticated user’s workspace owns that Link. The GraphQL resolver for the setDigitalDownloadLinkContext mutation accepts the supplied id and performs the update without verifying the user‑to‑object relationship. Because only authentication is enforced, any valid numeric Link ID can be used to target objects outside the caller’s scope.",
+      "walkthrough": "RECON\nStep 1 – Capture a legitimate request\nWe logged in with a user that can manage its own Links and used the browser’s developer tools to copy the GraphQL request that updates a Link.\nVerbatim request line: POST https://graph.linktr.ee/graphql\nWhy: The POST method sends data to the server; the URL is the GraphQL endpoint.\n\nStep 2 – Identify the object identifier\nIn the captured request body we saw a field named \"id\" that held our own Link’s numeric identifier (e.g. <my-authorized-link-id>).\nWhy: An identifier tells the server which object to modify.\n\nStep 3 – Modify the identifier to another workspace’s ID\nWe replaced the original id with a known ID from a different workspace (582743627).\nVerbatim snippet:\nOriginal Link ID: <my-authorized-link-id>\nModified Link ID: 582743627\nWhy: Changing the id directs the mutation to a different Link object.\n\nStep 4 – Resend the altered request using the same authenticated session\nWe sent the edited request back to https://graph.linktr.ee/graphql with the same session cookie.\nWhy: The server still sees a valid authenticated user, so it processes the mutation.\n\nStep 5 – Observe successful modification\nThe response indicated the mutation succeeded and the target Link’s fields (title, url, active, status) were updated.\nWhy: Because the resolver never checked that the user owned the Link, the operation was authorized only by authentication.\n\nEXPLOITATION\nStep 6 – Use the setDigitalDownloadLinkContext mutation\nThe mutation name that performed the change is setDigitalDownloadLinkContext and it accepts fields id, title, url, active, status.\nWhy: Mutations in GraphQL are the way to change data on the server.\n\nStep 7 – Verify impact\nWe fetched the modified Link via the public Link URL and saw the new destination URL, confirming a phishing redirect.\nWhy: Changing the url field controls where visitors are sent.",
+      "example": "Example target: https://target.example/graphql\nVulnerable resolver (pseudo‑code):\nfunction setLink(context, args) {\n  // args.id is taken from the client\n  const link = db.findLinkById(args.id); // no ownership check\n  link.title = args.title;\n  link.url = args.url;\n  db.save(link);\n}\nAttack request (JSON body):\n{\n  \"query\": \"mutation { setDigitalDownloadLinkContext(id: \\\"12345\\\", title: \\\"Hacked\\\", url: \\\"https://evil.example\\\") { id title url } }\"\n}\nWhy it works: The server trusts the supplied id (\"12345\") and updates the record even though the attacker does not own it, because there is no check that the authenticated user’s account matches the link’s owner.",
+      "takeaway": "When testing GraphQL APIs, always look for object identifiers (numeric IDs, UUIDs) in mutation requests. Capture a legitimate request, replace the id with one you have discovered elsewhere, and resend it while keeping the same authentication cookies. Tools such as Burp Suite or OWASP ZAP can automate the replay. Variants of this bug appear in REST endpoints that accept resource IDs in the URL path or JSON body. A common beginner mistake is to assume that being logged in automatically grants permission to edit any object with a valid ID; always verify server‑side ownership checks.",
+      "fix": "Add an explicit authorization check in every resolver that receives a Link id. Pseudo‑code fix:\nfunction setLink(context, args) {\n  const link = db.findLinkById(args.id);\n  if (link.ownerWorkspaceId !== context.authenticatedUser.workspaceId) {\n    throw new Error('Unauthorized');\n  }\n  // proceed with update\n  link.title = args.title;\n  link.url = args.url;\n  db.save(link);\n}\nThe check ensures the link belongs to the same workspace as the authenticated user before any modification. Apply this pattern to all GraphQL mutations and queries that accept object identifiers.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During security testing of Linktree’s GraphQL API, I identified a Broken Object Level Authorization (BOLA/IDOR) vulnerability that allowed an authenticated user to modify a Link object that was outside their authorized workspace. The issue was caused by insufficient server-side authorization checks around a user-controlled Link identifier. ## Affected Endpoint POST https://graph.linktr.ee/graphql The vulnerable functionality was exposed through GraphQL mutations responsible for managing Link objects. ## Discovery While testing Link management functionality, I noticed that requests contained a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "47bfc0531e96",
     "title": "Exposure of Shareable AWS S3 Pre-Signed Download URLs for Paid Digital Products",
     "url": "https://medium.com/@apop69166/exposure-of-shareable-aws-s3-pre-signed-download-urls-for-paid-digital-products-8e7dbef9fab3",
