@@ -1,5 +1,46 @@
 [
   {
+    "id": "bae3b5fef7f4",
+    "title": "Server-Side reCAPTCHA Validation Bypass on /services/request-send.php",
+    "url": "https://medium.com/@apop69166/server-side-recaptcha-validation-bypass-on-services-request-send-php-0e74076636f2",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahemd ashraf"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T14:33:15.000Z",
+    "added_at": "2026-10-02T11:23:29.783Z",
+    "categories": [
+      "business-logic",
+      "auth-bypass"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "The POST endpoint /services/request-send.php accepts form data without verifying the reCAPTCHA token on the server, so an attacker can send an empty g-recaptcha-response and still create leads.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "reCAPTCHA (a challenge‑response test that proves a user is human) is presented in the web form and generates a token stored in the g-recaptcha-response parameter (a field sent in the HTTP request body). The server‑side script request‑send.php (code that runs on the web server) does not verify that this parameter is present or valid before processing the request. It only records the CAPTCHA validation result in the JSON response but does not abort the workflow (the sequence of actions such as lead creation and email notification) when the result is false. Because the check occurs after lead creation, missing or invalid tokens are ignored, allowing unauthenticated users to bypass the protection.",
+      "walkthrough": "RECON\nStep 1: Open the form in a browser (a program that displays web pages). Why: to see the fields and the reCAPTCHA widget (a visual challenge that generates a token).\nStep 2: Capture the network traffic with Burp Suite (a proxy tool that lets you view and modify HTTP requests). Why: to see the exact request the browser sends.\nDISCOVERY\nStep 3: Locate the g-recaptcha-response parameter in the captured request. Why: this parameter carries the token that the server expects.\nStep 4: Send the captured request to Burp Repeater (a feature that lets you resend and edit a request). Why: to experiment with modifications.\nEXPLOITATION\nStep 5: Edit the request body to set g-recaptcha-response= (empty). The exact request:\nPOST /services/request-send.php HTTP/2\nHost: birdviewpsa.com\nContent-Type: application/x-www-form-urlencoded; charset=UTF-8\nX-Requested-With: XMLHttpRequest\n\ntyperequest=Trial&page=https%3A%2F%2Fbirdviewpsa.com%2Fcompany%2Fvulnerability-reward-program%2F&country=Egypt&state=Qalyubia&country_code=EG&meeting-url=NA&form-place=Header&fullname=Test+User&firstname=Test&lastname=User&email=attacker%40example.com&users=100&phone-code=20&phone=1234567890&company=TestCompany&comment=&g-recaptcha-response=&is_first_visit=true\nWhy: removing the token bypasses the client‑side check; the server still processes because it does not validate the token.\nStep 6: Send the modified request. Why: the server replies with JSON containing \"Success\": true while \"Captcha\": false, proving the bypass.\nIMPACT\nStep 7: Observe that a lead is created and notification emails are sent (the server’s downstream actions). Why: because the script proceeds after the failed CAPTCHA check.",
+      "example": "Imagine a fictional site target.example with an endpoint /api/submit.php that expects a reCAPTCHA token.\nVulnerable PHP snippet:\n<?php\n    $token = $_POST['g-recaptcha-response']; // token from client\n    // Log the verification result but continue anyway\n    $result = verify_with_google($token); // returns false if empty\n    // No check on $result, proceed to store data\n    store_lead($_POST);\n    echo json_encode(['success'=>true]);\n?>\nAttack request (empty token):\nPOST /api/submit.php HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\nname=Bob&email=bob%40example.com&g-recaptcha-response=\nWhy it works: the server reads the token but never aborts when verification fails, so the lead is stored even though the CAPTCHA was not solved.",
+      "takeaway": "When a form uses reCAPTCHA, always assume the client can be bypassed and verify the token on the server. Look for endpoints that accept a g-recaptcha-response parameter but do not return an error when it is missing or invalid. Tools like Burp Suite or OWASP ZAP can help you replay requests with an empty token to test this. Variants include invisible reCAPTCHA, hCaptcha, or custom challenge‑response fields that suffer the same lack of server‑side enforcement. A common beginner mistake is to trust only the client‑side JavaScript validation and not test the server’s behavior with manipulated parameters.",
+      "fix": "Add server‑side verification before any business logic runs. Example PHP fix:\n<?php\n    $token = $_POST['g-recaptcha-response'] ?? '';\n    if (empty($token)) {\n        http_response_code(400);\n        echo json_encode(['error'=>'CAPTCHA required']);\n        exit;\n    }\n    $response = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=YOUR_SECRET&response=' . $token);\n    $data = json_decode($response, true);\n    if (empty($data['success'])) {\n        http_response_code(400);\n        echo json_encode(['error'=>'CAPTCHA verification failed']);\n        exit;\n    }\n    // Proceed with lead creation and email notifications\n    store_lead($_POST);\n    send_notifications();\n    echo json_encode(['success'=>true]);\n?>\nThe fix ensures the token is present, sent to Google’s verification endpoint, and that the script aborts with an error if verification fails, preventing automated abuse.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The endpoint `/services/request-send.php` on `birdviewpsa.com` does not enforce server-side validation of the reCAPTCHA token before processing form submissions. Although the web form requires a CAPTCHA on the client side, an unauthenticated attacker can send a direct HTTP POST request with an empty `g-recaptcha-response` parameter. The server still processes the request successfully, creates the corresponding lead/request, assigns the request to sales and technical personnel, and triggers notification emails. ## Vulnerable Endpoint **Method:**`POST` **Endpoint:** `https://birdviewpsa.com/serv",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
     "id": "236719415888",
     "title": "I Found an OTP Bypass Bug in Mahindra’s Account Creation System",
     "url": "https://medium.com/@Falgun_Sondagar/i-found-an-otp-bypass-bug-in-mahindras-account-creation-system-05ae67c940c6",
