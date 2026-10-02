@@ -1,5 +1,45 @@
 [
   {
+    "id": "d9a7bbc4d19c",
+    "title": "Unauthenticated pol_round in arc-node: From Hash Preimage Omission to State Divergence",
+    "url": "https://medium.com/@mgsa112233/unauthenticated-pol-round-in-arc-node-from-hash-preimage-omission-to-state-divergence-387560f71493",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "jimmy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-02T18:45:26.000Z",
+    "added_at": "2026-10-02T21:04:39.165Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "An omission of the pol_round field from the proposal hash lets an attacker change the round value without breaking the proposer’s Ed25519 signature, causing divergent voting and possible consensus stall.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is three‑fold. First, the ProposalParts::hash function builds a Keccak‑256 hash using only height, round, and data bytes, completely leaving out the pol_round field. Second, the validate_proposal_parts routine verifies the proposer’s Ed25519 signature against this incomplete hash, so any change to pol_round does not affect signature validity. Third, the assemble_block_from_parts function copies the attacker‑controlled pol_round directly into the block’s valid_round state, allowing the manipulated value to influence the consensus state machine.",
+      "walkthrough": "RECON\nStep 1: The researcher opened the source file crates/types/src/proposal_parts.rs to see how the proposal hash is built.\nhasher.update(self.height().as_u64().to_be_bytes());\nhasher.update(self.round().as_i64().to_be_bytes());\nfor data in &self.data { hasher.update(&data.bytes); }\nWhy: hash means a fixed‑size digest; Keccak‑256 is the hash algorithm. The code shows only height, round, and data are fed, so pol_round is never included.\n\nDISCOVERY\nStep 2: The researcher inspected the signature check in crates/malachite-app/src/proposal_parts.rs.\nhash = parts.hash()\nWhy: validate_proposal_parts fetches the hash computed in Step 1 and then verifies the Ed25519 signature against it. Because the hash lacks pol_round, the signature does not bind that field.\n\nSTEP 3: The researcher read the block assembly code in state_machine.rs (line 279).\nvalid_round: parts.init().pol_round\nWhy: assemble_block_from_parts writes the pol_round value from the proposal directly into the node’s consensus state, so a modified value becomes the official round.\n\nEXPLOITATION\nStep 4: The researcher wrote a Python PoC to compute the hash and sign it, then altered pol_round from 0 to 5 and re‑used the same signature.\ndef proposal_parts_hash(height_u64, round_i64, data_parts):\n    msg = bytearray()\n    msg.extend(height_u64.to_bytes(8, 'big'))\n    msg.extend(round_i64.to_bytes(8, 'big', signed=True))\n    for part in data_parts:\n        msg.extend(part)\n    return keccak_256(bytes(msg))\nWhy: Python code builds the exact byte sequence used by the Rust hash function, proving that the hash does not depend on pol_round.\n\nStep 5: The PoC printed the verification result.\nBEFORE pol_round=0, AFTER pol_round=5, SIGNATURE VALID: True\nWhy: The signature remains valid after changing pol_round, confirming the omission bug.\n\nIMPACT\nStep 6: The researcher explained how the altered valid_round affects the voting guard in prevote_previous.\nvr = proposal.pol_round()\nif locked.round <= vr: prevote Val(proposed) else: prevote Nil\nWhy: prevote is a vote for the next block; Val means a positive vote, Nil means abstain. Different nodes receiving different pol_round values will take different branches, leading to conflicting votes and possible consensus split or stall.\n\nSTEP 7: The researcher noted that no private key is needed—only network access to relay tampered proposals.\nWhy: Because the signature verification does not cover pol_round, an attacker can simply forward modified messages without possessing any validator key.",
+      "example": "**Vulnerable snippet (target.example)**\n```rust\n// Simplified proposal hash – omits \"epoch\"\nfn hash(height: u64, round: i64, data: &[u8]) -> [u8; 32] {\n    let mut h = Keccak256::new();\n    h.update(&height.to_be_bytes());\n    h.update(&round.to_be_bytes());\n    h.update(data);\n    h.finalize().into()\n}\n\nfn verify(sig: &[u8], pk: &PublicKey, height: u64, round: i64, data: &[u8]) -> bool {\n    let h = hash(height, round, data);\n    pk.verify(&h, sig)\n}\n\nfn assemble(parts: ProposalParts) -> Block {\n    Block { valid_epoch: parts.epoch } // epoch was never hashed!\n}\n```",
+      "takeaway": "When reviewing consensus or blockchain code, always check that every mutable field influencing state transitions is included in the signed hash. Look for hash construction functions that skip fields like round, epoch, or timestamps. Tools such as grep for \"hash.update\" or static analysis can highlight missing inputs. Variants of this bug appear in other protocols that sign only a subset of a message (e.g., missing chain‑id in Ethereum signatures). Beginners often assume a signature automatically protects the whole object and forget to verify the exact signed data.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a security review of `arc-node` (commit `2a3e8ab`), I identified a critical integrity gap in the block dissemination and proposal validation logic. Specifically, the consensus proposal parts are signed over a hash that omits the `pol_round` field carried in the proposal `Init`. While this report was ultimately closed as a duplicate of an existing internal/external finding (`#4034183`), the vulnerability provides a fascinating study in consensus state-machine safety, signature malleability, and cryptographic omission bugs. ## Technical Deep Dive: The Integrity Gap In distributed consensu",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "bae3b5fef7f4",
     "title": "Server-Side reCAPTCHA Validation Bypass on /services/request-send.php",
     "url": "https://medium.com/@apop69166/server-side-recaptcha-validation-bypass-on-services-request-send-php-0e74076636f2",

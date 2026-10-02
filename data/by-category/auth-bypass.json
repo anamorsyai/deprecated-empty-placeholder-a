@@ -1,5 +1,47 @@
 [
   {
+    "id": "68b742883063",
+    "title": "The AES Key That Bypassed Every Fix: From Mass PII Exposure to 2FA Bypass",
+    "url": "https://medium.com/@mahmoudmagdy45456/the-aes-key-that-bypassed-every-fix-from-mass-pii-exposure-to-2fa-bypass-8143c9326f34",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mahmoud Magdy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-02T19:35:41.000Z",
+    "added_at": "2026-10-02T21:03:29.545Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A hardcoded AES encryption key in frontend JavaScript allowed a researcher to decrypt sensitive API responses and bypass Two-Factor Authentication (2FA) by tampering with the encrypted verification state.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The developers attempted to secure sensitive data by encrypting API responses, but they stored the secret AES key in the frontend JavaScript (code that runs in the user's browser), making it accessible to anyone. Additionally, the server relied on the client to send back an encrypted status string ('N' for No, 'Y' for Yes) to confirm 2FA completion, rather than tracking the 2FA state securely on the server side. This implementation flaw allowed an attacker to use the exposed key to forge a 'successful' 2FA response.",
+      "walkthrough": "RECON\nStep 1: The researcher examined the frontend JavaScript (code that runs in the browser) and discovered a hardcoded AES key.\n<AES-KEY>\nWhy: Hardcoded secrets in client-side code are accessible to any user who views the page source or uses browser developer tools.\n\nDISCOVERY\nStep 2: The researcher identified that the application was sending encrypted responses from various API endpoints (interfaces that allow programs to talk to each other).\nGET /api/proxy-service/companies?tenantCode=PIL&companyRegistrationNumber=1\nWhy: The application used encryption to hide sensitive data like PII (Personally Identifiable Information) after previous vulnerabilities were reported.\n\nStep 3: The researcher wrote a Node.js script to attempt decryption using the discovered key and the AES-GCM algorithm (a specific method of encryption that ensures data integrity).\nconst decipher = crypto.createDecipheriv(\"aes-256-gcm\", key, iv);\nWhy: By mimicking the application's internal logic, the researcher could unscramble the data into readable text.\n\nEXPLOITATION: DATA EXPOSURE\nStep 4: The researcher successfully decrypted the API response, revealing sensitive company and contact data.\nconsole.log(decrypted);\nWhy: Since the key was known, the encryption provided no actual security against a motivated user.\n\nEXPLOITATION: 2FA BYPASS\nStep 5: The researcher observed the 2FA (Two-Factor Authentication, an extra security layer) flow and captured an encrypted verification response.\n<encrypted_2fa_response>\nWhy: The researcher suspected the same key might be used for other security-critical functions.\n\nStep 6: The researcher decrypted the 2FA response and found a simple status string.\nmahmoudmagdy45456@gmail.com:null:1776557237487:N\nWhy: The 'N' at the end of the string represented 'No,' indicating the 2FA was not yet completed.\n\nStep 7: The researcher modified the decrypted string, changing the 'N' to a 'Y' (representing 'Yes').\nmahmoudmagdy45456@gmail.com:null:1776557237487:Y\nWhy: The goal was to trick the server into thinking the 2FA process was successful.\n\nStep 8: The researcher wrote a script to re-encrypt the modified string using the same AES key and a new IV (Initialization Vector, a random number used to start encryption).\nconst cipher = crypto.createCipheriv(\"aes-256-gcm\", key, iv);\nWhy: To be accepted by the server, the modified data had to be encrypted exactly like a legitimate response.\n\nStep 9: The researcher sent the forged, encrypted 'Y' response back to the application.\n[Modified Encrypted Payload]\nWhy: The server accepted the payload as valid because it was encrypted with the correct key.\n\nIMPACT\nStep 10: The application granted access to the account, bypassing the 2FA requirement entirely.\nWhy: The server trusted the client-provided encrypted value to determine the 2FA state instead of verifying it internally.",
+      "example": "Assume a fictional site target.example uses a hardcoded key 'SECRET_KEY_123' in its 'app.js' file. When a user logs in, the server sends an encrypted cookie: 'ENCRYPTED_STATUS'. Using the key, an attacker decrypts the cookie to find 'user_id=500;is_admin=false'. The attacker changes 'false' to 'true', re-encrypts the string with 'SECRET_KEY_123', and replaces their cookie. The server, seeing the validly encrypted cookie, grants the attacker administrative privileges. This works because the server trusts the client to hold and return sensitive state information that the client can actually manipulate.",
+      "takeaway": "When you find a hardcoded secret or key in JavaScript, your work is only beginning; you must find where that key is used in network traffic. Look for high-entropy (random-looking) strings in API responses or cookies and try to decrypt them using the found key. A common variant of this bug is 'Client-Side Session Management,' where the server trusts the client to store its own permissions. Avoid the mistake of reporting a 'Hardcoded Secret' as a low-severity bug without demonstrating how it can be used to access data or bypass authentication.",
+      "fix": "To fix this, the AES key must be removed from the frontend JavaScript and stored securely on the server. More importantly, the 2FA verification state must be managed entirely on the server side using secure sessions. The server should never trust a client-provided value to determine if a security check was passed. Instead of the client sending an encrypted 'Y', the server should update a database or session variable once the 2FA code is verified. \n\nExample of secure server-side check:\nif (submitted_code === correct_code) {\n  req.session.is_2fa_verified = true;\n  return res.status(200).send('Success');\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I had previously reported several vulnerabilities on the same application : https://medium.com/@mahmoudmagdy45456/how-i-landed-5-bounties-on-the-same-platform-c8d910b5f4cd For example: GET /api/proxy-service/companies?tenantCode=PIL&companyRegistrationNumber=1 and: GET /api/proxy-service/reference-data/USER_ROLE?tenantCode=PIL and: GET /api/proxy-service/admin/bl/companies These APIs were returning sensitive information without the proper access controls. The company fixed those issues. But as part of the fix, they changed how the API responses were handled. Instead of restricting access to th",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "1d6111a76833",
     "title": "$6,200 for an Invisible Button: Clickjacking an OAuth Consent Screen Into Account Takeover",
     "url": "https://medium.com/@t4nv1/6-200-for-an-invisible-button-clickjacking-an-oauth-consent-screen-into-account-takeover-7216042c6264",

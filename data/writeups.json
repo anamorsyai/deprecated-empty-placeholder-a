@@ -1,5 +1,87 @@
 [
   {
+    "id": "68b742883063",
+    "title": "The AES Key That Bypassed Every Fix: From Mass PII Exposure to 2FA Bypass",
+    "url": "https://medium.com/@mahmoudmagdy45456/the-aes-key-that-bypassed-every-fix-from-mass-pii-exposure-to-2fa-bypass-8143c9326f34",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mahmoud Magdy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-02T19:35:41.000Z",
+    "added_at": "2026-10-02T21:03:29.545Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A hardcoded AES encryption key in frontend JavaScript allowed a researcher to decrypt sensitive API responses and bypass Two-Factor Authentication (2FA) by tampering with the encrypted verification state.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The developers attempted to secure sensitive data by encrypting API responses, but they stored the secret AES key in the frontend JavaScript (code that runs in the user's browser), making it accessible to anyone. Additionally, the server relied on the client to send back an encrypted status string ('N' for No, 'Y' for Yes) to confirm 2FA completion, rather than tracking the 2FA state securely on the server side. This implementation flaw allowed an attacker to use the exposed key to forge a 'successful' 2FA response.",
+      "walkthrough": "RECON\nStep 1: The researcher examined the frontend JavaScript (code that runs in the browser) and discovered a hardcoded AES key.\n<AES-KEY>\nWhy: Hardcoded secrets in client-side code are accessible to any user who views the page source or uses browser developer tools.\n\nDISCOVERY\nStep 2: The researcher identified that the application was sending encrypted responses from various API endpoints (interfaces that allow programs to talk to each other).\nGET /api/proxy-service/companies?tenantCode=PIL&companyRegistrationNumber=1\nWhy: The application used encryption to hide sensitive data like PII (Personally Identifiable Information) after previous vulnerabilities were reported.\n\nStep 3: The researcher wrote a Node.js script to attempt decryption using the discovered key and the AES-GCM algorithm (a specific method of encryption that ensures data integrity).\nconst decipher = crypto.createDecipheriv(\"aes-256-gcm\", key, iv);\nWhy: By mimicking the application's internal logic, the researcher could unscramble the data into readable text.\n\nEXPLOITATION: DATA EXPOSURE\nStep 4: The researcher successfully decrypted the API response, revealing sensitive company and contact data.\nconsole.log(decrypted);\nWhy: Since the key was known, the encryption provided no actual security against a motivated user.\n\nEXPLOITATION: 2FA BYPASS\nStep 5: The researcher observed the 2FA (Two-Factor Authentication, an extra security layer) flow and captured an encrypted verification response.\n<encrypted_2fa_response>\nWhy: The researcher suspected the same key might be used for other security-critical functions.\n\nStep 6: The researcher decrypted the 2FA response and found a simple status string.\nmahmoudmagdy45456@gmail.com:null:1776557237487:N\nWhy: The 'N' at the end of the string represented 'No,' indicating the 2FA was not yet completed.\n\nStep 7: The researcher modified the decrypted string, changing the 'N' to a 'Y' (representing 'Yes').\nmahmoudmagdy45456@gmail.com:null:1776557237487:Y\nWhy: The goal was to trick the server into thinking the 2FA process was successful.\n\nStep 8: The researcher wrote a script to re-encrypt the modified string using the same AES key and a new IV (Initialization Vector, a random number used to start encryption).\nconst cipher = crypto.createCipheriv(\"aes-256-gcm\", key, iv);\nWhy: To be accepted by the server, the modified data had to be encrypted exactly like a legitimate response.\n\nStep 9: The researcher sent the forged, encrypted 'Y' response back to the application.\n[Modified Encrypted Payload]\nWhy: The server accepted the payload as valid because it was encrypted with the correct key.\n\nIMPACT\nStep 10: The application granted access to the account, bypassing the 2FA requirement entirely.\nWhy: The server trusted the client-provided encrypted value to determine the 2FA state instead of verifying it internally.",
+      "example": "Assume a fictional site target.example uses a hardcoded key 'SECRET_KEY_123' in its 'app.js' file. When a user logs in, the server sends an encrypted cookie: 'ENCRYPTED_STATUS'. Using the key, an attacker decrypts the cookie to find 'user_id=500;is_admin=false'. The attacker changes 'false' to 'true', re-encrypts the string with 'SECRET_KEY_123', and replaces their cookie. The server, seeing the validly encrypted cookie, grants the attacker administrative privileges. This works because the server trusts the client to hold and return sensitive state information that the client can actually manipulate.",
+      "takeaway": "When you find a hardcoded secret or key in JavaScript, your work is only beginning; you must find where that key is used in network traffic. Look for high-entropy (random-looking) strings in API responses or cookies and try to decrypt them using the found key. A common variant of this bug is 'Client-Side Session Management,' where the server trusts the client to store its own permissions. Avoid the mistake of reporting a 'Hardcoded Secret' as a low-severity bug without demonstrating how it can be used to access data or bypass authentication.",
+      "fix": "To fix this, the AES key must be removed from the frontend JavaScript and stored securely on the server. More importantly, the 2FA verification state must be managed entirely on the server side using secure sessions. The server should never trust a client-provided value to determine if a security check was passed. Instead of the client sending an encrypted 'Y', the server should update a database or session variable once the 2FA code is verified. \n\nExample of secure server-side check:\nif (submitted_code === correct_code) {\n  req.session.is_2fa_verified = true;\n  return res.status(200).send('Success');\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I had previously reported several vulnerabilities on the same application : https://medium.com/@mahmoudmagdy45456/how-i-landed-5-bounties-on-the-same-platform-c8d910b5f4cd For example: GET /api/proxy-service/companies?tenantCode=PIL&companyRegistrationNumber=1 and: GET /api/proxy-service/reference-data/USER_ROLE?tenantCode=PIL and: GET /api/proxy-service/admin/bl/companies These APIs were returning sensitive information without the proper access controls. The company fixed those issues. But as part of the fix, they changed how the API responses were handled. Instead of restricting access to th",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "d9a7bbc4d19c",
+    "title": "Unauthenticated pol_round in arc-node: From Hash Preimage Omission to State Divergence",
+    "url": "https://medium.com/@mgsa112233/unauthenticated-pol-round-in-arc-node-from-hash-preimage-omission-to-state-divergence-387560f71493",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "jimmy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-02T18:45:26.000Z",
+    "added_at": "2026-10-02T21:04:39.165Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "An omission of the pol_round field from the proposal hash lets an attacker change the round value without breaking the proposer’s Ed25519 signature, causing divergent voting and possible consensus stall.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is three‑fold. First, the ProposalParts::hash function builds a Keccak‑256 hash using only height, round, and data bytes, completely leaving out the pol_round field. Second, the validate_proposal_parts routine verifies the proposer’s Ed25519 signature against this incomplete hash, so any change to pol_round does not affect signature validity. Third, the assemble_block_from_parts function copies the attacker‑controlled pol_round directly into the block’s valid_round state, allowing the manipulated value to influence the consensus state machine.",
+      "walkthrough": "RECON\nStep 1: The researcher opened the source file crates/types/src/proposal_parts.rs to see how the proposal hash is built.\nhasher.update(self.height().as_u64().to_be_bytes());\nhasher.update(self.round().as_i64().to_be_bytes());\nfor data in &self.data { hasher.update(&data.bytes); }\nWhy: hash means a fixed‑size digest; Keccak‑256 is the hash algorithm. The code shows only height, round, and data are fed, so pol_round is never included.\n\nDISCOVERY\nStep 2: The researcher inspected the signature check in crates/malachite-app/src/proposal_parts.rs.\nhash = parts.hash()\nWhy: validate_proposal_parts fetches the hash computed in Step 1 and then verifies the Ed25519 signature against it. Because the hash lacks pol_round, the signature does not bind that field.\n\nSTEP 3: The researcher read the block assembly code in state_machine.rs (line 279).\nvalid_round: parts.init().pol_round\nWhy: assemble_block_from_parts writes the pol_round value from the proposal directly into the node’s consensus state, so a modified value becomes the official round.\n\nEXPLOITATION\nStep 4: The researcher wrote a Python PoC to compute the hash and sign it, then altered pol_round from 0 to 5 and re‑used the same signature.\ndef proposal_parts_hash(height_u64, round_i64, data_parts):\n    msg = bytearray()\n    msg.extend(height_u64.to_bytes(8, 'big'))\n    msg.extend(round_i64.to_bytes(8, 'big', signed=True))\n    for part in data_parts:\n        msg.extend(part)\n    return keccak_256(bytes(msg))\nWhy: Python code builds the exact byte sequence used by the Rust hash function, proving that the hash does not depend on pol_round.\n\nStep 5: The PoC printed the verification result.\nBEFORE pol_round=0, AFTER pol_round=5, SIGNATURE VALID: True\nWhy: The signature remains valid after changing pol_round, confirming the omission bug.\n\nIMPACT\nStep 6: The researcher explained how the altered valid_round affects the voting guard in prevote_previous.\nvr = proposal.pol_round()\nif locked.round <= vr: prevote Val(proposed) else: prevote Nil\nWhy: prevote is a vote for the next block; Val means a positive vote, Nil means abstain. Different nodes receiving different pol_round values will take different branches, leading to conflicting votes and possible consensus split or stall.\n\nSTEP 7: The researcher noted that no private key is needed—only network access to relay tampered proposals.\nWhy: Because the signature verification does not cover pol_round, an attacker can simply forward modified messages without possessing any validator key.",
+      "example": "**Vulnerable snippet (target.example)**\n```rust\n// Simplified proposal hash – omits \"epoch\"\nfn hash(height: u64, round: i64, data: &[u8]) -> [u8; 32] {\n    let mut h = Keccak256::new();\n    h.update(&height.to_be_bytes());\n    h.update(&round.to_be_bytes());\n    h.update(data);\n    h.finalize().into()\n}\n\nfn verify(sig: &[u8], pk: &PublicKey, height: u64, round: i64, data: &[u8]) -> bool {\n    let h = hash(height, round, data);\n    pk.verify(&h, sig)\n}\n\nfn assemble(parts: ProposalParts) -> Block {\n    Block { valid_epoch: parts.epoch } // epoch was never hashed!\n}\n```",
+      "takeaway": "When reviewing consensus or blockchain code, always check that every mutable field influencing state transitions is included in the signed hash. Look for hash construction functions that skip fields like round, epoch, or timestamps. Tools such as grep for \"hash.update\" or static analysis can highlight missing inputs. Variants of this bug appear in other protocols that sign only a subset of a message (e.g., missing chain‑id in Ethereum signatures). Beginners often assume a signature automatically protects the whole object and forget to verify the exact signed data.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a security review of `arc-node` (commit `2a3e8ab`), I identified a critical integrity gap in the block dissemination and proposal validation logic. Specifically, the consensus proposal parts are signed over a hash that omits the `pol_round` field carried in the proposal `Init`. While this report was ultimately closed as a duplicate of an existing internal/external finding (`#4034183`), the vulnerability provides a fascinating study in consensus state-machine safety, signature malleability, and cryptographic omission bugs. ## Technical Deep Dive: The Integrity Gap In distributed consensu",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "061527f90250",
     "title": "The Verizon Report Just Proved Something Terrifying: Attackers Are Using AI to Exploit Bugs in…",
     "url": "https://medium.com/@riyalimba/the-verizon-report-just-proved-something-terrifying-attackers-are-using-ai-to-exploit-bugs-in-f0a1a4d2ead3",
