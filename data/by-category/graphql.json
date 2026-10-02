@@ -42,6 +42,47 @@
     "score": 53
   },
   {
+    "id": "ca64eb83da7d",
+    "title": "Broken Function Level Authorization in Linktree GraphQL API Allows Lower-Privileged Admins to…",
+    "url": "https://medium.com/@apop69166/broken-function-level-authorization-in-linktree-graphql-api-allows-lower-privileged-admins-to-5d53185b3693",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahemd ashraf"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-01T14:45:10.000Z",
+    "added_at": "2026-10-02T05:36:04.311Z",
+    "categories": [
+      "auth-bypass",
+      "graphql"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A lower‑privileged Admin could call an Owner‑only GraphQL mutation and add new administrators, bypassing role‑based access control. The backend only checked authentication, not the user’s role, leading to privilege escalation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The GraphQL mutation that invites a new administrator lacked a function‑level authorization check. The server verified that the request came from an authenticated user but never confirmed that the user’s role was Owner. Because the resolver did not inspect the caller’s permissions, any authenticated Admin could invoke the mutation. This missing role verification is the root cause of the Broken Function Level Authorization vulnerability.",
+      "walkthrough": "RECON\nStep 1: Capture a legitimate Owner request.\n- Action: Log in as the Owner and use the browser’s developer tools to record the GraphQL request that adds an admin.\n- Code: mutation { <owner_admin_invitation_mutation>( identifier: \"<target-user>\" accountId: \"<account-id>\" ) { ... } }\n- Why: The HTTP request contains a GraphQL mutation (a structured operation sent over HTTP) that the Owner is allowed to execute.\n\nStep 2: Identify the authentication cookie.\n- Action: In the same network tab, note the \"Cookie\" header that carries the Owner’s session token.\n- Why: A cookie is a small piece of data the browser sends with each request to prove the user is logged in.\n\nEXPLOITATION\nStep 3: Obtain an Admin session cookie.\n- Action: Log out the Owner, log in as a lower‑privileged Admin, and copy the new \"Cookie\" header value.\n- Why: This cookie represents an authenticated Admin user.\n\nStep 4: Replace the Owner cookie with the Admin cookie.\n- Action: In a tool like Burp Suite or curl, set the \"Cookie\" header to the Admin’s value while keeping the original request body unchanged.\n- Why: The server will see a valid authenticated session but from a different role.\n\nStep 5: Send the mutated request.\n- Action: POST the same GraphQL payload (the mutation from Step 1) to the GraphQL endpoint using the Admin cookie.\n- Code: POST /graphql HTTP/1.1\\nHost: linktr.ee\\nCookie: admin_session=...\\nContent-Type: application/json\\n\\n{\"query\":\"mutation { <owner_admin_invitation_mutation>(identifier:\\\"target@example.com\\\",accountId:\\\"12345\\\") { ... } }\"}\n- Why: The backend receives a valid mutation from an authenticated Admin; because it does not check the role, it processes the request.\n\nStep 6: Observe the successful response.\n- Action: The response contains a message like \"<target-user> has been added as an admin\".\n- Why: The lack of role verification allowed the Admin to perform an Owner‑only operation.\n\nIMPACT\nStep 7: Verify the new admin exists.\n- Action: Use the UI or another GraphQL query to list administrators and confirm the target user appears.\n- Why: Confirms that privilege escalation succeeded.\n\nSTEP 8: Consider further abuse.\n- Action: Repeat the process to add additional accounts or perform other Owner‑level mutations.\n- Why: Once an attacker can create admins, they can maintain persistence and expand control.",
+      "example": "**Fictional Target:** https://target.example/graphql\n**Vulnerable Resolver (pseudo‑code):**\n```js\nfunction inviteAdmin(request) {\n  // Only checks that the user is logged in\n  if (!request.user) throw new Error('Unauthenticated');\n  // Missing: if (request.user.role !== 'owner') return error;\n  addAdmin(request.body.identifier, request.body.accountId);\n  return { success: true };\n}\n```\n**Attack Request:**\n```\nPOST /graphql HTTP/1.1\nHost: target.example\nCookie: session=admin_cookie\nContent-Type: application/json\n\n{\"query\":\"mutation { inviteAdmin(identifier:\\\"evil@evil.com\\\",accountId:\\\"999\\\") { success } }\"}\n```\n**Why it works:** The server authenticates the request via the session cookie but never checks that the caller’s role is *owner*. Therefore an Admin can invoke the `inviteAdmin` mutation and create a new administrator.",
+      "takeaway": "When testing GraphQL APIs, always enumerate every mutation and replay privileged ones with lower‑privileged accounts. Look for missing role checks in resolvers – the server may only verify authentication. Tools like Burp Suite, GraphQL Playground, or curl help capture and replay requests. Variants of this bug appear in REST endpoints that expose admin actions without proper RBAC, or in RPC services that skip permission checks. Beginners often forget to swap the authentication token and keep the original request body unchanged, which leads to false‑negative results.",
+      "fix": "Add explicit role verification inside the mutation resolver. Before performing the invite, check that `request.user.role` includes the permission \"invite_admin\" (or that the role is Owner). Example fix (pseudo‑code):\n```js\nfunction inviteAdmin(request) {\n  if (!request.user) throw new Error('Unauthenticated');\n  if (request.user.role !== 'owner') throw new Error('Forbidden');\n  // optional: verify request.user.accountId === request.body.accountId\n  addAdmin(request.body.identifier, request.body.accountId);\n  return { success: true };\n}\n```\nThis ensures the server enforces both authentication and authorization, preventing lower‑privileged users from executing Owner‑only functions.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing the authorization model of Linktree’s GraphQL API, I discovered a Broken Function Level Authorization vulnerability that allowed a lower-privileged Admin account to perform an administrative operation that should have been restricted to the account Owner. The application correctly distinguished between different administrative roles in the UI, but the backend GraphQL API did not enforce the same privilege boundary for the affected mutation. ## Understanding the Authorization Model The account had multiple privilege levels. The **Owner** had permission to manage administrators and",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "45a90b4cf8d9",
     "title": "The Butterfly Effect: Turning Overlooked Misconfigurations into Zero Click Account Takeover",
     "url": "https://oussamarahali.com/blog/butterfly-effect-zero-click-account-takeover",
