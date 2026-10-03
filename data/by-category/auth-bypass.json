@@ -1,5 +1,45 @@
 [
   {
+    "id": "b27f0d31e312",
+    "title": "$7,500 for a Wildcard in the Wrong Place: LDAP Injection to Authentication Bypass",
+    "url": "https://medium.com/@t4nv1/7-500-for-a-wildcard-in-the-wrong-place-ldap-injection-to-authentication-bypass-655682f8bebd",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-03T08:51:01.000Z",
+    "added_at": "2026-10-03T10:36:57.271Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "LDAP injection let an attacker bypass the login form on Pemberton Systems and gain full user privileges.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (target.example)**\n```php\n// PHP code that processes a login form\n$username = $_POST['user'];   // HTTP request parameter sent by the browser\n$password = $_POST['pass'];   // HTTP request parameter sent by the browser\n\n$ldap = ldap_connect('ldap://ldap.target.example'); // opens a connection to the LDAP server\nldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);\n\n// The code builds an LDAP filter directly from user input – NO sanitisation!\n$filter = \"(uid=$username)\"; // LDAP filter string; (uid=…) tells the server to look for a user entry whose uid attribute matches the value\n\n$search = ldap_search($ldap, \"dc=example,dc=com\", $filter);\n$entries = ldap_get_entries($ldap, $search);\n\nif ($entries['count'] == 1) {\n    // The user exists – now try to bind (authenticate) with the supplied password\n    $dn = $entries[0]['dn']; // distinguished name of the found entry\n    if (ldap_bind($ldap, $dn, $password)) {\n        echo \"Login successful\"; // authentication succeeded\n    } else {\n        echo \"Invalid password\";\n    }\n} else {\n    echo \"User not found\";\n}\n```\n**Why it is vulnerable**\n- The `$filter` string is built by concatenating the raw `$username` value. An attacker can inject LDAP control characters (e.g., `*`, `)`, `(`) to change the logic of the filter.\n\n**Exploit payload**\n```\nPOST /login.php HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\nuser=*)(|(uid=*))&pass=doesnotmatter\n```\n**Break‑down**\n1. `POST` – an HTTP request method that sends data to the server.\n2. `/login.php` – the endpoint (URL path) that processes the login.\n3. `Content-Type: application/x-www-form-urlencoded` – tells the server the body is key‑value pairs.\n4. Body `user=*)(|(uid=*))&pass=doesnotmatter`\n   - `user=` – name of the first parameter.\n   - `*)(|(uid=*))` – the injected value. When placed into the filter it becomes `(uid=*)(|(uid=*))` which is always true because `*` matches any entry.\n   - `pass=` – second parameter; its value is irrelevant because the filter already returns a user entry, and the subsequent `ldap_bind` will succeed with an empty password if the directory allows it, or the attacker can try a known weak password.\n\n**Result**\nThe LDAP server returns the first user entry (often an admin) regardless of the real username, and the script thinks the user exists and proceeds to bind, effectively bypassing authentication.\n\n**Lesson for beginners**\n- Never insert raw user input into an LDAP filter.\n- Always escape special characters (`*`, `(`, `)`, `\\`, `\\0`) or use a safe library function.\n- Treat LDAP filters like SQL queries: they need the same sanitisation discipline.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I almost skipped this login form entirely. It looked like every other enterprise single-sign-on page I’ve tested — username, password, a “forgot password” link, nothing visually distinctive. What made me slow down was a single detail in how it failed: a slightly different error message depending on whether the username I entered existed at all, versus existed but with a wrong password. That kind of inconsistency is usually nothing. Here, it was the first thread of something considerably more serious. The target, which I’ll call **Pemberton Systems** here per their program’s disclosure terms, i",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "68b742883063",
     "title": "The AES Key That Bypassed Every Fix: From Mass PII Exposure to 2FA Bypass",
     "url": "https://medium.com/@mahmoudmagdy45456/the-aes-key-that-bypassed-every-fix-from-mass-pii-exposure-to-2fa-bypass-8143c9326f34",
