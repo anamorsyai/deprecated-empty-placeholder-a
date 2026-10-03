@@ -1,5 +1,46 @@
 [
   {
+    "id": "c4a6b939da9b",
+    "title": "It Returned 404… But the Data Was Still There",
+    "url": "https://medium.com/@hamdyosama2995/it-returned-404-but-the-data-was-still-there-6e9bf4dd408d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Hamdyosama"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-02T22:51:49.000Z",
+    "added_at": "2026-10-03T00:23:38.746Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An application attempted to hide sensitive admin data by displaying a 404 Not Found error page, but the underlying HTTP response still contained the full list of employee data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a 'client-side security' flaw where the server-side logic fetches sensitive data before or during an authorization check. Instead of preventing the data from being sent, the application sends the data to the browser and then relies on the user interface to hide it if the user is unauthorized. Specifically, the endpoint api/get-users was configured to return a 404 status code to unauthorized users, but it failed to clear the response body, leaving the sensitive JSON data accessible to anyone inspecting the network traffic.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher used waybackurls (a tool that fetches old URLs from internet archives) and katana (a tool that crawls websites to find hidden links) to gather a list of endpoints.\nwaybackurls target.example | katana\nWhy: To find hidden or forgotten pages that might not be linked on the main site (endpoints are specific web addresses like /login or /api/data).\n\n2. The researcher filtered the results to look for sensitive keywords like 'admin'.\ngrep \"admin\" endpoints.txt\nWhy: Admin pages often contain more sensitive functionality or data than standard user pages.\n\nDISCOVERY\n3. The researcher attempted to visit one of the discovered admin URLs in a web browser.\nhttps://target.example/admin-dashboard\nWhy: To see if the page is publicly accessible or protected by a login (authentication is the process of verifying who a user is).\n\n4. The browser displayed a 'You can’t access this page — 404' message.\nWhy: A 404 error usually means 'Not Found,' suggesting the page doesn't exist or is hidden.\n\n5. While the page was loading, the researcher noticed a table of data appeared and disappeared in less than a second.\nWhy: This 'flicker' suggests the browser received data and tried to show it before the website's code decided to hide it.\n\nEXPLOITATION\n6. The researcher opened Burp Suite (a tool used to intercept and inspect web traffic between a browser and a server).\nWhy: To see the raw HTTP request (the message the browser sends to the server) and the HTTP response (the message the server sends back).\n\n7. The researcher reloaded the admin page while Burp Suite was running.\nWhy: To capture the exact data being sent by the server to the browser.\n\n8. In the Burp Suite 'HTTP history' tab, the researcher located a request to a specific data-fetching endpoint.\nGET /api/get-users HTTP/1.1\nWhy: Modern websites often load a 'shell' page first and then make separate requests to an API (Application Programming Interface, a way for programs to talk to each other) to get the actual data.\n\n9. The researcher inspected the response from the server for that request.\nHTTP/1.1 404 Not Found\nContent-Type: application/json\n[{\"id\":1,\"name\":\"John Doe\",\"email\":\"john@example.com\"},...]\nWhy: Even though the status code was 404 (Not Found), the response body (the actual content of the message) contained the full list of employee data.\n\nIMPACT\n10. The researcher confirmed that any user could view sensitive employee PII (Personally Identifiable Information) without logging in.\nWhy: The server failed to implement proper access control (rules that determine who can see what data) at the data level.",
+      "example": "Imagine a website at 'target.example/admin/logs'. When a regular user visits, the website's JavaScript code checks if 'user.role' is 'admin'. If not, it shows a '404 Not Found' image. However, the code still runs a background command: 'fetch(\"/api/admin/raw-logs\")'. The server receives this request and, because it doesn't check permissions on the server-side, it sends back a JSON file containing all system logs. An attacker simply opens their browser's 'Network' tab (F12), clicks on the 'raw-logs' request, and reads the sensitive data in the 'Response' section, completely bypassing the 404 image shown on the screen.",
+      "takeaway": "Always look for 'flickering' UI elements that appear briefly before an error message; this is a major red flag that data is being sent before authorization is verified. Use a proxy tool like Burp Suite to inspect every response, as developers often use 'Security through Obscurity' (trying to hide things rather than securing them) by sending a 404 or 403 status code while still including the data in the body. A common variant of this is 'Information Disclosure via Client-Side Routing,' where the frontend hides a component but the backend API remains wide open. Avoid the mistake of trusting the browser to hide data; if the data reaches the user's computer, it is already compromised.",
+      "fix": "The fix must be implemented on the server-side, not the client-side. Before the server retrieves any data from the database or sends a response, it must verify the user's session and permissions. If the user is not authorized, the server should return a 403 Forbidden or 404 Not Found status code with a completely empty body or a generic error message. \n\nExample of fixed server-side logic (Node.js/Express):\napp.get('/api/get-users', (req, res) => {\n  if (!req.user || !req.user.isAdmin) {\n    return res.status(404).send({ error: 'Not Found' }); // Send generic error, NO DATA\n  }\n  const users = db.getAllUsers();\n  res.json(users);\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**In this article, I’d like to share a bug I discovered while performing reconnaissance on a target. I came across a page that returned a 404 response, but the HTTP requests told a different story.** When testing a target. while performing reconnaissance. I found a page and returned 404. But the HTTP requests had other ideas. ## Get Hamdyosama’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in I started with some basic reconnaissance, using waybackurl and katana to collect endpoints to test. While going through",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "68b742883063",
     "title": "The AES Key That Bypassed Every Fix: From Mass PII Exposure to 2FA Bypass",
     "url": "https://medium.com/@mahmoudmagdy45456/the-aes-key-that-bypassed-every-fix-from-mass-pii-exposure-to-2fa-bypass-8143c9326f34",
