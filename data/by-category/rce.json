@@ -1,5 +1,46 @@
 [
   {
+    "id": "582dc44ebedb",
+    "title": "RCE and bad crypto in Internxt's 'post-quantum' cloud storage",
+    "url": "https://www.reddit.com/r/netsec/comments/1wwgdom/rce_and_bad_crypto_in_internxts_postquantum_cloud",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/pascalschaerli"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-03T06:43:58.000Z",
+    "added_at": "2026-10-03T14:54:13.695Z",
+    "categories": [
+      "rce",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "A critical Remote Code Execution (RCE) vulnerability and cryptographic weaknesses were identified in Internxt's cloud storage platform.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a cloud storage service at target.example that lets users rename files. The server uses a system command (a direct instruction to the computer's operating system) to perform the rename. If the application does not clean the input (the data sent by the user), an attacker can use special characters like a semicolon (;) to chain a second, malicious command. Vulnerable Code Snippet: `os.system('mv ' + old_name + ' ' + new_name)`. Attack Request: `POST /rename?new_name=file.txt;whoami`. Why: The server executes `mv old.txt file.txt;whoami`. The semicolon acts as a command separator (a character that marks the end of one instruction and the start of another), telling the computer to finish the move command and then immediately run `whoami` (a command that reveals the identity of the user running the web server). This is Remote Code Execution (RCE), where an attacker runs their own code on the target machine.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "061527f90250",
     "title": "The Verizon Report Just Proved Something Terrifying: Attackers Are Using AI to Exploit Bugs in…",
     "url": "https://medium.com/@riyalimba/the-verizon-report-just-proved-something-terrifying-attackers-are-using-ai-to-exploit-bugs-in-f0a1a4d2ead3",

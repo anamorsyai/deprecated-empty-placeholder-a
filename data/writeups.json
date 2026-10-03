@@ -1,5 +1,46 @@
 [
   {
+    "id": "51e0a975fe3c",
+    "title": "I Spent 6 Hours on a Report That Got Closed in 4 Minutes. Here’s What I Learned.",
+    "url": "https://medium.com/@riyalimba/i-spent-6-hours-on-a-report-that-got-closed-in-4-minutes-heres-what-i-learned-5c22ca04048d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Riya Limba"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-03T14:00:30.000Z",
+    "added_at": "2026-10-03T14:53:47.633Z",
+    "categories": [
+      "info-disclosure",
+      "auth-bypass"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "A researcher identified an API endpoint that leaked the existence of usernames through different error messages, but the report was closed due to a lack of exploitable impact.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a lack of uniform error handling on the authentication endpoint. The API (a set of rules allowing programs to talk to each other) returned 'User not found' for non-existent accounts and 'Incorrect password' for existing ones. This behavior (how the application acts) allowed for user enumeration (the process of identifying valid usernames). However, the application implemented security controls like rate limiting (restricting the number of requests a user can make) which prevented further exploitation.",
+      "walkthrough": "RECON\n1. The researcher identified an authentication endpoint used for logging into the application.\n2. They observed the HTTP response (the data sent back by the server) when trying different login inputs.\n\nDISCOVERY\n3. The researcher sent a request with a username they knew did not exist.\nPOST /api/login HTTP/1.1\n{\"username\": \"fakeuser123\", \"password\": \"password123\"}\n4. The server responded with a specific error message.\n{\"status\": \"error\", \"message\": \"User not found\"}\nWhy: The application logic explicitly checks if the user exists before checking the password, revealing the account's absence (a beginner-friendly way to say the code branches too early).\n5. The researcher sent a request with a username they knew did exist.\nPOST /api/login HTTP/1.1\n{\"username\": \"admin\", \"password\": \"wrongpassword\"}\n6. The server responded with a different error message.\n{\"status\": \"error\", \"message\": \"Incorrect password\"}\nWhy: The application logic confirmed the user exists and then failed on the password check, confirming the account's existence.\n\nEXPLOITATION (FAILED)\n7. The researcher attempted to automate this to find many usernames.\n8. They discovered the server had rate limiting (a security measure that slows down or blocks users making too many requests in a short time).\n9. They discovered the server had account lockout (a feature that disables an account after too many failed login attempts).\n\nIMPACT ASSESSMENT\n10. The researcher submitted the report as 'User Enumeration' to the bug bounty program.\n11. The triager (the professional who reviews and validates bug reports) closed the report as 'Informative' or 'Not a Vulnerability'.\n12. Why: Because the attacker could not use the discovered usernames to perform a brute-force attack (trying many passwords) due to the existing security controls, the behavior had no exploitable impact.",
+      "example": "Imagine a fictional site target.example with a 'Forgot Password' page. When you enter an email, the code looks like this:\n\nif (database.hasEmail(inputEmail)) {\n  sendEmail(inputEmail);\n  return \"Check your inbox!\";\n} else {\n  return \"That email is not in our system.\";\n}\n\nAn attacker sends this request:\nPOST /forgot-password HTTP/1.1\nemail=target@example.com\n\nIf the response is \"Check your inbox!\", the attacker knows that specific person uses the site. This is a 'behavior' called user enumeration. To turn this into a 'bug,' the attacker would need to find a way to bypass the email requirement or use this information to cause harm, such as by chaining it with a password reset vulnerability that doesn't require access to the email inbox.",
+      "takeaway": "The most important lesson is to distinguish between a 'behavior' and a 'bug.' A bug must have an impact—a way for an attacker to actually cause harm or bypass security. When you find something 'weird' like different error messages, always ask 'So what?'. If the application has rate limiting or other controls that prevent you from using that information, it is likely not a vulnerability. Look for 'chained' vulnerabilities where one small leak leads to a larger exploit, and always verify if a security control (like a lockout) is actually working before reporting.",
+      "fix": "To fix this, the application should return a generic, identical message for all authentication failures, regardless of whether the username exists. This prevents attackers from guessing valid accounts. Additionally, the server should ensure that the time it takes to respond is consistent (preventing timing attacks).\n\nFixed Code Example:\n\nif (database.hasEmail(inputEmail)) {\n  sendEmail(inputEmail);\n}\n// Always return the same message\nreturn \"If that account exists, a reset link has been sent to your email.\";",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "“Thank you for your submission. After review, we’ve determined this report does not represent a security vulnerability. No action will be taken.” Four minutes. That’s how long it took the triager to read six hours of my work and close it. I didn’t sleep after that. I sat in the dark, laptop open, staring at the report I had written. The reproduction steps. The screenshots. The impact assessment. All of it, gone. I wanted to be angry. But reading the closure reason again, I couldn’t be. The triager was right. What I had found wasn’t a vulnerability. It was a behavior. And I had no idea what the",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
     "id": "b27f0d31e312",
     "title": "$7,500 for a Wildcard in the Wrong Place: LDAP Injection to Authentication Bypass",
     "url": "https://medium.com/@t4nv1/7-500-for-a-wildcard-in-the-wrong-place-ldap-injection-to-authentication-bypass-655682f8bebd",
@@ -38,6 +79,47 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "582dc44ebedb",
+    "title": "RCE and bad crypto in Internxt's 'post-quantum' cloud storage",
+    "url": "https://www.reddit.com/r/netsec/comments/1wwgdom/rce_and_bad_crypto_in_internxts_postquantum_cloud",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/pascalschaerli"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-03T06:43:58.000Z",
+    "added_at": "2026-10-03T14:54:13.695Z",
+    "categories": [
+      "rce",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "A critical Remote Code Execution (RCE) vulnerability and cryptographic weaknesses were identified in Internxt's cloud storage platform.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a cloud storage service at target.example that lets users rename files. The server uses a system command (a direct instruction to the computer's operating system) to perform the rename. If the application does not clean the input (the data sent by the user), an attacker can use special characters like a semicolon (;) to chain a second, malicious command. Vulnerable Code Snippet: `os.system('mv ' + old_name + ' ' + new_name)`. Attack Request: `POST /rename?new_name=file.txt;whoami`. Why: The server executes `mv old.txt file.txt;whoami`. The semicolon acts as a command separator (a character that marks the end of one instruction and the start of another), telling the computer to finish the move command and then immediately run `whoami` (a command that reveals the identity of the user running the web server). This is Remote Code Execution (RCE), where an attacker runs their own code on the target machine.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
   },
   {
     "id": "c4a6b939da9b",
