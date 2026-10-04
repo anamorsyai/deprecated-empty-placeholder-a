@@ -1,5 +1,47 @@
 [
   {
+    "id": "0d612b8bbe62",
+    "title": "An Old Password Reset Link Was Enough to Take Back the Account",
+    "url": "https://medium.com/@nourammar877/an-old-password-reset-link-was-enough-to-take-back-the-account-cdf5c788e1e5",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Nourammar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-04T07:22:09.000Z",
+    "added_at": "2026-10-04T11:19:20.659Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A password reset token remained valid even after a manual password change, allowing an attacker with access to an old reset link to hijack the account.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's token management logic only checked if a password reset token was expired or already used, rather than checking if the account's security state had changed. When a user manually updated their password, the system failed to revoke or invalidate outstanding reset tokens associated with that user. This created a logic flaw where a recovery credential issued for an 'old' version of the account remained functional for the 'new' version.",
+      "walkthrough": "RECON\n1. The researcher identified the password reset endpoint, which is a specific web address used to trigger recovery emails.\n2. They navigated to the UXCam login page and located the 'Forgot Password' button.\n\nDISCOVERY\n3. The researcher entered their email address to trigger a password reset request.\n4. An HTTP request (a message sent by your browser to a server) was sent to the backend to generate a token.\n5. A 'token' is a unique, secret string of characters used to prove you have permission to change a password.\n6. The researcher received the email and copied the reset link but did not click it yet.\n7. The link looked like this: https://app.uxcam.com/reset-password?token=SECRET_TOKEN_123\n\nSECURITY ACTION\n8. The researcher logged into the account normally using their current password.\n9. They navigated to the account settings to perform a manual password change.\n10. They updated the password to a new value (e.g., 'NewPassword123').\n11. This action is supposed to create a 'security boundary,' meaning all old session or recovery links should be killed.\n\nEXPLOITATION\n12. The researcher opened a new 'incognito session,' which is a private browser window that does not share saved logins or cookies.\n13. They pasted the OLD reset link (from Step 7) into the browser.\n14. The application loaded the 'Set New Password' page instead of showing an 'Expired' error.\n15. The researcher entered a third password (e.g., 'AttackerPassword456') into the form.\n16. The application accepted the request and confirmed the password was changed.\n\nIMPACT\n17. The researcher tried to log in with the password they set in Step 10.\n18. The login failed because the old token had overwritten the legitimate password change.\n19. The researcher logged in with 'AttackerPassword456' and successfully gained access.\n20. This confirmed a full Account Takeover (ATO), where an attacker can lock a user out using a stale link.",
+      "example": "Imagine a website 'target.example' that sends reset links. A user requests a link but then remembers their password and changes it manually for safety. \n\n1. User requests: https://target.example/reset?t=abc\n2. User changes password manually to 'Safe123'.\n3. Attacker finds the link 'abc' in the user's browser history.\n4. Attacker visits: https://target.example/reset?t=abc\n5. The server code only checks: 'Is token abc in the database? Yes. Is it older than 24 hours? No.'\n6. The server allows the attacker to set a new password, ignoring that the user already updated their security settings.",
+      "takeaway": "Always test the 'lifecycle' of security tokens by performing sensitive actions (changing email, changing password, enabling MFA) and seeing if old tokens survive. Look for 'stale' credentials that should have been revoked by a state change. A common variant is when a 'Remember Me' cookie or an active session remains valid after a password change. Beginners often forget to test the 'Forgot Password' link against a 'Manual Password Change'—they usually only test if the link works once.",
+      "fix": "The application must invalidate all outstanding password reset tokens for a user immediately upon a successful password change. This can be done by deleting the tokens from the database or by using a 'security version' column in the users table. If the user's 'security_version' is 5, the token should also store '5'; if the user changes their password and the version increments to 6, the old token (version 5) should be rejected. \n\nExample Fix (Pseudocode):\nfunction onPasswordChange(user) {\n  user.password_version += 1;\n  db.execute('DELETE FROM reset_tokens WHERE user_id = ?', [user.id]);\n  user.save();\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "You request one, use it once, and after your password changes, any previously issued recovery link should effectively become useless. At least, that is what users expect. While testing UXCam’s authentication flow, I found a password reset token that survived something it should not have survived: **A manual password change.** That meant an old reset link issued before the password was changed could still be used afterward to set a completely new password. In the right circumstances, that turns a stale email link into an account takeover primitive. Press enter or click to view image in full siz",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d9a7bbc4d19c",
     "title": "Unauthenticated pol_round in arc-node: From Hash Preimage Omission to State Divergence",
     "url": "https://medium.com/@mgsa112233/unauthenticated-pol-round-in-arc-node-from-hash-preimage-omission-to-state-divergence-387560f71493",

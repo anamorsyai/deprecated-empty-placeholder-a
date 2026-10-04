@@ -1,5 +1,46 @@
 [
   {
+    "id": "6835bcd31b4d",
+    "title": "A 403 Bypass Worth $900: How a Semicolon Exposed API Documentation",
+    "url": "https://medium.com/@papjm/a-403-bypass-worth-900-how-a-semicolon-exposed-api-documentation-698eecaf9308",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Adini Rodini Rodney"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-04T10:16:06.000Z",
+    "added_at": "2026-10-04T11:18:58.261Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A researcher bypassed Cloudflare's 403 Forbidden restrictions on an API documentation page by injecting semicolons into the URL path, exploiting a parsing discrepancy between the security filter and the backend server.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability is caused by a path normalization discrepancy between the Web Application Firewall (WAF) and the backend application server. A WAF (a security tool that filters web traffic) often uses strict pattern matching to block specific URLs like '/service/v4/reference/'. However, some backend frameworks, such as Java Spring, support 'matrix variables,' which allow parameters to be embedded directly in the URL path using semicolons. When the researcher added a semicolon, the WAF saw a path that did not match its 'blocked' list (e.g., '/v4;/'). Meanwhile, the backend server stripped the semicolon and its following characters during its own normalization process (the way a server cleans up a URL), routing the request to the intended restricted resource.",
+      "walkthrough": "RECON\n1. The researcher began by investigating an API subdomain (a prefix added to a main domain name like 'api.example.com') belonging to the target.\n2. They visited the root URL but received a '403 Forbidden' response (a status code meaning the server refuses to authorize the request) from Cloudflare.\n3. To find hidden paths, they used Yahoo Search to find indexed URLs (web addresses that a search engine has saved in its database).\n4. They discovered a functional API URL: \nhttps://example.com/service/v4/catalog/en/items/482901/feedback?limit=10&page=1&sort=recent&direction=desc\n5. This revealed that the application used a '/service/' prefix for its API routes (specific web addresses where an API can be reached).\n\nDISCOVERY\n6. The researcher navigated to the base service path: \nhttps://example.com/service\n7. On this page, they found a link to 'Interactive REST API documentation.'\n8. Clicking the link led to a Swagger UI page (a visual map that shows all the secret paths and instructions of an API), but it was blocked: \nhttps://example.com/service/v4/reference/start.html\n\nEXPLOITATION PHASE 1\n9. The researcher attempted to bypass the block by adding a semicolon (;) after the version segment of the URL.\n10. Payload used: \nhttps://example.com/service/v4;/reference/start.html\n11. Why: The semicolon tells the backend to treat the segment as a 'matrix variable' (extra data in the path), but the WAF sees it as a different, unblocked path. (A segment is the part of a URL between two slashes).\n12. The server responded with a '200 OK' (success), and the documentation loaded.\n\nEXPLOITATION PHASE 2\n13. Two years later, the researcher found the original semicolon trick was fixed and now returned a 403.\n14. They tried a new variation by placing the semicolon later in the path and adding a dummy key-value pair.\n15. Payload used: \nhttps://example.com/service/v4/reference/;foo=bar/start.html\n16. Why: ';foo=bar' is a standard matrix variable format. The security filter was likely only looking for semicolons in specific spots, not everywhere.\n17. This second variation successfully bypassed the new security rule.\n\nIMPACT\n18. The researcher demonstrated that they could still access the Swagger UI, exposing the entire structure of the API.\n19. They also found other working variations: \nhttps://example.com/service/v4/reference;/start.html\n20. And: \nhttps://example.com/service/v4/reference/;/start.html\n21. The researcher reported both findings, proving that a simple character can bypass expensive security layers.",
+      "example": "Imagine a website 'target.example' that blocks access to its admin panel at 'https://target.example/api/v1/admin'. The security filter (WAF) is programmed to block any request containing the exact string '/admin/'. An attacker sends a request to 'https://target.example/api/v1/admin;user=guest/settings'. The WAF looks at the path, sees '/admin;user=guest/', decides it does not match the forbidden '/admin/' string, and lets it through. The backend server, built with a framework like Spring, sees the semicolon and ignores everything from the semicolon to the next slash. It processes the path as '/api/v1/admin/settings', granting the attacker access to the admin settings page because the security check was bypassed.",
+      "takeaway": "This bug highlights the importance of 'Path Normalization' testing. When you encounter a 403 Forbidden error, never assume the path is truly unreachable; instead, try injecting characters that different servers interpret differently, such as semicolons (;), dots (.), or null bytes (%00). Use alternative search engines like Yahoo or DuckDuckGo to find 'leaked' paths that Google might have missed. A common mistake for beginners is giving up after one bypass is fixed; as shown here, moving the payload to a different segment of the URL can often bypass the new, specific filter. Look for this pattern in Java (Spring), Python (Flask), and Ruby on Rails applications.",
+      "fix": "To fix this, developers must ensure that the security layer (WAF/Proxy) and the application server interpret URLs in the exact same way. The most robust solution is to implement 'Zero Trust' authentication, where the application itself checks for a valid user session on every sensitive endpoint, rather than relying on the WAF to block paths. If matrix variables (semicolons in paths) are not required, they should be globally disabled. In Spring Boot, you can do this by setting 'setRemoveSemicolonContent(true)' in the configuration: \n\n@Configuration\npublic class WebConfig implements WebMvcConfigurer {\n    @Override\n    public void configurePathMatch(PathMatchConfigurer configurer) {\n        UrlPathHelper urlPathHelper = new UrlPathHelper();\n        urlPathHelper.setRemoveSemicolonContent(true);\n        configurer.setUrlPathHelper(urlPathHelper);\n    }\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A single semicolon turned a Cloudflare `403 Forbidden` response into access to an API documentation page. When the original bypass stopped working, a different semicolon placement opened the same page again. Two accepted reports earned me **$450 each — a total of $900**. This started during reconnaissance in 2023 and continued through follow-up testing in 2025. Here is how I found the issue, bypassed the initial fix, and learned to think beyond one blocked URL. _The target has been anonymized. All target URLs use_`example.com`_, and the paths and query parameters below are invented replacement",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4ef5a2c721aa",
     "title": "0xJ0cKkY and his NASA — Letter of Recognition (LOR)",
     "url": "https://medium.com/@jockky.dev/nasa-letter-of-recognition-lor-e577ffb160b5",
