@@ -1,5 +1,46 @@
 [
   {
+    "id": "4ef5a2c721aa",
+    "title": "0xJ0cKkY and his NASA — Letter of Recognition (LOR)",
+    "url": "https://medium.com/@jockky.dev/nasa-letter-of-recognition-lor-e577ffb160b5",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "0xJ0cKkY"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-04T04:06:46.000Z",
+    "added_at": "2026-10-04T05:33:51.644Z",
+    "categories": [
+      "recon",
+      "info-disclosure"
+    ],
+    "severity": null,
+    "difficulty": "beginner",
+    "summary_en": "A security researcher earned a NASA Letter of Recognition by performing extensive subdomain enumeration and fuzzing to identify a vulnerability on a specific NASA subdomain.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by an unspecified security flaw on a peripheral NASA subdomain, specifically one related to 'mars'. The researcher leveraged the fact that large organizations often have vast, complex infrastructures where peripheral subdomains might not be as strictly monitored as primary domains. By using enumeration (listing all parts of a system) and fuzzing (guessing hidden file names), the researcher identified a service that exhibited unexpected behavior.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher joined the NASA Vulnerability Disclosure Program (VDP).\n\nWhy: To find a high-profile target that offers recognition (LOR). (VDP: A program where organizations invite hackers to report bugs safely).\n2. They identified the scope, which consisted of 3 main domains.\n\nWhy: To know which websites are legal to test.\n3. The researcher performed Enumeration.\n\nWhy: To find hidden entry points that others might have missed. (Enumeration: The process of listing all possible parts of a system).\n4. They spent a week Fuzzing subdomains.\n\nWhy: To discover subdomains like 'mars' that aren't publicly linked. (Fuzzing: Using a tool to guess thousands of possible website names).\nDISCOVERY\n5. The researcher analyzed each discovered Service for anomalies.\n\nWhy: To find software that is misconfigured or outdated. (Service: A program running on a server).\n6. They reviewed historical vulnerability reports published by other researchers.\n\nWhy: To see what types of bugs NASA usually has and where they occur.\n7. A vulnerability was identified on a 'mars' related subdomain.\n\"mars\"\nWhy: This specific area of the infrastructure contained the flaw. (Subdomain: An extra part added to the start of a website address).\nIMPACT\n8. The researcher calculated the Impact.\n\nWhy: To prove to NASA that the bug is worth fixing. (Impact: The potential harm a bug can cause).\n9. They wrote a report with 'Step to reproduce'.\n\nWhy: So the security team can see the bug for themselves.\n10. NASA validated the report and issued a Letter of Recognition (LOR).\n\nWhy: The bug was real and met their criteria for recognition.",
+      "example": "A researcher targets 'target.example' and uses a tool to guess subdomains. They find 'dev-internal.target.example'. By visiting this URL, they find an open directory listing sensitive configuration files.\n\nRequest:\nGET / HTTP/1.1\nHost: dev-internal.target.example\n\nWhy: The developer forgot to disable directory listing on a test server, exposing private data to the public.",
+      "takeaway": "Persistence in enumeration is vital. When targeting large organizations, don't just look at the main website; use tools like 'subfinder' or 'assetfinder' to find forgotten subdomains. Look for 'service' anomalies where a server responds differently than others. A common mistake is giving up after checking the main domains; the most vulnerable assets are often subdomains that have been online for years without updates.",
+      "fix": "Organizations should maintain an accurate inventory of all subdomains and services. Use automated tools to scan the entire infrastructure for misconfigurations and ensure that even 'minor' subdomains follow the same security standards as the main site. Implement a centralized asset management system to track all subdomains and disable unnecessary services.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Sitemap Open in app Sign up [](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------) Get app Write Search Sign up Image 1: Unknown user 1. # NASA — Letter of Recogition (LOR)\") 1. ## H0w? 2. ## tl;dr — ຄວາມລະຍຳຂອງການເຮັດ Bug Bounty 3. ## ລາຍລະອຽດຊ່ອງໂຫວ່ທີ່ຂ້ອຍຫາເຈີໃນລະບົບຂອງ NASA 4. # ລາຍລະອຽດຂອງຊ່ອງໂຫວ່ ແລະ timeline ທີ່ເປີດເຜີຍໄດ້ບາງສ່ວນ: 5. # Hall of Fame 6. # Submission History 7. # My Warp: Image 2: 0xJ0cKkY ## 0xJ0cKkY HELLO!! THIS is JOCKKY!, HE is a boy who REALLY LOVEs Drinking MILK and Learning H0W_t0_H4Ck... || Discord: jockky writer Cybersecur",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "5ca682a242f4",
     "title": "I Didn’t Find a Bug on Shodan. I Found a Lead.",
     "url": "https://medium.com/@bughunt3r1985/i-didnt-find-a-bug-on-shodan-i-found-a-lead-b5039ec43ac4",
