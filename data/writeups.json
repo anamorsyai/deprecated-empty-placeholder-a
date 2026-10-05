@@ -1,5 +1,46 @@
 [
   {
+    "id": "a843931f2b3f",
+    "title": "Password reset link stays valid after requesting a new one (old token not invalidated on reissue)",
+    "url": "https://medium.com/@jokodfir/password-reset-link-stays-valid-after-requesting-a-new-one-old-token-not-invalidated-on-reissue-4af0fb651a1c",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Joko Purwanto"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-05T04:18:12.000Z",
+    "added_at": "2026-10-05T06:19:51.420Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "The application fails to invalidate previous password reset tokens when a new one is requested, allowing multiple active links to exist simultaneously. This creates a security gap where an attacker with access to an older, unused link can still hijack the account even after the user requests a fresh reset.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a logic flaw in the token management system where tokens are treated as independent entities rather than being tied to a single active session state for the user. When the /ForgotPassword endpoint is triggered, the system generates a new token (a secret string used for identification) but fails to update the status of previously issued tokens in the database. This implementation allows multiple 'bearer credentials' (tokens that grant access to whoever holds them) to remain valid for the same account at the same time. The system only performs a cleanup once a password change is actually completed, leaving a dangerous window of time where any previously leaked or intercepted link remains functional.",
+      "walkthrough": "RECON\n1. Identify the password reset page on the target website.\nhttps://www.tripadvisor.com/ForgotPassword\nWhy: This is the starting point for the 'Forgot Password' flow, which is a sequence of steps designed to help a user recover access to their account.\n\nDISCOVERY\n2. Enter the target email address and submit the form to trigger the first reset email.\nPOST /ForgotPassword HTTP/1.1\nemail=victim@example.com\nWhy: This sends an HTTP request (a message from your browser to a server) telling the application to generate a unique token and email it to the user.\n3. Access the email inbox and copy the first reset link provided.\nhttps://www.tripadvisor.com/MemberResetPassword?prq=TOKEN_1\nWhy: The 'prq' is a parameter (a piece of data passed to a web page) containing the secret token that identifies this specific reset request.\n4. Return to the reset page and submit the same email address a second time.\nPOST /ForgotPassword HTTP/1.1\nemail=victim@example.com\nWhy: This tests if the server is smart enough to cancel the first 'key' (TOKEN_1) now that it has issued a second one.\n5. Access the email inbox again and copy the second, different reset link.\nhttps://www.tripadvisor.com/MemberResetPassword?prq=TOKEN_2\nWhy: The system generates a new high-entropy token (a long, random string that is impossible to guess) for the new request.\n\nEXPLOITATION\n6. Open a browser and navigate to the FIRST link (TOKEN_1).\nhttps://www.tripadvisor.com/MemberResetPassword?prq=TOKEN_1\nWhy: To see if the issuance of TOKEN_2 automatically deactivated TOKEN_1. If the page loads the 'choose a new password' form, the vulnerability is confirmed.\n7. Observe that the password reset form for the old link is still fully functional.\n[Password Reset Form UI]\nWhy: This proves that the application allows multiple active reset tokens for a single account simultaneously.\n8. Enter a new password into the form loaded by the OLD link (TOKEN_1) and submit.\nPOST /MemberResetPassword HTTP/1.1\nprq=TOKEN_1&password=NewPassword123!\nWhy: This demonstrates that the old token still has the authority to change the account's credentials.\n\nIMPACT\n9. Attempt to load the SECOND link (TOKEN_2) in the browser.\nhttps://www.tripadvisor.com/MemberResetPassword?prq=TOKEN_2\nWhy: To verify if the system invalidates remaining tokens after one is finally used.\n10. Observe that the second link now leads to a blank page or error.\n[Blank Page]\nWhy: The system correctly invalidates all tokens only AFTER a password change is successful, but it fails to do so when a new link is merely requested.",
+      "example": "Imagine a fictional site 'target.example' that handles password resets. The vulnerable code looks like this: \n\nfunction onCreateReset(user_email) {\n  newToken = generateRandomString();\n  db.execute('INSERT INTO reset_tokens (email, token, active) VALUES (?, ?, true)', [user_email, newToken]);\n  sendEmail(user_email, newToken);\n}\n\nAn attacker who previously compromised a user's email might have an old reset link from three hours ago. If the user realizes their email was hacked, changes their email password, and requests a 'fresh' reset link for target.example, they assume the old link is now dead. However, because the code above only INSERTS new tokens and never UPDATES old ones to 'active=false', the attacker can still use that old link from the trash folder to hijack the target.example account.",
+      "takeaway": "When hunting for bugs, always test the lifecycle of temporary tokens. Don't just check if they work; check if they SHOULD work after a newer one is requested. Look for this pattern in password resets, email verification links, and MFA (Multi-Factor Authentication) SMS codes. A common signal is when an app allows you to 'Resend Email' multiple times—try using the very first email after receiving the fifth. A variant of this bug occurs when tokens don't expire even after the user manually changes their password through the settings menu. Avoid the mistake of assuming that because a token is long and random (high entropy), the logic behind it is secure.",
+      "fix": "The application should implement a 'revoke on reissue' policy. When a new reset token is requested, the server must immediately invalidate all existing, unused tokens for that specific user. This can be done by adding a database update step to the reset request function. \n\nFixed Code Example:\nfunction onCreateReset(user_email) {\n  // First, invalidate all existing tokens for this user\n  db.execute('UPDATE reset_tokens SET active = false WHERE email = ? AND active = true', [user_email]);\n  \n  // Then, create the new one\n  newToken = generateRandomString();\n  db.execute('INSERT INTO reset_tokens (email, token, active) VALUES (?, ?, true)', [user_email, newToken]);\n  sendEmail(user_email, newToken);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "interesting on penetration testing and security audit, accept collaboration on cyber secuurity. linkedin: www.linkedin.com/in/joko-purwanto-599b94212 writer Cybersecurity Penetration Testing Bug Bounty # **Password reset link stays valid after requesting a new one (old token not invalidated on reissue)** Image 3: Joko Purwanto Joko Purwanto 3 min read · 2 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F4af0fb651a1c&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40jokodfir%2Fpassword-reset-link-stays-valid-after-requesting-a-new-one-old-toke",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "b890a90a3aa2",
     "title": "Hijacking Your VPN with one Deep Link",
     "url": "https://medium.com/@husein.ayoub/hijacking-your-vpn-with-one-deep-link-3ce9ca778306",
