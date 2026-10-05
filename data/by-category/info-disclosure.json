@@ -1,5 +1,45 @@
 [
   {
+    "id": "8347afeac86a",
+    "title": "How I Found Account Enumeration on Two Endpoints of a Social Platform",
+    "url": "https://medium.com/@Rahul.Masal/how-i-found-account-enumeration-hiding-across-two-endpoints-c12013a78cb6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Rahul Masal"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-05T20:11:16.000Z",
+    "added_at": "2026-10-05T21:46:46.806Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "The platform’s email‑change and forgot‑password endpoints return different response codes for existing vs. non‑existing emails, allowing anyone to confirm whether an address is registered.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server’s implementation leaks account existence by returning distinct messages. In the email‑change endpoint, a logged‑in user receives either EMAIL_ALREADY_REGISTERED or OK depending on whether the new address is taken. The forgot‑password endpoint, which requires no authentication, returns OK for registered emails and USER_NOT_FOUND for unknown ones. Both endpoints expose the result in a machine‑readable field (the code property) instead of a generic message. No rate‑limiting or uniform error handling is applied, turning the API into an enumeration oracle.",
+      "walkthrough": "RECON\nStep 1: Open the login page in a browser.\nRequest: GET https://target.example/login\nWhy: An HTTP request (a message from your browser to the server) loads the login HTML page.\nStep 2: Log in with a valid account to obtain an authentication cookie.\nRequest: POST https://target.example/api/login {\"email\":\"my@example.com\",\"password\":\"p\"}\nWhy: The server sets a cookie (small data stored by the browser) that proves you are authenticated for later requests.\n\nDISCOVERY – Email‑change endpoint\nStep 3: Navigate to Account Settings → Email and open the browser’s developer tools.\nWhy: The developer tools let you see the network traffic (HTTP requests) the page sends.\nStep 4: Submit a new email address while the proxy (Burp Suite) is intercepting.\nRequest: POST https://target.example/api/account/email-change {\"email\":\"test@example.com\"}\nWhy: The request body contains a parameter (named email) whose value is the payload you control.\nStep 5: Capture the raw request in Burp and send it to the Repeater tab.\nWhy: Repeater lets you replay and modify the same HTTP request repeatedly.\nStep 6: Replace the email value with the address you want to test, e.g., victim@target.com.\nRequest: POST https://target.example/api/account/email-change {\"email\":\"victim@target.com\"}\nWhy: Changing the payload lets you query the server about any email.\nStep 7: Send the modified request and observe the JSON response.\nResponse (registered): {\"code\":\"EMAIL_ALREADY_REGISTERED\"}\nResponse (not registered): {\"status\":1,\"code\":\"OK\"}\nWhy: The distinct code values act as an oracle – they reveal whether the email exists.\n\nDISCOVERY – Forgot‑password endpoint\nStep 8: Open the Forgot Password page (no login required) and start the proxy.\nWhy: This endpoint is public, so no authentication cookie is needed.\nStep 9: Fill in an email address, solve the Cloudflare Turnstile CAPTCHA, and submit.\nRequest: POST https://target.example/api/password/forgot {\"email\":\"test@example.com\",\"turnstile_token\":\"…\"}\nWhy: The turnstile_token parameter proves you solved the CAPTCHA; the email parameter is the payload.\nStep 10: Capture the request, send it to Repeater, and swap the email value.\nRequest: POST https://target.example/api/password/forgot {\"email\":\"victim@target.com\",\"turnstile_token\":\"…\"}\nWhy: Re‑using the same request with a different payload lets you test any address.\nStep 11: Send the request and read the response.\nResponse (registered): {\"code\":\"OK\"}\nResponse (not registered): {\"code\":\"USER_NOT_FOUND\"}\nWhy: Again, different code values disclose account existence.\n\nIMPACT\nStep 12: Automate the two steps (solve Turnstile via a service or reuse a valid token) and iterate over a list of emails to build a confirmed user list.\nWhy: With the oracle you can filter leaked credential dumps, perform credential stuffing, password spraying, or targeted phishing with higher success rates.",
+      "example": "**Fictional vulnerable service – target.example**\nEndpoint: POST https://target.example/api/check-email\nRequest body (JSON): {\"email\":\"alice@target.example\"}\nVulnerable code (pseudo‑Python):\n```\nif db.email_exists(request.json[\"email\"]):\n    return {\"code\": \"EXISTS\"}\nelse:\n    return {\"code\": \"FREE\"}\n```\nAttack: Change the email value to any address and send the request.\nExample request: POST https://target.example/api/check-email {\"email\":\"bob@target.example\"}\nResponse if bob exists: {\"code\":\"EXISTS\"}\nResponse if bob does not exist: {\"code\":\"FREE\"}\nWhy it works: The server returns different codes for the two cases, leaking the existence of the account. A beginner can repeat the same steps with a browser proxy to enumerate users.",
+      "takeaway": "When hunting web APIs, always look for endpoints that accept an email (or username) and return different status codes or messages for existing vs. non‑existing values – these are classic enumeration points. Tools like Burp Suite or OWASP ZAP can capture the raw request and let you replay it with varied payloads. Remember to check both authenticated and unauthenticated routes; public password‑reset flows are especially valuable. Variants include phone‑number checks, username‑availability APIs, or social‑login callbacks that reveal account status. A common beginner mistake is to assume a generic error means the bug is not present; always compare raw JSON or HTTP status codes, not just UI messages.",
+      "fix": "Modify both endpoints to return a single, generic response regardless of account existence. For the email‑change API, always reply with {\"code\":\"OK\"} and, if the address is taken, silently send a notification to the existing owner instead of exposing the state. For the forgot‑password API, respond with a constant message such as \"If an account with this email exists, you will receive a reset link\" and the same JSON code for all inputs. Add rate limiting (e.g., max 3 attempts per hour per IP or per account) and require the current password for email changes. Ensure the server does not include any distinguishing fields (like EMAIL_ALREADY_REGISTERED or USER_NOT_FOUND) in the response body.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Imagine you go to a website’s login page and type in a wrong email. If the website says ”Email not found” — that’s a problem. Why? Because now you know for certain that nobody with that email has an account there. Try a hundred emails, and you’ll build a list of real users. The secure way to handle this is to always say something vague like ”Incorrect email or password” — never hinting which one was wrong. Account enumeration is when a website accidentally reveals whether an email address is registered. This writeup covers two places I found this on the same platform. > **The Target** Platform",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "b890a90a3aa2",
     "title": "Hijacking Your VPN with one Deep Link",
     "url": "https://medium.com/@husein.ayoub/hijacking-your-vpn-with-one-deep-link-3ce9ca778306",
