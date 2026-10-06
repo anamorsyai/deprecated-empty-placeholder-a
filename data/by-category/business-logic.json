@@ -1,5 +1,46 @@
 [
   {
+    "id": "7f3517bb3ff6",
+    "title": "Account Pre-Hijacking & Logic Bypass: How I Took Over Accounts on a Identity Platform",
+    "url": "https://aboutal3b.medium.com/account-pre-hijacking-logic-bypass-how-i-took-over-accounts-on-a-identity-platform-b45be02804c7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yousef"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-06T15:15:40.000Z",
+    "added_at": "2026-10-06T15:28:03.980Z",
+    "categories": [
+      "business-logic",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can pre‑create an account with a victim’s email, skip verification, and later log in with their own password after the victim completes registration, resulting in full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The service stores the password of an unverified registration and never overwrites it when the same email is later verified. The verification flow trusts a client‑side JSON field (isEmailVerified) to decide whether the account is active, allowing the attacker to tamper the response. No check is performed to see if an unverified account already exists for the email, so the attacker’s data remains. The front‑end blindly follows the modified response and grants access to 2FA setup. These design flaws together enable account pre‑hijacking and client‑side enforcement bypass.",
+      "walkthrough": "RECON\nStep 1: Open the registration page and capture traffic with Burp Suite. (We capture HTTP requests – messages sent from browser to server.)\nStep 2: Identify the POST /register endpoint that accepts JSON fields \"email\" and \"password\".\n\nDISCOVERY – SIMPLE PRE‑HIJACK\nStep 3: Register an attacker account using the victim’s email.\nPOST /register HTTP/1.1\nContent-Type: application/json\n\n{\"email\":\"victim@example.com\",\"password\":\"AttackerPass123\"}\nWhy: The server creates an unverified account and stores AttackerPass123.\nStep 4: Do not verify the email (skip the verification step).\nWhy: The account stays in an unverified state, leaving the attacker’s password stored.\nStep 5: Later, as the victim, register with the same email and a new password.\nPOST /register HTTP/1.1\nContent-Type: application/json\n\n{\"email\":\"victim@example.com\",\"password\":\"VictimPass123\"}\nWhy: The server accepts the duplicate because it does not check for an existing unverified record.\nStep 6: Complete email verification by entering the code sent to victim@example.com.\nWhy: Verification marks the account as active but does not replace the stored password.\nStep 7: Attempt to log in with the attacker’s password.\nPOST /login HTTP/1.1\nContent-Type: application/json\n\n{\"email\":\"victim@example.com\",\"password\":\"AttackerPass123\"}\nWhy: The login succeeds because the stored password was never overwritten – the attacker now controls the verified account.\n\nEXPLOITATION – RESPONSE MANIPULATION & FORCED 2FA\nStep 8: Sign up for a business account using the victim’s email.\nPOST /business/register ... (same JSON as above)\nWhy: Creates another unverified record.\nStep 9: At the verification screen, enter an incorrect code (e.g., 000000) and intercept the server’s JSON response.\nHTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"status\":\"success\",\"isEmailVerified\":false,\"resetToken\":\"0x4A...FB\"}\nWhy: The server tells the client the verification failed (isEmailVerified:false).\nStep 10: In Burp Suite, change \"isEmailVerified\":false to \"isEmailVerified\":true and forward the modified response.\n{\"status\":\"success\",\"isEmailVerified\":true,\"resetToken\":\"0x4A...FB\"}\nWhy: The front‑end trusts this field to decide the next step; it now believes the email is verified.\nStep 11: The application redirects to the 2FA setup page. Scan the displayed QR code with the attacker’s authenticator app.\nWhy: The attacker now owns the 2FA secret for the victim’s account.\nStep 12: When the real victim later completes verification, they are prompted for the 2FA code that only the attacker can generate, giving the attacker continued access.\nWhy: Because the server never re‑validated the 2FA secret after the victim’s verification, the attacker’s secret remains valid.\n\nIMPACT\nStep 13: The attacker has full access to the victim’s verified account without phishing.\nWhy: Both password and 2FA factors are under the attacker’s control.",
+      "example": "Assume a fictional service at https://target.example that offers user registration.\nVulnerable code (pseudo‑JavaScript on server):\nfunction register(email,password){\n  // Check if a verified user exists\n  let user = db.find({email:email,verified:true});\n  if(user){ return error('Email already used'); }\n  // No check for unverified accounts – create or update\n  db.upsert({email:email},{password:password,verified:false});\n  sendVerificationEmail(email);\n}\nfunction verify(email,code){\n  // Assume code is valid\n  db.update({email:email},{verified:true}); // DOES NOT change password\n  return {status:'ok',isEmailVerified:true}; // Sent to client\n}\nAttack steps:\n1. POST /register {\"email\":\"alice@target.example\",\"password\":\"Attacker123\"}\n2. Skip email verification.\n3. Later, Alice registers with same email and a new password.\n4. Verify her email – server marks account verified but keeps Attacker123.\n5. POST /login {\"email\":\"alice@target.example\",\"password\":\"Attacker123\"} succeeds.\nWhy it works: The server never overwrites the password of an existing unverified record and trusts the client‑side flag isEmailVerified.",
+      "takeaway": "When hunting, look for registration flows that allow duplicate emails before verification and for client‑side flags that control account state. Tools like Burp Suite or OWASP ZAP can help capture and replay registration requests. Variants include pre‑registration of phone numbers or social IDs, and cases where the server trusts a JWT claim like \"email_verified\" without server‑side validation. A common beginner mistake is assuming the server will reject duplicate emails automatically – always test the edge case of an unverified record existing first.",
+      "fix": "Modify the registration logic to check for any existing account (verified or not) with the same email and either reject the new signup or delete/overwrite the old unverified record before creating a new one. On verification, always re‑hash and store the password supplied at that moment, discarding any previous password. Never make security decisions based on client‑provided JSON fields such as isEmailVerified; instead, compute verification status on the server and return only a success flag. Implement automatic cleanup of unverified registrations after a short TTL (e.g., 15 minutes) to reduce the window for pre‑hijacking.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "If you’re interested in web security, bug bounties, or just curious about how authentication flows can break, this article is for you! So grab your favorite drink ☕, and let’s dive right in. ## 💡 What is Account Pre-Hijacking? (General Concept) Before we talk about my finding, let’s understand the concept itself in very simple terms. Imagine you go to a gym, and you want to sign up. You tell the receptionist your email, choose a password, but you leave without verifying your email. Later, the real owner of that email walks in, signs up with their own password, and proves their identity with a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "a843931f2b3f",
     "title": "Password reset link stays valid after requesting a new one (old token not invalidated on reissue)",
     "url": "https://medium.com/@jokodfir/password-reset-link-stays-valid-after-requesting-a-new-one-old-token-not-invalidated-on-reissue-4af0fb651a1c",
