@@ -1,5 +1,47 @@
 [
   {
+    "id": "19ed77d88ded",
+    "title": "From statical site on up-to-date governement CMS to 0-click Administrator Account Takeover – a Bug…",
+    "url": "https://medium.com/@sadinfinite/from-statical-site-on-up-to-date-governement-cms-to-0-click-administrator-account-takeover-a-bug-993a11d89e64",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "SadInfinite"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-06T20:04:26.000Z",
+    "added_at": "2026-10-06T20:31:17.600Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "An unauthenticated Wagtail‑transfer endpoint with an empty secret key allowed an attacker to read any database model and steal a valid admin session, resulting in full administrator takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application exposed the /wagtail-transfer/api/models/ endpoint without requiring authentication. The endpoint validates requests with an HMAC that uses the WAGTAILTRANSFER_SECRET_KEY, which the developers left empty by default. Because the secret is empty, anyone can compute a valid HMAC digest for any model name. The server then returns the requested model’s fields, including sensitive user data and session records. This design flaw gave an attacker direct read‑access to admin credentials and active sessions.",
+      "walkthrough": "RECON\nStep 1: Identify the technology stack. The source code showed the site uses Wagtail, a Django‑based CMS.\nWhy: Knowing the framework points to known features such as the wagtail‑transfer API.\n\nDISCOVERY\nStep 2: Locate the transfer endpoint. The URL pattern /wagtail-transfer/api/models/<model_name>/ was found in the code.\nWhy: Endpoints often expose functionality; this one promised to read DB fields.\nStep 3: Test the endpoint without authentication. A simple curl request to https://target/wagtail-transfer/api/models/auth.user/ returned a 403 unless a digest parameter was supplied.\nWhy: The endpoint expects a HMAC digest to prove knowledge of a secret key.\nStep 4: Inspect configuration for the secret. The settings file contained WAGTAILTRANSFER_SECRET_KEY = \"\" (empty string).\nWhy: An empty secret means the HMAC can be generated with no secret.\n\nEXPLOITATION\nStep 5: Compute the HMAC digest for the model name \"auth.user\" using an empty key. Python code used:\nimport hmac,hashlib\ndef digest(m):\n return hmac.new(b\"\",m.encode(),hashlib.sha1).hexdigest()\nprint(digest(\"auth.user\"))\nWhy: HMAC (Hash‑based Message Authentication Code) creates a hash that the server checks; with an empty key the result is predictable.\nStep 6: Send the crafted request with the digest:\ncurl \"https://target/wagtail-transfer/api/models/auth.user/?digest=9bcc6fdc372a8e9a1eaef96ff922c2bb06ba4162\"\nWhy: The server accepts the digest and returns the JSON representation of the auth.user model, leaking password hashes and admin flags.\nStep 7: Discover additional models. By enumerating model names, the researcher found \"sessions.session\".\nWhy: Session records store authentication tokens for logged‑in users.\nStep 8: Compute the digest for \"sessions.session\" using the same empty‑key method.\nWhy: Same HMAC weakness applies.\nStep 9: Request the session data:\ncurl \"https://target/wagtail-transfer/api/models/sessions.session/?digest=bb4e8b258bb2e19df94882c940bae52a2187ed02\"\nWhy: The response contains a valid session belonging to a super‑user.\n\nIMPACT\nStep 10: Use the stolen session cookie in a browser or HTTP client to impersonate the admin.\nWhy: The session cookie authenticates the attacker as a super‑user, granting full control over the site.\nStep 11: Verify admin access by visiting the Wagtail admin dashboard.\nWhy: Successful login proves complete account takeover.",
+      "example": "Assume a fictional site https://target.example runs a Django app with a similar endpoint /transfer/api/models/<model>/. The settings contain TRANSFER_SECRET_KEY = \"\". An attacker runs:\n\nimport hmac,hashlib\n\ndef d(m):\n return hmac.new(b\"\",m.encode(),hashlib.sha1).hexdigest()\n\nprint(d('users'))\n\n# Suppose the output is abcdef123456...\n\ncurl \"https://target.example/transfer/api/models/users/?digest=abcdef123456\"\n\nThe server returns the JSON of the users table, including password hashes. The attacker then queries the sessions model, steals a session belonging to an admin, and reuses the session cookie to log in as admin.\nWhy it works: The empty secret makes the HMAC digest trivially computable, and the endpoint does not check authentication, so any valid digest yields the data.",
+      "takeaway": "When scanning Django or Wagtail applications, look for any /wagtail-transfer/ or similar data‑export endpoints that do not require authentication. Check configuration files for empty or default secret keys. Tools like dirsearch or Burp Intruder can help enumerate model names. Variants of this issue appear in other frameworks that use HMAC‑protected APIs (e.g., AWS S3 presigned URLs with missing secret). A common beginner mistake is to assume that an endpoint returning data is safe because it requires a digest; forgetting to verify that the secret is properly set leads to this bypass.",
+      "fix": "Set a strong, non‑empty WAGTAILTRANSFER_SECRET_KEY in production and rotate it regularly. Enforce authentication on the /wagtail-transfer/ endpoint, rejecting unauthenticated requests before HMAC verification. Additionally, limit the models that can be exported and apply rate‑limiting. Example fix in settings.py:\nWAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY')\n# Ensure the key is at least 32 random bytes\nif not WAGTAILTRANSFER_SECRET_KEY:\n raise ImproperlyConfigured('WAGTAILTRANSFER_SECRET_KEY must be set')\n\nIn the view:\nif not request.user.is_staff:\n return HttpResponseForbidden()\n# then verify HMAC as before",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "When looking at the github page containing the app’s source code, I saw that this was a fork of the own governement’s CMS («Sites faciles»). Knowing that, finding a vulnerability that wasn’t a 0-day in the CMS appeared impossible, but I gave it a try, and it paid off. First, I saw that it used wagtail (A Django CMS), so I audited everything related to it. I saw that the transfert endpoint (can be used to read DB fields) was unauthenticated, I «only» needed to know the «WAGTAILTRANSFER_SECRET_KEY». Then by inspecting configuration I noticed that, by default, it was empty. Like : WAGTAILTRANSFER",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "7f3517bb3ff6",
     "title": "Account Pre-Hijacking & Logic Bypass: How I Took Over Accounts on a Identity Platform",
     "url": "https://aboutal3b.medium.com/account-pre-hijacking-logic-bypass-how-i-took-over-accounts-on-a-identity-platform-b45be02804c7",
