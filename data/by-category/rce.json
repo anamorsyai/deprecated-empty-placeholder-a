@@ -1,5 +1,45 @@
 [
   {
+    "id": "1489731b6714",
+    "title": "Wordpress libheif RCE",
+    "url": "https://www.reddit.com/r/netsec/comments/1wy4edi/wordpress_libheif_rce",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/adrian_rt"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-05T09:46:02.000Z",
+    "added_at": "2026-10-07T11:49:15.805Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A Remote Code Execution (RCE) vulnerability in WordPress involving the libheif library used for image processing.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume a website at target.example allows users to upload photos. The server (a computer hosting the site) uses a library (a pre-written set of code) to process HEIF images (a high-quality image format). Vulnerable Code Snippet: $img = new LibheifProcessor(); $img->load($_FILES['user_file']['tmp_name']); Attack Request: POST /upload HTTP/1.1 Host: target.example Content-Type: image/heic [Binary Data: \\x00\\x00\\x00\\x20\\x66\\x74\\x79\\x70\\x68\\x65\\x69\\x63...] Why: The 'load' function reads the file. The binary data starts with a 'header' (a file's ID badge) identifying it as a HEIC file. Inside, the attacker includes a 'payload' (malicious instructions). Because the library doesn't check the size of certain data blocks, a 'buffer overflow' (writing data past the end of a reserved memory area) occurs. This allows the attacker to overwrite the server's memory and gain 'Remote Code Execution' or 'RCE' (the ability to run any command on the server).",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "582dc44ebedb",
     "title": "RCE and bad crypto in Internxt's 'post-quantum' cloud storage",
     "url": "https://www.reddit.com/r/netsec/comments/1wwgdom/rce_and_bad_crypto_in_internxts_postquantum_cloud",

