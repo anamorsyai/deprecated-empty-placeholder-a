@@ -1,5 +1,45 @@
 [
   {
+    "id": "52dad05cae81",
+    "title": "How a Simple IDOR Earned $5,000 on Reddit",
+    "url": "https://meetcyber.net/how-a-simple-idor-earned-5-000-on-reddit-8d1b15857b2b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Monika"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-07T21:44:53.000Z",
+    "added_at": "2026-10-07T23:00:40.413Z",
+    "categories": [
+      "idor-bola"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An Insecure Direct Object Reference (IDOR) in Reddit’s API let an attacker retrieve another user’s data by changing a numeric ID, resulting in a $5,000 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "**Fictional target:** https://target.example/api/user?id=123\n**Vulnerable code (pseudo-Python):**\n```python\nuser_id = request.args.get('id')\n# No check that the logged-in user owns this ID\nprofile = db.query('SELECT * FROM users WHERE id = %s' % user_id)\nreturn json.dumps(profile)\n```\n**Attack request:**\nGET /api/user?id=456 HTTP/1.1\nHost: target.example\nCookie: session=abcdef\n\n**Why it works:** The server reads the `id` parameter from the URL and directly uses it in the database query without verifying that the requester’s session belongs to that user. Changing `123` to `456` makes the server return another user’s profile (IDOR).",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Many beginners think that big bounties come from very complex hacking. Often, that is not true. Some of the best-paid bugs come from one small mistake: the server forgot to ask, “Does this really belong to you?” In this article, I explain a real public report from Reddit’s bug bounty program on HackerOne. The report was submitted by a researcher with the username criptex, and the full report is public on HackerOne. The bug was an IDOR, and the reward was $5,000. Credit: all findings in this article belong to the researcher criptex. Original report: https://hackerone.com/reports/1661113 Press e",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "f700b4392dc4",
     "title": "The Art of Escalating Vulnerabilities",
     "url": "https://medium.com/@rkvb/the-art-of-escalating-vulnerabilities-fca037815f4c",
