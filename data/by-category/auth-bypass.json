@@ -1,5 +1,47 @@
 [
   {
+    "id": "9080784dd3b5",
+    "title": "Bypassing Payment Processes: When Checkout Logic Fails",
+    "url": "https://medium.com/@raksharoot/bypassing-payment-processes-when-checkout-logic-fails-7eedc8c72c01",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Raksharoot"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-08T18:00:36.000Z",
+    "added_at": "2026-10-08T21:35:34.161Z",
+    "categories": [
+      "business-logic",
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "Attackers can bypass payment systems by exploiting stale server-side pricing states or by intercepting and modifying the server's response to falsely indicate a successful transaction.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from the server trusting client-controlled data or failing to re-validate the state of a transaction at the final step. Specifically, the backend may reuse a previously calculated price (stale state) even after the cart contents have changed, or it may rely on the browser's interpretation of a 'success' flag rather than verifying the payment via a secure server-to-server webhook.",
+      "walkthrough": "RECON\n1. Map the entire payment flow from adding an item to the cart to the final order fulfillment.\n2. Identify every HTTP request (a message sent from your browser to a server) and parameter (a specific piece of data like a price or ID) involved in the checkout.\n\nSTALE PRICING EXPLOITATION\n3. Add a single inexpensive product to the cart and proceed to the checkout page where the total is calculated.\n4. In a separate browser tab, modify the cart by adding more expensive items or increasing quantities.\n5. Return to the original checkout tab and attempt to complete the payment.\n6. Observe if the server uses the old, lower price for the new, more expensive cart contents.\n\nCLIENT-SIDE RESPONSE MANIPULATION\n7. Initiate a payment and intentionally use a failing payment method (like an expired test card).\n8. Use an intercepting proxy (a tool that stops a request mid-air) to catch the server's response.\n9. Locate the JSON payload (a data format used for communication) containing the failure status.\n{\n  \"success\": false\n}\n10. Modify the payload verbatim to indicate success.\n{\n  \"success\": true\n}\n11. Forward the modified response to the browser and check if the application treats the order as paid.\n\nURL AND COOKIE TAMPERING\n12. Inspect the payment completion URL for sensitive tokens or hashes.\nhttps://example.com/payment/MD5HASH\n13. Copy this URL and attempt to access it from a private browser window with no active session (no cookies or login).\n14. If the page loads and confirms the order, the URL alone authorizes access, which is a security flaw.\n15. Check cookies (small data files stored in your browser) for values like 'paid=false' and attempt to change them to 'paid=true' before refreshing the page.",
+      "example": "Imagine a site 'target.example' that sells digital gift cards. \n1. A user adds a $10 gift card to their cart. \n2. They proceed to the payment page. The server generates a 'Transaction ID' linked to the $10 price. \n3. The user intercepts the request to the payment provider and changes the 'amount' parameter from 10.00 to 0.01. \n4. The payment provider processes the $0.01 charge and redirects the user back to target.example/success?status=paid. \n5. Because the server only checks if the 'status' parameter says 'paid' and doesn't verify the actual amount received via a backend API, it issues the $10 gift card for a penny.",
+      "takeaway": "Always look for 'state transitions' where the application moves from one phase (cart) to another (payment). Test if you can change the cart contents after the price has been 'locked in.' Look for parameters that look like booleans (true/false) or simple status strings (success/fail) in both requests and responses. A common mistake is assuming that because a price is calculated on the server, it cannot be manipulated; if that calculation is stored in a temporary session that isn't updated when the cart changes, it is vulnerable.",
+      "fix": "To fix these issues, the server must never trust the client for price or status. 1. Recalculate the total price on the server at the exact moment the payment is initiated. 2. Use server-to-server webhooks (notifications sent directly from the payment provider to your server) to confirm payment, rather than relying on browser redirects. 3. Ensure all payment tokens are cryptographically signed and single-use. \n\nExample of a secure check:\nif (webhook.signature_valid && webhook.amount == database.order_total) {\n  mark_order_as_paid(order_id);\n} else {\n  reject_transaction();\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Raksharoot is a cybersecurity publication focused on practical security knowledge, guides, and technical writeups for startups and beginners. writer Cybersecurity Web Security Pentesting Ethical Hacking Bug Bounty ## This is Part 4 of the Web Pentesting series by Raksharoot. Missed the start? Read Part 1 first, then come back here. The full series is here: Web Pentesting: A Complete Guide # Bypassing Payment Processes: When Checkout Logic Fails Image 3: Raksharoot Raksharoot 7 min read · 3 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F7eedc8c72c01",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "72795397781a",
     "title": "How I Found a Session Hijacking Bug That Could Lead to Account Takeover | by Samadhan Shimple",
     "url": "https://samadhanshimple.medium.com/how-i-found-a-session-hijacking-bug-that-could-lead-to-account-takeover-by-samadhan-shimple-99f63c58ca7f",
