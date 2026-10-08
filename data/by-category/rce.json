@@ -1,5 +1,47 @@
 [
   {
+    "id": "a351c6b189f1",
+    "title": "$13,000 for a Filename Inside a Zip: Path Traversal During Archive Extraction to RCE",
+    "url": "https://medium.com/@t4nv1/13-000-for-a-filename-inside-a-zip-path-traversal-during-archive-extraction-to-rce-d195aeb732ff",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-08T09:11:01.000Z",
+    "added_at": "2026-10-08T09:28:02.725Z",
+    "categories": [
+      "rce",
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A document management platform was vulnerable to Remote Code Execution (RCE) because it trusted filenames inside uploaded ZIP archives, allowing attackers to write files anywhere on the server.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from the application's trust in the internal structure of a ZIP archive (a compressed file containing multiple other files). When the server extracts the ZIP, it uses the 'os.path.join' function to combine a safe destination folder with the filenames found inside the archive. Because the application does not check if these filenames contain 'dot-dot-slash' (../) sequences, an attacker can name a file in a way that forces the server to save it outside the intended directory. This implementation flaw allows an attacker to overwrite system files or upload malicious scripts to web-accessible folders.",
+      "walkthrough": "RECON\n1. The researcher identifies that the target platform, Cascade Ledger, allows users to perform bulk uploads of documents using ZIP archives.\n(No code provided in article)\nWhy: ZIP archives (compressed files that bundle multiple items) are often processed automatically by servers, making them a prime target for testing how the server handles file paths.\nDISCOVERY\n2. The researcher analyzes how the server likely processes the files inside the ZIP archive.\n`for entry in zipfile.namelist():` \nWhy: The server uses a loop to look at every filename (entry) stored inside the uploaded ZIP file. (A loop is a way to repeat an action for every item in a list).\nEXPLOITATION\n3. The researcher creates a malicious ZIP file where one of the internal filenames contains path traversal characters.\n`../../../` \nWhy: Path Traversal (using '../' to move up one folder level) allows the attacker to escape the 'sandbox' (a restricted folder where files are supposed to stay).\n4. The server attempts to calculate where to save the file by joining the extraction folder with the malicious filename.\n`output_path = os.path.join(extract_dir, entry)` \nWhy: The 'os.path.join' tool (a function used to glue folder names together) does not automatically stop '../' from navigating out of the base folder.\n5. The server opens a file at the calculated (and now malicious) path and writes the contents of the ZIP entry into it.\n`with open(output_path, 'wb') as f: f.write(zipfile.read(entry))` \nWhy: By writing a file to a sensitive location, the attacker can achieve Remote Code Execution (RCE), which means they can run their own commands on the server.",
+      "example": "On a fictional site called target.example, there is a feature to upload 'Website Themes' as a ZIP file. The server is supposed to extract these themes to `/var/www/themes/`. An attacker creates a ZIP file containing a file named `../../html/shell.php`. When the server processes this, it calculates the path as `/var/www/themes/../../html/shell.php`. The computer simplifies this to `/var/www/html/shell.php`. Because the attacker has now placed a PHP script in the public web folder, they can visit `target.example/shell.php` to take control of the server.",
+      "takeaway": "Always test features that handle compressed archives (ZIP, TAR, etc.) for Path Traversal by including '../' in the filenames of the archived files. Look for 'Import', 'Bulk Upload', or 'Restore Backup' buttons as these are common entry points for this bug. A key signal is when an application extracts files and you can guess or find where they are stored on the server. A common variant is the 'Zip Slip' vulnerability, which affects many different programming languages and libraries. A common beginner mistake is assuming that standard library functions like 'join' will automatically sanitize paths for security.",
+      "fix": "To fix this vulnerability, you must validate that the final destination path is still located within the intended extraction directory. This is done by resolving the 'absolute path' (the full, simplified address) of both the directory and the file, then checking if the file path starts with the directory path. \n\n```python\nimport os\ndef safe_extract(extract_dir, entry):\n    # Get the full, real path of the destination\n    base = os.path.abspath(extract_dir)\n    target = os.path.abspath(os.path.join(base, entry))\n    # Ensure the target is actually inside the base folder\n    if not target.startswith(base):\n        raise Exception('Unsafe path detected!')\n    # Proceed with extraction safely...\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Archive extraction code almost always trusts the archive. That trust is the entire vulnerability class here — a zip file’s internal structure defines, among other things, the relative path each entry should be extracted to, and if the extraction logic joins that path directly onto a destination directory without checking whether the result still lives inside that directory, an entry can name itself its way straight out of the sandbox it was supposed to stay in. The target, which I’ll call **Cascade Ledger** here per their program’s anonymization terms, is a document-management platform support",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "1489731b6714",
     "title": "Wordpress libheif RCE",
     "url": "https://www.reddit.com/r/netsec/comments/1wy4edi/wordpress_libheif_rce",

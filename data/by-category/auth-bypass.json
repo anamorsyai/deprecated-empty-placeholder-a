@@ -1,5 +1,47 @@
 [
   {
+    "id": "72795397781a",
+    "title": "How I Found a Session Hijacking Bug That Could Lead to Account Takeover | by Samadhan Shimple",
+    "url": "https://samadhanshimple.medium.com/how-i-found-a-session-hijacking-bug-that-could-lead-to-account-takeover-by-samadhan-shimple-99f63c58ca7f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Samadhan shimple"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-08T06:01:01.000Z",
+    "added_at": "2026-10-08T09:28:18.145Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A session hijacking vulnerability allowed an attacker to take over a victim's account by simply replacing their own session cookie with a valid victim's cookie in a password-change request.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application relied exclusively on the PHPSESSID cookie to identify users without implementing secondary validation or 'defense in depth' measures. It failed to bind the session to specific browser characteristics (like User-Agent) or require re-authentication (entering the current password) before performing sensitive account modifications. This meant the server treated anyone possessing a valid session ID as the legitimate owner of that account, regardless of where the request originated.",
+      "walkthrough": "RECON\n1. The researcher identified that the application uses a standard session cookie called PHPSESSID to track logged-in users.\nPHPSESSID: A digital 'ID card' (cookie) used by websites to remember who you are after you log in.\n2. Two separate accounts were created for testing: Account A (Attacker) and Account B (Victim).\n\nDISCOVERY\n3. The researcher logged into Account B (Victim) using the Microsoft Edge browser.\n4. Using a proxy tool, they captured the Victim's PHPSESSID cookie value.\nCookie: A small piece of data stored in your browser that a website uses to identify your session.\n5. The researcher then logged into Account A (Attacker) using a completely different browser, Firefox, to ensure no session data was shared.\n\nEXPLOITATION\n6. While logged into the Attacker account, the researcher navigated to the 'Change Password' page.\n7. They filled out the form to change the password and clicked 'Submit', but intercepted the request using Burp Suite.\nBurp Suite: A professional tool used to catch and modify messages (HTTP requests) sent from a browser to a server.\n8. The researcher located the Attacker's PHPSESSID in the intercepted HTTP request.\nHTTP Request: A message your browser sends to a server asking it to do something, like 'update my password'.\n9. They deleted the Attacker's PHPSESSID and pasted the Victim's PHPSESSID (captured in Step 4) into the request.\n10. The modified request was then forwarded to the server.\nForward: Sending a message to its destination after you have finished looking at or changing it.\n\nIMPACT\n11. The server processed the request and returned a success message.\n12. The researcher verified that the password for Account B (Victim) had been changed, even though the request started from the Attacker's browser session.\n13. This confirmed that the application does not verify if the session belongs to the person making the request, allowing for full Account Takeover.",
+      "example": "Imagine a fictional website 'social.target.example' that allows users to update their profile bio. \n\n1. Victim logs in and gets cookie: 'session_id=victim_123'.\n2. Attacker logs in and gets cookie: 'session_id=attacker_456'.\n3. Attacker goes to 'social.target.example/update_bio' and types 'Hacked!' in the bio field.\n4. Attacker intercepts the request:\nPOST /update_bio HTTP/1.1\nHost: social.target.example\nCookie: session_id=attacker_456\nContent: bio=Hacked!\n\n5. Attacker changes 'session_id=attacker_456' to 'session_id=victim_123' and sends it.\n6. The server sees 'victim_123' and updates the Victim's bio to 'Hacked!' because it only checks the cookie to decide whose bio to change.",
+      "takeaway": "This vulnerability highlights that session tokens are as sensitive as passwords. When hunting, always test if a session token from one browser/IP can be used in another to perform actions. Look for 'sensitive' endpoints like /change-password, /update-email, or /delete-account that do not require the user to re-enter their current password. A common mistake for beginners is assuming that modern frameworks handle session security automatically; always manually verify that sessions are invalidated upon logout and are not easily guessable or transferable.",
+      "fix": "To fix this, the application must implement multi-factor session validation and strict authorization checks. First, require the user to provide their 'Current Password' before allowing a password change. Second, implement 'Session Binding' by checking if the requester's User-Agent or IP address has changed significantly during the session. Third, ensure the application uses the 'SameSite=Lax' or 'Strict' attribute on cookies to prevent cross-site usage. Finally, use a framework that automatically rotates session IDs after any privilege change.\n\nExample of a secure check in PHP:\nif ($_POST['new_password'] && password_verify($_POST['current_password'], $user_record['password_hash'])) {\n    // Only proceed if the current password is correct\n    update_password($user_id, $_POST['new_password']);\n} else {\n    die('Authentication required for sensitive changes.');\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "CyberSecurity Researcher | Penetration Tester | Cyber Security | CEH | Computer Science Engineer | Offensive Security | Digital Forensics Account Takeover Attacks Bug Bounty Hacking Penetesting Sam Shield Image 3: Samadhan shimple Samadhan shimple 5 min read · 3 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F99f63c58ca7f&operation=register&redirect=https%3A%2F%2Fsamadhanshimple.medium.com%2Fhow-i-found-a-session-hijacking-bug-that-could-lead-to-account-takeover-by-samadhan-shimple-99f63c58ca7f&user=Samadhan+shimple&userId=ffd939bcd919&source=---hea",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "15947f1449df",
     "title": "From WAF Bypass to Account Takeover: Chaining Logic Flaws & CSRF in Stock Photo Platform",
     "url": "https://medium.com/@DrakenKun/from-waf-bypass-to-account-takeover-chaining-logic-flaws-csrf-in-stock-photo-platform-920ae45c936d",

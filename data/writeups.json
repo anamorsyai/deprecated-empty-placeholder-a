@@ -1,5 +1,89 @@
 [
   {
+    "id": "a351c6b189f1",
+    "title": "$13,000 for a Filename Inside a Zip: Path Traversal During Archive Extraction to RCE",
+    "url": "https://medium.com/@t4nv1/13-000-for-a-filename-inside-a-zip-path-traversal-during-archive-extraction-to-rce-d195aeb732ff",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-08T09:11:01.000Z",
+    "added_at": "2026-10-08T09:28:02.725Z",
+    "categories": [
+      "rce",
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A document management platform was vulnerable to Remote Code Execution (RCE) because it trusted filenames inside uploaded ZIP archives, allowing attackers to write files anywhere on the server.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from the application's trust in the internal structure of a ZIP archive (a compressed file containing multiple other files). When the server extracts the ZIP, it uses the 'os.path.join' function to combine a safe destination folder with the filenames found inside the archive. Because the application does not check if these filenames contain 'dot-dot-slash' (../) sequences, an attacker can name a file in a way that forces the server to save it outside the intended directory. This implementation flaw allows an attacker to overwrite system files or upload malicious scripts to web-accessible folders.",
+      "walkthrough": "RECON\n1. The researcher identifies that the target platform, Cascade Ledger, allows users to perform bulk uploads of documents using ZIP archives.\n(No code provided in article)\nWhy: ZIP archives (compressed files that bundle multiple items) are often processed automatically by servers, making them a prime target for testing how the server handles file paths.\nDISCOVERY\n2. The researcher analyzes how the server likely processes the files inside the ZIP archive.\n`for entry in zipfile.namelist():` \nWhy: The server uses a loop to look at every filename (entry) stored inside the uploaded ZIP file. (A loop is a way to repeat an action for every item in a list).\nEXPLOITATION\n3. The researcher creates a malicious ZIP file where one of the internal filenames contains path traversal characters.\n`../../../` \nWhy: Path Traversal (using '../' to move up one folder level) allows the attacker to escape the 'sandbox' (a restricted folder where files are supposed to stay).\n4. The server attempts to calculate where to save the file by joining the extraction folder with the malicious filename.\n`output_path = os.path.join(extract_dir, entry)` \nWhy: The 'os.path.join' tool (a function used to glue folder names together) does not automatically stop '../' from navigating out of the base folder.\n5. The server opens a file at the calculated (and now malicious) path and writes the contents of the ZIP entry into it.\n`with open(output_path, 'wb') as f: f.write(zipfile.read(entry))` \nWhy: By writing a file to a sensitive location, the attacker can achieve Remote Code Execution (RCE), which means they can run their own commands on the server.",
+      "example": "On a fictional site called target.example, there is a feature to upload 'Website Themes' as a ZIP file. The server is supposed to extract these themes to `/var/www/themes/`. An attacker creates a ZIP file containing a file named `../../html/shell.php`. When the server processes this, it calculates the path as `/var/www/themes/../../html/shell.php`. The computer simplifies this to `/var/www/html/shell.php`. Because the attacker has now placed a PHP script in the public web folder, they can visit `target.example/shell.php` to take control of the server.",
+      "takeaway": "Always test features that handle compressed archives (ZIP, TAR, etc.) for Path Traversal by including '../' in the filenames of the archived files. Look for 'Import', 'Bulk Upload', or 'Restore Backup' buttons as these are common entry points for this bug. A key signal is when an application extracts files and you can guess or find where they are stored on the server. A common variant is the 'Zip Slip' vulnerability, which affects many different programming languages and libraries. A common beginner mistake is assuming that standard library functions like 'join' will automatically sanitize paths for security.",
+      "fix": "To fix this vulnerability, you must validate that the final destination path is still located within the intended extraction directory. This is done by resolving the 'absolute path' (the full, simplified address) of both the directory and the file, then checking if the file path starts with the directory path. \n\n```python\nimport os\ndef safe_extract(extract_dir, entry):\n    # Get the full, real path of the destination\n    base = os.path.abspath(extract_dir)\n    target = os.path.abspath(os.path.join(base, entry))\n    # Ensure the target is actually inside the base folder\n    if not target.startswith(base):\n        raise Exception('Unsafe path detected!')\n    # Proceed with extraction safely...\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Archive extraction code almost always trusts the archive. That trust is the entire vulnerability class here — a zip file’s internal structure defines, among other things, the relative path each entry should be extracted to, and if the extraction logic joins that path directly onto a destination directory without checking whether the result still lives inside that directory, an entry can name itself its way straight out of the sandbox it was supposed to stay in. The target, which I’ll call **Cascade Ledger** here per their program’s anonymization terms, is a document-management platform support",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "72795397781a",
+    "title": "How I Found a Session Hijacking Bug That Could Lead to Account Takeover | by Samadhan Shimple",
+    "url": "https://samadhanshimple.medium.com/how-i-found-a-session-hijacking-bug-that-could-lead-to-account-takeover-by-samadhan-shimple-99f63c58ca7f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Samadhan shimple"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-08T06:01:01.000Z",
+    "added_at": "2026-10-08T09:28:18.145Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A session hijacking vulnerability allowed an attacker to take over a victim's account by simply replacing their own session cookie with a valid victim's cookie in a password-change request.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application relied exclusively on the PHPSESSID cookie to identify users without implementing secondary validation or 'defense in depth' measures. It failed to bind the session to specific browser characteristics (like User-Agent) or require re-authentication (entering the current password) before performing sensitive account modifications. This meant the server treated anyone possessing a valid session ID as the legitimate owner of that account, regardless of where the request originated.",
+      "walkthrough": "RECON\n1. The researcher identified that the application uses a standard session cookie called PHPSESSID to track logged-in users.\nPHPSESSID: A digital 'ID card' (cookie) used by websites to remember who you are after you log in.\n2. Two separate accounts were created for testing: Account A (Attacker) and Account B (Victim).\n\nDISCOVERY\n3. The researcher logged into Account B (Victim) using the Microsoft Edge browser.\n4. Using a proxy tool, they captured the Victim's PHPSESSID cookie value.\nCookie: A small piece of data stored in your browser that a website uses to identify your session.\n5. The researcher then logged into Account A (Attacker) using a completely different browser, Firefox, to ensure no session data was shared.\n\nEXPLOITATION\n6. While logged into the Attacker account, the researcher navigated to the 'Change Password' page.\n7. They filled out the form to change the password and clicked 'Submit', but intercepted the request using Burp Suite.\nBurp Suite: A professional tool used to catch and modify messages (HTTP requests) sent from a browser to a server.\n8. The researcher located the Attacker's PHPSESSID in the intercepted HTTP request.\nHTTP Request: A message your browser sends to a server asking it to do something, like 'update my password'.\n9. They deleted the Attacker's PHPSESSID and pasted the Victim's PHPSESSID (captured in Step 4) into the request.\n10. The modified request was then forwarded to the server.\nForward: Sending a message to its destination after you have finished looking at or changing it.\n\nIMPACT\n11. The server processed the request and returned a success message.\n12. The researcher verified that the password for Account B (Victim) had been changed, even though the request started from the Attacker's browser session.\n13. This confirmed that the application does not verify if the session belongs to the person making the request, allowing for full Account Takeover.",
+      "example": "Imagine a fictional website 'social.target.example' that allows users to update their profile bio. \n\n1. Victim logs in and gets cookie: 'session_id=victim_123'.\n2. Attacker logs in and gets cookie: 'session_id=attacker_456'.\n3. Attacker goes to 'social.target.example/update_bio' and types 'Hacked!' in the bio field.\n4. Attacker intercepts the request:\nPOST /update_bio HTTP/1.1\nHost: social.target.example\nCookie: session_id=attacker_456\nContent: bio=Hacked!\n\n5. Attacker changes 'session_id=attacker_456' to 'session_id=victim_123' and sends it.\n6. The server sees 'victim_123' and updates the Victim's bio to 'Hacked!' because it only checks the cookie to decide whose bio to change.",
+      "takeaway": "This vulnerability highlights that session tokens are as sensitive as passwords. When hunting, always test if a session token from one browser/IP can be used in another to perform actions. Look for 'sensitive' endpoints like /change-password, /update-email, or /delete-account that do not require the user to re-enter their current password. A common mistake for beginners is assuming that modern frameworks handle session security automatically; always manually verify that sessions are invalidated upon logout and are not easily guessable or transferable.",
+      "fix": "To fix this, the application must implement multi-factor session validation and strict authorization checks. First, require the user to provide their 'Current Password' before allowing a password change. Second, implement 'Session Binding' by checking if the requester's User-Agent or IP address has changed significantly during the session. Third, ensure the application uses the 'SameSite=Lax' or 'Strict' attribute on cookies to prevent cross-site usage. Finally, use a framework that automatically rotates session IDs after any privilege change.\n\nExample of a secure check in PHP:\nif ($_POST['new_password'] && password_verify($_POST['current_password'], $user_record['password_hash'])) {\n    // Only proceed if the current password is correct\n    update_password($user_id, $_POST['new_password']);\n} else {\n    die('Authentication required for sensitive changes.');\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "CyberSecurity Researcher | Penetration Tester | Cyber Security | CEH | Computer Science Engineer | Offensive Security | Digital Forensics Account Takeover Attacks Bug Bounty Hacking Penetesting Sam Shield Image 3: Samadhan shimple Samadhan shimple 5 min read · 3 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F99f63c58ca7f&operation=register&redirect=https%3A%2F%2Fsamadhanshimple.medium.com%2Fhow-i-found-a-session-hijacking-bug-that-could-lead-to-account-takeover-by-samadhan-shimple-99f63c58ca7f&user=Samadhan+shimple&userId=ffd939bcd919&source=---hea",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "52dad05cae81",
     "title": "How a Simple IDOR Earned $5,000 on Reddit",
     "url": "https://meetcyber.net/how-a-simple-idor-earned-5-000-on-reddit-8d1b15857b2b",
