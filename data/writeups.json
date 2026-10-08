@@ -40,6 +40,47 @@
     "score": 53
   },
   {
+    "id": "5482f0c0e061",
+    "title": "How I Earned My First $$$ Bounty from Google — And What I Learned",
+    "url": "https://medium.com/@himxch/how-i-earned-my-first-bounty-from-google-and-what-i-learned-4952e25771e9",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Himxch"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-07T18:30:16.000Z",
+    "added_at": "2026-10-08T02:33:54.905Z",
+    "categories": [
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A misconfigured Google Cloud Storage bucket granted the 'list' permission to all users, allowing anyone to index and download thousands of private user files without needing the original share links.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was 'permission creep' within the Identity and Access Management (IAM) policy—a system that manages who can access specific resources. The developers used a predefined role that bundled the 'get' permission (needed to view a file via a link) with the 'list' permission (which allows viewing the entire directory). By granting this broad role to 'allUsers' (anyone on the internet), the bucket became fully indexable, violating the Principle of Least Privilege, which states that users should only have the minimum access necessary for a task.",
+      "walkthrough": "RECON\n1. The researcher identified a Google-hosted service that allows users to export content and generate a public share link.\n2. By examining the share link, the researcher identified the name of the underlying Google Cloud Storage bucket (a digital container for files).\nDISCOVERY\n3. The researcher tested if the bucket allowed 'enumeration' (listing all contents) by sending an unauthenticated HTTP request (a message sent to a server) to the bucket's base URL.\n4. GET https://storage.googleapis.com/[bucket-name]/\n5. Why: This request asks the storage API for the bucket's index. (Beginner: It is like asking a librarian for a list of every book in the library instead of just asking for one specific book).\n6. The server responded with a 200 OK and an XML list containing thousands of object names, creation dates, and metadata.\nEXPLOITATION\n7. The researcher identified a 'mediaLink' (a direct download URL) for a file they did not have a share link for.\n8. GET https://storage.googleapis.com/download/[object-path]\n9. Why: This request attempts to download the file content directly. (Beginner: Using the secret list to grab a file you weren't supposed to know existed).\n10. To prove the scale of the leak, the researcher looked for the 'nextPageToken' in the response.\n11. Why: Large lists are split into 'pages'; this token allows the requester to ask for the next set of results. (Beginner: Turning the page in the master list to see more files).\nIMPACT\n12. The researcher confirmed that thousands of user-generated files, some containing Personal Identifiable Information (PII) like names and emails in the metadata, were accessible without any authentication (logging in).",
+      "example": "Imagine a company 'target.example' uses a cloud bucket 'user-uploads-target' to let users share profile pictures. The intended behavior is that if you have the link 'https://storage.googleapis.com/user-uploads-target/user123_pic.jpg', you can see it. However, the admin accidentally grants the 'Storage Object Viewer' role to 'allUsers'. An attacker visits 'https://storage.googleapis.com/user-uploads-target/' and receives an XML file listing 'private_contract.pdf', 'internal_memo.docx', and 'user456_id_card.png'. The attacker can now download every file in the company's storage because the 'list' permission was enabled alongside the 'read' permission.",
+      "takeaway": "When hunting for cloud storage bugs, always distinguish between 'read' (accessing a known file) and 'list' (finding all files). A bucket that is 'public' for sharing is not necessarily a bug, but a bucket that is 'indexable' (allows listing) usually is. Look for bucket names in JavaScript files, network traffic, or by guessing based on the company name. A common mistake is assuming that because a file requires a long, unguessable ID to access, the bucket is secure; if the 'list' permission is active, those IDs are easily discovered.",
+      "fix": "To fix this, administrators must apply granular IAM roles instead of broad predefined roles. Specifically, the 'allUsers' entity should never be granted the 'storage.objects.list' permission. Instead, use a custom role or the 'Storage Object Viewer' role only on specific objects, or use 'Legacy Object Reader' which allows reading but not listing. In Google Cloud, the configuration should look like this:\n\n{\n  \"bindings\": [\n    {\n      \"role\": \"roles/storage.objectViewer\",\n      \"members\": [\"user:admin@example.com\"]\n    },\n    {\n      \"role\": \"roles/storage.legacyObjectReader\",\n      \"members\": [\"allUsers\"]\n    }\n  ]\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’ve been doing security research for a while, but landing my first significant bug bounty reward from a major tech company felt different. Not just because of the money — but because it proved that methodical research, persistence, and the right framing can turn an auto-rejected vulnerability into a confirmed fix and a real payout. This is the story of how I found a security misconfiguration in Google’s infrastructure, overcame an initial rejection, and earned my first Google VRP reward. Along the way, I learned lessons about cloud security, responsible disclosure, and how to present a findin",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "f700b4392dc4",
     "title": "The Art of Escalating Vulnerabilities",
     "url": "https://medium.com/@rkvb/the-art-of-escalating-vulnerabilities-fca037815f4c",
