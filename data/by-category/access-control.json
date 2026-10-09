@@ -1,5 +1,47 @@
 [
   {
+    "id": "9a6709168dc7",
+    "title": "How I Got Unlimited Office 365 Premium Memberships & Unlimited LinkedIn Premium Vouchers",
+    "url": "https://medium.com/@iamsecure1920/how-i-got-unlimited-office-365-premium-memberships-unlimited-linkedin-premium-vouchers-42ca4231e2af",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "iamsecure1920 (Sai Krishna Sobila )"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T00:58:33.000Z",
+    "added_at": "2026-10-09T01:26:25.328Z",
+    "categories": [
+      "business-logic",
+      "access-control",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A logic flaw in Microsoft's signup flow allowed users to bypass account limits by using email sub-addressing (plus tagging). This enabled the creation of unlimited free Office 365 and LinkedIn Premium accounts from a single email inbox.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure to perform canonicalization (converting data into its simplest, standard form) on email addresses before enforcing business rules. The system treated 'test+1@redacted.edu' and 'test+2@redacted.edu' as two different people because it compared the raw text strings. However, most email providers use sub-addressing, where any text after a plus sign is ignored for delivery. This allowed a single attacker to create infinite identities that all pointed back to one controlled inbox, bypassing the intended 'one trial per user' limit.",
+      "walkthrough": "RECON\n1. Navigate to the Microsoft 365 Education signup portal.\nURL: https://www.microsoft.com/en-us/education/products/office\nWhy: To identify the specific web page (Endpoint: a specific web address on a server) where users register for free trials.\n2. Identify the requirement for a .edu email address.\nWhy: To understand the prerequisite (Requirement: a condition that must be met first) for the attack.\nDISCOVERY\n3. Enter a valid university email address into the registration form.\nEmail: test@redacted.edu\nWhy: To trigger an HTTP request (A message sent from your computer to a server asking for data) and observe a normal signup.\n4. Receive and click the verification link in the inbox.\nWhy: To complete the authentication (Authentication: the process of proving you are who you say you are) process.\n5. Confirm the 12-month subscription is active.\nEXPLOITATION\n6. Open a new private browser window to clear session data.\nWhy: To ensure the website doesn't recognize the previous login session (Cookie: a small file used by websites to remember you).\n7. Start a new registration using a 'plus tag' in the email field.\nEmail: test+1@redacted.edu\nWhy: To send a malicious payload (The specific data or trick code sent to exploit a bug) inside the email parameter (A specific piece of information sent inside a request).\n8. Monitor the original inbox for a new verification email.\nWhy: To verify the email provider supports sub-addressing (Sub-addressing: a feature where tags added to an email are ignored during delivery).\n9. Click the second verification link.\nWhy: To bypass the 'one account per person' rule using a modified email string (String: a sequence of characters like letters or numbers).\n10. Repeat the process with a third variation.\nEmail: test+2@redacted.edu\nWhy: To demonstrate that the vulnerability allows for unlimited account creation.\nIMPACT\n11. Access the Microsoft Store dashboard for the new accounts.\nWhy: To check for additional rewards or services granted to new users.\n12. Confirm the receipt of a LinkedIn Premium voucher.\nWhy: To show how one bug affects multiple services (Entitlement: a digital right or permission to use a service).",
+      "example": "A fictional target 'coupon-king.example' offers a $10 discount to new subscribers. The vulnerable code checks if an email exists in the database: 'if (db.exists(email_input)) return error;'. An attacker uses 'shopper+1@example.com', 'shopper+2@example.com', and so on. The attack request: 'POST /api/claim-discount {\"email\": \"shopper+deal1@example.com\"}'. Because the database stores the full string including the plus tag, it treats each variation as a new customer. However, the email server delivers all discount codes to the same 'shopper@example.com' inbox, allowing the attacker to collect hundreds of coupons.",
+      "takeaway": "Always test for email variations when a system enforces 'one-per-user' limits or rate limits. Look for sub-addressing (using '+'), dot-stuffing (using 'u.s.e.r@gmail.com'), or case sensitivity (using 'User@example.com'). Use tools like Burp Suite Intruder to automate the creation of hundreds of variations to see if the system blocks them. A common beginner mistake is assuming that because a string is unique in a database, it represents a unique human identity. Variants of this bug often appear in newsletter signups, referral programs, and password reset rate limits.",
+      "fix": "Developers must normalize email addresses before checking them against a database or rate limiter. This involves converting the string to lowercase and removing any sub-addressing tags. For example, in Python, you can use 'email.split(\"+\")[0]' to get the base username before the domain. Always store and compare the 'canonical' version of the email to ensure one identity equals one record.\n\n```python\ndef get_clean_email(raw_email):\n    raw_email = raw_email.lower()\n    user, domain = raw_email.split(\"@\")\n    clean_user = user.split(\"+\")[0]\n    return f\"{clean_user}@{domain}\"\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The story of a tiny “+” that broke the gate — and what it taught me about identity, rate limits, and responsible disclosure. A quick note before we dive in: This vulnerability has been fixed. I reported it to Microsoft, waited roughly five months after the fix, and I’m sharing it now for educational purposes. Please don’t try this on live systems. Responsible disclosure keeps the ecosystem healthy. The Bug That Whispered Security bugs don’t always announce themselves with crashing servers or dramatic zero-days. Sometimes they whisper. Mine whispered with a plus sign. I was poking around the Mi",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "9080784dd3b5",
     "title": "Bypassing Payment Processes: When Checkout Logic Fails",
     "url": "https://medium.com/@raksharoot/bypassing-payment-processes-when-checkout-logic-fails-7eedc8c72c01",

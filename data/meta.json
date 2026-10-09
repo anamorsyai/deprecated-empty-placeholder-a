@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-10-08T21:35:40.259Z",
-  "totalItems": 127,
+  "lastRun": "2026-10-09T01:26:42.829Z",
+  "totalItems": 128,
   "newItemsThisRun": 1,
   "aiProvider": "custom",
   "aiOkThisRun": 1,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 82,
+  "aiGeneratedTotal": 83,
   "bySource": {
-    "medium-tag-bug-bounty": 62,
+    "medium-tag-bug-bounty": 63,
     "medium-tag-writeup": 11,
     "reddit-netsec": 4,
     "medium-tag-bugbounty": 1,
@@ -15,11 +15,11 @@
     "pentesterland": 48
   },
   "byCategory": {
-    "business-logic": 24,
-    "access-control": 42,
+    "business-logic": 25,
+    "access-control": 43,
+    "other": 22,
     "auth-bypass": 33,
     "rce": 24,
-    "other": 21,
     "idor-bola": 10,
     "info-disclosure": 21,
     "xss": 13,
