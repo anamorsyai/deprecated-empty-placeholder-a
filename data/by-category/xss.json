@@ -42,6 +42,46 @@
     "score": 53
   },
   {
+    "id": "e8e97717c173",
+    "title": "Reflected XSS di Portal Anggaran Pemerintah [REDACTED] via Parameter anggaran",
+    "url": "https://icikiwirsol.medium.com/reflected-xss-di-portal-anggaran-pemerintah-redacted-via-parameter-anggaran-c757860dae22",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T11:01:09.000Z",
+    "added_at": "2026-10-09T23:38:00.822Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A Reflected XSS vulnerability was found in a government budget portal's 'anggaran' parameter, allowing attackers to execute arbitrary JavaScript in a victim's browser.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability is caused by a lack of output encoding on the 'anggaran' parameter within the budget filtering feature. When a user provides input through this URL parameter, the application takes that input and places it directly into the HTML response without cleaning it. Specifically, the server fails to convert special characters like '<' and '>' into safe text entities. This allows a browser to interpret the user's input as executable code rather than plain text. The researcher identified this on the index.php endpoint where the budget filter is processed.",
+      "walkthrough": "RECON\n1. The researcher accessed the public budget portal to identify interactive features.\nhttps://redacted.redacted.go.id/redacted/index.php?id=13\nWhy: To find pages that accept user input through the URL (a URL is a web address).\nDISCOVERY\n2. The researcher identified the 'anggaran' parameter used for filtering data.\n?id=13&anggaran=test\nWhy: Parameters (pieces of info added to a URL) are often reflected back onto the page, making them targets for XSS (a bug where a site runs your code).\nEXPLOITATION\n3. The researcher crafted a payload using an SVG tag with an 'onload' event.\n<svg/onload=alert(document.domain)>\nWhy: An SVG is an image format that can contain code; 'onload' tells the browser to run JavaScript (a web programming language) as soon as the image loads.\n4. The researcher converted the payload into a URL-safe format (encoding).\n?id=13&anggaran=%3Csvg%2Fonload%3Dalert(document.domain)%3E&result=1\nWhy: Browsers require special symbols like '<' to be turned into codes like '%3C' to work correctly inside a URL.\n5. The researcher loaded the full URL in their browser.\nhttps://redacted.redacted.go.id/redacted/index.php?id=13&anggaran=%3Csvg%2Fonload%3Dalert(document.domain)%3E&result=1\nWhy: To test if the website would 'reflect' the code and trigger the browser to execute it.\nIMPACT\n6. A popup box appeared on the screen displaying the site's domain name.\n(Visual confirmation of alert box)\nWhy: This proves that the website is running the researcher's code, which could be used to steal cookies (small files used to keep you logged in).",
+      "example": "Imagine a fictional site target.example.com that has a search feature. The URL looks like this: https://target.example.com/search?query=books. If the page displays 'You searched for: books', an attacker can change the URL to: https://target.example.com/search?query=<details/open/ontoggle=alert(1)>. Because the website doesn't check the 'query' parameter for code, it inserts the <details> tag into the page. The browser sees the 'ontoggle' instruction and immediately runs the alert code, proving the site is vulnerable.",
+      "takeaway": "Always test parameters that change the text displayed on a webpage, such as search terms or filters. Look for 'reflections' where your input appears in the page's source code. If common tags like <script> are blocked, try 'event handlers' in other tags like <svg onload=...> or <img onerror=...>. A common mistake is assuming a site is safe just because it filters the word 'script'. Modern browsers have many ways to trigger JavaScript execution.",
+      "fix": "The developer should implement HTML Entity Encoding on all user-supplied input before it is rendered in the browser. This process converts characters like '<' into '&lt;' so the browser treats them as text to display rather than code to run. Additionally, a Content Security Policy (CSP) should be implemented to restrict which scripts are allowed to run. In PHP, this can be fixed using the htmlspecialchars function: \necho htmlspecialchars($_GET['anggaran'], ENT_QUOTES, 'UTF-8');",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 13 November 2025, saya sedang melakukan _vulnerability testing_ pada portal layanan publik milik **Pemerintah [REDACTED]**. Saat menguji fitur filter pada halaman “Anggaran”, saya menemukan sebuah celah _Reflected Cross-Site Scripting (XSS)_. Celah ini muncul karena input dari parameter `anggaran` tidak disanitasi dengan benar sebelum ditampilkan kembali ke dalam halaman HTML. Artikel ini akan membahas bagaimana saya menemukannya, cara mereproduksinya, hingga dampak dari kerentanan ini. ## 3. Detail Kerentanan (Vulnerability Details)",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "f700b4392dc4",
     "title": "The Art of Escalating Vulnerabilities",
     "url": "https://medium.com/@rkvb/the-art-of-escalating-vulnerabilities-fca037815f4c",
