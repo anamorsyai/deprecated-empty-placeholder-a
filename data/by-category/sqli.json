@@ -40,6 +40,46 @@
     "score": 60
   },
   {
+    "id": "5f12e0c1b291",
+    "title": "Error-Based SQL Injection di Portal Berita Pemerintah kabupaten [REDACTED] via Parameter id_news",
+    "url": "https://icikiwirsol.medium.com/error-based-sql-injection-di-portal-berita-pemerintah-kabupaten-redacted-via-parameter-id-news-c655489968b3",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T11:08:26.000Z",
+    "added_at": "2026-10-09T19:55:46.700Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An error-based SQL injection vulnerability was discovered in a government news portal's 'id_news' parameter, allowing attackers to view raw database errors and potentially extract sensitive information.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a lack of input sanitization (the process of cleaning data to remove dangerous characters) on the 'id_news' parameter. The application takes the value directly from the URL and inserts it into a SQL query (a command sent to a database to retrieve data) without using prepared statements. Because the application is configured to display raw database error messages to the user, any syntax error caused by malicious input is reflected on the screen. This specific flaw was found at the 'index.php' endpoint where the 'id_news' variable is processed.",
+      "walkthrough": "RECON\n1. The researcher identifies a news portal that uses a numerical ID in the URL to display specific articles.\nhttp://redacted.redactedkab.go.id/index.php?com=isi&id_news=290\nWhy: To find an entry point where user-supplied data (a parameter) is sent to the server's database (a system for storing organized information).\n\nDISCOVERY\n2. The researcher adds a single quote character to the end of the ID number in the URL.\nhttp://redacted.redactedkab.go.id/index.php?com=isi&id_news=290'\nWhy: A single quote (') is a special character used in SQL to wrap text; adding an extra one often breaks the query structure if the input isn't handled safely.\n\nEXPLOITATION\n3. The website responds with a raw error message from the database engine.\nYou have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''290'' at line 1\nWhy: This confirms Error-Based SQLi (a bug where the database leaks its internal errors), revealing that the server uses MariaDB and that the input is being directly interpreted as part of a command.\n\nIMPACT\n4. The researcher analyzes the error to confirm that the database structure can be mapped.\nN/A\nWhy: By seeing the 'syntax error' message, a professional knows they can now use more complex commands to force the database to reveal table names or user credentials through subsequent error messages.",
+      "example": "Imagine a fictional site 'target.example' that shows user profiles. The URL is 'target.example/profile.php?user_id=5'. The vulnerable code behind the scenes looks like this: 'SELECT * FROM users WHERE id = ' . $_GET['user_id']. If an attacker visits 'target.example/profile.php?user_id=5'', the database tries to run 'SELECT * FROM users WHERE id = 5'', which has an unbalanced quote. The database gets confused and sends back an error like 'Unexpected quote at line 1'. This tells the attacker the site is vulnerable. An attacker could then use a payload like '5 AND extractvalue(1,concat(0x7e,version()))' to force the database to show its version number inside an error message.",
+      "takeaway": "When hunting for bugs, always look for URL parameters that accept numbers, as these are frequently passed directly into database queries. Testing with a single quote (') or a backslash (\\) is the fastest way to trigger a visible error. If you see a database error message (like MariaDB, MySQL, or PostgreSQL errors), you have found a high-impact vulnerability. A common variant is 'Blind SQLi,' where the error isn't shown, but the page takes longer to load or looks different. A common mistake for beginners is assuming a site is safe just because it doesn't show a 'pretty' error; always check the page source for hidden error comments.",
+      "fix": "The most effective fix is using Prepared Statements (a security feature where the SQL command and the user data are sent to the database separately). This ensures the database treats the input strictly as data, not as executable code. Additionally, developers should disable public error reporting in production environments. \n\nExample of fixed PHP code:\n$id = $_GET['id_news'];\n$stmt = $pdo->prepare('SELECT * FROM news WHERE id = ?');\n$stmt->execute([$id]);\n$news = $stmt->fetch();",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* **Jenis Kerentanan:** SQL Injection (Error-Based) * **Vektor:** Parameter URL (`id_news`) * **Dampak:** Eksekusi query SQL yang tidak sah, kebocoran informasi struktur database melalui pesan error, dan potensi eksfiltrasi data sensitif. * **Status:** Silent Fixed (Diperbaiki tanpa konfirmasi/balasan dari pihak terkait) * **Severity:**Critical ## 2. Pendahuluan (Introduction) Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 14 November 2025, saya sedang melakukan _vulnerability testing_ pada portal layanan publik milik **Pemerintah [REDACTED]**. Saat menguji fitur berita pada port",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "9257b52a9d97",
     "title": "World of SELECT-only PostgreSQL Injections",
     "url": "http://phrack.org/issues/71/8.html",

