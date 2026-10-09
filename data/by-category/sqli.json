@@ -1,5 +1,45 @@
 [
   {
+    "id": "89ad0bc933f3",
+    "title": "Error-Based SQL Injection di Portal Perizinan Pemerintah Kabupaten [REDACTED] via Parameter id",
+    "url": "https://icikiwirsol.medium.com/error-based-sql-injection-di-portal-perizinan-pemerintah-kabupaten-redacted-via-parameter-id-ba1ec54b7c42",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T11:19:46.000Z",
+    "added_at": "2026-10-09T14:40:51.413Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An Error-Based SQL Injection vulnerability in a government portal's 'id' parameter allows attackers to trigger raw database errors, leaking internal structure and enabling data theft.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application directly concatenates the 'id' URL parameter into a SQL query without using prepared statements or sanitization. A SQL query is a command sent to a database to retrieve information. Sanitization is the process of cleaning user input to remove dangerous characters. Because the application also fails to hide raw database error messages, any syntax error caused by malicious input is displayed directly to the user, revealing details about the MySQL server.",
+      "walkthrough": "RECON\n1. The researcher identified a target page that displays licensing requirements based on an ID number.\nhttps://redacted.redactedkab.go.id/index.php?com=persyaratan&id=1\nWhy: This is the starting point where the application takes a parameter (a piece of data in the URL) to decide what content to show.\nDISCOVERY\n2. The researcher added a single quote character (') to the end of the ID parameter to test how the database handles unexpected input.\nhttps://redacted.redactedkab.go.id/index.php?com=persyaratan&id='\nWhy: In SQL, a single quote is used to wrap text data; adding an extra one often breaks the query structure if the input isn't handled safely.\nEXPLOITATION\n3. The application responded with a raw MySQL error message instead of a normal page.\nYou have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''\" at line 1\nWhy: This error confirms that the single quote successfully 'broke' the database command, proving the input is being processed as code (SQL Injection).\nIMPACT\n4. By observing these errors, an attacker can systematically guess table names or use advanced commands to extract the entire database.\nN/A\nWhy: Error-based injection allows an attacker to 'ask' the database questions and receive the answers inside the error messages themselves.",
+      "example": "Imagine a site target.example/profile.php?user_id=5. The server runs: SELECT * FROM users WHERE id = 5. An attacker sends target.example/profile.php?user_id=5'. The server tries to run: SELECT * FROM users WHERE id = 5'. This is invalid SQL. If the server is vulnerable, it might show: 'Error: Unclosed quotation mark after the character string 5''. The attacker now knows they can manipulate the database. They might then try: 5 AND 1=2 UNION SELECT 1,username,password FROM admin_users-- which could display the admin's password on the screen.",
+      "takeaway": "Always test numeric parameters in URLs by adding characters like ' or \" or mathematical operations like -1. If the page content changes or an error appears, you likely found an injection point. Look for 'verbose error messages' which are a goldmine for researchers because they explain exactly what went wrong in the database. A common mistake is assuming that because a parameter is a number, it doesn't need to be sanitized; attackers can always change that number into a string of code.",
+      "fix": "The developer must use Prepared Statements (also called Parameterized Queries). This method sends the SQL command and the user data to the database separately, so the database never treats the user data as code. Additionally, the application should be configured to show a generic 'Something went wrong' page instead of raw database errors.\n\nExample (PHP PDO):\n$stmt = $pdo->prepare('SELECT * FROM requirements WHERE id = :id');\n$stmt->execute(['id' => $_GET['id']]);\n$user = $stmt->fetch();",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* **Jenis Kerentanan:** SQL Injection (Error-Based) * **Vektor:** Parameter URL (`id`) * **Dampak:** Eksekusi query SQL yang tidak sah, kebocoran informasi struktur database melalui pesan error, dan potensi eksfiltrasi data sensitif. * **Status:** Unfixed (Dilaporkan, belum ada balasan, belum diperbaiki) * **Severity:**Critical ## 2. Pendahuluan (Introduction) Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 14 November 2025, saya sedang melakukan _vulnerability testing_ pada portal layanan publik milik **Pemerintah Kabupaten [REDACTED]**. Saat menguji fitur persyaratan perizinan p",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "9257b52a9d97",
     "title": "World of SELECT-only PostgreSQL Injections",
     "url": "http://phrack.org/issues/71/8.html",
