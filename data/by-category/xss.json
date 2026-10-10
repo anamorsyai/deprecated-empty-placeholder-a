@@ -1,5 +1,47 @@
 [
   {
+    "id": "c78aec8f2515",
+    "title": "CVE-2026–93485 Explained: How One WordPress Comment Can Hand Over the Server",
+    "url": "https://medium.com/@guidancewhite/cve-2026-93485-explained-how-one-wordpress-comment-can-hand-over-the-server-e3e3725e7d88",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Guidancewhite"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-10T01:05:13.000Z",
+    "added_at": "2026-10-10T02:46:12.685Z",
+    "categories": [
+      "xss",
+      "rce",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A flaw in WordPress's comment rendering pipeline allows attackers to bypass sanitization using newlines in blockquote attributes, leading to zero-click XSS. If an administrator views the comment, the script can automatically install a malicious plugin, resulting in full server takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a logic gap between the KSES sanitizer (which cleans input) and the wpautop/wptexturize formatters (which prepare text for display). KSES allows literal newlines in the 'cite' attribute of a blockquote. Later, wpautop replaces these newlines with temporary HTML comments containing a '>' character. A subsequent regular expression (a search pattern for text) used to wrap paragraphs incorrectly stops at this stray '>' character, breaking the HTML structure and allowing content inside a 'code' tag to escape and become active attributes on the blockquote.",
+      "walkthrough": "RECON\nStep 1: Identify the comment rendering pipeline which uses a chain of filters including KSES, wpautop, and wptexturize.\n\nDISCOVERY\nStep 2: Observe that KSES (the sanitizer) allows newlines inside the 'cite' attribute of a 'blockquote' tag because newlines are not in its character-encoding table.\n\nStep 3: Note that wpautop (the paragraph formatter) replaces newlines inside tags with a temporary placeholder string.\n<!-- wpnl -->\nWhy: This placeholder contains a '>' character, which is the 'bait' for the next step. (A placeholder is a temporary piece of text used until the final version is ready).\n\nEXPLOITATION\nStep 4: The attacker submits a specially crafted comment.\n<blockquote cite=\"a\nb\"><code>x\" onfocus=alert(document.domain) autofocus tabindex=0</code></blockquote>\nWhy: This payload uses a newline (\\n) to trigger the bug and places the malicious script inside a 'code' tag to protect it from being modified by other filters. (A payload is the specific code used to exploit a bug).\n\nStep 5: wpautop runs a regular expression to clean up paragraph tags.\npreg_replace( '|<p><blockquote([^>]*)>|i', '<blockquote$1><p>', $text );\nWhy: The pattern [^>]* means \"match anything that is NOT a closing bracket.\" Because of the placeholder from Step 3, it stops at the first '>' it sees, which is in the middle of the attribute. (A regular expression is a sequence of characters that defines a search pattern).\n\nStep 6: wptexturize runs, which normally turns straight quotes into curly quotes, but it ignores anything inside 'code' tags.\nWhy: This ensures the attacker's closing quote (\") inside the 'code' tag remains a straight quote, which the browser will later use to end the 'cite' attribute.\n\nStep 7: The browser receives the broken HTML and attempts to fix it.\n<blockquote cite=\"a <p> b&#8221;> onfocus=alert(document.domain) autofocus tabindex=0>\nWhy: The browser sees the straight quote from the 'code' tag as the end of the 'cite' attribute. Everything after it (onfocus, autofocus) is now treated as a real attribute of the blockquote. (An attribute is extra information inside an HTML tag, like a link or a style).\n\nIMPACT\nStep 8: The 'autofocus' attribute forces the browser to focus on the blockquote immediately, triggering the 'onfocus' event handler.\nonfocus=alert(document.domain)\nWhy: This runs the attacker's JavaScript without the user clicking anything. (An event handler is code that runs when a specific action, like a page load, occurs).\n\nStep 9: If an administrator views the page, the script uses their active session to fetch a security token (nonce).\nfetch('/wp-admin/plugin-install.php?tab=upload')\nWhy: A nonce is a unique code used to prove a request is legitimate. By stealing it, the script can perform actions as the admin.\n\nStep 10: The script uses the stolen nonce to upload and activate a malicious plugin.\nWhy: This gives the attacker Remote Code Execution (RCE), meaning they can now run any command on the server.",
+      "example": "Imagine a website 'target.example' that lets users post reviews. It allows the [b] tag for bold text. The server processes the review like this: 1. It checks for bad words. 2. It converts [b] to <b>. 3. It adds a 'title' attribute to the <b> tag if the user provided one. If the user submits: [b title=\"hello\n\" onmouseover=\"alert('hacked')\" x=\"]Click Me[/b], and the server's code for adding the title uses a simple search-and-replace that gets confused by the newline (\\n), it might output: <b title=\"hello <br> \" onmouseover=\"alert('hacked')\" x=\">Click Me</b>. The browser sees the quote after the <br> as the end of the title, making 'onmouseover' a live command that runs when a user moves their mouse over the text.",
+      "takeaway": "When hunting for bugs, look for 'filter chains' where multiple functions modify the same piece of data in sequence. Discrepancies in how different functions handle special characters like newlines (\\n) or null bytes (\\0) are prime targets. Always check if 'safe' tags like <code>, <pre>, or <script> are treated differently by sanitizers versus formatters; they can often be used to 'shield' a payload until the final rendering step. A common mistake is assuming that because a tag is on an allowlist, its attributes are automatically safe regardless of the characters they contain.",
+      "fix": "The fix involves updating the regular expression in wpautop to correctly handle HTML comments and attributes, ensuring it doesn't stop prematurely at a '>' character inside a comment. Additionally, the KSES sanitizer should be updated to properly encode newlines within attribute values so they cannot interfere with later processing. \n\n// Improved regex logic (simplified example):\n$text = preg_replace_callback('|<p><blockquote(.*?)>|i', function($matches) { \n  // Use a proper parser or more specific logic to find the REAL closing bracket\n}, $text);",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "WordPress sanitizes a comment with KSES when it’s saved, then reformats it with the `comment_text` filter chain when it's displayed. Each step looks fine on its own, but **the output-time filters interpret the saved result differently than the save-time sanitizer intended**, and an attack hides in that gap. The trigger is a single newline (`\\n`) inside the `cite` attribute of a `<blockquote>`. That newline trips a regex bug in `wpautop()`, which turns what was originally plain text inside a `<code>` tag into a real HTML attribute on the `<blockquote>`. The result: an event handler like `onfocu",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "82b4ddcd0223",
     "title": "From CSPT to DOM XSS: Chaining an Open Redirect with Malicious JSON",
     "url": "https://medium.com/@AstroKrypTech/from-cspt-to-dom-xss-chaining-an-open-redirect-with-malicious-json-71a58c462c2a",
@@ -80,6 +122,46 @@
     "ai_generated": true,
     "engagement": null,
     "score": 47
+  },
+  {
+    "id": "a39436a9341f",
+    "title": "Reflected XSS di Portal Pemerintah Kota [REDACTED] via Parameter Tahun pada Root Domain dan…",
+    "url": "https://icikiwirsol.medium.com/reflected-xss-di-portal-pemerintah-kota-redacted-via-parameter-tahun-pada-root-domain-dan-b1c07f6e4a89",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T10:52:09.000Z",
+    "added_at": "2026-10-10T02:52:35.798Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "Reflected XSS allows an attacker to inject a <script> tag via the datatahun or tahun URL parameter, causing arbitrary JavaScript to run in the victim’s browser on both the root domain and a sub‑domain.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application reads the datatahun (and tahun) parameter from the query string and writes its value directly into the HTML response without any output encoding. Because the server does not escape characters such as < and >, the browser interprets them as HTML tags. No whitelist validation is applied, so any string—including a mixed‑case <ScRiPt> tag—passes through. The same vulnerable code path exists on two different hosts (the main domain and a sub‑domain), exposing the flaw in multiple locations. This lack of sanitisation is the root cause of the reflected XSS.",
+      "walkthrough": "RECON\nStep 1: Identify a page that reflects a query parameter.\nWhat: Open the awards page on the main site.\nURL: https://redactedkota.go.id/penghargaan/tahun\nWhy: The URL contains a datatahun parameter that the server later prints back in the HTML (HTTP request is the text a browser sends to a server; URL is the address plus query string).\n\nStep 2: Craft a payload that will execute JavaScript.\nWhat: Write a mixed‑case script tag to bypass simple filters.\nPayload: <ScRiPt>alert(document.domain)</ScRiPt>\nWhy: < starts an HTML tag, ScRiPt is the tag name (mixed case avoids case‑sensitive filters), > ends the opening tag, alert(...) is JavaScript that shows a pop‑up, </ScRiPt> closes the tag.\n\nStep 3: URL‑encode the payload and send the request.\nWhat: Append the encoded payload to the datatahun parameter and add pagination parameters.\nRequest URL: https://redactedkota.go.id/penghargaan/tahun?datatahun=%3CScRiPt%3Ealert(document.domain)%3C/ScRiPt%3E&page=1&per-page=1\nWhy: URL‑encoding converts special characters (e.g., %3C for <) so the browser can transmit them safely; the server decodes them back to the original string before rendering.\n\nStep 4: Verify execution.\nWhat: Load the URL in a browser.\nResult: A pop‑up shows “redactedkota.go.id”.\nWhy: The injected <script> was reflected into the page, the browser parsed it as JavaScript, and alert() displayed the domain.\n\nSUBDOMAIN\nStep 5: Repeat on the sub‑domain endpoint.\nWhat: Open the legal‑products page on the sub‑domain.\nURL: https://redacted.redactedkota.go.id/produk-hukum/tahun\nWhy: This page also reflects a tahun parameter without encoding.\n\nStep 6: Inject the same payload via the tahun parameter.\nWhat: Use the same encoded payload.\nRequest URL: https://redacted.redactedkota.go.id/produk-hukum/tahun?tahun=%3CScRiPt%3Ealert(document.domain)%3C/ScRiPt%3E\nWhy: The server mirrors the tahun value into the HTML, causing the script to run.\n\nStep 7: Verify on the sub‑domain.\nWhat: Open the URL in a browser.\nResult: An alert shows “redacted.redactedkota.go.id”.\nWhy: The same reflection issue exists on the sub‑domain, confirming a duplicated vulnerability.",
+      "example": "Assume a fictional site http://target.example/search?year= that prints the year value inside a <div>. Vulnerable code (PHP):\n<?php echo \"<div>Results for \".$_GET['year'].\"</div>\"; ?>\nAn attacker can request:\nhttp://target.example/search?year=%3CScRiPt%3Ealert('XSS')%3C/ScRiPt%3E\nThe server decodes %3CScRiPt%3E to <ScRiPt> and injects it into the <div>. The browser executes alert('XSS'), proving the reflected XSS works.",
+      "takeaway": "When a page echoes any query‑string value back into HTML, test it for XSS by injecting a simple <script>alert(1)</script> payload (use mixed case if filters exist). Look for parameters named year, date, id, search, etc., especially on public‑facing pages. Tools like Burp Suite Intruder or OWASP ZAP can automate payload insertion. Variants include using event handlers (e.g., <img src=x onerror=alert(1)>) or breaking out of HTML attributes. Beginners often forget to URL‑encode the payload, causing the request to be malformed; always encode before sending.",
+      "fix": "Sanitize output by applying HTML entity encoding to every user‑controlled value before inserting it into the page. In PHP, replace the echo with:\n<?php echo \"<div>Results for \".htmlspecialchars($_GET['year'], ENT_QUOTES, 'UTF-8').\"</div>\"; ?>\nThis converts < to &lt;, > to &gt;, \" to &quot;, ' to &#039;, and & to &amp;, preventing the browser from treating them as markup. Additionally, implement a whitelist that only allows digits for the year parameter (e.g., preg_match('/^\\d{4}$/', $_GET['year'])). Deploy a strong Content‑Security‑Policy header (e.g., Content‑Security‑Policy: default-src 'self'; script-src 'self') to mitigate any remaining XSS vectors.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 13 November 2025, saya sedang melakukan _vulnerability testing_ pada portal layanan publik milik **Pemerintah Kota [REDACTED]**. Saat menguji fitur filter berbasis tahun pada beberapa halaman, saya menemukan celah _Reflected Cross-Site Scripting (XSS)_. Celah ini muncul karena input dari parameter URL tidak disanitasi dengan benar sebelum ditampilkan kembali ke dalam halaman HTML. Yang menarik, celah ini ditemukan di dua lokasi berbeda: root domain dan subdomain. Artikel ini akan membahas bagaimana saya menemukannya, cara mereproduks",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
   },
   {
     "id": "f700b4392dc4",
