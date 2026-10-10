@@ -1,5 +1,47 @@
 [
   {
+    "id": "3747b7f7c54b",
+    "title": "Finding an Exposed Admin Panel on a Government Portal: A Responsible Disclosure Story",
+    "url": "https://medium.com/@byteshubh1717/finding-an-exposed-admin-panel-on-a-government-portal-a-responsible-disclosure-story-ca8592f5b213",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Byteshubhx"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-10T18:03:01.000Z",
+    "added_at": "2026-10-10T19:22:10.890Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A government portal's administrative panel was found exposed to the public internet, protected only by default vendor credentials and lacking rate limiting. This allowed for immediate unauthorized access to the site's management interface.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a failure to change default vendor credentials (standard passwords set by the software creator) after the portal was deployed. Additionally, the admin panel (a restricted area for site management) was publicly accessible without any IP allowlisting (restricting access to specific trusted computers). The absence of rate limiting (a mechanism that limits how many times a user can try to log in) further exacerbated the risk, making the panel vulnerable to automated guessing attacks. Finally, a lack of a security handoff checklist between the third-party developer and the government agency meant these basic security steps were overlooked.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher performed passive reconnaissance (gathering information about a target without directly attacking it) using search engine dorking (using advanced search commands to find hidden information).\n2. The researcher used directory enumeration (automatically testing common folder names like /admin or /login) to find hidden paths on the government website.\n\nDISCOVERY\n3. The researcher discovered an administrative login panel (a private page used to manage the website) that was directly reachable from the homepage.\n4. The researcher identified that the portal was built by a third-party vendor, which often uses standard settings.\n\nEXPLOITATION\n5. The researcher attempted to log in using default credentials (standard usernames and passwords like 'admin' or 'password' provided by the software manufacturer).\n6. The researcher observed that the login form had no rate limiting (a security feature that blocks a user after too many failed attempts).\n7. The researcher successfully confirmed that the default credentials worked, granting access to the administrative backend.\n\nIMPACT\n8. The researcher confirmed that an attacker could have viewed, modified, or deleted sensitive government data or taken full control of the portal.\n9. The researcher immediately stopped testing once access was confirmed to follow ethical disclosure guidelines.",
+      "example": "Imagine a fictional website called target.example that uses a popular management software called 'WebAdmin v1'. By searching the internet, an attacker finds the manual for 'WebAdmin v1' which states the default username is 'manager' and the password is '12345'.\n\nThe attacker navigates to:\nhttp://target.example/admin_login.php\n\nThey enter the credentials into the HTTP request (the message sent from the browser to the server):\nPOST /admin_login.php HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\nusername=manager&password=12345\n\nBecause the owner of target.example never changed the default password, the server responds with a '200 OK' and a session cookie (a small piece of data that keeps the user logged in), giving the attacker full control over the site.",
+      "takeaway": "Always check for default credentials on any third-party software or login panels you discover during reconnaissance. Look for 'Powered by' footers or unique page titles to identify the software vendor, then search for their default manuals online. A key signal is the lack of rate limiting; if you can try 100 passwords without being blocked, the system is highly vulnerable. A common beginner mistake is assuming that because a link isn't visible on the homepage, it is 'secure'—always use directory brute-forcing tools to find hidden administrative endpoints.",
+      "fix": "To fix this, administrators must immediately change all default passwords to strong, unique credentials upon deployment. Furthermore, administrative panels should be restricted using IP allowlisting (only allowing specific office IP addresses to connect) or placed behind a VPN (Virtual Private Network). Rate limiting should be implemented on all authentication endpoints to prevent brute-force attacks. In code, this can be done by tracking failed attempts in a database and blocking the IP address after 5 failures:\n\nif (failed_attempts > 5) {\n  return response('Too many attempts. Please try again in 15 minutes.', 429);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "BCA student focused on SOC operations, threat detection, and web application security. Learning, testing, and sharing practical cybersecurity insights. Press enter or click to view image in full size Image 3 Cybersecurity Government Information Security Bug Bounty Hacking # Finding an Exposed Admin Panel on a Government Portal: A Responsible Disclosure Story Image 4: Byteshubhx Byteshubhx 3 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fca8592f5b213&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40byteshubh1717%2Ffinding-an-exp",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "c78aec8f2515",
     "title": "CVE-2026–93485 Explained: How One WordPress Comment Can Hand Over the Server",
     "url": "https://medium.com/@guidancewhite/cve-2026-93485-explained-how-one-wordpress-comment-can-hand-over-the-server-e3e3725e7d88",
