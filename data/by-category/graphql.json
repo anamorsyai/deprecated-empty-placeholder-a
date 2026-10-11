@@ -1,5 +1,47 @@
 [
   {
+    "id": "faf538cf1d20",
+    "title": "How I Found an Unauthenticated GraphQL API Leaking User Data",
+    "url": "https://medium.com/@OmarTamer0/how-i-found-an-unauthenticated-graphql-api-leaking-user-data-eeec3d54fe74",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Omar Tamer"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-11T20:10:55.000Z",
+    "added_at": "2026-10-11T22:35:32.194Z",
+    "categories": [
+      "graphql",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated GraphQL endpoint allowed anyone to query the entire user database, including PII, by exploiting missing authorization checks at the resolver level.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure to implement authorization at the resolver level (the specific code functions that fetch data for fields). While the server might have checked for a login at the main entry point, it failed to check if the user was allowed to access the specific 'users' data field. This allowed any visitor to send a POST request (a type of message used to send data to a server) to the /graphql endpoint and receive sensitive records without providing any credentials.",
+      "walkthrough": "RECON\n1. The researcher identified a potential GraphQL endpoint, which is a specific web address (URL) where an API (a system for computers to talk to each other) can be reached.\n2. They confirmed the endpoint was active by sending a minimal 'ping' query.\nPOST /graphql HTTP/1.1\nContent-Type: application/json\n{\"query\":\"{__typename}\"}\nWhy: The __typename field asks the server what kind of object it is; if it answers, it confirms GraphQL is running (a beginner gloss: it's like knocking on a door to see if anyone is home).\nDISCOVERY\n3. The researcher checked for 'Introspection,' a feature that lets you ask the server for a map of its entire database structure.\n4. They sent a specialized query to download the full schema (the blueprint of all data types).\n{\"query\":\"query{__schema{types{name kind fields{name args{name} type{name kind ofType{name}}}}}}\"}\nWhy: This returns every possible query, mutation (a command to change data), and field available on the server.\n5. If introspection was blocked, the researcher would have used 'field suggestions' (where the server says 'Did you mean email?' when you guess wrong) to rebuild the map.\n6. They also looked at client-side artifacts (the code sent to your browser) to find hidden query names.\nEXPLOITATION\n7. With the map in hand, the researcher looked for sensitive fields like 'users' or 'email'.\n8. They prepared a request to fetch user data but intentionally removed all authentication headers (extra info like cookies or tokens that prove who you are).\n9. They sent the unauthenticated request to the server.\nPOST /graphql HTTP/1.1\nContent-Type: application/json\n{\"query\":\"{ users { id username name createdAt } }\"}\nWhy: This asks for the ID, username, full name, and join date for all users. Because no login was provided, the server should have said 'Access Denied'.\n10. The server incorrectly returned the data, proving that the 'resolver' ( the function that gets the data) had no security check.\n11. The researcher then tested for BOLA (Broken Object-Level Authorization), which is when you can see other people's private data by guessing their ID number.\n{\"query\":\"{ user(id: 1337) { id email role } }\"}\nWhy: This checks if a user can see the private email of user #1337.\nIMPACT\n12. To prove the bug could leak the entire database, the researcher used 'pagination' (breaking a long list into pages).\n13. They used a 'cursor' (a digital bookmark) to ask for the next 100 users.\n{\"query\":\"{ users(first: 100, after: \\\"<cursor>\\\") { edges { node { id email } } pageInfo { endCursor hasNextPage } } }\"}\nWhy: By following the 'endCursor' (the bookmark for the last item seen), an attacker can systematically download every single user record.\n14. The researcher checked for 'Mutations' (commands that change data) to see if they could also delete or modify users without a login.\n15. They checked for 'Query Batching,' which allows sending many requests at once to bypass speed limits.\n16. Finally, they documented the findings, showing that anyone on the internet could steal the entire user list.",
+      "example": "Imagine a library website at target.example. The website has a GraphQL API. The developer wrote a function (a resolver) to get book details, which is public. They also wrote a function to get 'MemberDetails' (names and home addresses). They forgot to add a 'checkLogin' step to the MemberDetails function. An attacker sends this request: POST /graphql {\"query\": \"{ allMembers { fullName homeAddress } }\"}. Even though the attacker isn't logged in, the server sees the request for 'allMembers', runs the unprotected function, and sends back the private addresses of every library member. This happens because the server was told HOW to get the data, but not WHO is allowed to see it.",
+      "takeaway": "When hunting for bugs, always look for GraphQL endpoints like /graphql, /v1/graphql, or /api/graphql. Use introspection to map the attack surface, but don't give up if it's disabled; use tools to guess field names based on error messages. The most common mistake developers make is securing the 'front door' (the URL) but leaving the 'room doors' (the resolvers) unlocked. Always test sensitive queries with zero authentication to see if the server leaks data by default. A key variant is BOLA, where you are logged in but can access other users' data by changing an ID parameter.",
+      "fix": "The fix is to implement authorization checks inside every single resolver function, not just at the top-level API gateway. Developers should use a 'context' object to verify the user's identity and permissions before returning any data. Additionally, introspection and field suggestions should be disabled in production environments to prevent attackers from mapping the database. \n\nExample of fixed code (Node.js):\nconst resolvers = {\n  Query: {\n    users: (parent, args, context) => {\n      if (!context.user || context.user.role !== 'ADMIN') {\n        throw new Error('Not authorized');\n      }\n      return db.Users.findAll();\n    }\n  }\n};",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "## GraphQL shifts a lot of power to the client. One endpoint, one POST request, and the caller decides exactly which objects and fields come back. That flexibility is the feature. It is also why a single missing authorization check does not leak one record, it leaks the graph. This article is based on one of my own bug bounty findings: an unauthenticated GraphQL API that exposed user data at scale. The company stays unnamed and identifying details are generalized, but the methodology is exactly what I used: fingerprinting, schema discovery, locating the missing-authorization bug, proving impac",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "1f1fb4f363ce",
     "title": "HTTP Request Smuggling (TE.CL) to Session Hijacking via GraphQL",
     "url": "https://gentilsecurity.medium.com/http-request-smuggling-te-cl-to-session-hijacking-via-graphql-303f14dcec82",
