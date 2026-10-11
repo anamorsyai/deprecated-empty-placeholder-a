@@ -1,5 +1,46 @@
 [
   {
+    "id": "ccb5b1b6f3a3",
+    "title": "PortSwigger Access Control Notes: Data Leakage, Password Disclosure, and File-Based IDOR",
+    "url": "https://medium.com/@furkannyildiizz05/portswigger-access-control-notes-data-leakage-password-disclosure-and-file-based-idor-e1728925bba0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Furkannyildiizz"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-11T13:20:50.000Z",
+    "added_at": "2026-10-11T14:18:03.772Z",
+    "categories": [
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "While progressing through the Access Control learning path on PortSwigger Web Security Academy, I solved three interconnected labs demonstrating severe authorization flaws, data leakage, and account takeover vectors. 1.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While progressing through the Access Control learning path on PortSwigger Web Security Academy, I solved three interconnected labs demonstrating severe authorization flaws, data leakage, and account takeover vectors. 1. User ID Controlled by Request Parameter with Data Leakage in Redirect Concept and Analogy: Similar to a security guard turning you away at a building entrance (“You are not allowed here”) while simultaneously handing you a copy of classified documents before sending you out. Walkthrough: 1. Accessed the lab URL using the Burp Suite embedded browser. 2. Located the GET /my-accou",
+    "ai_generated": false,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "3747b7f7c54b",
     "title": "Finding an Exposed Admin Panel on a Government Portal: A Responsible Disclosure Story",
     "url": "https://medium.com/@byteshubh1717/finding-an-exposed-admin-panel-on-a-government-portal-a-responsible-disclosure-story-ca8592f5b213",
