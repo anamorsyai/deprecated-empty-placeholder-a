@@ -1,5 +1,47 @@
 [
   {
+    "id": "81da8aad1b26",
+    "title": "One-Click Account Deletion: How a Direct Link Can Instantly Delete an Authenticated User’s Account",
+    "url": "https://medium.com/@0xfalcon7/one-click-account-deletion-how-a-direct-link-can-instantly-delete-an-authenticated-users-account-4fb7c054fa3c",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "0xfalcon"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-10T09:22:14.000Z",
+    "added_at": "2026-10-11T07:19:52.416Z",
+    "categories": [
+      "csrf",
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can instantly delete a user's account by tricking them into clicking a single link, due to a lack of confirmation steps and the leakage of a required user identifier.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application performs a highly sensitive action—account deletion—using a simple HTTP GET request (a standard way to ask a server for data) without any Cross-Site Request Forgery (CSRF) protection. CSRF protection is a security measure that ensures a request was intentionally sent by the user. Furthermore, the application fails to require a confirmation step (like a 'Yes/No' prompt) before finalizing the deletion. Finally, the secret identifier needed to trigger the deletion, called 'pivot_uid', was leaked in an unrelated booking response under a different name, 'business_uid', making it discoverable by attackers.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher explored the target application while using Burp Suite, a tool that intercepts and records all communication between the browser and the server.\n2. They identified a specific endpoint (a specific web address used for a function) responsible for closing accounts.\nDISCOVERY\n3. The researcher noticed the account closure URL required a specific piece of data called a 'pivot_uid' (a unique identifier for a user).\n4. To find how an attacker might get this ID, they searched their recorded traffic history for that specific value.\n5. They discovered the exact same ID was being sent back by the server in a completely different part of the site related to bookings, labeled as 'business_uid'.\nEXPLOITATION\n6. The researcher combined the account closure address with the discovered ID to create a malicious link.\n7. The final payload (the specific code or link used to exploit a bug) looked like this:\nhttps://www.test.com/account/close?frontage_iframe=true&pivot_uid=<business_uid>\n8. Why: The '?' starts the list of parameters (extra instructions for the server), 'frontage_iframe=true' likely tells the site how to display the page, and 'pivot_uid' tells the site exactly which account to delete.\n9. The researcher logged into a test account (authentication) to simulate a real victim.\n10. They pasted the crafted link into the browser while logged in.\nIMPACT\n11. The application immediately processed the request and deleted the account without asking for a password or a confirmation click.\n12. This proves that any attacker who can find a user's 'business_uid' can trick them into deleting their own account by sending them that link.",
+      "example": "Imagine a website called 'photo-share.example.com'. To delete a photo, the site uses a link like: https://photo-share.example.com/delete?photo_id=999. If a user is logged in and clicks that link, the photo is gone instantly. An attacker finds that the 'photo_id' is visible to everyone who looks at the photo's public page. The attacker then sends an email to the owner of photo #1000 saying 'Check out this cool site!' but hides the link 'https://photo-share.example.com/delete?photo_id=1000' behind the text. When the owner clicks it, their photo is deleted because the website didn't check if the owner actually clicked a 'Delete' button on the real site or use a CSRF token (a secret, one-time code) to verify the request.",
+      "takeaway": "Always look for sensitive actions (delete, change password, update email) that are triggered by simple links (GET requests). If you find one, check if there is a 'CSRF token'—a long, random string in the URL or headers that changes every time. If that token is missing and there is no confirmation 'Are you sure?' button, the site is likely vulnerable. Also, always search your traffic history for 'IDs' or 'UIDs'; sometimes a secret ID required for a high-privilege action is accidentally leaked in a low-privilege response elsewhere in the app. A common mistake is assuming that because an ID looks random, an attacker can't find it.",
+      "fix": "To fix this, the developers must first change the account closure process to use a POST request instead of a GET request, as GET requests should never be used for actions that change data. Second, they must implement a CSRF token, which is a unique, unpredictable value generated by the server and validated before the deletion occurs. Finally, a mandatory confirmation step should be added where the user must click a button or re-enter their password. \n\nExample of a safer approach (Conceptual):\n// Instead of a link, use a form with a hidden token\n<form action='/account/close' method='POST'>\n  <input type='hidden' name='csrf_token' value='a7b8c9d0e1f2'>\n  <button type='submit'>Confirm Account Deletion</button>\n</form>",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m Mohamed Elasswy, (0xfalcon), a Cybersecurity Researcher and Bug Bounty Hunter focused on finding security vulnerabilities in web applications and APIs. I enjoy exploring applications, identifying security flaws, and helping organizations improve their security through responsible disclosure. ## Overview During a bug bounty assessment, I discovered an endpoint that could close an authenticated user’s account simply by opening a direct URL. I reported the issue, but the triage team rejected the submission because one important question remained unanswered: **How could an attacker obtain the",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "15947f1449df",
     "title": "From WAF Bypass to Account Takeover: Chaining Logic Flaws & CSRF in Stock Photo Platform",
     "url": "https://medium.com/@DrakenKun/from-waf-bypass-to-account-takeover-chaining-logic-flaws-csrf-in-stock-photo-platform-920ae45c936d",
