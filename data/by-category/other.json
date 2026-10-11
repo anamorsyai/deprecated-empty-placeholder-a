@@ -1,5 +1,47 @@
 [
   {
+    "id": "f2822b493613",
+    "title": "Recreating the DeepSeek Database Leak Wiz Research Found",
+    "url": "https://medium.com/@l4zz3rj0d/recreating-the-deepseek-database-leak-wiz-research-found-e1edc93b1b9d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-11T18:33:33.000Z",
+    "added_at": "2026-10-11T18:54:01.883Z",
+    "categories": [
+      "info-disclosure",
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A publicly exposed ClickHouse database and misconfigured staging environments at DeepSeek leaked sensitive chat logs, internal API keys, and cloud infrastructure credentials.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The primary cause was the exposure of a production database port (9000) to the public internet without any authentication (a password-free login). Additionally, developers hardcoded sensitive cloud credentials into client-side JavaScript files and failed to implement access controls on a staging dashboard, allowing guest access to internal inventory and pricing data.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher performed passive subdomain enumeration to find all web addresses associated with the target.\n`subfinder -d target.com`\nWhy: To find hidden parts of the infrastructure (subdomain: a prefix to a main website name like 'blog.example.com').\n2. The list of subdomains was resolved to see which ones were currently active.\n`cat subdomains.txt | httpx -sc -title`\nWhy: To check the HTTP status code (a 3-digit number from a server telling you if a request worked) and page titles.\n3. The researcher identified 'deepleak' as a high-interest target due to its name and redirect behavior.\n`curl -I http://deepleak.target.com`\nWhy: To confirm the target's purpose via HTTP headers (metadata sent with a web request).\n\nPORT DISCOVERY\n4. A full port sweep was performed on the 'deepleak' host to find non-standard services.\n`nmap -p- deepleak.target.com`\nWhy: To find open ports (a virtual 'door' on a server where specific services live).\n5. The open ports were probed to identify the specific services running on them.\n`httpx -p 80,443,8080,9000 -sc -title`\nWhy: To see if the ports hosted web interfaces or database management tools.\n\nEXPLOITATION (PATH 1 - JS LEAK)\n6. The researcher accessed the cluster management portal on port 8080.\n`http://deepleak.target.com:8080`\nWhy: To investigate the management interface for potential vulnerabilities.\n7. The researcher inspected the JavaScript bundle loaded by the portal.\n`GET /static/js/main.chunk.js`\nWhy: To look for secrets in the JavaScript bundle (a file containing all the code needed to run a website's interactive parts).\n8. Hardcoded AKS credentials and bearer tokens were found inside the code.\n`const AKS_TOKEN = \"eyJhbGci...\"`\nWhy: Developers accidentally included credentials (keys used to prove identity) in the public code.\n\nEXPLOITATION (PATH 2 - STAGING BYPASS)\n9. A router resellers portal was discovered on a nearby staging environment.\n`http://staging-router.target.com`\nWhy: To check if internal tools were properly protected.\n10. The researcher accessed the dashboard as a guest with no login required.\n`GET /dashboard/inventory`\nWhy: The application lacked authentication (the process of verifying who a user is) for sensitive endpoints.\n\nEXPLOITATION (PATH 3 - DATABASE LEAK)\n11. The researcher navigated to the ClickHouse web interface on port 9000.\n`http://deepleak.target.com:9000`\nWhy: To see if the database was unauthenticated (accessible without a password).\n12. A query was sent to list all available databases on the server.\n`SHOW DATABASES`\nWhy: To identify where sensitive data might be stored using a query (a specific command sent to a database).\n13. The researcher targeted the 'deepleak' database and its 'log_stream' table.\n`SELECT * FROM deepleak.log_stream LIMIT 10`\nWhy: To verify if the table contained real sensitive information.\n14. The final dump revealed API keys, database connection strings, and chat logs.\n`SELECT * FROM deepleak.log_stream`\nWhy: To prove the impact of the leak, which included API keys (secret passwords for software) and JWT tokens (digital ID cards).",
+      "example": "Imagine a company called 'cloud-storage.example' that uses a database called Redis to store temporary user sessions. They accidentally leave port 6379 open to the internet. A researcher finds this by scanning the IP address: 'nmap -p 6379 192.0.2.1'. By using a simple tool called 'redis-cli', the researcher connects without a password: 'redis-cli -h 192.0.2.1'. They run the command 'KEYS *' and see thousands of session tokens. By running 'GET session:user123', they retrieve a user's private login token, allowing them to take over the account. This works because the database was configured to trust any connection from any location by default.",
+      "takeaway": "Always scan the full range of 65,535 ports, not just 80 and 443, as databases often live on high ports like 9000 (ClickHouse), 6379 (Redis), or 27017 (MongoDB). Use tools like 'httpx' with the '-title' flag to quickly identify database web UIs that shouldn't be public. A common mistake is assuming that 'security by obscurity' (using a weird port) is enough; if a port is open, it will be found. Look for variants like exposed Prometheus metrics or Spring Boot Actuator endpoints which often leak similar environment secrets.",
+      "fix": "To fix these issues, first implement a strict firewall policy (such as AWS Security Groups or iptables) that blocks all database ports from the public internet, allowing access only from trusted internal IP addresses. Second, enable strong authentication on the ClickHouse instance by creating users with complex passwords in the 'users.xml' configuration. Third, remove all hardcoded secrets from frontend code and use a secrets management service (like HashiCorp Vault or Azure Key Vault) to inject credentials at runtime. Finally, ensure all staging and internal environments require SSO (Single Sign-On) authentication before any data is displayed.\n\nExample ClickHouse fix (users.xml):\n<users>\n  <admin>\n    <password_sha256_hex>your_secure_hash_here</password_sha256_hex>\n    <networks>\n      <ip>10.0.0.0/8</ip>\n    </networks>\n  </admin>\n</users>",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Back in January 2025, Wiz Research found a completely open, unauthenticated ClickHouse database sitting on the public internet, tied straight to DeepSeek. No login, no API key, nothing, just a browser tab away from chat logs, internal API keys, and plaintext secrets belonging to one of the biggest AI companies on the planet at that exact moment. Wiz’s own writeup covers exactly how they found it, and it’s worth reading straight from them if you haven’t already. What I actually worked through here isn’t the real DeepSeek environment, obviously, it’s a recreated version of that exact scenario bu",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "3747b7f7c54b",
     "title": "Finding an Exposed Admin Panel on a Government Portal: A Responsible Disclosure Story",
     "url": "https://medium.com/@byteshubh1717/finding-an-exposed-admin-panel-on-a-government-portal-a-responsible-disclosure-story-ca8592f5b213",
