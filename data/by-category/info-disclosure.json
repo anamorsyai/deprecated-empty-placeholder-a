@@ -1,5 +1,45 @@
 [
   {
+    "id": "73720926ad75",
+    "title": "Exposed docker-compose.yml di Portal Pemerintah Kota [REDACTED]: Kebocoran Kredensial Database dan Konfigurasi Internal",
+    "url": "https://icikiwirsol.medium.com/exposed-docker-compose-yml-dc21fed23311",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-09T10:25:55.000Z",
+    "added_at": "2026-10-11T01:19:04.073Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A publicly accessible docker-compose.yml file on a government portal exposed sensitive database credentials and internal infrastructure details in plaintext.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The web server was misconfigured to allow public access to sensitive configuration files within the web root (the main folder where website files are stored). Specifically, the docker-compose.yml file, which defines how the application's containers (isolated software packages) are built and run, was left in a directory accessible via the browser. This file contained environment variables (settings used by programs) with plaintext passwords for the MySQL database. Developers failed to implement access control rules (security instructions for the server) to block requests for .yml files.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher performs reconnaissance (the process of gathering information about a target) by testing common file names on the target domain.\n2. The researcher identifies a potential path for a configuration file (a file that tells software how to run).\n\nDISCOVERY\n3. The researcher navigates to the specific URL in a web browser (a software application for accessing the World Wide Web).\nhttps://redacted.redactedkota.go.id/docker-compose.yml\nWhy: To check if the web server (a program that delivers content to users) serves the file instead of blocking it.\n4. The browser automatically downloads the file because the server treats it as a static asset (a file that doesn't change, like an image or text file).\n\nEXPLOITATION\n5. The researcher opens the downloaded YAML file (a human-readable data format used for configuration).\n6. The researcher identifies the 'services' section, which lists the application components like 'frontend', 'backend', and 'mysql'.\n7. The researcher locates the 'environment' block under the 'mysql' service.\nenvironment:\n - MYSQL_ROOT_PASSWORD=[REDACTED]\n - MYSQL_DATABASE=[REDACTED]\n - MYSQL_USER=[REDACTED]\n - MYSQL_PASSWORD=[REDACTED]\nWhy: This section contains the actual login credentials (usernames and passwords) used by the application to talk to the database.\n8. The researcher notes the internal port mappings (instructions that connect a computer's internal communication channels to the outside world).\n20080:80, 21080:80\nWhy: This reveals how internal traffic is routed, helping an attacker map the network architecture.\n\nIMPACT\n9. The researcher confirms that the credentials are in plaintext (unencrypted, readable text).\n10. These credentials could allow an attacker to connect directly to the database to read, modify, or delete sensitive government data.",
+      "example": "Imagine a developer at target.example uploads their entire project folder to a server, including a file named '.env'. This file contains the secret key for the database. We assume the web server is Nginx. A user visits: http://target.example/.env. Because Nginx is not told to hide files starting with a dot, it displays: DB_PASSWORD=MySecretPassword123. An attacker now has full control over the website's data. This works because the server treats the secret file just like a public image or a text file.",
+      "takeaway": "Always check for common configuration files like docker-compose.yml, .env, or web.config during the initial testing phase. Use automated tools like 'ffuf' or 'dirsearch' with wordlists specifically targeting configuration extensions (.yml, .env, .conf). A common mistake is assuming that because a file isn't linked on the homepage, it is 'hidden' or safe. Look for 'leaky' directories where developers might have accidentally run setup commands directly in the public folder. Variants of this bug include exposed .git folders or .vscode settings.",
+      "fix": "Move all configuration files outside of the public web root directory so they cannot be reached by a URL. If they must remain in that folder, configure the web server to deny all requests to sensitive file extensions. For an Nginx server, add this block to the configuration: location ~* \\.(yml|yaml|env|conf)$ { deny all; }. Additionally, never hardcode passwords; use a secret management tool or Docker Secrets to inject credentials at runtime without saving them in the file.\n\n# Example Nginx Fix:\nserver {\n    location ~* (docker-compose\\.yml|\\.env) {\n        deny all;\n        return 404;\n    }\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 3: Mencari si dia Mencari si dia 4 min read · 1 day ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fdc21fed23311&operation=register&redirect=https%3A%2F%2Ficikiwirsol.medium.com%2Fexposed-docker-compose-yml-dc21fed23311&user=Mencari+si+dia&userId=dda99a1406dd&source=---header_actions--dc21fed23311---------------------clap_footer--------------------) -- [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fdc21fed23311&operation=register&redirect=https%3A%2F%2Ficikiwirsol.medium.com%2Fexposed-docker-compose-yml-dc21fed2",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "5482f0c0e061",
     "title": "How I Earned My First $$$ Bounty from Google — And What I Learned",
     "url": "https://medium.com/@himxch/how-i-earned-my-first-bounty-from-google-and-what-i-learned-4952e25771e9",
