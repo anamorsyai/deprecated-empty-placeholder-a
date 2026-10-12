@@ -81,6 +81,46 @@
     "score": 53
   },
   {
+    "id": "e33624b1c625",
+    "title": "LG webOS sync-demo Preauth RCE",
+    "url": "https://www.reddit.com/r/netsec/comments/1x3wv86/lg_webos_syncdemo_preauth_rce",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/SSDisclosure"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-12T08:58:28.000Z",
+    "added_at": "2026-10-12T23:53:30.543Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A pre‑authentication remote code execution in LG’s webOS sync‑demo component lets an attacker execute arbitrary commands on the device without any valid credentials.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "35ba6a830c94",
     "title": "Google paid me $90,000 for this RCE",
     "url": "https://www.reddit.com/r/netsec/comments/1x3v6od/google_paid_me_90000_for_this_rce",
