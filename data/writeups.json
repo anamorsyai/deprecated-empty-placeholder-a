@@ -1,5 +1,45 @@
 [
   {
+    "id": "35ba6a830c94",
+    "title": "Google paid me $90,000 for this RCE",
+    "url": "https://www.reddit.com/r/netsec/comments/1x3v6od/google_paid_me_90000_for_this_rce",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/TradeGold6317"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-12T07:09:37.000Z",
+    "added_at": "2026-10-12T08:03:08.137Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "A researcher earned a $90,000 bounty from Google for discovering a Remote Code Execution (RCE) vulnerability.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume a website at target.example allows users to check the status of a file. The server (a computer hosting the site) takes a filename from a URL parameter (data sent in the web address) and passes it to a system command (an instruction for the computer).\n\nVulnerable Code Snippet:\n`system('ls -l ' + user_input);` \n\nAttack Request:\n`https://target.example/status?file=image.jpg;id` \n\nWhy: The semicolon (;) is a command separator. It tells the server to finish the first command ('ls -l image.jpg') and then start the next one ('id'). The 'id' command displays the current user's identity. Because the application does not clean the input, it executes the attacker's command on the server. This is Remote Code Execution (RCE), which means an attacker can run any code they want on the target system.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "bdc88d6fa5f4",
     "title": "From Recon to Full Read/Write DB Access — A Bug Bounty Story",
     "url": "https://medium.com/@sadinfinite/from-recon-to-full-read-write-db-access-a-bug-bounty-story-ce1197a0983c",
