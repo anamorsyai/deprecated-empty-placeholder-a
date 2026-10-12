@@ -1,5 +1,46 @@
 [
   {
+    "id": "bdc88d6fa5f4",
+    "title": "From Recon to Full Read/Write DB Access — A Bug Bounty Story",
+    "url": "https://medium.com/@sadinfinite/from-recon-to-full-read-write-db-access-a-bug-bounty-story-ce1197a0983c",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "SadInfinite"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-11T22:30:25.000Z",
+    "added_at": "2026-10-12T01:45:24.205Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated attacker can reach a live Adminer database UI via a `/adminer` endpoint that redirects with pre‑filled connection parameters, giving full read/write access to the production database.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The web application hosts the open‑source Adminer tool at the `/adminer` path but never checks whether the requester is logged in. Instead of showing a login form, the server issues a 302 redirect that already contains a valid username, password, and database name. Because the redirect is processed automatically by the browser, the attacker is handed an authenticated Adminer session without ever providing credentials. The underlying code likely trusts a configuration flag or environment variable and skips the authentication middleware for this route. This design flaw exposes the entire production database to anyone who can discover the endpoint.",
+      "walkthrough": "RECON\nStep 1: Enumerate sub‑domains of the target domain.\nGET https://*.example.com (use tools like Sublist3r)\nWhy: A sub‑domain list reveals all live hosts (HTTP request = text sent to a web server).\n\nStep 2: Probe each discovered host with a light fuzzing wordlist for common admin panels.\nGET https://api.example.com/adminer HTTP/1.1\nWhy: Fuzzing sends many simple URLs (payloads) to see which return interesting responses.\n\nDISCOVERY\nStep 3: Receive a HTTP 302 status code from `/adminer`.\nHTTP/1.1 302 Found\nLocation: https://api.example.com/adminer/?server=127.0.0.1&username=admin&db=real‑estate‑api&password=********\nWhy: 302 means the server tells the client to go to another URL; the Location header now carries connection parameters (parameters = data passed in the URL).\n\nStep 4: Follow the redirect automatically (browser or curl -L).\nGET https://api.example.com/adminer/?server=127.0.0.1&username=admin&db=real‑estate‑api&password=******** HTTP/1.1\nWhy: Following the redirect loads the new URL; because the URL already contains valid credentials, the server creates an authenticated session.\n\nEXPLOITATION\nStep 5: The returned page is the Adminer UI showing the list of tables.\n(no code – visual UI)\nWhy: Adminer is a web‑based database manager; once logged in it displays tables (no further authentication needed).\n\nStep 6: Browse the `users` table and view columns containing password hashes and personal data.\n(no code – UI interaction)\nWhy: The attacker can read any data because they have full DB read rights.\n\nStep 7: Use the “Edit” function to modify a user record or delete rows.\n(no code – UI interaction)\nWhy: Adminer also permits write operations; the attacker now has write access.\n\nIMPACT\nStep 8: Export the `users` table to obtain credentials for other systems.\n(no code – UI interaction)\nWhy: Exporting lets the attacker download data for offline use, leading to credential reuse attacks.",
+      "example": "**Fictional target:** https://target.example.com/adminer\n**Vulnerable snippet (pseudo‑code):**\n```php\nif ($_SERVER['REQUEST_URI'] === '/adminer') {\n    // No auth check!\n    header('Location: /adminer/?server=127.0.0.1&username=admin&password=secret&db=customers');\n    exit;\n}\n```\n**Attack request:**\n```\nGET /adminer HTTP/1.1\nHost: target.example.com\n```\nThe server replies with a 302 redirect that includes the DB credentials. Following the redirect logs you into Adminer without a login screen, letting you view and edit the `customers` database.\n**Why it works:** The code skips any authentication step and directly redirects to a URL that contains a valid username and password. Because browsers automatically follow redirects, the attacker receives an authenticated session instantly.",
+      "takeaway": "When hunting web applications, always add `/adminer`, `/phpmyadmin`, and other common database‑admin paths to your recon wordlist. Look for HTTP 302 responses that contain query parameters such as `username`, `password`, or `db` – these are strong indicators of an auth‑bypass. Tools like `httpx` or `gobuster` can flag such redirects automatically. Variants of this bug appear with other admin interfaces (e.g., phpMyAdmin, pgAdmin) that expose credentials via redirects or default‑allow lists. Beginners often forget to follow redirects, missing the authenticated session; always use `-L` with curl or enable follow‑redirects in your scanner.",
+      "fix": "Add an authentication middleware to the `/adminer` route that checks for a valid session or token before any response is sent. Remove the automatic redirect that embeds credentials; instead, serve a login page that requires the user to supply a username and password. Store database credentials securely (e.g., environment variables) and never expose them in URLs, as URLs are logged and can be intercepted. If the Adminer tool is needed, restrict access by IP allow‑list or place it behind a VPN. Example fix (PHP pseudo‑code):\n```php\nif ($_SERVER['REQUEST_URI'] === '/adminer') {\n    if (!isset($_SESSION['user'])) {\n        header('Location: /login');\n        exit;\n    }\n    // serve Adminer UI without exposing credentials in the URL\n    include 'adminer.php';\n}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This was wildcard so I first enumerated domains and found which one of these was alive. Then I started a light fuzz on every single domain. On one of their main APIs domain I got a hit on a : `/adminer` This normally refer to “Adminer” tool, a database management system requiring authentication (login+password), but… Requesting this endpoint does not present a login form. Instead, the server responds with a `302` redirect that already contains valid connection parameters, and following it lands directly in an **authenticated Adminer session** connected to a production database (`real-estate-ap",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "faf538cf1d20",
     "title": "How I Found an Unauthenticated GraphQL API Leaking User Data",
     "url": "https://medium.com/@OmarTamer0/how-i-found-an-unauthenticated-graphql-api-leaking-user-data-eeec3d54fe74",
