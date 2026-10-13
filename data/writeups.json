@@ -1,5 +1,45 @@
 [
   {
+    "id": "90900dc3193f",
+    "title": "Gitea Guarded Three Doors and Forgot the Fourth",
+    "url": "https://mayssare.medium.com/gitea-guarded-three-doors-and-forgot-the-fourth-e44d6e76e5e6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mayssare"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-13T21:46:10.000Z",
+    "added_at": "2026-10-13T23:03:25.664Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "Gitea's push mirror feature only validated destination addresses during initial setup, allowing attackers to bypass security filters by later changing the destination's DNS record to point to internal network services.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability is a Time-of-Check to Time-of-Use (TOCTOU) flaw within the push mirror logic. Gitea validates the 'remote_address' parameter against a blocklist only when the mirror is first created via the '/api/v1/repos/{owner}/{repo}/push_mirrors' endpoint. However, the background process that performs the actual 'git push' later does not re-verify the address. This allows a hostname that initially pointed to a safe public IP to be redirected to a restricted internal IP after the check has already passed.",
+      "walkthrough": "RECON\n1. Identify that Gitea allows users to create 'Push Mirrors,' which are automated tasks that copy code to another server.\n2. Note that Gitea uses a blocklist (a list of forbidden addresses) to prevent mirrors from connecting to internal company servers.\nDISCOVERY\n3. Observe the API endpoint used to create a mirror:\nPOST /api/v1/repos/{owner}/{repo}/push_mirrors\n4. Send a test request with a public hostname to see if it is accepted:\n{\"remote_address\": \"http://attacker.example/repo.git\", \"sync_on_commit\": true}\nWhy: The server checks 'attacker.example' against the blocklist. Since it points to a public IP, the server saves it (A 'hostname' is a human-readable name for a computer, like 'google.com').\nEXPLOITATION\n5. Set up a domain name ('attacker.example') that you control to point to a safe, public IP address.\n6. Create the mirror in Gitea using this domain name.\n7. Change the DNS record for 'attacker.example' so it now points to an internal IP address, such as '192.168.1.50' (DNS is the system that translates hostnames into numerical IP addresses).\n8. Push a new commit to your Gitea repository to trigger an automatic sync.\n9. Gitea executes the 'git push' command using the saved hostname:\ngit push --mirror --force http://attacker.example/repo.git\nWhy: Gitea's background worker performs a new DNS lookup. Because you changed the record, Gitea now connects to the internal server at '192.168.1.50', bypassing the initial blocklist check.\nIMPACT\n10. The 'git push' command uses the '--force' flag, which overwrites data on the target.\n11. If the internal server accepts pushes without a password, the attacker can delete or replace any code on that internal machine.",
+      "example": "Imagine a website 'target.example' that lets you 'Import Profile Picture from URL.' \n1. The server checks if the URL is '127.0.0.1' (itself) and blocks it if so.\n2. You provide 'http://my-cool-dog.com/pic.jpg'. The server checks the IP of 'my-cool-dog.com', sees it is a public IP, and saves the URL to a database.\n3. Five minutes later, a background 'Worker' process reads the URL from the database to download the image.\n4. You have changed 'my-cool-dog.com' to point to '127.0.0.1'.\n5. The Worker process downloads from 'my-cool-dog.com', which now resolves to '127.0.0.1', allowing you to access the server's internal files.\nThis works because the 'Check' happened at 12:00, but the 'Use' happened at 12:05 after the destination changed.",
+      "takeaway": "When hunting for SSRF, look for 'delayed' actions where a URL is saved now but used later in a background task. If the application only validates the URL at the moment of entry, it is likely vulnerable to DNS rebinding or simple record updates. Always check if 'Pull' and 'Push' features use the same validation logic, as developers often secure one but forget the other. A common mistake is assuming that because a hostname was safe once, it will stay safe forever.",
+      "fix": "To fix this, the application must perform the blocklist check immediately before every connection attempt, not just at setup. The best approach is to use a custom network 'dialer' that resolves the hostname to an IP and checks that IP against the blocklist every single time a connection is opened. In Gitea, the fix involved ensuring the 'git push' command respects the same security policies as the 'LFS' and 'Pull' mirror components.\n\n// Example of a safer check logic:\nfunc safeSync(url string) {\n    ip := resolveDNS(url)\n    if isBlocklisted(ip) {\n        return error(\"Forbidden destination\")\n    }\n    performPush(ip) // Connect directly to the verified IP\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’ve been going through open source projects lately, looking for bugs in software that real people run. This time it was **Gitea**, the self-hosted Git server a lot of teams keep their private code on. **Gitea** can mirror a repository to another git server. You give it an address, and it pushes a copy there on a timer or on every commit. Admins can also set a block list so mirrors can’t be pointed at internal hosts. When you create a mirror, the address gets checked against that list. I wanted to know what happens after that. The answer is nothing. The check runs once, when the mirror is crea",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "cbc70f30fe18",
     "title": "0-Click Account Takeover via Cookie Switching",
     "url": "https://medium.com/@l4zz3rj0d/0-click-account-takeover-via-cookie-switching-cb90cd68cbed",
