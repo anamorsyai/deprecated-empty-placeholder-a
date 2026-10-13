@@ -1,5 +1,45 @@
 [
   {
+    "id": "cbc70f30fe18",
+    "title": "0-Click Account Takeover via Cookie Switching",
+    "url": "https://medium.com/@l4zz3rj0d/0-click-account-takeover-via-cookie-switching-cb90cd68cbed",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-13T16:51:08.000Z",
+    "added_at": "2026-10-13T18:30:04.074Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A guest session cookie issued by a staging subdomain was accepted by the production site, allowing an attacker to take over an account without any interaction.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is that both staging and production environments share the same session‑validation logic and signing key. The session cookie is not bound to a specific subdomain, so a token minted in staging is considered valid in production. Because the production server trusts any correctly signed token, it does not check the origin of the cookie. This design flaw lets an attacker reuse a harmless guest token from a low‑risk environment to gain access to the live system.",
+      "walkthrough": "RECON\nStep 1: Identify the two related subdomains. Why: Subdomains \"stage.router-resellers\" (staging) and \"prod.router-resellers\" (production) are visible in DNS and share the same product name, hinting at shared backend.\n\nDISCOVERY\nStep 2: Visit the staging site and click the \"guest login\" button, which requires no credentials. Why: The UI explicitly offers a \"sign in as a guest\" option, meaning the server will issue a session cookie without authentication.\nStep 3: Capture the Set‑Cookie header from the HTTP response. Example (verbatim from article): the cookie value was shown in the request. Why: The Set‑Cookie header contains the session token that the browser will send on subsequent requests.\n\nEXPLOITATION\nStep 4: Open a new browser tab and navigate to the production subdomain. Why: The attacker wants to test whether the production server accepts the same token.\nStep 5: Replace the production cookie with the captured staging cookie (no other changes). Verbatim request (article description): the same guest session cookie from staging was dropped straight into a request against production. Why: By sending the identical cookie, the attacker checks if the production server validates the token solely by its signature.\n\nIMPACT\nStep 6: Observe that the production site logs the attacker in and displays a banner \"Session Notice: your session was created in a different environment\". Why: The server accepted the token, proving the shared signing key and lack of environment isolation, resulting in a 0‑click account takeover.",
+      "example": "Assume a fictional service at https://app.example.com uses a cookie named \"sess\" to track logged‑in users. The staging instance https://staging.app.example.com lets anyone click \"Continue as Guest\" and returns:\nSet‑Cookie: sess=guest123; Path=/; Secure; HttpOnly\nThe production instance https://prod.app.example.com validates any \"sess\" cookie by checking a HMAC signature that is the same for both environments. An attacker copies the value \"guest123\" and sends a request to https://prod.app.example.com with the header:\nCookie: sess=guest123\nBecause the signature matches, the production server treats the request as an authenticated guest session, granting access to protected pages. This works because the cookie is not tied to the subdomain and the signing key is shared.\n\nLesson: The attack succeeds by reusing a low‑privilege token from a test environment in the live environment.",
+      "takeaway": "When hunting, look for any \"guest\" or \"anonymous\" login feature in staging or test subdomains that issues a session cookie. Check whether the same cookie name and format appear on the production site. Tools like Burp Suite or browser dev tools can capture Set‑Cookie headers quickly. Variants include shared JWT signing keys across environments or OAuth tokens issued by a common auth server. A common beginner mistake is to assume that different subdomains automatically isolate sessions; always verify the token validation logic.",
+      "fix": "Separate the session‑validation secrets for each environment: use distinct signing keys for staging and production. Bind the cookie to its issuing subdomain by setting the \"Domain\" attribute to the specific subdomain (e.g., Domain=stage.router-resellers) and enable the \"SameSite\" attribute to prevent cross‑site usage. Additionally, configure the production server to reject cookies that were not issued by its own domain, rejecting unknown signatures with a 401 response. Example fix in pseudo‑code:\n// before: validate(token)\n// after:\nif token.domain != request.host { reject(); }\nif !verifySignature(token, envSpecificKey) { reject(); }",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Two subdomains jumped out immediately next to each other, `stage.router-resellers` and `prod.router-resellers`. Same product name sitting on both, which on its own doesn't mean much, plenty of companies run a staging and production pair with completely separate backing infrastructure behind them. Worth actually checking rather than assuming either way. Press enter or click to view image in full size Image 6 Staging loaded up as exactly what the banner across the top said it was, a visibly marked staging environment, open for testing, letting anyone sign in as a guest with no credentials requir",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "17007480f530",
     "title": "How i found an easy account take over vulnerability",
     "url": "https://medium.com/@omaremadeldinfathy/how-i-found-easy-account-take-over-vulnerability-eeb900f0860e",
