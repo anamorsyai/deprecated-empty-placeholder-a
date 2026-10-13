@@ -1,5 +1,86 @@
 [
   {
+    "id": "17007480f530",
+    "title": "How i found an easy account take over vulnerability",
+    "url": "https://medium.com/@omaremadeldinfathy/how-i-found-easy-account-take-over-vulnerability-eeb900f0860e",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Omaremad"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-13T09:45:50.000Z",
+    "added_at": "2026-10-13T11:28:17.384Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher bypassed rate limiting on an OTP login page by spoofing the X-Forwarded-For header, allowing for a successful brute-force attack and account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server's rate limiting mechanism, designed to prevent multiple rapid login attempts, relied on the 'X-Forwarded-For' HTTP header to identify the user's IP address. An HTTP header is a piece of metadata sent with a request that provides extra information to the server. Because the server trusted this user-controlled header without validation, it allowed the researcher to provide a fake IP address. By changing this IP address in every request, the researcher made each attempt look like it originated from a different person, effectively tricking the security system.",
+      "walkthrough": "RECON\n1. The researcher opened Burp Suite to intercept and analyze web traffic.\nWhy: Burp Suite is a proxy tool (a middleman) that allows a user to see, stop, and change HTTP requests (messages sent from a browser to a server) before they are sent.\n\nDISCOVERY\n2. The researcher navigated to the target website's login page and attempted to log in.\nWhy: This identifies the endpoint (the specific web address) that handles authentication (the process of proving who you are).\n3. The researcher attempted to 'brute force' the OTP (One-Time Password) field.\nWhy: Brute forcing means using a computer program to automatically try every possible combination of numbers (e.g., 0000 to 9999) until the correct one is found.\n4. The server blocked the attempts due to high security and a WAF.\nWhy: A WAF (Web Application Firewall) is a security shield that monitors traffic and blocks suspicious activity, such as too many failed login attempts from a single IP address (your internet 'home address').\n\nEXPLOITATION\n5. The researcher modified the HTTP request by adding the 'X-Forwarded-For' header.\nPOST /login/otp HTTP/1.1\nHost: website.com\nX-Forwarded-For: 1.1.1.1\n...\notp=1234\nWhy: The 'X-Forwarded-For' header is used to tell a server the original IP address of a client; if the server trusts this header, it uses it for rate limiting instead of the actual connection IP.\n6. The researcher used a tool to automate the brute force while changing the IP address in the header for every single request.\nPOST /login/otp HTTP/1.1\nHost: website.com\nX-Forwarded-For: [VARIABLE_IP]\n...\notp=[VARIABLE_CODE]\nWhy: By rotating the IP address (e.g., 1.1.1.1, 1.1.1.2, etc.), the researcher bypassed the rate limit because the server thought each guess was coming from a completely different user.\n\nIMPACT\n7. The researcher successfully guessed the correct OTP and gained access to the account.\nWhy: Without rate limiting to stop the guesses, a 4-digit or 6-digit code can be cracked in minutes, leading to a full account takeover.",
+      "example": "Imagine a fictional site 'target.example' that requires a 4-digit code sent to your phone to log in. Normally, if you guess wrong 5 times, the site blocks your IP address. A researcher sends the following request using a tool like Burp Intruder:\n\nPOST /api/verify-code HTTP/1.1\nHost: target.example\nX-Forwarded-For: 10.0.0.§1§\nContent-Type: application/json\n\n{\"code\":\"§1234§\"}\n\nIn this example, the '§' symbols tell the tool to change the numbers automatically. The first request uses IP 10.0.0.1 and code 0001. The second request uses IP 10.0.0.2 and code 0002. Because the IP address changes every time, the '5-guess limit' is never triggered for any single IP, allowing the attacker to try all 10,000 possible codes until they find the right one.",
+      "takeaway": "When testing login or OTP forms, always check if the server respects headers like 'X-Forwarded-For', 'X-Real-IP', or 'X-Client-IP' for rate limiting. If you get blocked after a few attempts, try adding these headers with random values to see if the block is lifted. This is a common misconfiguration in environments using load balancers or proxies. A common mistake for beginners is giving up after seeing a '429 Too Many Requests' error without trying to spoof the source identity.",
+      "fix": "To fix this, the application should never trust user-supplied headers for security-critical functions like rate limiting. Instead, the server should use the actual socket connection IP address (often referred to as REMOTE_ADDR). If the application is behind a proxy, the proxy should be configured to overwrite or strip the 'X-Forwarded-For' header from the client and replace it with the verified source IP. Additionally, rate limiting should be applied to the account being targeted (e.g., the username or email), not just the IP address.\n\nExample of secure configuration (Pseudo-code):\n// BAD: trust user header\n// ip = request.headers['X-Forwarded-For']\n\n// GOOD: use actual connection IP\n// ip = request.connection.remoteAddress\n// limit_attempts(user_id, ip)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Firstly i open burb to capture the traffic, i search for the common vulnerabilites like broken access control and ssrf and cors misconfigirations and i ## Get Omaremad’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in didn’t found any thing because of height security in website and waf, * i skip that and serched in login page and try to brute force otp but i fail * i tried again and added x-Forward-For and finally otp Bruce forced 🎯 * in this senario there are a misconfiguration in header (the server doesn’t",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "ea54155c6437",
+    "title": "$11,500 for a Payload That Waited: Second-Order SQL Injection in an Admin Report",
+    "url": "https://medium.com/@t4nv1/11-500-for-a-payload-that-waited-second-order-sql-injection-in-an-admin-report-44bab854bbe1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-13T09:21:01.000Z",
+    "added_at": "2026-10-13T11:29:28.360Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A second‑order SQL injection where a malicious username is stored safely during registration but later concatenated into an admin‑report query, enabling an attacker to run arbitrary SQL when the report is generated.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The registration endpoint correctly uses a parameterized INSERT, so the malicious username is stored without error. Later, the admin‑report generation code reads the stored username and builds a new SQL query by string‑concatenation instead of using parameters. This unsafe concatenation treats the previously stored characters as part of the query, allowing injection. Because the vulnerable code is in a different component (the report generator), the flaw is not visible during initial testing of the registration endpoint. The root cause is the inconsistent handling of user‑supplied data across the application’s code base.",
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (fictional target.example)**\n```sql\n-- When a user registers\nINSERT INTO users (username) VALUES (?);  -- ? is a prepared‑statement placeholder, safe\n```\n```sql\n-- When an admin views the user report\nquery = \"SELECT * FROM users WHERE username = '\" + user.username + \"'\";\n// The code concatenates the stored username directly into the SQL string\n```\n**Attack request**\n```\nPOST /register HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"username\":\"admin' OR 1=1--\"}\n```\n**Why it works**\n- The registration request stores the string `admin' OR 1=1--` safely because the INSERT uses a prepared statement.\n- The report generator later builds a query like `SELECT * FROM users WHERE username = 'admin' OR 1=1--'`. The single quote closes the string literal, `OR 1=1` makes the WHERE clause always true, and `--` comments out the trailing quote. This returns all rows, demonstrating the injection.\n\n**Explanation for beginners**\n- *HTTP request*: a message a browser or tool sends to a server.\n- *Parameter*: a piece of data sent in the request (here, `username`).\n- *Payload*: the malicious value we put into the parameter.\n- *SQL query*: a command the database understands.\n- *Prepared statement*: a way to send data to the database without letting it change the query structure.\n- *String concatenation*: joining pieces of text together; dangerous when user data is involved.\n- *Single quote (`'`)* ends a text literal in SQL.\n- `--` starts a comment in SQL, ignoring the rest of the line.\nThe payload exploits the fact that the second piece of code does not use a prepared statement, turning the stored value into executable SQL.",
+      "takeaway": "When testing a target, never assume that a parameter that is safe in one endpoint is safe everywhere. Look for places where stored values are later used in dynamic queries, especially in admin‑only features like reports. Tools like Burp Suite’s intruder can help fuzz stored fields with typical SQL metacharacters. Variants of this bug appear when data is stored in cookies, hidden form fields, or logs and later concatenated. Beginners often miss second‑order bugs because they only test the immediate response; always trace how user input flows through the application.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "First-order SQL injection shows up immediately — you send a payload, the vulnerable query runs right then, and you see the effect in the same response. Second-order injection is slower and easier to miss entirely, because the payload gets stored safely, through a perfectly well-parameterized query, and only becomes dangerous much later, when some entirely different piece of code reads that stored value back out and uses it unsafely in a second query the original input never touched directly. The target, which I’ll call **Quillmark** here per their program’s terms, is a team-collaboration platf",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "602a1f4dc0e7",
     "title": "I Asked How Guests Get Their Identity — and Found a Meeting Logic Flaw",
     "url": "https://medium.com/@moatymohamed897/i-asked-how-guests-get-their-identity-and-found-a-meeting-logic-flaw-66252694b409",

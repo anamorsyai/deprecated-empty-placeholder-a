@@ -1,5 +1,46 @@
 [
   {
+    "id": "17007480f530",
+    "title": "How i found an easy account take over vulnerability",
+    "url": "https://medium.com/@omaremadeldinfathy/how-i-found-easy-account-take-over-vulnerability-eeb900f0860e",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Omaremad"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-13T09:45:50.000Z",
+    "added_at": "2026-10-13T11:28:17.384Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher bypassed rate limiting on an OTP login page by spoofing the X-Forwarded-For header, allowing for a successful brute-force attack and account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server's rate limiting mechanism, designed to prevent multiple rapid login attempts, relied on the 'X-Forwarded-For' HTTP header to identify the user's IP address. An HTTP header is a piece of metadata sent with a request that provides extra information to the server. Because the server trusted this user-controlled header without validation, it allowed the researcher to provide a fake IP address. By changing this IP address in every request, the researcher made each attempt look like it originated from a different person, effectively tricking the security system.",
+      "walkthrough": "RECON\n1. The researcher opened Burp Suite to intercept and analyze web traffic.\nWhy: Burp Suite is a proxy tool (a middleman) that allows a user to see, stop, and change HTTP requests (messages sent from a browser to a server) before they are sent.\n\nDISCOVERY\n2. The researcher navigated to the target website's login page and attempted to log in.\nWhy: This identifies the endpoint (the specific web address) that handles authentication (the process of proving who you are).\n3. The researcher attempted to 'brute force' the OTP (One-Time Password) field.\nWhy: Brute forcing means using a computer program to automatically try every possible combination of numbers (e.g., 0000 to 9999) until the correct one is found.\n4. The server blocked the attempts due to high security and a WAF.\nWhy: A WAF (Web Application Firewall) is a security shield that monitors traffic and blocks suspicious activity, such as too many failed login attempts from a single IP address (your internet 'home address').\n\nEXPLOITATION\n5. The researcher modified the HTTP request by adding the 'X-Forwarded-For' header.\nPOST /login/otp HTTP/1.1\nHost: website.com\nX-Forwarded-For: 1.1.1.1\n...\notp=1234\nWhy: The 'X-Forwarded-For' header is used to tell a server the original IP address of a client; if the server trusts this header, it uses it for rate limiting instead of the actual connection IP.\n6. The researcher used a tool to automate the brute force while changing the IP address in the header for every single request.\nPOST /login/otp HTTP/1.1\nHost: website.com\nX-Forwarded-For: [VARIABLE_IP]\n...\notp=[VARIABLE_CODE]\nWhy: By rotating the IP address (e.g., 1.1.1.1, 1.1.1.2, etc.), the researcher bypassed the rate limit because the server thought each guess was coming from a completely different user.\n\nIMPACT\n7. The researcher successfully guessed the correct OTP and gained access to the account.\nWhy: Without rate limiting to stop the guesses, a 4-digit or 6-digit code can be cracked in minutes, leading to a full account takeover.",
+      "example": "Imagine a fictional site 'target.example' that requires a 4-digit code sent to your phone to log in. Normally, if you guess wrong 5 times, the site blocks your IP address. A researcher sends the following request using a tool like Burp Intruder:\n\nPOST /api/verify-code HTTP/1.1\nHost: target.example\nX-Forwarded-For: 10.0.0.§1§\nContent-Type: application/json\n\n{\"code\":\"§1234§\"}\n\nIn this example, the '§' symbols tell the tool to change the numbers automatically. The first request uses IP 10.0.0.1 and code 0001. The second request uses IP 10.0.0.2 and code 0002. Because the IP address changes every time, the '5-guess limit' is never triggered for any single IP, allowing the attacker to try all 10,000 possible codes until they find the right one.",
+      "takeaway": "When testing login or OTP forms, always check if the server respects headers like 'X-Forwarded-For', 'X-Real-IP', or 'X-Client-IP' for rate limiting. If you get blocked after a few attempts, try adding these headers with random values to see if the block is lifted. This is a common misconfiguration in environments using load balancers or proxies. A common mistake for beginners is giving up after seeing a '429 Too Many Requests' error without trying to spoof the source identity.",
+      "fix": "To fix this, the application should never trust user-supplied headers for security-critical functions like rate limiting. Instead, the server should use the actual socket connection IP address (often referred to as REMOTE_ADDR). If the application is behind a proxy, the proxy should be configured to overwrite or strip the 'X-Forwarded-For' header from the client and replace it with the verified source IP. Additionally, rate limiting should be applied to the account being targeted (e.g., the username or email), not just the IP address.\n\nExample of secure configuration (Pseudo-code):\n// BAD: trust user header\n// ip = request.headers['X-Forwarded-For']\n\n// GOOD: use actual connection IP\n// ip = request.connection.remoteAddress\n// limit_attempts(user_id, ip)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Firstly i open burb to capture the traffic, i search for the common vulnerabilites like broken access control and ssrf and cors misconfigirations and i ## Get Omaremad’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in didn’t found any thing because of height security in website and waf, * i skip that and serched in login page and try to brute force otp but i fail * i tried again and added x-Forward-For and finally otp Bruce forced 🎯 * in this senario there are a misconfiguration in header (the server doesn’t",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "14b79769fa87",
     "title": "$8,800 for a Redirect Nobody Validated: Stealing OAuth Tokens Through an Open Redirect",
     "url": "https://medium.com/@t4nv1/8-800-for-a-redirect-nobody-validated-stealing-oauth-tokens-through-an-open-redirect-7645d4122944",

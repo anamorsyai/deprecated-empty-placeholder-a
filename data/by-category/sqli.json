@@ -1,5 +1,45 @@
 [
   {
+    "id": "ea54155c6437",
+    "title": "$11,500 for a Payload That Waited: Second-Order SQL Injection in an Admin Report",
+    "url": "https://medium.com/@t4nv1/11-500-for-a-payload-that-waited-second-order-sql-injection-in-an-admin-report-44bab854bbe1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-13T09:21:01.000Z",
+    "added_at": "2026-10-13T11:29:28.360Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A second‑order SQL injection where a malicious username is stored safely during registration but later concatenated into an admin‑report query, enabling an attacker to run arbitrary SQL when the report is generated.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The registration endpoint correctly uses a parameterized INSERT, so the malicious username is stored without error. Later, the admin‑report generation code reads the stored username and builds a new SQL query by string‑concatenation instead of using parameters. This unsafe concatenation treats the previously stored characters as part of the query, allowing injection. Because the vulnerable code is in a different component (the report generator), the flaw is not visible during initial testing of the registration endpoint. The root cause is the inconsistent handling of user‑supplied data across the application’s code base.",
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (fictional target.example)**\n```sql\n-- When a user registers\nINSERT INTO users (username) VALUES (?);  -- ? is a prepared‑statement placeholder, safe\n```\n```sql\n-- When an admin views the user report\nquery = \"SELECT * FROM users WHERE username = '\" + user.username + \"'\";\n// The code concatenates the stored username directly into the SQL string\n```\n**Attack request**\n```\nPOST /register HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"username\":\"admin' OR 1=1--\"}\n```\n**Why it works**\n- The registration request stores the string `admin' OR 1=1--` safely because the INSERT uses a prepared statement.\n- The report generator later builds a query like `SELECT * FROM users WHERE username = 'admin' OR 1=1--'`. The single quote closes the string literal, `OR 1=1` makes the WHERE clause always true, and `--` comments out the trailing quote. This returns all rows, demonstrating the injection.\n\n**Explanation for beginners**\n- *HTTP request*: a message a browser or tool sends to a server.\n- *Parameter*: a piece of data sent in the request (here, `username`).\n- *Payload*: the malicious value we put into the parameter.\n- *SQL query*: a command the database understands.\n- *Prepared statement*: a way to send data to the database without letting it change the query structure.\n- *String concatenation*: joining pieces of text together; dangerous when user data is involved.\n- *Single quote (`'`)* ends a text literal in SQL.\n- `--` starts a comment in SQL, ignoring the rest of the line.\nThe payload exploits the fact that the second piece of code does not use a prepared statement, turning the stored value into executable SQL.",
+      "takeaway": "When testing a target, never assume that a parameter that is safe in one endpoint is safe everywhere. Look for places where stored values are later used in dynamic queries, especially in admin‑only features like reports. Tools like Burp Suite’s intruder can help fuzz stored fields with typical SQL metacharacters. Variants of this bug appear when data is stored in cookies, hidden form fields, or logs and later concatenated. Beginners often miss second‑order bugs because they only test the immediate response; always trace how user input flows through the application.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "First-order SQL injection shows up immediately — you send a payload, the vulnerable query runs right then, and you see the effect in the same response. Second-order injection is slower and easier to miss entirely, because the payload gets stored safely, through a perfectly well-parameterized query, and only becomes dangerous much later, when some entirely different piece of code reads that stored value back out and uses it unsafely in a second query the original input never touched directly. The target, which I’ll call **Quillmark** here per their program’s terms, is a team-collaboration platf",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "89ad0bc933f3",
     "title": "Error-Based SQL Injection di Portal Perizinan Pemerintah Kabupaten [REDACTED] via Parameter id",
     "url": "https://icikiwirsol.medium.com/error-based-sql-injection-di-portal-perizinan-pemerintah-kabupaten-redacted-via-parameter-id-ba1ec54b7c42",
