@@ -1,5 +1,47 @@
 [
   {
+    "id": "a49310f702bd",
+    "title": "One File, Zero Clicks Needed: A Stored DoS Story",
+    "url": "https://medium.com/@devyanipardesh7010/one-file-zero-clicks-needed-a-stored-dos-story-68725c5703c3",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Devyani Pardeshi"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T06:17:30.000Z",
+    "added_at": "2026-10-14T06:47:46.015Z",
+    "categories": [
+      "xxe",
+      "file-upload",
+      "other"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A researcher discovered that a diagramming tool's SVG upload feature was vulnerable to a 'Billion Laughs' XML expansion attack, allowing a low-privilege user to permanently crash diagrams for all collaborators.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by the server-side XML parser failing to disable entity expansion when processing SVG files. Since SVGs are XML-based, they support 'entities' (text shortcuts). The application's parser would dutifully attempt to expand these shortcuts even when they were nested exponentially, leading to a Denial of Service (DoS) as the server exhausted its memory and CPU resources trying to resolve a tiny file into gigabytes of data.",
+      "walkthrough": "RECON\n1. The researcher identified a diagramming tool with a feature allowing users to upload custom shape libraries as SVG files.\n(An SVG is an image format that uses XML text to define shapes).\n\nDISCOVERY\n2. The researcher noted that SVGs are essentially XML files, which are often susceptible to entity-based attacks.\n(XML is a language used to store and transport data).\n3. They decided to test for a 'Billion Laughs' attack, which uses nested shortcuts to overwhelm a computer.\n(An entity is a shortcut in XML that represents a larger string of text).\n\nEXPLOITATION\n4. The researcher prepared a malicious SVG file containing the 'Billion Laughs' XML structure.\n<?xml version=\"1.0\"?>\n<!DOCTYPE lolz [\n <!ENTITY lol \"lol\">\n <!ENTITY lol1 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;\">\n <!ENTITY lol2 \"&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;\">\n]>\n<svg>&lol2;</svg>\nWhy: This payload defines 'lol1' as ten 'lol's, and 'lol2' as ten 'lol1's. Each level multiplies the size by 10. A full version with 9 levels results in 1 billion 'lol's from a tiny file.\n5. The researcher uploaded this SVG into the 'custom shape library' section of a diagram.\n6. They dragged the malicious shape onto the active drawing canvas.\n7. The application immediately became unresponsive, showing a permanent loading state.\nWhy: The server's parser (the software reading the file) got stuck in an infinite loop of expanding the shortcuts, consuming all available resources.\n\nIMPACT\n8. To confirm the 'Stored' nature of the bug, the researcher logged in as a different user (the high-privilege owner of the diagram).\n9. The owner attempted to open the diagram that the collaborator had modified.\n10. The owner's screen also hung indefinitely, effectively locking them out of their own work.\nWhy: Because the malicious SVG was saved as part of the diagram's state, the server tried to process it for every single user who viewed that diagram.",
+      "example": "Imagine a project management app at target.example where users can upload SVG icons for their tasks. An attacker uploads 'bomb.svg' containing nested entities. \n\nAttack Request:\nPOST /api/tasks/101/icon HTTP/1.1\nContent-Type: image/svg+xml\n\n<svg>\n<!DOCTYPE bomb [\n<!ENTITY a \"RESOURCES\">\n<!ENTITY b \"&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;\">\n<!ENTITY c \"&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;\">\n]>\n<rect width=\"100\" height=\"100\">&c;</rect>\n</svg>\n\nWhen any team member views the task list, their browser or the server (depending on where the SVG is processed) will attempt to expand '&c;' into 100 instances of 'RESOURCES'. If the attacker adds more levels (d, e, f...), the expansion reaches billions of characters, crashing the app for the entire team.",
+      "takeaway": "When hunting for bugs, always treat SVG upload fields as XML entry points. Test for both XXE (reading files) and XML Entity Expansion (crashing the server). This 'Stored DoS' pattern is particularly valuable because it proves you can disrupt other users' workflows without their interaction. Look for any app that processes XML-based formats like SVG, DOCX, or XLSX. A common mistake is thinking that 'image' uploads are safe; if the file is text-based like an SVG, it is a potential logic bomb.",
+      "fix": "The fix is to configure the XML parser to explicitly disable Document Type Definitions (DTDs) and external entity resolution. In most programming languages, this is done by setting specific security flags on the parser object. For example, in Java using the DocumentBuilderFactory, you should set 'setFeature(\"http://apache.org/xml/features/disallow-doctype-decl\", true)'. This prevents the parser from even looking at the malicious entity definitions, neutralizing the attack before it starts.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I used to look at other researchers’ reports and wonder, _how do people even find this stuff?_ I’d tried like so many times , and all i used to got was ? A “Informative” , a “Duplicate.” and rest “NA” That’s it. It was frustrating enough that I took a break from bug hunting altogether — I was tired of staring at requests until they blurred together in my sleep. Eventually I came back, no expectations, nothing to lose. ## The Feature I found a diagramming tool that let users upload custom shape libraries as SVG files. Harmless enough, right? Except SVGs are secretly just XML wearing a trench co",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "f2822b493613",
     "title": "Recreating the DeepSeek Database Leak Wiz Research Found",
     "url": "https://medium.com/@l4zz3rj0d/recreating-the-deepseek-database-leak-wiz-research-found-e1edc93b1b9d",

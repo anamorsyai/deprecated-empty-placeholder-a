@@ -1,5 +1,45 @@
 [
   {
+    "id": "78ea383cee0c",
+    "title": "Reflected XSS di Aplikasi Pelaporan Kecamatan Pemerintah Kabupaten [REDACTED] via Parameter id",
+    "url": "https://icikiwirsol.medium.com/reflected-xss-di-aplikasi-pelaporan-kecamatan-pemerintah-kabupaten-redacted-via-parameter-id-1a19d6e1474c",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T02:22:48.000Z",
+    "added_at": "2026-10-14T06:48:32.637Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A reflected XSS flaw in the public‑reporting portal allows an attacker to inject JavaScript via the id URL parameter, leading to arbitrary code execution in a victim’s browser.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The endpoint /index.php?page=detail-laporan-penduduk2 takes the value of the id parameter directly from the URL and writes it into the HTML response without any sanitisation. No output encoding (HTML entity conversion) is applied, so characters like <, >, \", and ' are interpreted as markup. The lack of an allow‑list for allowed characters means an attacker can supply a full HTML tag. Because the page does not set a Content‑Security‑Policy, the injected script runs unhindered. These implementation oversights together create the reflected XSS vector described in the write‑up.",
+      "walkthrough": "RECON\nStep 1: Identify the vulnerable page.\n- Action: Open the detail view URL in a browser.\n- Code: https://redactedkab.go.id/index.php?page=detail-laporan-penduduk2\n- Why: This is the HTTP request (a message a browser sends to a server) that loads the page where the id parameter will be reflected.\n\nEXPLOITATION\nStep 2: Craft a payload that breaks out of the HTML attribute context.\n- Action: Insert a specially‑crafted string into the id parameter.\n- Payload: '\"<img/src/onerror=.1|alert`XSS REFLECTED`>\n- Why: The leading single‑quote (') and double‑quote (\") close any surrounding attribute, the <img> tag creates an element, and the onerror event runs JavaScript (alert) when the image fails to load. The \".1|\" trick is a common bypass for weak filters.\n\nSTEP 3: Send the request with the payload.\n- Action: Paste the full URL with the payload into the address bar and press Enter.\n- URL: https://redactedkab.go.id/index.php?page=detail-laporan-penduduk2&id='\"<img/src/onerror=.1|alert`XSS REFLECTED`>\n- Why: The server reflects the id value back into the HTML page; the browser parses the injected tag and executes the JavaScript.\n\nVERIFICATION\nStep 4: Observe the impact.\n- Action: Watch the browser display a pop‑up alert box.\n- Result: An alert window shows the text \"XSS REFLECTED\" confirming code execution.\n- Why: The alert() function (a built‑in JavaScript call) proves that the injected script ran in the victim’s context.",
+      "example": "Assume a fictional site https://target.example/view?id= that prints the id value inside a <div>. Vulnerable code (PHP):\n```php\n<?php echo \"<div>\" . $_GET['id'] . \"</div>\"; ?>\n```\nAn attacker can request:\nhttps://target.example/view?id='\"<img/src/onerror=alert(1)>\nExplanation: The single‑quote and double‑quote close the surrounding HTML, the <img> tag triggers onerror, and alert(1) runs, showing a pop‑up. Because the server never encodes the input, the browser executes the script.",
+      "takeaway": "When hunting, look for pages that echo URL parameters back into the HTML without sanitisation – especially detail or search pages. Test simple tag‑breaking payloads like '\"<img src=x onerror=alert(1)>. Tools such as Burp Intruder or OWASP ZAP can automate injection of these strings. Variants include breaking out of JavaScript strings (e.g., </script><script>alert(1)</script>) or using event handlers on other tags (e.g., <svg/onload=...). A common beginner mistake is forgetting to URL‑encode the payload, causing the browser to truncate the request before reaching the server.",
+      "fix": "Fix the server‑side code to encode user‑controlled data before inserting it into HTML. In PHP, replace the echo with:\n```php\n<?php echo \"<div>\" . htmlspecialchars($_GET['id'], ENT_QUOTES, 'UTF-8') . \"</div>\"; ?>\n```\nThis converts <, >, \", and ' into safe HTML entities. Additionally, implement an allow‑list that only permits expected characters (e.g., alphanumerics) for the id parameter. Deploy a strong Content‑Security‑Policy header (e.g., `Content-Security-Policy: default-src 'self'; script-src 'self'`) to mitigate any remaining XSS risk.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 14 November 2025, saya sedang melakukan _vulnerability testing_ pada portal layanan publik milik **Pemerintah Kabupaten [REDACTED]**, khususnya pada aplikasi pelaporan kecamatan. Saat menguji fitur laporan penduduk, saya menemukan sebuah celah _Reflected Cross-Site Scripting (XSS)_ pada parameter `id`. Celah ini muncul karena input dari parameter URL tidak disanitasi dengan benar sebelum ditampilkan kembali ke dalam halaman HTML. Artikel ini akan membahas bagaimana saya menemukannya, cara mereproduksinya, hingga dampak dari kerentana",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "0a40af8fe2bb",
     "title": "Menemukan 3 Kerentanan di 3 Subdomain Nokia dalam Sehari (Semuanya Duplikat)",
     "url": "https://icikiwirsol.medium.com/menemukan-3-kerentanan-di-portal-nokia-dalam-sehari-semuanya-duplikat-070de3a9d15c",
