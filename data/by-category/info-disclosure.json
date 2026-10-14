@@ -1,5 +1,47 @@
 [
   {
+    "id": "0a40af8fe2bb",
+    "title": "Menemukan 3 Kerentanan di 3 Subdomain Nokia dalam Sehari (Semuanya Duplikat)",
+    "url": "https://icikiwirsol.medium.com/menemukan-3-kerentanan-di-portal-nokia-dalam-sehari-semuanya-duplikat-070de3a9d15c",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T01:36:14.000Z",
+    "added_at": "2026-10-14T01:49:07.562Z",
+    "categories": [
+      "info-disclosure",
+      "xss",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher discovered three vulnerabilities across Nokia subdomains: two instances of sensitive secrets (SAML keys, OAuth secrets) exposed in client-side code and a reflected XSS vulnerability.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was the inclusion of sensitive server-side configuration data and secrets directly within client-side JavaScript files and HTML tags. Additionally, a lack of input sanitization on the SMAGENTNAME parameter allowed for the execution of arbitrary scripts.",
+      "walkthrough": "RECON AND DISCOVERY (SUBDOMAIN A)\n1. The researcher navigated to the login page of Subdomain A (redacted.redacted.nokia.com).\n2. They performed a source code review (viewing the raw HTML/JavaScript sent to the browser).\n3. Inside a <script> tag (a container for browser-run code), they found a variable named base64Config containing a long string of Base64 (a way to turn binary data into text).\nEXPLOITATION (SUBDOMAIN A)\n4. The researcher copied the long string into a file named base64.txt.\n5. They used a terminal command to decode the Base64 string and format it as JSON (a structured data format).\ncat base64.txt | base64 -d | python3 -m json.tool\nWhy: The base64 command decodes the text, and the python tool makes it readable. (Base64 is not encryption; anyone can decode it).\n6. The output revealed sensitive keys like SAML_BRIDGE_PRIVATE_KEY (a secret used to sign login tokens) and VITE_AZURE_AD_CLIENT_SECRET (a password for Google/Microsoft login services).\nDISCOVERY AND EXPLOITATION (SUBDOMAIN B)\n7. The researcher moved to Subdomain B and tested the login endpoint (a specific URL where a function happens).\n8. They identified the SMAGENTNAME parameter (a piece of data passed in the URL) as a potential target for XSS (Cross-Site Scripting, where a site runs a hacker's script).\n9. They injected a payload (malicious code) into the URL to test if the browser would execute it.\nhttps://redacted.redacted.nokia.com/login/login.jsp?METHOD=GET&SMAGENTNAME='\"%3E%3Cimg%20src=x%20onerror=alert(document.cookie);%3E\nWhy: The '\"%3E characters try to break out of the existing HTML code, and <img src=x onerror=...> forces the browser to run JavaScript when an image fails to load. (document.cookie is a command to show the user's session data).\n10. The browser displayed a pop-up alert containing the user's cookies (small files used to stay logged in), proving the vulnerability.\nDISCOVERY AND EXPLOITATION (SUBDOMAIN C)\n11. On Subdomain C, the researcher analyzed JavaScript 'bundles' (large files containing the app's logic).\n12. They searched for keywords like 'secret' or 'environment' in the browser's Developer Tools (F12).\n13. They found a file named chunk-*.js containing an object called SSO_CONFIG.\n14. This object contained google.clientSecret and azure.client_secret (private passwords for authentication services).\nWhy: Developers often accidentally include server-side configuration files in the final code sent to users.",
+      "example": "Imagine a site target.example that uses a JavaScript file to handle logins. A researcher opens the browser console and types 'window.config'. The site returns: { \"apiKey\": \"12345\", \"firebaseSecret\": \"super-secret-key-99\" }. The researcher then crafts a request to the Firebase API using this secret to download the entire user database. Why: The developer included the secret key in the client-side code instead of keeping it on the private server.",
+      "takeaway": "Always inspect client-side JavaScript and HTML source code for encoded strings (Base64) or variables named 'config', 'env', or 'secret'. Use browser Developer Tools to search through 'chunk' files for hardcoded credentials. A common beginner mistake is assuming that Base64 encoding or minified JavaScript provides security; it only provides slight obfuscation that is easily reversed. Look for parameters in login pages that are reflected back into the page, as these are prime targets for XSS.",
+      "fix": "Never store sensitive secrets like private keys, client secrets, or API keys in client-side code; these must remain on the server and be accessed via environment variables. For XSS, implement strict output encoding (converting characters like < to &lt;) so the browser treats them as text rather than executable code. Example fix in Node.js: const clientSecret = process.env.AZURE_CLIENT_SECRET; (This keeps the secret on the server).",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Halo, saya Primandito Adi Setiya, seorang _bug hunter_. Pada 20 Juli 2026, saya memutuskan untuk melakukan _vulnerability testing_ pada beberapa subdomain milik Nokia. Dalam satu sesi _hunting_ tersebut, saya berhasil menemukan **3 celah keamanan** yang berbeda di **3 subdomain yang berbeda**. Meskipun pada akhirnya ketiga laporan tersebut ditandai sebagai **Duplikat** oleh tim keamanan Nokia, saya tetap mendokumentasikan prosesnya sebagai bagian dari portofolio dan pembelajaran. Artikel ini akan membahas bagaimana saya menemukannya dan apa yang bisa kita pelajari dari proses tersebut. ## 3. T",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "faf538cf1d20",
     "title": "How I Found an Unauthenticated GraphQL API Leaking User Data",
     "url": "https://medium.com/@OmarTamer0/how-i-found-an-unauthenticated-graphql-api-leaking-user-data-eeec3d54fe74",
