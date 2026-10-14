@@ -1,5 +1,45 @@
 [
   {
+    "id": "babb2c04861f",
+    "title": "$18,000 for a Serialized String in a Cookie: PHP Object Injection to Remote Code Execution",
+    "url": "https://medium.com/@t4nv1/18-000-for-a-serialized-string-in-a-cookie-php-object-injection-to-remote-code-execution-952d271971e0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T09:26:01.000Z",
+    "added_at": "2026-10-14T12:31:29.043Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "PHP object injection via a serialized cookie allowed an attacker to achieve remote code execution on the Larkspur platform.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application deserialized a user‑controlled cookie containing a PHP serialized string. Because the deserialization routine trusted the data and used vulnerable library classes that execute code during object reconstruction, an attacker could craft a malicious object graph that runs arbitrary commands on the server.",
+      "walkthrough": null,
+      "example": "Example:\nTarget: https://target.example\nVulnerable PHP code:\n$payload = $_COOKIE['session'];\n$object = unserialize($payload);\nExplanation: unserialize rebuilds an object from the cookie. If attacker supplies a serialized object of a class with a __destruct method that calls system($this->cmd), they achieve RCE.\nAttack request (set cookie):\nGET / HTTP/1.1\nHost: target.example\nCookie: session=O:8:\\\"EvilClass\\\":1:{s:3:\\\"cmd\\\";s:11:\\\"id > /tmp/out\\\";}\nExplanation of payload: O:8:\\\"EvilClass\\\" tells PHP to create an object of class EvilClass (8 characters). The property cmd is set to the command id > /tmp/out. When the script ends, __destruct runs system(cmd), executing the command.\nResult: attacker can read /tmp/out via another request.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’d found Java deserialization bugs before, and my instinct going into this target was that the same mental model would transfer directly. It mostly did — the core idea of “an attacker-supplied object graph gets reconstructed and something dangerous happens during that reconstruction” holds across languages. What I wasn’t prepared for was how differently PHP’s version of this vulnerability actually executes, and how much of the exploit construction ended up depending on reading through an open-source library’s source code line by line rather than throwing pre-built tooling at a black box. The",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "e33624b1c625",
     "title": "LG webOS sync-demo Preauth RCE",
     "url": "https://www.reddit.com/r/netsec/comments/1x3wv86/lg_webos_syncdemo_preauth_rce",

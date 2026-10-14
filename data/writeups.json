@@ -1,5 +1,87 @@
 [
   {
+    "id": "c1d6c27c80f6",
+    "title": "How I found a Zero-Click Account Tack over via password rest link",
+    "url": "https://cyghost.medium.com/how-i-found-a-zero-click-account-tack-over-via-password-rest-link-9f4eafbc9009",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "seif nasr"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T11:35:16.000Z",
+    "added_at": "2026-10-14T12:29:50.108Z",
+    "categories": [
+      "access-control",
+      "business-logic",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can take over any account by using their own valid password reset token and replacing the email address in the final update request. This occurs because the server fails to verify that the reset token is actually bound to the specific email address being modified.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a lack of server-side binding between a password recovery token and the user's identity. The application's endpoint (a specific web address that handles a task) for changing passwords accepted two separate inputs: a 'token' (a unique secret code) and an 'Email' parameter (a label for a piece of data). Instead of using the token to look up which account was authorized for a reset, the server trusted the 'Email' parameter provided by the user. This allowed an attacker to provide a token they legitimately owned but apply the password change to a different user's email address.",
+      "walkthrough": "RECON\n1. Locate the target website's password recovery page.\n2. Enter an email address you control (attacker@example.com) to start the password reset process.\nDISCOVERY\n3. Open your email inbox and find the recovery link sent by the system.\n4. Click the link to navigate to the 'Set New Password' page.\n5. Enter a new password into the form fields but do not submit yet.\n6. Prepare a proxy tool (software that sits between your browser and the server to let you see and change data) to intercept the request.\n7. Click the 'Submit' button on the form.\n8. Intercept the HTTP request (a message sent from your browser to a server) which looks like this:\nPOST /api/password-reset/confirm HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"token\": \"abc-123-xyz\", \"Email\": \"attacker@example.com\", \"NewPassword\": \"AttackerPass123!\"}\n9. Identify the 'Email' parameter and the 'token' (the secret code proving you started a reset).\nEXPLOITATION\n10. Change the value of the 'Email' parameter from your own email to the victim's email address (victim@example.com).\n11. Leave the 'token' parameter exactly as it is, using your own valid token.\n12. The modified payload (the data part of the message) now looks like this:\n{\"token\": \"abc-123-xyz\", \"Email\": \"victim@example.com\", \"NewPassword\": \"AttackerPass123!\"}\n13. Forward the modified request to the server.\n14. Observe the server's response, which indicates a successful password change (e.g., HTTP 200 OK).\nIMPACT\n15. Navigate to the login page of the application.\n16. Attempt to log in using the victim's email (victim@example.com) and the password you just set (AttackerPass123!).\n17. Confirm that you have successfully logged into the victim's account, proving a full account takeover without victim interaction.",
+      "example": "Imagine a fictional site 'target.example' that uses a 'code' to verify email changes. The vulnerable server-side code looks like this:\n\nfunction updateEmail(providedCode, targetUserId, newEmail) {\n  if (db.verifyCode(providedCode)) {\n    db.users.update(targetUserId, {email: newEmail});\n  }\n}\n\nAn attacker generates a valid code for their own account. They then send a request to the server: \nPOST /update-email\n{\"code\": \"ATTACKER_VALID_CODE\", \"targetUserId\": \"VICTIM_ID\", \"newEmail\": \"attacker@evil.com\"}\n\nBecause the function only checks if the code is 'valid' in general, but doesn't check if the code belongs to 'targetUserId', the attacker can change the email address of any user ID they specify.",
+      "takeaway": "This vulnerability is a classic example of Broken Access Control within a business logic flow. You should always test if a security token is strictly 'bound' (tied) to the specific user ID or email it was generated for. When hunting, look for requests that include both a security token and a user identifier (like an ID, username, or email). Try swapping the identifier while keeping your own valid token. A common mistake for beginners is assuming that because a token is required, the process is secure; always verify that the server checks the relationship between all pieces of data in the request.",
+      "fix": "To fix this, the server must never trust the user-supplied email or ID in a sensitive request. Instead, the server should use the token to identify the user. The database should store a mapping between the token and the user ID. When the request arrives, the server looks up the user ID associated with that specific token and ignores any other identifiers in the request. Additionally, the token must be invalidated immediately after use.\n\nFixed Code Example:\napp.post('/api/password-reset/confirm', (req, res) => {\n  const token = req.body.token;\n  const newPassword = req.body.newPassword;\n  // Look up the user directly from the token in the database\n  const user = db.password_tokens.findUserByToken(token);\n  if (!user) {\n    return res.status(400).send('Invalid or expired token.');\n  }\n  // Update the password for the user found via the token, NOT the email in the request\n  db.users.updatePassword(user.id, newPassword);\n  // Invalidate the token so it cannot be used again\n  db.password_tokens.delete(token);\n  res.send('Password updated successfully.');\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Password recovery features are interesting targets for security researchers because they involve several security-sensitive elements: recovery tokens, account identifiers, and password changes. These elements must be correctly linked together on the server side. I wanted to understand whether the application properly enforced that relationship. ## Understanding the Request I started by using the password recovery functionality with a test account under my control. After receiving the recovery link and proceeding through the reset process, I inspected the HTTP requests involved in changing the",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "babb2c04861f",
+    "title": "$18,000 for a Serialized String in a Cookie: PHP Object Injection to Remote Code Execution",
+    "url": "https://medium.com/@t4nv1/18-000-for-a-serialized-string-in-a-cookie-php-object-injection-to-remote-code-execution-952d271971e0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T09:26:01.000Z",
+    "added_at": "2026-10-14T12:31:29.043Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "PHP object injection via a serialized cookie allowed an attacker to achieve remote code execution on the Larkspur platform.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application deserialized a user‑controlled cookie containing a PHP serialized string. Because the deserialization routine trusted the data and used vulnerable library classes that execute code during object reconstruction, an attacker could craft a malicious object graph that runs arbitrary commands on the server.",
+      "walkthrough": null,
+      "example": "Example:\nTarget: https://target.example\nVulnerable PHP code:\n$payload = $_COOKIE['session'];\n$object = unserialize($payload);\nExplanation: unserialize rebuilds an object from the cookie. If attacker supplies a serialized object of a class with a __destruct method that calls system($this->cmd), they achieve RCE.\nAttack request (set cookie):\nGET / HTTP/1.1\nHost: target.example\nCookie: session=O:8:\\\"EvilClass\\\":1:{s:3:\\\"cmd\\\";s:11:\\\"id > /tmp/out\\\";}\nExplanation of payload: O:8:\\\"EvilClass\\\" tells PHP to create an object of class EvilClass (8 characters). The property cmd is set to the command id > /tmp/out. When the script ends, __destruct runs system(cmd), executing the command.\nResult: attacker can read /tmp/out via another request.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’d found Java deserialization bugs before, and my instinct going into this target was that the same mental model would transfer directly. It mostly did — the core idea of “an attacker-supplied object graph gets reconstructed and something dangerous happens during that reconstruction” holds across languages. What I wasn’t prepared for was how differently PHP’s version of this vulnerability actually executes, and how much of the exploit construction ended up depending on reading through an open-source library’s source code line by line rather than throwing pre-built tooling at a black box. The",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "a49310f702bd",
     "title": "One File, Zero Clicks Needed: A Stored DoS Story",
     "url": "https://medium.com/@devyanipardesh7010/one-file-zero-clicks-needed-a-stored-dos-story-68725c5703c3",
