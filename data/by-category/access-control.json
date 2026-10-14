@@ -1,5 +1,46 @@
 [
   {
+    "id": "5f0cdc262a81",
+    "title": "I found a secret door into an admin panel — and got paid $1350 for it",
+    "url": "https://medium.com/@dhruv.gup707/i-found-a-secret-door-into-an-admin-panel-and-got-paid-1350-for-it-bb170e9974b0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Dhruv Gupta"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T21:27:12.000Z",
+    "added_at": "2026-10-14T23:36:49.594Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An exposed Supabase API key allowed the researcher to call the hidden signup endpoint directly, creating an account that granted full admin access.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The web app hid the sign‑up button in its UI but never disabled Supabase’s public signup endpoint. The client‑side login request included a long‑lived Supabase API key in clear text, which anyone intercepting traffic could reuse. Because the backend trusted any request that presented a valid API key, it did not verify that the caller was an authorized internal user. Consequently, an attacker could bypass the UI restriction and create a new account with the same privileges as a legitimate user. The lack of server‑side access control on the signup route is the root cause.",
+      "walkthrough": "RECON\nStep 1: Open the login page in a browser.\n- Action: Visually inspect the page.\n- Why: To see what user‑facing features are offered (e.g., a missing \"Sign Up\" button).\n\nStep 2: Capture the traffic with Burp Suite (a proxy that records HTTP requests and responses).\n- Action: Enable intercept, submit a login attempt.\n- Why: HTTP request = the data the browser sends to the server; intercepting lets us see hidden parameters.\n\nStep 3: Locate the \"Apikey\" header in the captured POST /auth/v1/token request.\n- Action: Note the value \"sb_****\" shown in the header.\n- Why: An API key is a secret token that authenticates the client to Supabase; exposing it leaks full access.\n\nDISCOVERY\nStep 4: Identify the Supabase base URL from the Host header (e.g., https://[redacted].supabase.co).\n- Action: Record the domain for later use.\n- Why: The domain points to the backend service handling authentication.\n\nStep 5: Guess the hidden signup endpoint based on Supabase documentation (/auth/v1/signup).\n- Action: Form the URL https://[redacted].supabase.co/auth/v1/signup.\n- Why: Supabase exposes a REST endpoint for creating new users.\n\nEXPLOITATION\nStep 6: Craft a curl command that sends a POST request to the signup endpoint.\n- Code: curl -X POST \"https://[redacted].supabase.co/auth/v1/signup\" \\ -H \"apikey: [key found in traffic]\" \\ -H \"Content-Type: application/json\" \\ -d '{\"email\":\"test@example.com\",\"password\":\"Password123!\"}'\n- Why: curl is a command‑line tool that makes HTTP requests; -X POST sets the method, -H adds headers, -d sends a JSON payload (email and password) to create a user.\n\nStep 7: Execute the command and observe the JSON response.\n- Response: { \"role\": \"authenticated\", \"email\": \"test@example.com\" }\n- Why: The server accepted the request and created a new account because the API key was valid.\n\nIMPACT\nStep 8: Log in to the original web app using the newly created credentials.\n- Action: Enter test@example.com / Password123! on the login page.\n- Why: The account now exists in the system; after authentication the app redirects to the admin dashboard, revealing creator lists, payment history, and settings.\n\nStep 9: Verify admin‑only pages are accessible.\n- Action: Browse to /admin or similar URLs.\n- Why: Confirms that the newly created account has elevated privileges, completing the breach.",
+      "example": "**Fictional target:** https://target.example.com\n**Vulnerable code (pseudo‑JavaScript):**\n```js\napp.post('/auth/v1/signup', (req, res) => {\n  // No check that the request comes from an internal service\n  const {email, password} = req.body;\n  createUser(email, password).then(user => {\n    res.json({role:'authenticated', email:user.email});\n  });\n});\n```\n**Attack request:**\n```bash\ncurl -X POST \"https://target.example.com/auth/v1/signup\" \\\n  -H \"apikey: sb_public_testkey\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"attacker@evil.com\",\"password\":\"evilPass123\"}'\n```\n**Why it works:** The server trusts any request that presents a valid Supabase API key and does not verify the caller’s identity, so the attacker can create a new account with the same privileges as a legitimate user. Once the account is created, the attacker can log in and access protected resources.",
+      "takeaway": "Hunters should always test whether a UI‑hidden feature (like a missing sign‑up button) still works via the underlying API. Look for API keys or tokens in client traffic using a proxy such as Burp Suite or OWASP ZAP. This class of bug appears in services that expose third‑party auth providers (Supabase, Firebase, Auth0) where the provider key is shipped to the browser. Variants include open registration endpoints protected only by a static API key or by CORS misconfiguration. A common beginner mistake is assuming that the absence of a front‑end element means the functionality is disabled; always verify the backend behavior.",
+      "fix": "Remove the public Supabase API key from client‑side code and store it securely on the server. Restrict the /auth/v1/signup endpoint to trusted origins or require an additional server‑side verification (e.g., a signed JWT issued after admin approval). Implement proper access control checks so that only authorized users can create accounts with elevated roles. If open registration is not intended, disable the endpoint entirely or require an invitation flow. Finally, rotate any leaked API keys and monitor for unauthorized usage.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "When I visited the login page, there was no “Sign Up” button anywhere. The message was clear: you can’t create an account here. This is for our team only. Most people would close the tab and move on. I opened a tool called Burp Suite — basically it lets you peek under the hood of a website and see exactly what’s happening behind the scenes when you click things. ## What I actually found Think of it this way _Imagine a nightclub with a strict “no walk-ins” policy. The bouncer at the front door turns everyone away. But around the back? There’s a staff entrance with a keypad — and someone left th",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c1d6c27c80f6",
     "title": "How I found a Zero-Click Account Tack over via password rest link",
     "url": "https://cyghost.medium.com/how-i-found-a-zero-click-account-tack-over-via-password-rest-link-9f4eafbc9009",
