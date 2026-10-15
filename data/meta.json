@@ -1,23 +1,24 @@
 {
-  "lastRun": "2026-10-15T01:50:36.829Z",
-  "totalItems": 158,
+  "lastRun": "2026-10-15T06:36:26.373Z",
+  "totalItems": 159,
   "newItemsThisRun": 1,
   "aiProvider": "custom",
   "aiOkThisRun": 1,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 112,
+  "aiGeneratedTotal": 113,
   "bySource": {
+    "medium-tag-writeup": 21,
     "medium-tag-bug-bounty": 81,
     "reddit-netsec": 7,
-    "medium-tag-writeup": 20,
     "medium-tag-bugbounty": 1,
     "infosec-writeups": 1,
     "pentesterland": 48
   },
   "byCategory": {
+    "oauth-jwt": 9,
+    "access-control": 57,
+    "other": 28,
     "auth-bypass": 44,
-    "access-control": 56,
-    "other": 27,
     "rce": 29,
     "business-logic": 27,
     "xxe": 1,
@@ -36,7 +37,6 @@
     "subdomain-takeover": 1,
     "cors": 2,
     "cache-smuggling": 1,
-    "oauth-jwt": 8,
     "race-condition": 4
   }
 }

@@ -1,5 +1,47 @@
 [
   {
+    "id": "288c22536145",
+    "title": "Android Deep Link Hijacking to Account Takeover via OAuth Code Interception",
+    "url": "https://medium.com/@ahmed.m.abd.elftah.abbas/android-deep-link-hijacking-to-account-takeover-via-oauth-code-interception-db24544254be",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahmed M.Abbas"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-15T06:13:51.000Z",
+    "added_at": "2026-10-15T06:34:50.599Z",
+    "categories": [
+      "oauth-jwt",
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "An attacker can intercept OAuth authorization codes by registering a malicious app with the same custom URI scheme as a legitimate app, leading to full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from two main flaws: the use of a non-exclusive custom URI scheme (app-login://) and the storage of sensitive OAuth credentials (client_id and client_secret) inside the publicly accessible APK file (the Android application package). Because Android allows any app to claim a custom URI scheme, a malicious app can 'hijack' the link intended for the real app. Furthermore, because the app's secret keys were hardcoded, the attacker had everything needed to complete the login process once the code was stolen.",
+      "walkthrough": "RECON\n1. The researcher decompiles (turning an app file back into readable code) the APK to read the AndroidManifest.xml (a file in an app that lists its features and permissions).\n2. They identify an intent-filter (a setting that tells Android which links an app can open) using a custom URI scheme (the part of a link like app:// that tells the device which app to use).\n<data android:scheme=\"app-login\" android:host=\"m.example.com\" />\nWhy: This tells us the app listens for links starting with app-login:// to handle logins.\nDISCOVERY\n3. The researcher uses JADX (a tool to turn app files into code) to search for the custom scheme and OAuth (a system for sharing data without passwords) secrets.\n4. They find a hardcoded client_secret (a password for the app itself) in the Java source code.\nprivate static final String CLIENT_SECRET = \"...\";\nWhy: Hardcoded secrets can be read by anyone who downloads the app, as APKs are not encrypted.\nEXPLOITATION\n5. The researcher creates a malicious PoC (Proof of Concept) app that includes the exact same intent-filter in its own manifest.\n6. They install both the legitimate app and the malicious app on the same Android device.\n7. The researcher triggers the email verification flow in the legitimate app, which sends a login link to their email.\n8. They open the email and click the \"Open in App\" button.\n9. Android displays an app chooser (a menu asking which app to use) because two apps claim the same link.\n10. The researcher selects the malicious app from the list.\n11. The malicious app receives the intent (a message containing data) which includes the auth_code (a temporary secret used to get a login token).\napp-login://m.example.com/?auth_code=...\nWhy: The sensitive code meant for the real app was successfully diverted to the attacker's app because the scheme was not unique.\n12. The malicious app extracts the auth_code using the getQueryParameter method.\nString authCode = data.getQueryParameter(\"auth_code\");\nWhy: This pulls the specific parameter (a piece of information added to a URL) from the intercepted link.\nIMPACT\n13. The malicious app sends an HTTP POST request (a message sending data to a server) to the token endpoint (a specific web address for authentication).\nhttps://api.example.com/oauth2/token\nWhy: This exchanges the stolen code and hardcoded secret for an access token (a digital key that proves a user is logged in).\n14. The attacker uses the resulting token to request the user's private profile data, proving full account takeover.\nhttps://api.example.com/2.0/users/me\nWhy: The server believes the attacker is the legitimate user because they provided a valid token.",
+      "example": "Suppose a fictional app 'TargetApp' uses the scheme 'target-auth://' for logins. We assume the app's APK contains a hardcoded secret 'SECRET_999'. An attacker creates 'EvilApp' which also handles 'target-auth://'. When a user clicks a login link like 'target-auth://callback?code=ABC123', they are prompted to choose an app and might pick 'EvilApp'. The attacker's app then sends this request: \n\nPOST /oauth/token HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\ncode=ABC123&client_id=target_id&client_secret=SECRET_999\n\nThe server sees a valid code and the correct secret, so it issues a login token to the attacker, who now controls the user's account.",
+      "takeaway": "When hunting for Android bugs, always check the AndroidManifest.xml for custom URI schemes in intent-filters. Use tools like JADX to decompile the APK and search for hardcoded strings like 'client_secret' or 'api_key'. A common variant of this bug involves 'App Links' that are improperly configured, allowing hijacking even on modern Android versions. Beginners often forget that APKs are not encrypted; any 'secret' stored inside them is public knowledge. Look for OAuth flows where the redirect_uri uses a custom scheme instead of a verified https domain.",
+      "fix": "To fix this, developers must use Android App Links with the 'autoVerify=true' attribute in the manifest. This requires hosting a 'digital-asset-links.json' file on the web server to prove the app owns the domain, preventing other apps from hijacking the links. Additionally, sensitive credentials like the client_secret must never be hardcoded in the app. Instead, use the OAuth PKCE (Proof Key for Code Exchange) extension, which uses a dynamically generated secret for each login session, making intercepted codes useless without the session-specific key.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Alhamdulillah, I successfully discovered and reported an Android Deep Link Hijacking vulnerability that led to Account Takeover via OAuth Code Interception. The report was triaged, and I received a bounty for the finding. Press enter or click to view image in full size Image 4 — — ## 1. Introduction During an Android security assessment, I discovered a deep link vulnerability that allowed a malicious application to intercept an OAuth authorization code during an email verification flow. The application used an unverified custom URI scheme to handle authentication callbacks. By registering the",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "19925befb54b",
     "title": "My First Blockchain Bug Bounty Investigation: What a Duplicate Report Taught Me About Security…",
     "url": "https://medium.com/@nsm10a01akhil/my-first-blockchain-bug-bounty-investigation-what-a-duplicate-report-taught-me-about-security-20065a0e7ae0",
