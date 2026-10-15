@@ -1,5 +1,47 @@
 [
   {
+    "id": "9c4c4749e4d4",
+    "title": "Bug Bounty Automation Toolkit 2026: Why Faster Recon Finds Fewer Bugs — And What Works Instead",
+    "url": "https://medium.com/@R.H_Rizvi/bug-bounty-automation-toolkit-2026-why-faster-recon-finds-fewer-bugs-and-what-works-instead-96e391d17536",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "R.H Rizvi"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-15T11:09:08.000Z",
+    "added_at": "2026-10-15T12:03:03.634Z",
+    "categories": [
+      "recon",
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "Standard bug bounty automation fails by creating noise; this workflow uses 'diffing' to alert hunters only when new, untested assets appear on a target.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The primary failure in modern bug bounty automation is a lack of 'state'—the ability to remember what was found in previous scans. Most toolkits treat every run as the first run, producing thousands of duplicate results that bury new, vulnerable assets. Additionally, many hunters ignore 'scope discipline,' which means their tools scan assets that are not allowed by the program's rules. This leads to 'noise' (useless data) and potential bans rather than finding high-impact bugs like broken authorization. The root cause is a strategy that prioritizes scanning everything poorly over scanning new changes deeply.",
+      "walkthrough": "RECON AND SCOPE LOCKING\n1. The researcher first defines the 'Scope,' which is a list of allowed targets provided by the company.\n2. They create a 'Regex' file (a special pattern used to match specific text) to ensure the tools only touch allowed domains.\nIN_SCOPE=\"scope/${TARGET}.in.regex\"\nWhy: This acts as a safety barrier so the automated tools do not attack unauthorized servers.\n3. They use 'subfinder' to perform 'Passive Discovery,' which means looking up public records to find subdomains (extra parts of a main domain like dev.example.com).\nsubfinder -d \"$TARGET\" -silent | sort -u > \"$OUT/subs.raw\"\nWhy: This finds potential targets without directly interacting with the company's servers yet.\n4. They apply the 'Scope Lock' by using 'grep' (a tool that searches for patterns) to filter the list of subdomains against the allowed regex.\ngrep -Ef \"$IN_SCOPE\" \"$OUT/subs.raw\" | grep -vEf \"$OUT_SCOPE\" > \"$OUT/subs.scoped\"\nWhy: This removes any subdomains that are explicitly forbidden by the bug bounty program.\n\nDISCOVERY AND PROBING\n5. The researcher uses 'dnsx' to 'resolve' the subdomains, which means checking if the domain name actually points to a real IP address (a server's digital location).\n6. They pipe (send) those results into 'httpx' to 'probe' for live web services, checking for things like 'status codes' (numbers like 200 for 'OK' or 404 for 'Not Found').\ndnsx -silent -l \"$OUT/subs.scoped\" | httpx -silent -rl 10 -sc -td -title -json > \"$OUT/live.json\"\nWhy: This identifies which subdomains are actually running a website or API that can be attacked.\n\nTHE DIFF ENGINE (STATE MANAGEMENT)\n7. The researcher extracts the URLs from the live results using 'jq' (a tool for processing data in JSON format).\njq -r '.url' \"$OUT/live.json\" | sort -u > \"$OUT/live.urls\"\nWhy: This creates a clean list of web addresses found in the current scan.\n8. They use the 'comm' command to perform a 'diff' (finding the difference) between the current list and a list of 'known' URLs from previous scans.\ncomm -13 \"$OUT/known.urls\" \"$OUT/live.urls\" > \"$OUT/new.urls\"\nWhy: This is the 'memory' of the system; it isolates only the assets that appeared for the first time today.\n\nTARGETED TRIAGE AND EXPLOITATION\n9. If new URLs are found, the system sends an alert to the researcher via 'notify' (a tool that sends messages to apps like Slack or Discord).\nnotify -silent -bulk < \"$OUT/new.urls\"\nWhy: This ensures the researcher can manually inspect new code as soon as it is deployed.\n10. They run 'nuclei' (a vulnerability scanner) using only 'targeted templates' (specific rules to find common mistakes) on the new assets.\nnuclei -l \"$OUT/new.urls\" -tags exposure,misconfig,takeover -severity medium,high,critical\nWhy: Instead of scanning everything, it only checks the new, untested assets for high-risk flaws.\n11. Finally, the researcher moves to 'Manual Testing' using 'Burp Suite' (a tool that intercepts and modifies web traffic) to find complex logic errors.\nWhy: Humans are better than machines at understanding 'Business Logic' (how an app is supposed to work) and finding where it breaks.",
+      "example": "Imagine a target company, 'target.example'. Most hunters run a scan on Monday and find 'www.target.example' and 'api.target.example'. On Tuesday, the company's developers deploy a new, unfinished testing site at 'dev-v2-beta.target.example'. \n\nA standard automation tool would scan all three sites on Tuesday, producing a massive report where the new 'dev-v2' site is hidden among thousands of lines of old data. \n\nUsing the 'Diff-Based' approach, the researcher's script compares Monday's list to Tuesday's list. The script ignores 'www' and 'api' because they haven't changed. It generates a single alert: 'NEW ASSET FOUND: dev-v2-beta.target.example'. \n\nThe researcher immediately opens this URL in their browser and notices that the 'dev' site doesn't require a password. They find an 'Endpoint' (a specific URL path) like '/admin/config' that exposes the company's database credentials. Because they were the first to see the new asset, they report the 'Information Disclosure' (leaking private data) before anyone else.",
+      "takeaway": "The most successful bug hunters don't have the fastest tools; they have the best 'time-to-new-asset' metrics. You should hunt for the 'delta' (the change) rather than the whole surface. Look for signals like new JavaScript files, new subdomains, or changes in 'HTTP Headers' (extra info sent with a web request). A common beginner mistake is running 'Nuclei' with all templates against a massive scope; this results in 'Rate Limiting' (the server blocking you for too many requests) and 'Duplicates' (reporting things others already found). Instead, use automation to tell you *where* to look, then use manual tools like Burp Suite to find the actual bug.",
+      "fix": "To fix the noise and scope issues in automation, implement a stateful script that records every found asset in a database or text file. Use 'Regex' to strictly enforce scope boundaries and 'Rate Limiting' to stay under the program's allowed request threshold. A fixed workflow script should look like this:\n\n#!/usr/bin/env bash\n# Ensure we only scan what is allowed\ncat subdomains.txt | grep -E '.*\\.target\\.com$' > scoped_subs.txt\n# Find live sites and compare to the 'seen' list\nhttpx -l scoped_subs.txt -silent > current_live.txt\ncomm -13 seen_assets.txt current_live.txt > new_to_test.txt\n# Update the 'seen' list for next time\ncat new_to_test.txt >> seen_assets.txt\n# Only scan the new items\nnuclei -l new_to_test.txt -t exposures/",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A scope-locked ethical hacking workflow system to automate recon, cut the noise, and find vulnerabilities faster than hunters running the same tools._ **Every bug bounty automation toolkit in 2026 runs the same stack. Same subdomain enumerator.** Same HTTP prober. Same public nuclei templates. Same wildcard scope. The inputs are identical across thousands of hunters, so the results are too: duplicates, informational closures, and a triage queue that has stopped reading your name. Faster recon does not find more vulnerabilities. It reaches the same exhausted attack surface sooner. Speed pointe",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "288c22536145",
     "title": "Android Deep Link Hijacking to Account Takeover via OAuth Code Interception",
     "url": "https://medium.com/@ahmed.m.abd.elftah.abbas/android-deep-link-hijacking-to-account-takeover-via-oauth-code-interception-db24544254be",
