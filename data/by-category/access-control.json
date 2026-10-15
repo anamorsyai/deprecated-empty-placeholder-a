@@ -1,5 +1,46 @@
 [
   {
+    "id": "607a014e2958",
+    "title": "How a Free Trial Led to Broken Access Control",
+    "url": "https://medium.com/@a7medsalah169/how-a-free-trial-led-to-broken-access-control-537488544be0",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ahmed Salah"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-15T12:08:27.000Z",
+    "added_at": "2026-10-15T16:53:40.615Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "Changing the free‑trial productType parameter lets a Student obtain a Teacher free trial, gaining teacher privileges and bypassing age restrictions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server decides which trial length and account role to grant based only on the productType value in the POST /cart-line-items/create-or-update request. The endpoint does not check whether the authenticated user is allowed to request that product type. For a Student the client sends productType 37, while a Teacher’s request uses productType 15. Because the server trusts the client‑provided value, an attacker can replace 37 with 15. This missing server‑side authorization check creates broken access control and privilege escalation.",
+      "walkthrough": "RECON\nStep 1: Capture the network traffic while a normal Student requests a free trial.\n{ \"productType\": 37, \"quantity\": 1, \"source\": \"header_plus\" }\nWhy: An HTTP request is a message sent from a browser to a server; the JSON block shown is the request payload (the data sent in the body). The parameter productType tells the server which trial to create.\n\nDISCOVERY\nStep 2: Capture the same request when a Teacher requests a free trial and note the difference.\n{ \"productType\": 15, \"quantity\": 1, \"source\": \"header_plus\" }\nWhy: Comparing the two payloads reveals that the only change is productType (37 → 15). This shows the server uses that value to decide the trial length and role.\n\nEXPLOITATION\nStep 3: Edit the captured Student request, changing productType from 37 to 15.\n{ \"productType\": 15, \"quantity\": 1, \"source\": \"header_plus\" }\nWhy: By modifying the parameter we tell the server to treat the request as a Teacher trial. The single quote concept does not apply here; we simply replace the numeric value.\nStep 4: Forward the modified request to the endpoint POST /cart-line-items/create-or-update.\nPOST /cart-line-items/create-or-update\n{ \"productType\": 15, \"quantity\": 1, \"source\": \"header_plus\" }\nWhy: Sending the altered payload causes the server to apply the Teacher‑type trial because it trusts the client‑supplied productType.\n\nIMPACT\nStep 5: Verify the account now has Teacher status, teacher‑only features are enabled, and the under‑age restriction is removed.\nWhy: The server granted the privileges associated with productType 15, demonstrating a privilege‑escalation bug.",
+      "example": "Assume a fictional service at https://target.example. The API endpoint /api/trial accepts a JSON payload with a field \"planId\". Normal users send {\"planId\":10,\"duration\":7} for a 7‑day basic trial. Premium users send {\"planId\":20,\"duration\":30}. If the server only reads the client‑provided planId without checking the caller, an attacker can send:\nPOST https://target.example/api/trial\n{ \"planId\":20, \"duration\":30 }\nWhy: The modified planId tells the server to grant the premium trial, giving the attacker elevated privileges.",
+      "takeaway": "When hunting, look for endpoints that accept a product, plan, or SKU identifier (e.g., productType, planId) and grant privileges based on that value. Intercept such requests with a proxy (Burp Suite, OWASP ZAP) and try higher‑privilege identifiers. Variants include price‑manipulation or role‑escalation via purchase APIs. A common beginner mistake is assuming the server validates the identifier; always test by swapping values.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Can a free-trial feature let you bypass account restrictions and become a Teacher even if you’re not allowed to? That’s exactly what I found during this test. It will be a short story so let’s see how it happened. ## Understanding the restriction The platform has two main account types: **Student** and **Teacher**. Younger students than 14 have additional restrictions, and they can’t switch their account type to Teacher through Settings. My first attempt was straightforward: intercept the request and try to change my account type directly. The server returned `403 Forbidden`. Looks like it was",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "9c4c4749e4d4",
     "title": "Bug Bounty Automation Toolkit 2026: Why Faster Recon Finds Fewer Bugs — And What Works Instead",
     "url": "https://medium.com/@R.H_Rizvi/bug-bounty-automation-toolkit-2026-why-faster-recon-finds-fewer-bugs-and-what-works-instead-96e391d17536",
