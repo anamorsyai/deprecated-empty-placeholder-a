@@ -83,6 +83,47 @@
     "score": 53
   },
   {
+    "id": "c53fdfaa358b",
+    "title": "An Email Address Was Enough: Two Account Deletion Findings Worth $850",
+    "url": "https://medium.com/@papjm/an-email-address-was-enough-two-account-deletion-findings-worth-850-89037f87dbc0",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Adini Rodini Rodney"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-15T10:55:53.000Z",
+    "added_at": "2026-10-15T20:09:37.151Z",
+    "categories": [
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "Attackers could delete any user account by simply providing the victim's email address to customer support, bypassing ownership verification. The support staff processed these destructive requests without requiring the requester to prove they actually controlled the target account.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure in the business logic of the customer support workflow, where knowing an account's email address was incorrectly treated as proof of ownership. The system failed to enforce a trust boundary—a security checkpoint where a user's identity is verified before performing sensitive actions. Specifically, the support process did not require an authenticated session (a state where the user is logged in and proven to be who they say they are) or a confirmation link sent to the actual registered email address of the account being deleted.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher identified that the application allows account deletion through manual customer support requests rather than just automated buttons.\n2. Two test accounts were created: Account A (attacker) and Account B (victim).\n\nDISCOVERY (METHOD 1: DIRECT EMAIL)\n3. The researcher sent a plain-text email from Account A's email address to the support team.\n4. The email contained a specific instruction (the payload) to delete a different account.\nHello, I would like to close my account registered under account-b@example.com.\nWhy: This tests if the support agent checks if the sender's email matches the account they want to delete. (An email address is a unique identifier, but not a secret password).\n\nEXPLOITATION (METHOD 1)\n5. Support replied to Account A (the attacker) to confirm the request.\n6. The researcher confirmed the request from Account A.\n7. Support proceeded to delete Account B without ever contacting Account B's owner.\n\nDISCOVERY (METHOD 2: SUPPORT FORM)\n8. The researcher found a web support form with three specific input fields (parameters: pieces of data sent to a server).\n9. Field 1: 'Contact Email' (where support sends replies).\n10. Field 2: 'Confirm Contact Email'.\n11. Field 3: 'Account Email' (the account the user needs help with).\n\nEXPLOITATION (METHOD 2)\n12. The researcher filled the form using Account A's email in the 'Contact' fields and Account B's email in the 'Account' field.\n13. Support sent a confirmation email to the 'Contact' address (Account A).\n14. The researcher replied from Account A, authorizing the deletion.\n15. Support deleted Account B.\n\nIMPACT\n16. The researcher verified that Account B was fully deleted.\n17. A notification was sent to Account B only AFTER the deletion was finished, which is too late to prevent the attack.",
+      "example": "Imagine a fictional website 'target.example' that has a 'Contact Us' form for password resets. The form asks for 'Your Current Email' and 'The Email of the Account to Reset'. An attacker enters 'attacker@gmail.com' in the first box and 'victim@gmail.com' in the second. If the support agent sends a password reset link to 'attacker@gmail.com' instead of 'victim@gmail.com', the attacker can take over the account. This works because the system trusts the user-provided 'Contact Email' parameter instead of looking up the 'Account Email' in the database and sending the link only to the address already on file.",
+      "takeaway": "Always look for 'human-in-the-loop' processes where manual support actions can bypass technical security controls. When testing, look for forms with multiple email fields or support channels that don't require you to be logged in. A common variant is 'Account Recovery' where support might change an account's email address based on a simple request. Avoid the mistake of assuming that because a 'Delete' button in the settings is secure, the manual support process for the same action is also secure.",
+      "fix": "The support workflow must be updated to require proof of ownership before performing destructive actions. Support should only send confirmation links to the email address officially registered to the account in the database, or require the user to submit the request through an authenticated session (while logged in). If the user has lost access to their email, they must go through a formal identity verification process rather than a simple email exchange.\n\n// Conceptual fix: Verify sender matches target\nif (request.sender_email != target_account.registered_email) {\n  send_verification_to(target_account.registered_email);\n  reject_request_from(request.sender_email);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Can I change the account ID? Does the application check ownership? Can a request from another session delete my account? But there is another route worth examining: customer support. Across two bug bounty programs, I found that support workflows allowed someone to request deletion of an account without proving ownership. Both findings involved accounts I controlled, and they earned me a combined **$850**. The companies, domains, email addresses, and staff identities in this story have been redacted. ## Finding One: A Deletion Request From a Different Email Address For the first test, I created",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c1d6c27c80f6",
     "title": "How I found a Zero-Click Account Tack over via password rest link",
     "url": "https://cyghost.medium.com/how-i-found-a-zero-click-account-tack-over-via-password-rest-link-9f4eafbc9009",
