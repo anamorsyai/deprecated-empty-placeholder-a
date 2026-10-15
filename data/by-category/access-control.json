@@ -41,6 +41,48 @@
     "score": 53
   },
   {
+    "id": "19925befb54b",
+    "title": "My First Blockchain Bug Bounty Investigation: What a Duplicate Report Taught Me About Security…",
+    "url": "https://medium.com/@nsm10a01akhil/my-first-blockchain-bug-bounty-investigation-what-a-duplicate-report-taught-me-about-security-20065a0e7ae0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Ak-4!7"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T21:11:55.000Z",
+    "added_at": "2026-10-15T01:49:23.098Z",
+    "categories": [
+      "access-control",
+      "auth-bypass",
+      "other"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "A validation gap in a blockchain node allowed transactions to denylisted addresses to be processed if they were included in a block payload via the Engine API, bypassing standard transaction pool checks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by inconsistent security enforcement across different data entry points in the Rust-based blockchain node. While the transaction pool (a digital waiting room for transactions) correctly checked an address denylist (a list of banned addresses), the Engine API (a communication channel for nodes to share blocks) lacked this check in its execution path. Specifically, the function 'execute_transaction_without_commit' processed transactions directly through the EVM (the engine that runs transaction code) without verifying if the recipient was restricted, allowing a malicious block producer to force-include forbidden transactions.",
+      "walkthrough": "RECON\n1. The researcher identified the target blockchain node (a computer running the blockchain software) and located the core execution and validation crates (bundles of code in the Rust language).\n2. They mapped out the components: 'crates/exec****n-txpool' for incoming transactions and 'crates/e**' for the Engine API.\nDISCOVERY\n3. They examined the transaction pool logic and found a call to 'is_denylisted()' which prevents forbidden addresses from entering the pool.\n4. They then traced the Engine API path, which validators (nodes that verify new blocks) use to accept blocks from other nodes.\n5. They located the execution function:\nexecute_transaction_without_commit()\nWhy: This function is responsible for simulating or running transactions within a block without making the changes permanent yet.\n6. They observed that this function calls the EVM (Ethereum Virtual Machine, the virtual engine that executes instructions) directly:\nself.evm.transact(tx_env)\nWhy: The researcher noted that no denylist check occurred before this call, meaning the 'brain' of the node would process whatever it was given.\nEXPLOITATION\n7. To prove the gap, they set up a local test environment with two nodes: a Producer and a Validator.\n8. They configured a specific address as 'denylisted' in the node settings.\n9. They used the Producer node to craft a transaction targeting that blocked address.\n10. They generated an 'execution payload' (a package of data containing the block's transactions).\n11. They sent this payload to the Validator node using the Engine API.\n12. They monitored the Validator's response to see if it would reject the block due to the banned address.\nIMPACT\n13. The Validator accepted the payload and returned a 'Valid' status.\n14. The researcher confirmed the transaction was processed by checking the transaction receipt (a digital proof that a transaction was completed).\n15. This proved that a malicious block proposer could bypass the denylist for the entire network, rendering the security feature useless against sophisticated attackers.",
+      "example": "Imagine a digital library (target.example) that has a 'Public Upload' page and a 'Librarian Sync' tool. The Public Upload page has a filter that blocks files containing 'malware.exe'. However, the Librarian Sync tool, which downloads books from other libraries, forgets to check for 'malware.exe'. An attacker sets up a fake library, puts 'malware.exe' in a book, and uses the Sync tool to push it to the target. The target accepts it because it trusts the Sync tool more than the Public page. In code, the Public page calls 'check_file(file)', but the Sync tool calls 'save_to_disk(file)' directly. To exploit this, you would find the internal sync endpoint and send a POST request (a message sent to a server to submit data) with the forbidden file: 'POST /api/sync/receive { \"file_name\": \"malware.exe\", \"content\": \"...\" }'. The server processes it because the 'Sync' logic assumes the data is already clean.",
+      "takeaway": "Always look for 'secondary' data entry points that might bypass 'primary' filters. In blockchain, this often means comparing the Transaction Pool (user-facing) with the Engine API (node-to-node). If you find a security check in one, verify it exists in the other. Use search terms like 'validate', 'check', or 'denylist' across the whole codebase to see where they are missing. A common mistake is assuming that because data comes from a 'peer' or 'internal' source, it is already validated; this is known as the Byzantine threat model where you must never trust data from another node.",
+      "fix": "The fix involves moving the denylist check into a shared validation component that is mandatory for all execution paths, regardless of where the transaction originated. Before the EVM processes any transaction, the system must verify the recipient against the denylist. \n\n```rust\n// Fixed logic: Check denylist before execution\nfor tx in block.transactions {\n    if denylist.is_denylisted(tx.to) {\n        // Reject the entire block if it contains a banned address\n        return Err(ValidationError::AddressDenylisted);\n    }\n    // Only execute if the check passes\n    self.evm.transact(tx);\n}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_An honest account of exploring a Rust codebase, investigating an Engine API validation hypothesis, testing locally, and learning that finding a vulnerability is only half the battle._ ## Introduction When I started exploring bug bounty hunting, I thought the process was relatively straightforward: find suspicious code, investigate it, reproduce the issue, and submit a report. My recent experience investigating the `ar*-**de` repository challenged that assumption. I explored a blockchain node implementation, investigated address-denylist enforcement, traced execution paths, ran automated tests",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c1d6c27c80f6",
     "title": "How I found a Zero-Click Account Tack over via password rest link",
     "url": "https://cyghost.medium.com/how-i-found-a-zero-click-account-tack-over-via-password-rest-link-9f4eafbc9009",
