@@ -1,5 +1,46 @@
 [
   {
+    "id": "7bd822a86149",
+    "title": "**Is Your Web App Leaking Files? How I Found a Path Traversal Vulnerability Leading to Local File Disclosure |**by [Samadhan Shimple](https://radiohackers.com/)",
+    "url": "https://radiohackers.com/is-your-web-app-leaking-files-d712c659367b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Samadhan shimple"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-16T08:27:58.000Z",
+    "added_at": "2026-10-16T10:13:27.930Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A path traversal vulnerability was discovered in a file download endpoint, allowing an attacker to read sensitive system files like /etc/passwd by using directory navigation sequences.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application failed to validate or sanitize the 'file' parameter used in its download endpoint. It directly concatenated user input with a directory path on the server's filesystem without checking for directory traversal sequences like '../'. This allowed the input to 'escape' the intended folder and access the root directory of the operating system.",
+      "walkthrough": "PHASE: DISCOVERY\n1. The researcher browsed the target application and identified a feature that allowed users to download or view files.\n2. They used Burp Suite (a tool that intercepts and views web traffic) to capture the HTTP request (a digital message sent from a browser to a server).\n3. They identified the specific endpoint (a web address that performs a task) and the parameter (a label for data) responsible for file selection.\nGET /download?file=report.pdf HTTP/1.1\nWhy: The 'file' parameter tells the server which specific document to retrieve from its storage.\nPHASE: EXPLOITATION\n4. The researcher replaced the legitimate filename with a path traversal payload (a malicious input designed to trigger a bug).\nGET /download?file=../../../../etc/passwd HTTP/1.1\nWhy: The '../' sequence tells the server's operating system to 'go up one folder level.' By repeating this, the researcher navigates from the web folder all the way to the system's root folder.\n5. The researcher sent the modified request to the server to see how it would respond.\n6. The server processed the request and, because it lacked security checks, followed the path provided in the payload.\nPHASE: IMPACT\n7. The server returned an HTTP 200 OK status ( a code meaning the request was successful).\n8. The researcher examined the response body (the actual data sent back from the server).\n9. The response contained the contents of the /etc/passwd file (a standard Linux file that lists all user accounts on the system).\n10. The researcher observed the 'Content-Disposition' header, which confirmed the server was serving the system file as a download named 'passwd'.\nattachment; filename=passwd\nWhy: This header tells the browser to treat the incoming data as a file download rather than a webpage.",
+      "example": "Suppose a fictional website 'target.example' allows users to view their profile pictures via a URL like: https://target.example/display?image=myphoto.jpg. The server-side code might look like this: file_get_contents('/var/www/app/images/' . $_GET['image']). An attacker could change the URL to: https://target.example/display?image=../../../../etc/hostname. Because the code blindly adds the user's input to the folder path, the server attempts to read '/var/www/app/images/../../../../etc/hostname', which resolves to '/etc/hostname'. The server then displays the internal name of the computer to the attacker.",
+      "takeaway": "When hunting for bugs, always look for parameters named 'file', 'path', 'doc', or 'image'. These are prime candidates for path traversal. Test by using multiple '../' sequences to ensure you reach the root directory, and try to access well-known files like /etc/passwd (Linux) or C:\\Windows\\win.ini (Windows). A common mistake is assuming that a '200 OK' response is enough; you must verify that the content of the response actually contains the sensitive file data you requested.",
+      "fix": "To fix this, developers should avoid using raw user input to build file paths. Instead, use a unique ID (like a database index) to refer to files. If paths must be used, the application should 'canonicalize' the path (resolve all '../' parts) and verify that the resulting path still resides within the intended directory. \n\nExample of a secure check in PHP:\n$base_dir = '/var/www/html/files/';\n$requested_file = realpath($base_dir . $_GET['file']);\nif ($requested_file && strpos($requested_file, $base_dir) === 0) {\n    // Only serve the file if the resolved path starts with the base directory\n    readfile($requested_file);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "CyberSecurity Researcher | Penetration Tester | Cyber Security | CEH | Computer Science Engineer | Offensive Security | Digital Forensics writer Cybersecurity Bug Bounty Web Security Penetration Testing Path Traversal # **Is Your Web App Leaking Files? How I Found a Path Traversal Vulnerability Leading to Local File Disclosure |**by Samadhan Shimple Image 3: Samadhan shimple Samadhan shimple 5 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fd712c659367b&operation=register&redirect=https%3A%2F%2Fsamadhanshimple.medium.com%2Fis-your-web-app-",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "f6cfc08b3935",
     "title": "Broken Access Control in a Study Platform When “Delete My Own Stuff” Became “Delete Anyone’s Stuff”",
     "url": "https://medium.com/@yasser0hamoda1/broken-access-control-in-a-study-platforms-class-materials-api-when-delete-my-own-stuff-became-d-89160bd2c583",
