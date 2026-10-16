@@ -80,6 +80,47 @@
     "score": 47
   },
   {
+    "id": "470f4e187994",
+    "title": "Exposed Source Code Archive (ekinerja.zip) di Portal Pemerintah Kabupaten [REDACTED]: Kebocoran .env dan Hash Password Database",
+    "url": "https://icikiwirsol.medium.com/exposed-source-code-archive-ekinerja-zip-6bd37068dce1",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-16T14:13:34.000Z",
+    "added_at": "2026-10-16T23:55:02.561Z",
+    "categories": [
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A publicly accessible ZIP archive on a government portal exposed the entire application source code, database credentials, and user password hashes.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The developer left a backup archive named 'ekinerja.zip' in the web root, which is the main folder where public website files are stored. This occurred because the web server was not configured to block access to sensitive file types like .zip or .env. The archive contained the application's secret configuration file and a full export of the database, which should never be accessible to the public.",
+      "walkthrough": "RECON\n1. The researcher identified the target government portal for security testing.\n2. The researcher performed directory fuzzing, which means using a tool to automatically guess many different file names to find hidden ones.\n3. The researcher discovered a potential file named 'ekinerja.zip' in the main directory.\n4. The researcher sent an HTTP request, which is a message sent by your browser to a server asking for a file.\nhttps://ekinerja.redactedkab.go.id/ekinerja.zip\nWhy: To see if the server would allow a public user to download this specific resource (a file or page).\nDISCOVERY\n5. The server responded with the file, and the browser automatically began the download.\n6. The researcher saved the 'ekinerja.zip' archive to their local computer.\n7. The researcher used an extraction tool to unzip the contents of the archive.\n8. The researcher noticed a file named '.env' in the root of the extracted folder.\nEXPLOITATION\n9. The researcher opened the '.env' file using a standard text editor.\n.env\nWhy: A .env file is a text file used to store secret settings like passwords and system keys.\n10. The researcher identified the 'APP_KEY' variable within the file.\nAPP_KEY=base64:...\nWhy: The APP_KEY is an encryption key, which is a secret code used to lock and unlock data like user sessions.\n11. The researcher located the database username.\nDB_USERNAME=ekinerja\nWhy: This is part of the credentials, which is the login information used to access the database (the system that stores all the site's data).\n12. The researcher located the database password.\nDB_PASSWORD=[REDACTED]\nWhy: This secret password allows anyone to connect to the database and read or change information.\n13. The researcher explored the 'database/' folder within the extracted files.\n14. The researcher found a file named 'kinerja.sql'.\nkinerja.sql\nWhy: This is a database dump, which is a file containing a complete copy of all the information stored in the database.\n15. The researcher opened the SQL file to inspect the data structure.\n16. The researcher searched for the 'users' table within the file to find account information.\n17. The researcher found the 'INSERT INTO' statements for user accounts.\nINSERT INTO users (id, name, password) VALUES (1, 'admin', '$2y$10$...')\nWhy: This is an SQL query, which is a command used to talk to a database, and it reveals password hashes (scrambled versions of passwords).\nIMPACT\n18. The researcher confirmed that the 'admin' account hash was present and could be targeted.\n19. The researcher noted that bcrypt was used for hashing, which is a specific method of scrambling passwords.\n20. The researcher concluded that the database could be accessed remotely using the leaked credentials.\n21. The researcher realized that user sessions could be hijacked using the leaked APP_KEY.\n22. The researcher verified that the password hashes could be cracked offline to reveal the original passwords.",
+      "example": "Imagine a fictional website at target.example. The developer creates a backup of the site before an update and names it 'backup_site.zip'. They leave this file in the main folder of the website. An attacker guesses the name and visits 'https://target.example/backup_site.zip'. After downloading and opening it, they find a file called 'config.php' containing the line: define('DB_PASSWORD', 'MySecretPass123');. Because the developer forgot to delete the temporary backup file, the attacker now has the password to the site's entire database.",
+      "takeaway": "Always hunt for common backup patterns like [project-name].zip, backup.sql, or .env files during the recon phase. Use wordlists that include the target's name or common framework files to find these 'forgotten' archives. A key signal is finding a '200 OK' response for files that should normally be private or restricted. A common variant of this bug is the '.git' folder exposure, where the entire version history of the code is left online. Avoid the mistake of assuming 'hidden' files are safe just because there is no link to them on the homepage.",
+      "fix": "First, immediately remove any archive or backup files from the web root directory so they cannot be downloaded. Second, configure your web server (like Nginx or Apache) to explicitly deny access to sensitive file extensions like .zip, .sql, and .env. Third, rotate (change) all leaked passwords and encryption keys immediately since they are now compromised. Finally, use a .gitignore file to ensure developers do not accidentally upload secret configuration files to the server.\n\nExample Nginx fix:\nlocation ~ /\\.(env|bak|zip|sql) {\n    deny all;\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 3: Mencari si dia Mencari si dia 4 min read · 9 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F6bd37068dce1&operation=register&redirect=https%3A%2F%2Ficikiwirsol.medium.com%2Fexposed-source-code-archive-ekinerja-zip-6bd37068dce1&user=Mencari+si+dia&userId=dda99a1406dd&source=---header_actions--6bd37068dce1---------------------clap_footer--------------------) -- [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2F6bd37068dce1&operation=register&redirect=https%3A%2F%2Ficikiwirsol.medium.com%2Fexposed-source-code",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "7bd822a86149",
     "title": "**Is Your Web App Leaking Files? How I Found a Path Traversal Vulnerability Leading to Local File Disclosure |**by [Samadhan Shimple](https://radiohackers.com/)",
     "url": "https://radiohackers.com/is-your-web-app-leaking-files-d712c659367b",
