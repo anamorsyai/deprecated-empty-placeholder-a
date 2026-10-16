@@ -40,6 +40,46 @@
     "score": 53
   },
   {
+    "id": "01d16637a0c5",
+    "title": "Exposed CGI [printenv.pl](https://printenv.pl/) di Portal e-SPTPD Pemerintah Kabupaten [REDACTED]: Kebocoran Informasi Lingkungan Server",
+    "url": "https://icikiwirsol.medium.com/exposed-cgi-printenv-pl-599f7bce435a",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-16T14:27:06.000Z",
+    "added_at": "2026-10-16T21:38:05.686Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An exposed default Apache CGI script (printenv.pl) leaked sensitive server environment variables, including software versions and internal file paths, to the public internet.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server administrator failed to remove or restrict access to default scripts provided by the Apache web server during installation. Specifically, the printenv.pl script in the /cgi-bin/ directory remained active and accessible. This script is designed to output environment variables (data describing the server's operating environment) for debugging, but it reveals critical metadata like software versions and absolute system paths when left public.",
+      "walkthrough": "RECON\n1. The researcher performs directory fuzzing (testing many common folder names) on the target government portal to find hidden files.\n2. The researcher discovers the /cgi-bin/ directory, which is a standard folder for scripts that interact with the server.\nDISCOVERY\n3. The researcher attempts to access a common default script used for testing server environments.\nhttps://e-sptpd.redactedkab.go.id/cgi-bin/printenv.pl\nWhy: To see if the server administrator left default debugging tools enabled (CGI is a protocol for web servers to execute programs).\nEXPLOITATION\n4. The server executes the Perl script and returns a plain text list of environment variables to the browser.\n5. The researcher identifies the software stack and specific versions from the output.\nSERVER_SOFTWARE=\"Apache/2.4.48 (Win64) OpenSSL/1.1.1k PHP/7.4.20\"\nWhy: This reveals the exact versions of the web server and programming language, allowing an attacker to look for specific known exploits (vulnerabilities) for those versions.\n6. The researcher identifies internal system paths from the environment variables.\nPHPRC=\"C:\\xampp\\php\"\nWhy: This confirms the server is running on Windows using XAMPP and reveals the local folder structure (Path is the location of files on the hard drive).\nIMPACT\n7. The researcher documents the leaked information, which provides a roadmap for further attacks like Local File Inclusion (LFI) or targeting unpatched software.",
+      "example": "A company sets up a new web server using a default installation package. The server has a file at http://target.example/cgi-bin/test-cgi. An attacker sends a GET request to this URL. The script echoes back request headers and server info. If an attacker sees SERVER_ADMIN=\"admin@target.example\" and DOCUMENT_ROOT=\"/var/www/html\", they now know the administrator's email and exactly where the website files are stored on the physical disk. This information makes it significantly easier to guess file locations for other attacks like file uploads or directory traversal.",
+      "takeaway": "Always check for default files and directories like /cgi-bin/, /phpinfo.php, or /server-status during the initial reconnaissance phase. Use wordlists specifically designed for 'default files' or 'CGI scripts' in tools like ffuf or Dirsearch. A common variant is the test-cgi script or phpinfo() pages, which provide similar information. Beginners often overlook these 'boring' info leaks, but they are the foundation for chaining more complex exploits like Remote Code Execution (RCE).",
+      "fix": "The most effective fix is to delete all unused default scripts from the /cgi-bin/ directory immediately. If CGI functionality is not required by the application, disable the mod_cgi or mod_cgid modules in the Apache configuration. Additionally, use a configuration block to deny access to the directory: <Directory \"/var/www/cgi-bin\"> Require all denied </Directory>.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 2: Mencari si dia Mencari si dia 3 min read · 7 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F599f7bce435a&operation=register&redirect=https%3A%2F%2Ficikiwirsol.medium.com%2Fexposed-cgi-printenv-pl-599f7bce435a&user=Mencari+si+dia&userId=dda99a1406dd&source=---header_actions--599f7bce435a---------------------clap_footer--------------------) 1 [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2F599f7bce435a&operation=register&redirect=https%3A%2F%2Ficikiwirsol.medium.com%2Fexposed-cgi-printenv-pl-599f7bce435a&",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "7bd822a86149",
     "title": "**Is Your Web App Leaking Files? How I Found a Path Traversal Vulnerability Leading to Local File Disclosure |**by [Samadhan Shimple](https://radiohackers.com/)",
     "url": "https://radiohackers.com/is-your-web-app-leaking-files-d712c659367b",
