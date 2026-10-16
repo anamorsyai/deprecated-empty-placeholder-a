@@ -1,5 +1,46 @@
 [
   {
+    "id": "f6cfc08b3935",
+    "title": "Broken Access Control in a Study Platform When “Delete My Own Stuff” Became “Delete Anyone’s Stuff”",
+    "url": "https://medium.com/@yasser0hamoda1/broken-access-control-in-a-study-platforms-class-materials-api-when-delete-my-own-stuff-became-d-89160bd2c583",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yasser Hamoda"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-15T23:42:20.000Z",
+    "added_at": "2026-10-16T01:13:06.028Z",
+    "categories": [
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A student could delete any study material in a class, including those added by teachers, by simply swapping a resource ID in a JSON request. This happened because the server checked if the user belonged to the class but failed to verify if they owned the specific material being deleted.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a failure in object-level authorization. While the application correctly checked if a user was a member of a class (membership check), it failed to verify if the user had the right to delete a specific resource (ownership check). The endpoint /webapi/x.x/class-sets assumed that any member with 'delete' permissions could delete any 'setId' provided in the request body. This allowed a student to act on resources they did not create.",
+      "walkthrough": "RECON\n1. The researcher identified a study platform where teachers and students share a virtual classroom.\n2. They noted a feature where teachers can allow students to add or remove study sets (collections of study materials).\n3. They prepared two accounts: a Teacher account and a Student account, both joined to the same class.\n\nDISCOVERY\n4. As the Teacher, the researcher added a study set and recorded its unique identifier (setId) and the class identifier (classId).\n5. As the Student, the researcher added their own study set to the class.\n6. The researcher opened an intercepting proxy (a tool that sits between the browser and server to let you view and change data) to watch the traffic.\n7. The Student deleted their own set to see how a legitimate request looks.\n8. They captured the following HTTP request (a message sent to the server asking for an action):\nDELETE /webapi/x.x/class-sets HTTP/2\nHost: [redacted]\nContent-Type: application/json\n{\"data\":[{\"setId\":<STUDENT_OWNED_SET_ID>,\"classId\":<CLASS_ID>}]}\nWhy: This establishes a baseline for what the server expects when a user deletes something they actually own.\n\nEXPLOITATION\n9. The researcher stayed logged in as the Student but modified the payload (the data inside the request).\n10. They replaced the student's setId with the Teacher's setId they recorded earlier.\n11. They sent the following modified request:\nDELETE /webapi/x.x/class-sets HTTP/2\nHost: [redacted]\nContent-Type: application/json\n{\"data\":[{\"setId\":<TEACHER_SET_ID>,\"classId\":<CLASS_ID>}]}\nWhy: This tests if the server checks if the student (the requester) is actually the owner of the teacher's set.\n\nIMPACT\n12. The server responded with a 200 OK status (meaning the request was successful) and a JSON response confirming the deletion.\n13. The response body showed the teacher's set was now deleted:\n{\"responses\":[{\"models\":{\"classSet\":[{\"setId\":<TEACHER_SET_ID>,\"isDeleted\":true}]}}]}\nWhy: This proves that any student in the class could delete any material, regardless of who created it, leading to potential disruption of the learning environment.",
+      "example": "Imagine a photo-sharing app called 'target.example' where users can create shared albums. A user named Alice creates an album and adds a photo with ID '999'. Bob is invited to the album. Bob uploads his own photo, ID '888'. When Bob deletes his photo, his browser sends: DELETE /api/photos/888. If Bob changes that request to DELETE /api/photos/999 and the server deletes Alice's photo, the app is vulnerable. The server checked if Bob was in the album, but it didn't check if Bob was the one who uploaded photo '999'.",
+      "takeaway": "When hunting for bugs, look for shared workspaces (classes, folders, albums) where multiple users have 'edit' or 'delete' permissions. Always test if you can perform an action on a resource created by a different user. A common signal is an API request that includes both a container ID (like classId) and a resource ID (like setId). Beginners often forget to check if the 'permission toggle' (like 'Allow students to delete') is actually enforced on the server-side for every specific object.",
+      "fix": "The server must implement an ownership check before processing the deletion. It should query the database to ensure the requesting user's ID matches the 'creator_id' of the specific 'setId' being targeted, or that the user has a 'Teacher' role for that specific 'classId'.\n\nExample fix in pseudo-code:\nset = db.getSet(request.setId)\nuser = session.getCurrentUser()\nif (set.ownerId == user.id || user.hasRole('TEACHER', request.classId)) {\n  set.delete()\n} else {\n  return Error(403, 'Unauthorized')\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Not every bug needs a fancy GraphQL schema or a chained exploit to be fun. Sometimes the best ones are embarrassingly simple: a feature meant for teachers quietly forgets to check _which_ teacher. Or, in this case, forgets to check that the person deleting something is a teacher at all. Press enter or click to view image in full size Image 3 This is the story of how a standard student account could reach into a virtual classroom and delete study materials that the teacher, not the student, had added. No admin panel required. Just a modified JSON body and a request that should never have succee",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "ccb5b1b6f3a3",
     "title": "PortSwigger Access Control Notes: Data Leakage, Password Disclosure, and File-Based IDOR",
     "url": "https://medium.com/@furkannyildiizz05/portswigger-access-control-notes-data-leakage-password-disclosure-and-file-based-idor-e1728925bba0",

