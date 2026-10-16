@@ -1,5 +1,45 @@
 [
   {
+    "id": "360a59fc43a3",
+    "title": "Write-Up: How I Found a Business Logic Flaw That Permanently Orphaned Teams on a Developer Platform",
+    "url": "https://medium.com/@atefm5667/write-up-how-i-found-a-business-logic-flaw-that-permanently-orphaned-teams-on-a-developer-platform-6be675083192",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mohamed Atef"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-16T02:16:57.000Z",
+    "added_at": "2026-10-16T05:53:24.548Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": null,
+    "difficulty": null,
+    "summary_en": "A business‑logic flaw on the developer platform let an attacker permanently orphan teams, effectively removing their access and causing denial‑of‑service for those groups.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "f6cfc08b3935",
     "title": "Broken Access Control in a Study Platform When “Delete My Own Stuff” Became “Delete Anyone’s Stuff”",
     "url": "https://medium.com/@yasser0hamoda1/broken-access-control-in-a-study-platforms-class-materials-api-when-delete-my-own-stuff-became-d-89160bd2c583",
