@@ -1,5 +1,45 @@
 [
   {
+    "id": "c27c2309dc1a",
+    "title": "Exposed .env File di Subdomain Development Portal Pemerintah Kabupaten [REDACTED]: Kebocoran APP_KEY dan Kredensial Database",
+    "url": "https://icikiwirsol.medium.com/exposed-env-file-di-subdomain-development-portal-pemerintah-kabupaten-redacted-kebocoran-6d740731d016",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mencari si dia"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-16T14:48:18.000Z",
+    "added_at": "2026-10-16T18:32:35.799Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "The public .env file on the development subdomain leaked the Laravel APP_KEY, database credentials and other secrets, allowing full account takeover and database compromise.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The web server was configured without any rule to block dot‑files (files that start with a period). Because of this, requests to \".env\" were served like any normal file. The Laravel application stores secrets such as APP_KEY, DB_USERNAME, DB_PASSWORD, and REDIS_PASSWORD in this file, so exposing it gave an attacker all private configuration data. No access control or request filtering was applied to the \"/.env\" endpoint, which is the direct cause of the leak.",
+      "walkthrough": "RECON\nStep 1: Enumerate subdomains and discover the development host.\n- Action: Ran a subdomain enumeration tool (e.g., amass) and found dev.redactedkab.go.id.\n- Why: Subdomains often host staging or development versions that are less hardened.\n\nStep 2: Perform directory fuzzing on the development host.\n- Action: Used gobuster with a common‑wordlist to request many paths.\n- Why: Fuzzing reveals hidden files or directories that the server may unintentionally expose.\n\nDISCOVERY\nStep 3: Request the .env file.\n- GET / .env HTTP/1.1\\nHost: dev.redactedkab.go.id\\n\\n\n- Why: An HTTP request is a message sent from a client (browser) to a server; the line \"GET / .env\" asks the server to return the file named \".env\" at the root path.\n\nStep 4: Receive a 200 OK response containing the file contents.\n- Action: The server responded with the full text of the .env file.\n- Why: Because the server had no rule to deny dot‑files, it treated \".env\" like any public asset and returned it.\n\nStep 5: Open the file in a text editor and read the secrets.\n- Action: Copied the response into VS Code.\n- Why: The .env format is simple key=value pairs; reading it reveals configuration values.\n\nEXPLOITATION\nStep 6: Use DB credentials to connect to the database.\n- Action: mysql -u DB_USERNAME -pDB_PASSWORD -h db.host.example.com DB_DATABASE\n- Why: The credentials allow direct authentication to the database server (SQL = Structured Query Language, used to talk to databases).\n\nStep 7: Use APP_KEY to decrypt Laravel cookies.\n- Action: php artisan tinker \"decryptCookie('encrypted_value', 'APP_KEY')\"\n- Why: APP_KEY is the secret key Laravel uses to encrypt session cookies; knowing it lets an attacker reverse the encryption (decryption) and hijack user sessions.\n\nIMPACT\nStep 8: Demonstrate reading sensitive user data from the database.\n- Action: SELECT * FROM users LIMIT 1;\n- Why: Shows that the attacker can now view, modify, or delete any stored data.\n\nStep 9: Show that Redis is unauthenticated (REDIS_PASSWORD=null).\n- Action: redis-cli -h redis.host.example.com ping\n- Why: Without a password, the attacker can read or write cache/session data.",
+      "example": "**Fictional Target:** dev.example.com\n**Vulnerable snippet (Nginx config):**\n```\nlocation / {\n    try_files $uri $uri/ =404;\n}\n# No rule to deny dotfiles\n```\n**Attack request:**\n```\nGET /.env HTTP/1.1\nHost: dev.example.com\n\n```\n**Why it works:** The server treats \".env\" as a normal file because there is no \"deny dotfiles\" directive. Nginx therefore reads the file from the filesystem and returns its contents, exposing all key=value secrets inside.",
+      "takeaway": "When scanning any web application, always include \".env\" (and other dot‑files like .git) in your wordlist. Development or staging subdomains are common places where such files are left public. Tools like gobuster, dirsearch, or Burp Suite's scanner can automate this. Variants of this issue appear with other configuration files such as \"config.php\", \"settings.py\", or \"web.config\" that contain credentials. Beginners often forget to check the HTTP response code; a 200 OK means the file was served, while a 403/404 would indicate it is blocked. Remember to verify that the content actually looks like an environment file before assuming a false positive.",
+      "fix": "Add a rule to the web server to deny all dot‑files. For Nginx:\n```\nlocation ~ /\\..* {\n    deny all;\n    access_log off;\n    log_not_found off;\n}\n```\nFor Apache:\n```\n<FilesMatch \"^\\.\">\n    Require all denied\n</FilesMatch>\n```\nAfter deploying the rule, reload the server configuration. Then rotate any secrets that were exposed (APP_KEY, DB_USERNAME, DB_PASSWORD, REDIS_PASSWORD) and set APP_DEBUG=false in production to prevent accidental information leakage.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 2: Mencari si dia Mencari si dia 4 min read · 3 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F6d740731d016&operation=register&redirect=https%3A%2F%2Ficikiwirsol.medium.com%2Fexposed-env-file-di-subdomain-development-portal-pemerintah-kabupaten-redacted-kebocoran-6d740731d016&user=Mencari+si+dia&userId=dda99a1406dd&source=---header_actions--6d740731d016---------------------clap_footer--------------------) -- [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2F6d740731d016&operation=register&redirect=https%3A%2",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "7bd822a86149",
     "title": "**Is Your Web App Leaking Files? How I Found a Path Traversal Vulnerability Leading to Local File Disclosure |**by [Samadhan Shimple](https://radiohackers.com/)",
     "url": "https://radiohackers.com/is-your-web-app-leaking-files-d712c659367b",
