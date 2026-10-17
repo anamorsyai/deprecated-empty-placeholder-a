@@ -1,5 +1,88 @@
 [
   {
+    "id": "f79f53e565e0",
+    "title": "Web Cache Deception: How A GraphQL Query in the Archives Led Me to Cached Profile Data",
+    "url": "https://medium.com/@papjm/web-cache-deception-how-a-graphql-query-in-the-archives-led-me-to-cached-profile-data-72fae6e03570",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Adini Rodini Rodney"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-17T10:36:21.000Z",
+    "added_at": "2026-10-17T10:46:56.569Z",
+    "categories": [
+      "cache-smuggling",
+      "graphql",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "A GraphQL endpoint was found to accept GET requests and ignore trailing file extensions, allowing an attacker to trick a cache into storing sensitive user profile data as a public static file.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a mismatch between how the application server and the caching layer (a middleman server that stores copies of files) interpret URLs. The application server was configured to ignore trailing file extensions like '.pdf' and process the underlying GraphQL route, while the cache saw the extension and assumed the response was a non-sensitive static file. Furthermore, the server allowed sensitive operations via GET requests (parameters in the URL) instead of strictly requiring POST requests (parameters in the hidden body), making the request eligible for caching.",
+      "walkthrough": "RECON\n1. The researcher searched web archives for historical requests to find hidden functionality.\nGET /api/query/publicContent?query=...&variables=...\nWhy: To see if the server accepts GraphQL queries via GET requests (parameters in the URL) instead of just POST (parameters in the hidden body).\n\nDISCOVERY\n2. The researcher logged into a test account and identified the standard request for profile data.\nPOST /api/query/accountProfile\nWhy: To find an endpoint (a specific web address) that handles sensitive personal information.\n3. The researcher converted the authenticated POST request into a GET request.\nGET /api/query/accountProfile?query={accountProfile...}&variables=...\nWhy: GET requests are frequently cached by internet infrastructure, whereas POST requests are typically ignored by caches.\n\nEXPLOITATION\n4. The researcher appended a fake file extension to the end of the URL path.\nhttps://example.com/api/query/accountProfile.pdf?query=...\nWhy: To perform Web Cache Deception (tricking a cache into storing dynamic data as a static file). The '.pdf' suffix tells the cache this is a public document.\n5. The researcher sent this modified request while logged in with a session cookie (a digital ID card used for authentication).\nCookie: session=REDACTED\nWhy: To force the server to generate a response containing private data that the cache will then save.\n6. The researcher checked the HTTP headers (extra info sent with a request) for a cache 'HIT'.\nX-Cache: HIT\nWhy: A 'HIT' means the cache has stored a copy of the response and will serve it to the next person who asks.\n\nIMPACT\n7. The researcher opened a private browser window with no cookies and requested the exact same URL.\nhttps://example.com/api/query/accountProfile.pdf?query=...\nWhy: To verify if an unauthenticated stranger can see the cached private data of the first user.\n8. The researcher successfully retrieved the cached JSON (a data format) containing the test account's address and phone number.\nWhy: The cache served the stored 'PDF' (which was actually private JSON) to the unauthorized requester.",
+      "example": "Imagine a site 'target.example' that shows your private inbox at '/api/v1/messages'. The server is programmed to ignore anything after the slash, so '/api/v1/messages/anything' still shows your messages. An attacker crafts a link: 'https://target.example/api/v1/messages/style.css'. When a logged-in victim clicks this, the server returns their private messages. However, the CDN (Content Delivery Network, a type of cache) sees the '.css' extension and thinks, 'This is just a public stylesheet, I will save a copy.' The attacker then visits 'https://target.example/api/v1/messages/style.css' themselves and the CDN gives them the victim's private messages from its memory.",
+      "takeaway": "Always test if sensitive POST endpoints also work as GET requests, as this is a prerequisite for many cache-based attacks. Look for 'path mapping' issues where the server ignores parts of the URL (like extensions or extra slashes) while the cache uses those parts to decide what to store. A key signal is seeing a 'HIT' in the cache headers for a URL you just modified with a random extension. Avoid the mistake of assuming a bug is unexploitable just because it requires a specific header; sometimes those headers can be forced through other vulnerabilities like CORS or CSRF.",
+      "fix": "To fix this, the application should be configured to return a 404 Not Found error if a URL contains an unexpected file extension. Additionally, the server should send a 'Cache-Control: no-store, private' header for all responses containing sensitive data, which explicitly tells caches not to save the information. Finally, sensitive GraphQL operations should be restricted to POST requests only. Example header fix: \nHeader set Cache-Control 'no-store, no-cache, must-revalidate, private'",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While testing a target, every GraphQL request I observed used POST. Then I found something different in the web archives: a URL carrying a GraphQL query in its query string. That archived request became the starting point for an investigation into cached user data. _The target, routes, operation names, and identifying details below have been replaced with illustrative examples._ ## The archived request The URL looked roughly like this: GET /api/query/publicContent?query=...&variables=... Host: example.com I replayed it, and the server accepted it. The response contained public information, so",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "7f1c7de67904",
+    "title": "My Bug Bounty Report Was Marked N/A. Then I Received $1,200.",
+    "url": "https://medium.com/@hacker-zero/my-bug-bounty-report-was-marked-n-a-then-i-received-1-200-457508133978",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Zero"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-17T10:07:59.000Z",
+    "added_at": "2026-10-17T10:47:27.123Z",
+    "categories": [
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher discovered an exposed API schema that revealed internal administrative endpoints, one of which allowed a low-privilege user to perform unauthorized administrative actions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by two distinct failures: first, the API documentation (Swagger/OpenAPI schema) was publicly accessible without authentication, providing a map of internal functions. Second, the backend server failed to perform authorization checks on specific administrative endpoints, relying on 'security by obscurity' (assuming users wouldn't find the URL) rather than verifying the user's permissions.",
+      "walkthrough": "RECON\n1. The researcher performed reconnaissance (the process of gathering information about a target) to find hidden files.\n2. They identified an unauthenticated API schema endpoint, which is a blueprint file describing how the application's backend works.\nGET /api/v2/swagger_doc HTTP/1.1\nHost: api.example.com\nWhy: This request asks the server for its internal documentation. Because it didn't require a login, the server returned a full list of every available command (endpoint).\n\nDISCOVERY\n3. The researcher analyzed the documentation to find 'administrative operations' (actions only bosses or IT staff should do).\n4. They found a specific route intended for administrators that was not visible in the normal user interface.\n5. They logged into the application with a 'low-privilege account' (a standard user with no special powers).\n\nEXPLOITATION\n6. The researcher attempted to trigger the administrative action by sending a direct request to the discovered endpoint using their standard user credentials.\nPOST /api/admin/internal_operation HTTP/1.1\nHost: api.example.com\nCookie: session=low_privilege_user_cookie\nContent-Type: json\n{\"action\": \"modify\"}\nWhy: This 'payload' (the data sent to the server) tries to perform an admin task. The researcher included their own session cookie (a digital ID card) to prove they were acting as a regular user.\n7. The server responded with a success message instead of a '403 Forbidden' error.\nHTTP/1.1 200 OK\n{\"success\":true}\nWhy: The '200 OK' status code indicates the server accepted the command. This proves 'Broken Access Control' (when a system fails to stop a user from doing things they shouldn't).\n\nIMPACT\n8. To confirm this was a bug, the researcher tried other admin endpoints which correctly returned '403 Forbidden', proving the specific endpoint was uniquely vulnerable.\n9. The researcher reported the 'Information Disclosure' (the leaked map) and the 'Unauthorized Access' (the ability to act as an admin).",
+      "example": "Imagine a website 'target.example' that has a hidden map of its office at 'target.example/building-plans.json'. A visitor finds this map and sees a button labeled 'Unlock Server Room' located at 'target.example/api/unlock'. Even though the visitor is just a guest, they send a digital request to that address. Because the door's computer only checks if the request is formatted correctly, but doesn't check if the person sending it is a Security Guard, the door unlocks. \n\nRequest:\nPOST /api/unlock HTTP/1.1\nHost: target.example\nCookie: user_type=guest\n\nResponse:\n200 OK\n{\"status\": \"door_unlocked\"}",
+      "takeaway": "Always look for API documentation files like 'swagger.json', 'api-docs', or 'v2/swagger'. These files are 'treasure maps' that reveal hidden functionality. When you find an interesting endpoint, always test it with the lowest possible user permissions to see if the server actually checks 'Authorization' (permissions) rather than just 'Authentication' (identity). A common mistake is assuming that because a URL is 'hidden' or 'internal', it is safe from discovery.",
+      "fix": "First, restrict access to API documentation (like Swagger) so only authenticated developers can see it. Second, implement a strict 'Authorization' check on every single administrative endpoint. The server must verify the user's role before executing any logic. \n\nExample of fixed code (Pseudo-code):\n\nfunction handleAdminRequest(request) {\n  user = getAuthenticatedUser(request);\n  if (user.role != 'ADMIN') {\n    return response(403, 'Access Denied');\n  }\n  // Only proceed if the user is confirmed as an admin\n  executeAdminAction();\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I was expecting feedback on a bug bounty report. Instead, the first response said the issue could not be reproduced and marked it Not Applicable. The reviewer also said the report did not contain a clear enough proof of concept, lacked technical details, and appeared potentially AI-generated. That was not the result I had hoped for. Later, the program confirmed two security findings from the same submission. One received a P4 reward of $200. The other received a P3 reward of $1,000. The total was $1,200. This is how the investigation unfolded, what I actually proved, and what I would do differ",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c27c2309dc1a",
     "title": "Exposed .env File di Subdomain Development Portal Pemerintah Kabupaten [REDACTED]: Kebocoran APP_KEY dan Kredensial Database",
     "url": "https://icikiwirsol.medium.com/exposed-env-file-di-subdomain-development-portal-pemerintah-kabupaten-redacted-kebocoran-6d740731d016",

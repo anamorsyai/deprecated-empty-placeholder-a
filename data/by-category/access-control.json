@@ -1,5 +1,46 @@
 [
   {
+    "id": "7f1c7de67904",
+    "title": "My Bug Bounty Report Was Marked N/A. Then I Received $1,200.",
+    "url": "https://medium.com/@hacker-zero/my-bug-bounty-report-was-marked-n-a-then-i-received-1-200-457508133978",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Zero"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-17T10:07:59.000Z",
+    "added_at": "2026-10-17T10:47:27.123Z",
+    "categories": [
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher discovered an exposed API schema that revealed internal administrative endpoints, one of which allowed a low-privilege user to perform unauthorized administrative actions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by two distinct failures: first, the API documentation (Swagger/OpenAPI schema) was publicly accessible without authentication, providing a map of internal functions. Second, the backend server failed to perform authorization checks on specific administrative endpoints, relying on 'security by obscurity' (assuming users wouldn't find the URL) rather than verifying the user's permissions.",
+      "walkthrough": "RECON\n1. The researcher performed reconnaissance (the process of gathering information about a target) to find hidden files.\n2. They identified an unauthenticated API schema endpoint, which is a blueprint file describing how the application's backend works.\nGET /api/v2/swagger_doc HTTP/1.1\nHost: api.example.com\nWhy: This request asks the server for its internal documentation. Because it didn't require a login, the server returned a full list of every available command (endpoint).\n\nDISCOVERY\n3. The researcher analyzed the documentation to find 'administrative operations' (actions only bosses or IT staff should do).\n4. They found a specific route intended for administrators that was not visible in the normal user interface.\n5. They logged into the application with a 'low-privilege account' (a standard user with no special powers).\n\nEXPLOITATION\n6. The researcher attempted to trigger the administrative action by sending a direct request to the discovered endpoint using their standard user credentials.\nPOST /api/admin/internal_operation HTTP/1.1\nHost: api.example.com\nCookie: session=low_privilege_user_cookie\nContent-Type: json\n{\"action\": \"modify\"}\nWhy: This 'payload' (the data sent to the server) tries to perform an admin task. The researcher included their own session cookie (a digital ID card) to prove they were acting as a regular user.\n7. The server responded with a success message instead of a '403 Forbidden' error.\nHTTP/1.1 200 OK\n{\"success\":true}\nWhy: The '200 OK' status code indicates the server accepted the command. This proves 'Broken Access Control' (when a system fails to stop a user from doing things they shouldn't).\n\nIMPACT\n8. To confirm this was a bug, the researcher tried other admin endpoints which correctly returned '403 Forbidden', proving the specific endpoint was uniquely vulnerable.\n9. The researcher reported the 'Information Disclosure' (the leaked map) and the 'Unauthorized Access' (the ability to act as an admin).",
+      "example": "Imagine a website 'target.example' that has a hidden map of its office at 'target.example/building-plans.json'. A visitor finds this map and sees a button labeled 'Unlock Server Room' located at 'target.example/api/unlock'. Even though the visitor is just a guest, they send a digital request to that address. Because the door's computer only checks if the request is formatted correctly, but doesn't check if the person sending it is a Security Guard, the door unlocks. \n\nRequest:\nPOST /api/unlock HTTP/1.1\nHost: target.example\nCookie: user_type=guest\n\nResponse:\n200 OK\n{\"status\": \"door_unlocked\"}",
+      "takeaway": "Always look for API documentation files like 'swagger.json', 'api-docs', or 'v2/swagger'. These files are 'treasure maps' that reveal hidden functionality. When you find an interesting endpoint, always test it with the lowest possible user permissions to see if the server actually checks 'Authorization' (permissions) rather than just 'Authentication' (identity). A common mistake is assuming that because a URL is 'hidden' or 'internal', it is safe from discovery.",
+      "fix": "First, restrict access to API documentation (like Swagger) so only authenticated developers can see it. Second, implement a strict 'Authorization' check on every single administrative endpoint. The server must verify the user's role before executing any logic. \n\nExample of fixed code (Pseudo-code):\n\nfunction handleAdminRequest(request) {\n  user = getAuthenticatedUser(request);\n  if (user.role != 'ADMIN') {\n    return response(403, 'Access Denied');\n  }\n  // Only proceed if the user is confirmed as an admin\n  executeAdminAction();\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I was expecting feedback on a bug bounty report. Instead, the first response said the issue could not be reproduced and marked it Not Applicable. The reviewer also said the report did not contain a clear enough proof of concept, lacked technical details, and appeared potentially AI-generated. That was not the result I had hoped for. Later, the program confirmed two security findings from the same submission. One received a P4 reward of $200. The other received a P3 reward of $1,000. The total was $1,200. This is how the investigation unfolded, what I actually proved, and what I would do differ",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "0a05cb14db9f",
     "title": "IDOR + RBAC Vulnerability: Finding the Attack Scenario That Earned Me $100",
     "url": "https://medium.com/@Muhammad_Wageh/idor-rbac-vulnerability-finding-the-attack-scenario-that-earned-me-100-b4bcb20c3223",
