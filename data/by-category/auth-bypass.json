@@ -1,5 +1,47 @@
 [
   {
+    "id": "0f2e5d888da4",
+    "title": "Invalid Role Leads to Organization Lockout and Unauthorized API Access",
+    "url": "https://medium.com/@banertheinrich/invalid-role-leads-to-organization-lockout-and-unauthorized-api-access-511a180c8fb9",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Adham Heinrich"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-17T12:37:01.000Z",
+    "added_at": "2026-10-17T14:00:48.422Z",
+    "categories": [
+      "access-control",
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An invalid role assignment leads to a complete organization lockout and allows unauthorized access to sensitive API endpoints.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume a web application at target.example allows administrators to assign roles to team members. A role is a label (like 'Editor' or 'Viewer') that defines what a user can do. The application fails to check if the role name provided by the user actually exists in its database.\n\nVulnerable Code Snippet:\n# This code takes the role name directly from the user's request without checking a whitelist\nnew_role = request.json['role_name']\nuser.update(role=new_role)\n\nAttack Request:\nPOST /api/v1/organization/invite HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\n  \"email\": \"attacker@example.com\",\n  \"role_name\": \"NOT_A_REAL_ROLE\"\n}\n\nWhy it works: When the system tries to load the organization dashboard, it looks for the permissions associated with 'NOT_A_REAL_ROLE'. Because that role doesn't exist, the code crashes (causing a lockout for all users). Additionally, if the API's security check is written poorly—for example, 'if user.role != \"Guest\": allow_access()'—then the 'NOT_A_REAL_ROLE' might accidentally grant the attacker full access because it is technically not a 'Guest' role.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d248f2ae9bda",
     "title": "Exposed MCP Server: From Recon to OAuth Security Flaws",
     "url": "https://scriptjacker.medium.com/exposed-mcp-server-from-recon-to-oauth-security-flaws-8c40084e0e6d",
