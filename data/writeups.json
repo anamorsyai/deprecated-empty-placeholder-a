@@ -1,5 +1,43 @@
 [
   {
+    "id": "429d318709ad",
+    "title": "Bug Hunting on Android: Finding an Old Session Bug After Password Change",
+    "url": "https://cybrox.medium.com/bug-hunting-on-android-finding-an-old-session-bug-after-password-change-0d5be3ec4615",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-18T09:07:22.000Z",
+    "added_at": "2026-10-18T10:00:00.832Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An application fails to invalidate existing user sessions after a password change, allowing potentially compromised sessions to remain active.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's session management logic does not link session validity to the password's state or a 'last password change' timestamp. When a password is updated, the server fails to revoke or delete active session tokens (cookies) stored in its database or cache. This means the unique ID used to identify the user (the session cookie) remains trusted by the server even though the credentials that generated it have changed.",
+      "walkthrough": "RECON\n1. Identify a target website that has a bug bounty program.\n2. Create a test account on the target website.\n\nDISCOVERY\n3. Open two different browsers (e.g., Chrome and Firefox) or use an Incognito window.\n4. Log into the same account on both browsers simultaneously.\n5. In Browser A (Chrome), navigate to the password change settings.\n\nEXPLOITATION\n6. Change the account password in Browser A.\n7. Observe the successful password change confirmation.\n8. Switch to Browser B (Firefox/Incognito) where the old session is still active.\n9. Refresh the page or attempt to access a protected area (like the profile page).\n\nIMPACT\n10. Confirm that Browser B is still logged in despite the password change.\n11. Realize that an attacker who stole the session cookie before the password change still has full access.\nWhy: The server failed to perform session invalidation (the process of making a digital ID card no longer work).",
+      "example": "Imagine a site target.example. A user logs in and gets a cookie 'session_id=abc123'. They change their password via a request to /update-password. If the server only updates the database password field but doesn't clear the sessions table, the 'abc123' cookie remains valid. An attacker with that cookie can still access /dashboard without knowing the new password.",
+      "takeaway": "Look for this bug whenever an application handles sensitive account changes like password resets, email updates, or enabling Two-Factor Authentication (2FA). If the app doesn't 'log out all other devices,' it is a vulnerability. Use tools like Burp Suite to track session cookies across these actions. A common mistake is assuming that changing a password automatically clears all sessions; developers must explicitly code this behavior.",
+      "fix": "When a password is changed, the server should invalidate all active session tokens associated with that user ID. This is typically done by deleting the session records from the database or incrementing a 'session version' number in the user's record that must match the session token. \n\nExample fix logic:\nUPDATE users SET session_version = session_version + 1 WHERE user_id = 123;\nDELETE FROM active_sessions WHERE user_id = 123;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A security researcher focused on web security, vulnerability research, and bug bounty hunting. I learn through hands-on research and share my knowledge Cybersecurity Bug Bounty AI Termux Medium # Bug Hunting on Android: Finding an Old Session Bug After Password Change ## In this article, I share how I tested for an old session vulnerability using an Android phone. Learn how session invalidation should work after a password change, how to safely identify sessions that remain active, and why improper session management can create a security risk. This practical Android bug hunting guide is desig",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "a931abf12556",
     "title": "I Analyzed 12 IDOR-to-ATO Reports. The Email-Change Endpoint Wins.",
     "url": "https://infosecwriteups.com/i-analyzed-12-idor-to-ato-reports-the-email-change-endpoint-wins-483e24b6aa8c",
