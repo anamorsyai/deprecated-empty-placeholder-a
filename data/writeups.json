@@ -1,5 +1,46 @@
 [
   {
+    "id": "4cf73bac81a4",
+    "title": "One Pending Invitation Was Enough to Restore Revoked Admin Privileges",
+    "url": "https://cyghost.medium.com/one-pending-invitation-was-enough-to-restore-revoked-admin-privileges-9408c10f83d2",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "seif nasr"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-17T23:59:40.000Z",
+    "added_at": "2026-10-18T01:04:54.421Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A flaw in the invitation system allowed a revoked administrator to regain control because pending invitations remained valid and retained their original permission levels even after the inviter was downgraded.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's authorization logic (the system that checks if you are allowed to do something) only verified the inviter's permissions at the moment the invitation was created. It failed to perform a second check when the invitation was actually accepted. This created a 'time-of-check to time-of-use' flaw where a pending action (the invite) remained authorized even after the person who authorized it lost their own power.",
+      "walkthrough": "RECON\n1. Identify the user roles in the application: Owner (full control), Administrator (can invite others), and Member (limited access).\n2. Locate the invitation endpoint (the specific web address used to send invites) and the acceptance flow.\n\nDISCOVERY\n3. Log in to the application using an account with 'Administrator' privileges.\n4. Send an invitation to a second email address you control, assigning it the 'Admin' role.\nPOST /api/team/invite\n{\"email\": \"attacker-alt@target.example\", \"role\": \"admin\"}\nWhy: This creates a pending invitation in the database. An 'HTTP request' is a message your browser sends to a server to perform an action.\n\nEXPLOITATION\n5. Do NOT accept the invitation yet; leave it in a 'pending' state.\n6. Log in as the 'Team Owner' (the highest authority).\n7. Revoke the first account's privileges by downgrading it from 'Administrator' to 'Member'.\nPOST /api/team/update-role\n{\"user_id\": \"admin_a_id\", \"new_role\": \"member\"}\nWhy: Now, the original inviter no longer has the 'privilege' (permission) to create admins.\n8. Switch to the second email account (the one that received the invite).\n9. Click the link in the invitation email to accept the invite.\nGET /api/accept-invite?token=xyz123\nWhy: This triggers the application to process the invitation. A 'token' is a unique secret code used to identify a specific request.\n\nIMPACT\n10. Observe that the second account is successfully joined to the team with 'Admin' privileges.\n11. Verify that this new Admin can now manage other users, effectively bypassing the Owner's decision to revoke the original Admin's power.\n12. Confirm the new Admin can even downgrade the original Admin or the Owner, demonstrating full 'privilege escalation' (gaining higher permissions than intended).",
+      "example": "Imagine a fictional site 'target.example' that manages office access. \n1. Manager Alice creates a digital 'Guest Key' for Bob that grants 'Master Access'. \n2. Before Bob uses the key, the CEO fires Alice and deactivates her badge. \n3. Bob arrives and swipes his 'Guest Key'. \n4. The system checks the key and sees it was signed by Alice (who was a Manager at the time) and lets Bob in with Master Access, even though Alice is no longer authorized to grant that access. \n\nAttack Request:\nPOST /api/v1/invites/confirm\nHost: target.example\nContent-Type: json\n{\"token\": \"valid_token_from_revoked_user\"}\n\nWhy it works: The server sees the token is valid and was created by a 'Manager' role, but it doesn't check if that Manager is still active or still holds the Manager role at the exact moment the token is used.",
+      "takeaway": "Always test the 'lifecycle' of an invitation or a reset link. When a user's permissions change or their account is deleted, all 'pending' actions they initiated (like invites or password resets for others) should be invalidated. Look for 'delayed' actions where the person who started the process might lose their authority before the process finishes. A common mistake is assuming that because a request was authorized when it was *sent*, it is still authorized when it is *received*.",
+      "fix": "The application must re-validate the inviter's current status at the moment the invitee accepts the invitation. If the inviter is no longer an Admin or has been removed, the invitation must be rejected. Alternatively, when a user is downgraded, the system should run a script to cancel all pending invitations they created.\n\nExample Fix (Pseudocode):\nfunction acceptInvite(token) {\n  invite = database.getInvite(token);\n  inviter = database.getUser(invite.sender_id);\n  if (inviter.role != 'admin' && inviter.role != 'owner') {\n    return Error(\"This invitation is no longer valid because the sender lost their permissions.\");\n  }\n  // Proceed with joining user\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a web application security assessment, I was testing a team management system with different roles and permission levels. Team owners could assign administrators, while administrators could invite new users and grant them roles. Everything appeared to work as expected. But while examining the authorization logic, I started asking a different question: **Does revoking a user’s privileges also prevent previously initiated actions from granting those privileges later?** I decided to test this using accounts under my control. First, I used an administrator account to invite another account",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "0f2e5d888da4",
     "title": "Invalid Role Leads to Organization Lockout and Unauthorized API Access",
     "url": "https://medium.com/@banertheinrich/invalid-role-leads-to-organization-lockout-and-unauthorized-api-access-511a180c8fb9",
