@@ -1,5 +1,46 @@
 [
   {
+    "id": "b72d53c06b2e",
+    "title": "$15,000 Write-Up: Unauthenticated Temporal on a Yahoo News Cluster",
+    "url": "https://medium.com/@hi.david60/15-000-write-up-unauthenticated-temporal-on-a-yahoo-news-cluster-22598760812f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "0xBruno"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-19T13:34:32.000Z",
+    "added_at": "2026-10-19T14:07:20.664Z",
+    "categories": [
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "Unauthenticated access to a Temporal cluster on Yahoo News allowed for unauthorized interaction with sensitive workflow orchestration, resulting in a $15,000 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "A company uses a tool called Temporal to manage 'User Signups'. They host it at 'https://tasks.target.example'. Vulnerable Code (in a config file): 'auth: { enabled: false }'. Attack Request: 'GET /api/v1/namespaces/default/workflows HTTP/1.1' Host: 'tasks.target.example'. Why: The 'HTTP request' (a digital letter sent to a website) asks for a list of tasks. Because 'enabled' is 'false', the server doesn't check if the sender is an employee. It just sends back the list of all 'workflows' (automated business processes), which might include private user emails or internal logic.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "12fff86a068a",
     "title": "Could This Have Been a €1,000 Bug? My First Accepted Bug Bounty Report",
     "url": "https://vicricsec.medium.com/could-this-have-been-a-1-000-bug-my-first-accepted-bug-bounty-report-e44b8c75cd2c",
