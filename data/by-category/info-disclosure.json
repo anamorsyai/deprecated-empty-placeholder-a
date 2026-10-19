@@ -1,5 +1,46 @@
 [
   {
+    "id": "12fff86a068a",
+    "title": "Could This Have Been a €1,000 Bug? My First Accepted Bug Bounty Report",
+    "url": "https://vicricsec.medium.com/could-this-have-been-a-1-000-bug-my-first-accepted-bug-bounty-report-e44b8c75cd2c",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Vicricsec"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-19T05:06:20.000Z",
+    "added_at": "2026-10-19T06:52:04.491Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A publicly accessible container repository was discovered that allowed unauthenticated access to internal metadata and container resources, potentially exposing proprietary information.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a misconfiguration in the access control settings of a container repository. Access control refers to the security rules that decide who can see or use specific data. In this case, an endpoint (a specific web address where a service is accessed) that should have required authentication (the process of proving your identity with a password) was left open to the public. This allowed the researcher to view internal metadata (data that describes other data, such as version numbers or internal paths) without any credentials.",
+      "walkthrough": "RECON\n1. The researcher performed manual reconnaissance, which is the process of searching for information about a target's digital assets.\n2. During this search, they identified a URL associated with a container repository (a storage system for software packages).\n3. They noted that the asset appeared to be an internal resource but was reachable from the public internet.\nDISCOVERY\n4. The researcher navigated to the repository URL in a web browser.\n5. They observed that the page loaded content immediately without asking for a username or password.\n6. To investigate further, they opened Burp Suite, which is a professional tool used to intercept and inspect web traffic.\n7. They captured an HTTP request, which is a message sent from the browser to the server asking for data.\n8. They examined the HTTP response, which is the data the server sends back to the browser.\n9. They checked the headers (extra information sent with a request) to see if any session cookies (small pieces of data used to track a logged-in user) were being required.\n10. They confirmed that no authentication headers were necessary to view the content.\nEXPLOITATION\n11. The researcher began browsing the accessible directories within the repository.\n12. They accessed metadata files, which contained technical details about the container images.\n13. They verified that they could see internal resource names and configuration details.\n14. They documented the specific URLs that were accessible without a login.\nIMPACT\n15. The researcher assessed the potential impact, noting that an attacker could use this information to understand the company's internal software structure.\n16. They compiled the evidence, including screenshots of the exposed data.\n17. They submitted a report to the bug bounty program explaining how the lack of access control exposed internal information.\n18. Initially, the report was marked 'Out of Scope' (not eligible for a reward), but the researcher remained professional.\n19. The company later re-evaluated the report and confirmed it was a legitimate security issue.\n20. The report was officially 'Accepted,' and the researcher was awarded a bonus for their finding.",
+      "example": "Imagine a company uses a private Docker Registry at 'registry.target.example' to store their website's code. A researcher finds this URL and tries to access the catalog of images by typing 'https://registry.target.example/v2/_catalog' into their browser. If the server is correctly configured, it should return a '401 Unauthorized' error. However, if it is misconfigured, it might return a JSON list of all private software images, such as '{\"repositories\":[\"internal-api\", \"secret-database-connector\"]}'. This allows the researcher to see exactly what software the company is running internally without ever logging in.",
+      "takeaway": "When hunting for bugs, always check subdomains for internal tools like container registries, CI/CD pipelines (like Jenkins), or code repositories. Look for signs that you are seeing more than a guest should, such as lists of internal project names or version numbers. A key signal is when an API endpoint returns data without you providing an 'Authorization' header or a login cookie. A common variant of this bug is an exposed '.git' directory or an unprotected cloud storage bucket. Finally, if a report is rejected but you are sure the impact is real, wait for a re-review or politely provide more context on why the exposure is dangerous.",
+      "fix": "To fix this, the organization must implement strict Identity and Access Management (IAM) policies that require authentication for every request to the repository. This can be done by configuring the web server or the repository software to check for a valid JSON Web Token (JWT) or session cookie before serving any data. Additionally, internal resources should be placed behind a VPN (Virtual Private Network) or a firewall so they are not reachable from the public internet at all. A sample configuration for a registry might look like: 'auth: token: realm: https://auth.example.com/token', which forces the user to prove their identity before access is granted.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hi, I’m **Vikas Meena(Vicricsec)**, a cybersecurity researcher, bug bounty hunter, website developer, and digital marketer. I’ve worked on movie promotion campaigns, including _Krishna and Chitthi_, and marketing for an upcoming movie featuring Sapna Choudhary. This is the story of my first accepted bug bounty report and what I learned along the way. ## How I Found the Issue During manual reconnaissance, I discovered a publicly accessible resource associated with a container repository. I noticed that it appeared to allow access without authentication, so I investigated further instead of maki",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "f79f53e565e0",
     "title": "Web Cache Deception: How A GraphQL Query in the Archives Led Me to Cached Profile Data",
     "url": "https://medium.com/@papjm/web-cache-deception-how-a-graphql-query-in-the-archives-led-me-to-cached-profile-data-72fae6e03570",

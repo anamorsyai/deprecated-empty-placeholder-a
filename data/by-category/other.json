@@ -1,5 +1,45 @@
 [
   {
+    "id": "77c03f7dcf4a",
+    "title": "$4,800 for an Equals Sign: CSV Formula Injection That Turns an Export Feature Into a Payload…",
+    "url": "https://medium.com/@t4nv1/4-800-for-an-equals-sign-csv-formula-injection-that-turns-an-export-feature-into-a-payload-dfd73da69617",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-19T06:26:01.000Z",
+    "added_at": "2026-10-19T06:51:46.580Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A CSV injection vulnerability in Fieldmark Analytics allowed attackers to execute arbitrary commands on employee laptops by submitting malicious formulas in survey response fields.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability is caused by the application's failure to sanitize user-provided input before including it in a CSV (Comma Separated Values) export. CSV is a plain-text format used to store tabular data, but spreadsheet software like Microsoft Excel interprets any cell starting with an equals sign (=) as a formula. Because the platform allowed survey respondents to submit text starting with these characters, an attacker could inject malicious instructions. When an employee later downloaded and opened the survey results, their spreadsheet software executed the injected commands on their local machine.",
+      "walkthrough": "RECON\n1. Identify the target platform, Fieldmark Analytics, which is a survey and feedback-collection service.\n2. Observe that the platform allows users to create surveys and collect responses from the public.\n3. Note that the platform provides a feature for companies to download these collected responses as CSV files.\nDISCOVERY\n4. Access a survey form created on the platform as a regular respondent.\n5. Identify text input fields where respondents are expected to provide feedback or answers.\n6. Test if the application restricts special characters at the beginning of the input.\nEXPLOITATION\n7. Submit a survey response containing a payload that starts with an equals sign (=).\n8. The researcher used a formula designed to trigger command execution.\n=\nWhy: The equals sign is a special character that tells spreadsheet software to stop treating the cell as text and start treating it as a calculation or command. (Formula: A set of instructions in a spreadsheet that performs actions).\n9. Submit the form to save the malicious entry into the Fieldmark Analytics database.\n10. Wait for an internal employee or a customer of the platform to export the survey data.\n11. The victim initiates a CSV export of the survey results.\n12. The victim downloads the resulting CSV file to their local computer.\n13. The victim opens the CSV file using a spreadsheet application like Microsoft Excel.\nIMPACT\n14. The spreadsheet application parses the CSV and encounters the cell starting with the equals sign.\n15. The application attempts to execute the formula contained within that cell.\n16. The formula triggers a system command, leading to arbitrary command execution on the victim's laptop.\n17. This results in a Remote Code Execution (RCE) vulnerability.\nWhy: RCE allows an attacker to run any command they want on a target machine, effectively taking control of it. (RCE: Remote Code Execution, a high-severity security flaw).\n18. The researcher reported the finding and received a $4,800 bounty.",
+      "example": "Suppose a website called target.example has a 'Contact Us' form. An attacker submits the following text into the 'Message' field:\n\n=cmd|' /C calc'!A0\n\nWhen the site administrator exports the messages to a CSV file and opens it in Excel, the spreadsheet sees the '=' and interprets the rest as a command. It uses a feature called DDE (Dynamic Data Exchange) to launch the Windows Command Prompt ('cmd') and open the calculator ('calc'). This works because the website did not check if the message started with a formula-triggering character before saving it to the CSV.",
+      "takeaway": "Always test export features (CSV, XLS, PDF) by entering characters like '=', '+', '-', or '@' at the start of input fields. If the exported file evaluates '=1+1' as '2', the application is vulnerable to CSV injection. Look for this pattern in any application that collects user data for administrative review, such as survey tools, CRM systems, or e-commerce order logs. A common beginner mistake is assuming that plain-text formats like CSV are inherently safe; the danger lies in how the software opening the file interprets that text.",
+      "fix": "To fix this, the application must sanitize all user-provided data before it is written to a CSV file. The most effective method is to prepend a single quote (') to any cell value that begins with a formula-triggering character (=, +, -, or @). This tells spreadsheet software to treat the entire cell as literal text and prevents formula execution. \n\nExample fix in Python:\n```python\ndef sanitize_for_csv(input_string):\n    # Define characters that trigger formulas\n    trigger_chars = ('=', '+', '-', '@')\n    if input_string.startswith(trigger_chars):\n        # Prepend a single quote to neutralize the formula\n        return \"'\" + input_string\n    return input_string\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This is the bug I’ve had the hardest time convincing people outside security actually matters. “You typed a formula into a text field, and a spreadsheet program did spreadsheet things with it” sounds, on first hearing, like a non-issue — almost a feature working as intended. It took building the full chain, from a single character typed into an ordinary form field through to arbitrary command execution on an internal employee’s laptop, to understand why this is a real, repeatedly-exploited vulnerability class rather than a curiosity. The target, which I’ll call **Fieldmark Analytics** here per",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "288c22536145",
     "title": "Android Deep Link Hijacking to Account Takeover via OAuth Code Interception",
     "url": "https://medium.com/@ahmed.m.abd.elftah.abbas/android-deep-link-hijacking-to-account-takeover-via-oauth-code-interception-db24544254be",

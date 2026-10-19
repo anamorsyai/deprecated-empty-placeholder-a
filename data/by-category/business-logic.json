@@ -1,5 +1,46 @@
 [
   {
+    "id": "80ace8941158",
+    "title": "How I Bypassed a Region-Locked Comment Feature on a Public Bug Bounty Program",
+    "url": "https://medium.com/@mostafa23110006/how-i-bypassed-a-region-locked-comment-feature-on-a-public-bug-bounty-program-b5c65fdfe67b",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mostafa Waleed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-18T10:36:03.000Z",
+    "added_at": "2026-10-19T06:53:16.284Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "The app hides the comments UI for users in certain regions, but the GraphQL API still allows any logged‑in user to read and post comments, exposing a client‑side only access‑control flaw.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The region restriction was implemented only in the frontend UI, which decides whether to show the comment button based on the user’s location. The backend GraphQL resolvers that serve the comment list and creation do not perform any region check, so they accept requests from any logged‑in user. Because the server never validates the caller’s region, the UI’s hide/show logic is the only gate. This design flaw means the security rule exists in code that runs on the client’s device, not on the server that enforces policy. Consequently, an attacker can bypass the restriction simply by calling the API directly.",
+      "walkthrough": "RECON\nStep 1: Identify that the comments feature is missing in the UI when accessing the site from a blocked country. Why: The UI hides the button, indicating a possible client‑side check.\n\nStep 2: Open a second browser with a VPN located in a supported country and verify that the comments UI appears. Why: Confirms the feature is region‑dependent.\n\nDISCOVERY\nStep 3: Capture the network traffic from the VPN browser while loading the comment list. Why: We need the exact request the app sends to the server.\nStep 4: Record the GraphQL request used to read comments (verbatim):\nPOST /graphql HTTP/2\nHost: api.example.com\nAuthorization: Bearer <AUTH_TOKEN>\nContent-Type: application/json\n\n{ \"operationName\": \"GetVideoComments\", \"variables\": { \"videoId\": \"<VIDEO_ID>\", \"page\": 1 }, \"query\": \"query GetVideoComments($videoId: String!, $page: Int) { video(id: $videoId) { id title comments(first: 10, page: $page) { totalCount edges { node { id text createDate } } } } }\" }\nWhy: This request asks the server for the first page of comments for a specific video; it includes an auth token proving the user is logged in.\n\nStep 5: Capture the request used to post a comment from the VPN browser. Why: To see how the app creates a new comment.\nStep 6: Record the GraphQL mutation (verbatim):\nPOST /graphql HTTP/2\nHost: api.example.com\nAuthorization: Bearer <AUTH_TOKEN>\nContent-Type: application/json\n\n{ \"operationName\": \"CreateComment\", \"variables\": { \"input\": { \"videoId\": \"<VIDEO_ID>\", \"text\": \"Hello world\" } }, \"query\": \"mutation CreateComment($input: CreateCommentInput!) { createComment(input: $input) { status comment { id text createDate } } }\" }\nWhy: This mutation tells the server to store a new comment; the payload contains the video identifier and the comment text.\n\nEXPLOITATION\nStep 7: Switch to the non‑VPN browser (the blocked region) and replay the captured \"read comments\" request, keeping the same auth token. Why: The server does not check region, so it returns the comment list.\nStep 8: Replay the captured \"create comment\" mutation from the blocked region. Why: The server accepts the mutation and creates the comment, proving write access.\n\nIMPACT\nStep 9: Verify that the comment appears when reading the list again. Why: Confirms that both read and write operations succeed despite the UI being hidden.\nStep 10: Document the successful bypass with screenshots or API responses as proof for the bounty report. Why: Evidence is required for validation and payout.",
+      "example": "Assume a fictional video site at https://target.example. The frontend hides the comment box for users whose IP resolves to \"CountryX\". The backend GraphQL endpoint is https://api.target.example/graphql.\n\nVulnerable backend resolver (pseudo‑code):\nfunction getComments(videoId) { return db.comments.where(vId == videoId); }\nfunction addComment(input) { db.comments.insert({videoId: input.videoId, text: input.text, user: input.userId}); return {status:\"ok\"}; }\n\nNo region check is performed.\n\nAttack request to read comments (run from a blocked IP):\nPOST https://api.target.example/graphql\nContent-Type: application/json\nAuthorization: Bearer abc123\n\n{ \"operationName\":\"GetVideoComments\", \"variables\":{\"videoId\":\"vid123\",\"page\":1}, \"query\":\"query GetVideoComments($videoId: String!, $page: Int){ video(id:$videoId){ comments(first:10,page:$page){ edges{ node{id text} } } } }\" }\nWhy it works: The server trusts the auth token only; it never looks at the requester's country, so it returns the comment list.\n\nAttack request to post a comment:\nPOST https://api.target.example/graphql\nContent-Type: application/json\nAuthorization: Bearer abc123\n\n{ \"operationName\":\"CreateComment\", \"variables\":{\"input\":{\"videoId\":\"vid123\",\"text\":\"test\"}}, \"query\":\"mutation CreateComment($input:CreateCommentInput!){ createComment(input:$input){ status } }\" }\nWhy it works: Same reason – no region validation, so the comment is stored.\n\nThe attacker can now read and write comments from any region.",
+      "takeaway": "When a feature disappears in the UI for a certain geography, assume the restriction might be client‑side only and test the underlying API directly. Look for GraphQL or REST endpoints that handle the same operation and replay them with a valid auth token. Tools like Burp Suite, OWASP ZAP, or browser devtools can capture the requests. Variants of this bug appear as missing server‑side checks for age, subscription level, or feature flags. Beginners often forget to include the Authorization header when replaying, causing false‑negative results; always copy the full request, not just the JSON body.",
+      "fix": "Add a server‑side region validation step in every comment‑related resolver. For example, in the GraphQL resolver code:\nif (allowedRegions.includes(requester.region) === false) { throw new Error('Region not permitted'); }\nreturn getComments(videoId);\nSimilarly, before inserting a comment, verify the requester’s region and reject if blocked. Centralise the check in a middleware so future endpoints cannot forget it. Updating the policy documentation to require server‑enforced controls will prevent the UI‑only bypass.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Every hunter sees a program like this and thinks about skipping it. A big video platform with support videos and reels, and a leaderboard with thousands of resolved reports. If that many people already tested it, what is left for you? 🤔 I tested it anyway, mostly to challenge myself. A big program is not fully clean, it is just clean from the easy bugs. The first things everyone tries, like IDOR on video IDs or broken auth on signup, are already gone. What stays is the weird logic that only breaks when you set up something most people never try. This writeup is about one of those cases. ## Ma",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4cf73bac81a4",
     "title": "One Pending Invitation Was Enough to Restore Revoked Admin Privileges",
     "url": "https://cyghost.medium.com/one-pending-invitation-was-enough-to-restore-revoked-admin-privileges-9408c10f83d2",
