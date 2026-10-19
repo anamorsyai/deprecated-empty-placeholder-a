@@ -138,26 +138,26 @@
     "added_at": "2026-10-17T14:00:48.422Z",
     "categories": [
       "access-control",
-      "auth-bypass",
-      "business-logic"
+      "business-logic",
+      "auth-bypass"
     ],
     "severity": "high",
     "difficulty": "beginner",
-    "summary_en": "An invalid role assignment leads to a complete organization lockout and allows unauthorized access to sensitive API endpoints.",
+    "summary_en": "A role validation flaw allowed attackers to set an invalid role ID, resulting in a 'null' role state that bypassed API security checks and locked administrators out of managing the account.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "We assume a web application at target.example allows administrators to assign roles to team members. A role is a label (like 'Editor' or 'Viewer') that defines what a user can do. The application fails to check if the role name provided by the user actually exists in its database.\n\nVulnerable Code Snippet:\n# This code takes the role name directly from the user's request without checking a whitelist\nnew_role = request.json['role_name']\nuser.update(role=new_role)\n\nAttack Request:\nPOST /api/v1/organization/invite HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\n  \"email\": \"attacker@example.com\",\n  \"role_name\": \"NOT_A_REAL_ROLE\"\n}\n\nWhy it works: When the system tries to load the organization dashboard, it looks for the permissions associated with 'NOT_A_REAL_ROLE'. Because that role doesn't exist, the code crashes (causing a lockout for all users). Additionally, if the API's security check is written poorly—for example, 'if user.role != \"Guest\": allow_access()'—then the 'NOT_A_REAL_ROLE' might accidentally grant the attacker full access because it is technically not a 'Guest' role.",
-      "takeaway": null,
-      "fix": null,
+      "cause": "The backend application failed to verify if the role ID provided in the API request existed in the system's allowed list. When the researcher sent an unsupported value to the '/api/teams/<team_id>/users/<user_id>/roles/default' endpoint, the server accepted it without validation. This created a database entry with a 'null' role, which the application's logic was not designed to handle, leading to broken management features and inconsistent security enforcement.",
+      "walkthrough": "RECON\n1. Identify the feature where administrators change user permissions and intercept the traffic using Burp Suite (a tool used to capture and modify data sent between a browser and a server).\nDISCOVERY\n2. Observe the standard request used to update a user's role.\nPUT /api/teams/123/users/456/roles/default\nWhy: This is an HTTP request (a message sent to a server) using the PUT method (a command used to update existing data) to target a specific user's role settings.\n3. Analyze the data sent in the request body.\n{\"userId\": \"<target_user_id>\", \"role\": \"1\"}\nWhy: The body contains a parameter (a specific piece of information) named 'role' which uses a number to represent a permission level like 'Admin' or 'Developer'.\nEXPLOITATION\n4. Modify the 'role' value to an arbitrary, unsupported number.\n{\"userId\": \"<target_user_id>\", \"role\": \"5\"}\nWhy: The researcher is testing if the server checks if '5' is a valid role before saving it to the database.\n5. Send the modified request and observe the server's response.\nHTTP/2 204 No Content\nWhy: A 204 response means the server successfully processed the request but has no data to return, indicating the invalid role was accepted.\nIMPACT\n6. Refresh the administrator's view of the user list.\nThe user's role now appears as 'null' (a term meaning 'no value' or 'empty').\n7. Attempt to delete or edit the user with the 'null' role.\nThe interface fails to perform these actions.\nWhy: The management code likely expects a valid role string; when it sees 'null', the logic breaks, effectively locking the user into the organization.\n8. Log in as the affected user and attempt to access restricted data.\nGET /api/teams/123/users/info\nWhy: The researcher is testing API authorization (the process of checking if a user has permission to see data). Because the user has no valid role, the security check fails to find a 'restrict' rule and incorrectly allows access.",
+      "example": "Imagine a website 'target.example' where users are '1' (Basic) or '2' (Pro). The update code looks like this: function setRole(id, val) { database.exec('UPDATE users SET role_id = ' + val + ' WHERE id = ' + id); }. An attacker sends a request with 'role=999'. The database saves '999'. Later, the site checks permissions: 'if (user.role == 1) { hide_pro_features(); }'. Since 999 is not 1, the site fails to hide the Pro features, giving the attacker free access because the code only looked for the 'Basic' ID to restrict them.",
+      "takeaway": "Always test what happens when you send data that isn't in the official list, such as negative numbers, very large numbers, or symbols. Look for 'lockout' scenarios where an invalid state makes a resource unmanageable by admins, as this often indicates poor error handling. A common variant is 'Type Juggling,' where sending a boolean 'true' instead of a number might bypass checks. Avoid the mistake of trusting that the frontend's dropdown menu is the only way a user can send a role ID.",
+      "fix": "Implement strict server-side validation using an 'allow-list' (a list of only permitted values) to ensure the role ID exists before updating the database. Additionally, the authorization logic should follow a 'deny-by-default' pattern, where any user without a explicitly recognized valid role is granted zero access. \n\nExample fix:\nif (![1, 2, 3].includes(requestedRole)) {\n  return response.status(400).send('Invalid Role');\n}\nuser.role = requestedRole;\nawait user.save();",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "In this write-up, I’ll explain how I discovered a role validation vulnerability in a web application that allowed an invalid user role to be accepted by the backend, causing organization management issues and unauthorized API access. ## Discovery While testing the application’s role management functionality, I noticed that administrators could modify users’ roles through an API request. I intercepted the request using Burp Suite and examined how the server handled role changes. The request looked like this: PUT /api/teams/<team_id>/users/<user_id>/roles/default The request body contained the t",
     "ai_generated": true,
     "engagement": null,
     "score": 53
@@ -223,26 +223,26 @@
       "idor-bola",
       "access-control"
     ],
-    "severity": "high",
-    "difficulty": "intermediate",
-    "summary_en": "An IDOR combined with broken RBAC let an attacker access other users' data, resulting in a $100 bounty.",
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A Viewer role can delete admin‑only resources by sending a DELETE request to /example/{example_id} after enumerating IDs via an unauthenticated GET endpoint, resulting in an IDOR and broken access‑control bug.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The DELETE /example/v1/example/example/{example_id} endpoint does not verify that the caller has admin privileges, only checking the Viewer role. The Viewer role is allowed to call the endpoint, so it can delete any object if it knows the ID. The GET /example/v1/Example/ID endpoint returns a list of all example IDs without any authentication or authorization checks, exposing the identifiers. Because IDs are discoverable, an attacker can combine the two endpoints to perform an IDOR (Insecure Direct Object Reference) and bypass role‑based access control.",
+      "walkthrough": "RECON\nStep 1: Look at the API documentation or traffic and notice a DELETE endpoint.\nGET https://example.com/example/v1/example/example/{example_id}\nWhy: This is an HTTP request (a message sent from client to server) using the DELETE method (asks server to remove a resource) with a path parameter {example_id} that specifies which object to delete.\n\nStep 2: Test the endpoint with a known ID while logged in as a Viewer role.\nDELETE https://example.com/example/v1/example/example/12345\nWhy: The server responded with success, showing the Viewer role is allowed to call the endpoint.\n\nDISCOVERY\nStep 3: Search for other endpoints that might reveal IDs.\nGET https://example.com/example/v1/Example/ID\nWhy: This is an HTTP GET request (asks server to return data) that returns a list of all example IDs.\n\nStep 4: Send the GET request without any authentication.\nGET https://example.com/example/v1/Example/ID\nWhy: The response contains IDs like [\"111\",\"222\",\"333\"], proving the endpoint is publicly accessible.\n\nEXPLOITATION\nStep 5: Choose an ID that belongs to an admin‑only object (e.g., 222).\nWhy: Because the DELETE endpoint does not check ownership, any valid ID can be used.\n\nStep 6: Send a DELETE request with the chosen ID.\nDELETE https://example.com/example/v1/example/example/222\nWhy: The server deletes the admin resource, confirming an IDOR and RBAC bypass.\n\nIMPACT\nStep 7: Verify the resource is gone by re‑fetching the list or checking the UI.\nGET https://example.com/example/v1/Example/ID\nWhy: The missing ID shows the deletion succeeded, demonstrating the impact of the bug.",
+      "example": "Assume a fictional service at target.example.\nVulnerable code (Node.js/Express):\napp.get('/api/items', (req,res)=>{ // no auth check\n  const ids = items.map(i=>i.id);\n  res.json(ids);\n});\napp.delete('/api/items/:id', (req,res)=>{ // only checks if user is \"viewer\"\n  if(req.user.role!=='viewer') return res.sendStatus(403);\n  const idx = items.findIndex(i=>i.id===req.params.id);\n  if(idx===-1) return res.sendStatus(404);\n  items.splice(idx,1);\n  res.sendStatus(200);\n});\nAttack steps:\n1. GET https://target.example/api/items   → returns [\"a1\",\"b2\",\"c3\"]\n2. DELETE https://target.example/api/items/b2   (authenticated as viewer)\nResult: item b2 is removed even though only admins should delete items. The bug exists because the DELETE handler does not verify that the user has admin rights and the GET handler leaks all IDs.",
+      "takeaway": "When hunting for IDOR + RBAC issues, look for endpoints that perform destructive actions (POST, PUT, DELETE) and compare them with any enumeration endpoints that return object identifiers without proper auth. Tools like Burp Suite or OWASP ZAP can help capture traffic and spot missing authorization checks. Variants include IDOR on update (PUT) or view (GET) endpoints and broken object‑level permissions in GraphQL mutations. A common beginner mistake is to assume that a role restriction on one endpoint protects the whole API; always verify each endpoint’s own access control.",
+      "fix": "Add strict role‑based checks on the DELETE endpoint and any other state‑changing routes. Example fix (pseudo‑code):\nif(!user.hasRole('admin')){ return 403; }\nif(!user.canAccessObject(example_id)){ return 403; }\n// proceed with deletion\nAlso restrict the GET /example/ID endpoint to authenticated users with appropriate permissions, or return only IDs the caller is allowed to see. Centralize permission logic in a middleware so every route enforces the same checks.",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "I found that the privileged role (Viewer) can delete something in the admin that only the admin should have access to! In this endpoint: DELETE https://example.com/example/v1/example/example/{example_id} Press enter or click to view image in full size Image 3 And the idea is, if I reported it, it would be rated as Low because the triager might say: How can you get all the IDs to delete it? What’s the attack scenario? So, I dug into it, and I found that the GET request has access to all the IDs: ## Get Muhammad Wageh’s stories in your inbox Join Medium for free to get updates from this writer.",
     "ai_generated": true,
     "engagement": null,
-    "score": 53
+    "score": 47
   },
   {
     "id": "470f4e187994",

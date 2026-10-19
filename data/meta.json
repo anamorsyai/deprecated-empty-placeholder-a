@@ -38,5 +38,6 @@
     "subdomain-takeover": 1,
     "cors": 2,
     "race-condition": 4
-  }
+  },
+  "backfilledThisRun": 4
 }

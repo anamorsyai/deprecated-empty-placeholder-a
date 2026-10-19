@@ -61,26 +61,26 @@
       "idor-bola",
       "access-control"
     ],
-    "severity": "high",
-    "difficulty": "intermediate",
-    "summary_en": "An IDOR combined with broken RBAC let an attacker access other users' data, resulting in a $100 bounty.",
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A Viewer role can delete admin‑only resources by sending a DELETE request to /example/{example_id} after enumerating IDs via an unauthenticated GET endpoint, resulting in an IDOR and broken access‑control bug.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The DELETE /example/v1/example/example/{example_id} endpoint does not verify that the caller has admin privileges, only checking the Viewer role. The Viewer role is allowed to call the endpoint, so it can delete any object if it knows the ID. The GET /example/v1/Example/ID endpoint returns a list of all example IDs without any authentication or authorization checks, exposing the identifiers. Because IDs are discoverable, an attacker can combine the two endpoints to perform an IDOR (Insecure Direct Object Reference) and bypass role‑based access control.",
+      "walkthrough": "RECON\nStep 1: Look at the API documentation or traffic and notice a DELETE endpoint.\nGET https://example.com/example/v1/example/example/{example_id}\nWhy: This is an HTTP request (a message sent from client to server) using the DELETE method (asks server to remove a resource) with a path parameter {example_id} that specifies which object to delete.\n\nStep 2: Test the endpoint with a known ID while logged in as a Viewer role.\nDELETE https://example.com/example/v1/example/example/12345\nWhy: The server responded with success, showing the Viewer role is allowed to call the endpoint.\n\nDISCOVERY\nStep 3: Search for other endpoints that might reveal IDs.\nGET https://example.com/example/v1/Example/ID\nWhy: This is an HTTP GET request (asks server to return data) that returns a list of all example IDs.\n\nStep 4: Send the GET request without any authentication.\nGET https://example.com/example/v1/Example/ID\nWhy: The response contains IDs like [\"111\",\"222\",\"333\"], proving the endpoint is publicly accessible.\n\nEXPLOITATION\nStep 5: Choose an ID that belongs to an admin‑only object (e.g., 222).\nWhy: Because the DELETE endpoint does not check ownership, any valid ID can be used.\n\nStep 6: Send a DELETE request with the chosen ID.\nDELETE https://example.com/example/v1/example/example/222\nWhy: The server deletes the admin resource, confirming an IDOR and RBAC bypass.\n\nIMPACT\nStep 7: Verify the resource is gone by re‑fetching the list or checking the UI.\nGET https://example.com/example/v1/Example/ID\nWhy: The missing ID shows the deletion succeeded, demonstrating the impact of the bug.",
+      "example": "Assume a fictional service at target.example.\nVulnerable code (Node.js/Express):\napp.get('/api/items', (req,res)=>{ // no auth check\n  const ids = items.map(i=>i.id);\n  res.json(ids);\n});\napp.delete('/api/items/:id', (req,res)=>{ // only checks if user is \"viewer\"\n  if(req.user.role!=='viewer') return res.sendStatus(403);\n  const idx = items.findIndex(i=>i.id===req.params.id);\n  if(idx===-1) return res.sendStatus(404);\n  items.splice(idx,1);\n  res.sendStatus(200);\n});\nAttack steps:\n1. GET https://target.example/api/items   → returns [\"a1\",\"b2\",\"c3\"]\n2. DELETE https://target.example/api/items/b2   (authenticated as viewer)\nResult: item b2 is removed even though only admins should delete items. The bug exists because the DELETE handler does not verify that the user has admin rights and the GET handler leaks all IDs.",
+      "takeaway": "When hunting for IDOR + RBAC issues, look for endpoints that perform destructive actions (POST, PUT, DELETE) and compare them with any enumeration endpoints that return object identifiers without proper auth. Tools like Burp Suite or OWASP ZAP can help capture traffic and spot missing authorization checks. Variants include IDOR on update (PUT) or view (GET) endpoints and broken object‑level permissions in GraphQL mutations. A common beginner mistake is to assume that a role restriction on one endpoint protects the whole API; always verify each endpoint’s own access control.",
+      "fix": "Add strict role‑based checks on the DELETE endpoint and any other state‑changing routes. Example fix (pseudo‑code):\nif(!user.hasRole('admin')){ return 403; }\nif(!user.canAccessObject(example_id)){ return 403; }\n// proceed with deletion\nAlso restrict the GET /example/ID endpoint to authenticated users with appropriate permissions, or return only IDs the caller is allowed to see. Centralize permission logic in a middleware so every route enforces the same checks.",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "I found that the privileged role (Viewer) can delete something in the admin that only the admin should have access to! In this endpoint: DELETE https://example.com/example/v1/example/example/{example_id} Press enter or click to view image in full size Image 3 And the idea is, if I reported it, it would be rated as Low because the triager might say: How can you get all the IDs to delete it? What’s the attack scenario? So, I dug into it, and I found that the GET request has access to all the IDs: ## Get Muhammad Wageh’s stories in your inbox Join Medium for free to get updates from this writer.",
     "ai_generated": true,
     "engagement": null,
-    "score": 53
+    "score": 47
   },
   {
     "id": "f6cfc08b3935",
