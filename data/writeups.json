@@ -1,5 +1,45 @@
 [
   {
+    "id": "e8eb8cd6a83f",
+    "title": "Prompt injection, XSS and SIEM-exfil payloads living in reverse DNS, plus 28 fake Googlebots that passed FCrDNS",
+    "url": "https://www.reddit.com/r/netsec/comments/1xaqo61/prompt_injection_xss_and_siemexfil_payloads",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/HexLayer3"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-20T12:21:14.000Z",
+    "added_at": "2026-10-20T20:43:34.189Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "difficulty": null,
+    "summary_en": "Prompt injection, XSS and SIEM-exfil payloads living in reverse DNS, plus 28 fake Googlebots that passed FCrDNS",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "bd0663c78ffb",
     "title": "The Bug Hiding In A Feature Nobody Uses Anymore",
     "url": "https://kd-200.medium.com/the-bug-hiding-in-a-feature-nobody-uses-anymore-28b215352398",
