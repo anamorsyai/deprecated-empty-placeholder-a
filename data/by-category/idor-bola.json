@@ -1,5 +1,47 @@
 [
   {
+    "id": "85e340f7cf66",
+    "title": "IDOR in a Third-Party AI Chat Widget: Sensitive Data Exposure",
+    "url": "https://infosecwriteups.com/idor-in-a-third-party-ai-chat-widget-sensitive-data-exposure-49bd64c01f3c",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Priyanshu parmar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-20T03:58:09.000Z",
+    "added_at": "2026-10-20T23:28:24.411Z",
+    "categories": [
+      "idor-bola",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An IDOR in a third-party AI chat widget allowed unauthorized access to user contact details, including phone numbers and internal tokens, by manipulating the email parameter in an API request.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from an Insecure Direct Object Reference (IDOR) on a backend API endpoint used by a chat widget. An IDOR is a bug where an application provides direct access to data based on user input without checking permissions. The endpoint /backend/widget/contact/upsert used the email field as a lookup key to fetch existing records. Because the server did not verify if the requester was authorized to view the data linked to that email, it returned sensitive information to any user who knew a victim's email address.",
+      "walkthrough": "RECON\n1. The researcher monitored the web platform's traffic using Burp Suite (a tool used to intercept and inspect web traffic).\n2. They identified an AI chat widget making requests to a third-party domain instead of the main site's API.\nDISCOVERY\n3. To see how the widget handles data, the researcher updated their profile name.\n4. They captured the following HTTP request (a message sent from a browser to a server):\nPOST /backend/widget/contact/upsert HTTP/2\nHost: [redacted]\nContent-Type: application/json\nX-Bot-Token: [redacted]\n{\n \"name\": \"owners\",\n \"email\": \"my-email@example.com\",\n \"phone\": \"...\",\n \"customData\": {\n \"role\": \"Owner\",\n \"organizationToken\": \"org_...\",\n \"userToken\": \"user_...\"\n }\n}\nWhy: The POST method sends data to the server. The upsert endpoint (a combination of 'update' and 'insert') processes user details. The X-Bot-Token is a header (extra metadata) used for identification.\nEXPLOITATION\n5. The researcher suspected the server might return data based only on the email field.\n6. They prepared a second account to act as the victim.\n7. They sent a simplified request using the victim's email address:\nPOST /backend/widget/contact/upsert HTTP/2\nHost: [redacted]\nContent-Type: application/json\nX-Bot-Token: [redacted]\n{\n \"email\": \"my-second-email@example.com\"\n}\nWhy: By removing other fields, the researcher tested if the server would treat this as a lookup request for the existing record tied to that email.\nIMPACT\n8. The server responded with the full contact record for the second account.\n9. The response included the victim's name, phone number, role, and internal identifiers (userToken and organizationToken).\n10. This confirmed that any user could retrieve another user's private data just by knowing their email address.",
+      "example": "Imagine a fictional site target.example.com that uses a support widget. When you open the chat, it sends your email to api.support-widget.com/v1/user/sync to load your history. An attacker sends a request like this:\n\nPOST /v1/user/sync HTTP/1.1\nHost: api.support-widget.com\nContent-Type: application/json\n{\n  \"user_email\": \"victim@example.com\"\n}\n\nThe server sees \"user_email\": \"victim@example.com\" and, without checking if the requester is logged in as that user, returns the victim's phone number and home address in the response. This works because the server trusts the user_email parameter (a piece of data sent in the request) as the sole proof of identity.",
+      "takeaway": "Always inspect third-party integrations like chat widgets, analytics, or support tools, as they often have weaker security than the main application. Look for 'upsert,' 'sync,' or 'profile' endpoints that take a simple identifier like an email or a numeric ID. A common signal is when an API returns a full object (all user details) after you send a small piece of information. A variant of this is 'Leaky APIs,' where an endpoint meant for internal use is accidentally exposed to the public. Avoid the mistake of assuming that third-party code is inherently secure.",
+      "fix": "The server must implement strict authorization checks. Instead of relying on a user-provided email parameter to fetch data, the server should identify the user through a secure, server-side session or a cryptographically signed token (like a JWT) that cannot be tampered with. The backend should verify that the authenticated user's ID matches the ID of the record being requested before returning any data.\n\n// FIXED CODE EXAMPLE (Node.js/Express style)\napp.post('/backend/widget/contact/upsert', async (req, res) => {\n  const authenticatedUser = req.user; // Get user from secure session/token\n  const requestedEmail = req.body.email;\n\n  // Check if the authenticated user has permission to access this email\n  if (authenticatedUser.email !== requestedEmail) {\n    return res.status(403).send(\"Unauthorized access\");\n  }\n\n  // Proceed with upsert logic...\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Bug bounty hunter and security researcher focused on web app security, auth flaws, and access control vulnerabilities. Sharing real findings and writeups. Press enter or click to view image in full size Image 3 Cybersecurity Bug Bounty Bug Bounty Writeup Information Security Web Security # IDOR in a Third-Party AI Chat Widget: Sensitive Data Exposure Image 4: Priyanshu parmar Priyanshu parmar 2 min read · Just now [](https://infosecwriteups.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F49bd64c01f3c&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40priyanshuuparmar%2F",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "a931abf12556",
     "title": "I Analyzed 12 IDOR-to-ATO Reports. The Email-Change Endpoint Wins.",
     "url": "https://infosecwriteups.com/i-analyzed-12-idor-to-ato-reports-the-email-change-endpoint-wins-483e24b6aa8c",
