@@ -1,5 +1,45 @@
 [
   {
+    "id": "f677791cf90e",
+    "title": "$16,500 for a Protocol Downgrade Nobody Double-Checked: HTTP/2 Desync Smuggling",
+    "url": "https://medium.com/@t4nv1/16-500-for-a-protocol-downgrade-nobody-double-checked-http-2-desync-smuggling-d23d50002350",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-20T06:31:01.000Z",
+    "added_at": "2026-10-20T06:47:10.682Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A downgrade from HTTP/2 to HTTP/1.1 inside the edge layer caused a request‑smuggling desynchronisation, letting an attacker inject extra HTTP/1.1 requests that the backend processes as legitimate.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is the edge layer automatically translating a client‑initiated HTTP/2 connection into HTTP/1.1 for the legacy backend. The translation step does not re‑validate request boundaries, so the front‑end proxy and the backend disagree on where one request ends and the next begins. Because HTTP/2 frames guarantee proper framing, the downgrade loses that guarantee, creating a gap that can be abused. The legacy application never expects HTTP/2, so it relies solely on HTTP/1.1 length parsing, which the proxy’s downgrade logic does not enforce strictly. This mismatch enables a desynchronisation attack where extra data is interpreted as a new request by the backend but is ignored by the proxy.",
+      "walkthrough": null,
+      "example": "**Vulnerable snippet (fictional target.example)**\n```go\n// HTTP/1.1 handler that reads the request body based on Content‑Length\nfunc handler(w http.ResponseWriter, r *http.Request) {\n    body, _ := io.ReadAll(r.Body) // reads exactly Content‑Length bytes\n    // process body …\n    fmt.Fprintln(w, \"OK\")\n}\n```\n**Attack request (sent to the edge that downgrades HTTP/2 → HTTP/1.1)**\n```\nPOST /vulnerable HTTP/1.1\r\nHost: target.example\r\nContent-Length: 4\r\n\r\nABCD\r\nGET /admin HTTP/1.1\r\nHost: target.example\r\n\r\n```\n**Why it works:**\n1. The edge receives an HTTP/2 stream and converts it to HTTP/1.1, copying the `Content‑Length: 4` header.\n2. The backend reads exactly four bytes (`ABCD`) as the body of the first request and then stops.\n3. The remaining bytes (`GET /admin …`) are treated by the backend as a brand‑new HTTP/1.1 request because the proxy never re‑validated the boundary after downgrade.\n4. An attacker can therefore smuggle the second request (e.g., an admin page) behind the first, gaining unauthorized access.\nAll terms (HTTP/2, HTTP/1.1, Content‑Length, request body, proxy, downgrade) are defined in plain language for beginners.",
+      "takeaway": "When hunting for request‑smuggling bugs, look for services that terminate HTTP/2 at the edge and forward traffic to legacy HTTP/1.1 backends. Signals include mixed‑protocol architectures, edge proxies that perform automatic downgrades, and any lack of explicit boundary checks after the downgrade. Tools such as `h2c` clients, Burp Suite's HTTP/2 support, or custom scripts that craft raw HTTP/2 frames can help reveal the issue. Variants of this bug appear in HTTP/2‑to‑HTTP/1.1 downgrades, HTTP/3‑to‑HTTP/2 downgrades, and any protocol translation layer that does not re‑parse length headers. Beginners often forget to test the post‑downgrade path, assuming the proxy will enforce the same rules as the original protocol; always verify the backend’s view of the request.",
+      "fix": "The fix is to enforce strict request‑boundary validation after any protocol downgrade. The edge layer should re‑calculate and verify `Content‑Length` (or `Transfer‑Encoding`) against the actual bytes received before forwarding to the backend, or better, keep the connection in HTTP/2 end‑to‑end when possible. If downgrade is required, the proxy must split the stream into distinct HTTP/1.1 messages and send each with its own proper headers, ensuring no leftover bytes are interpreted as a new request. Updating the legacy backend to understand HTTP/2 or inserting a second validation layer that mirrors the proxy’s framing logic also eliminates the desynchronisation window.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’d found request smuggling before, built on the classic Content-Length versus Transfer-Encoding disagreement between a front-end proxy and a back-end server. This bug lives in the same general neighborhood — two systems disagreeing about where one request ends and the next begins — but the mechanism is different enough that none of my old detection habits transferred directly. The disagreement here wasn’t about conflicting headers within one protocol. It was about what happens when a connection negotiated as HTTP/2 gets silently translated into HTTP/1.1 somewhere inside the request’s path, an",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "db09904445b7",
     "title": "XSS by Proxy: “Tricking the AI Into Reading Its Own Death Sentence Out Loud 🤖📋”",
     "url": "https://meetcyber.net/xss-by-proxy-tricking-the-ai-into-reading-its-own-death-sentence-out-loud-2ae1811a4f88",
