@@ -1,5 +1,45 @@
 [
   {
+    "id": "bd0663c78ffb",
+    "title": "The Bug Hiding In A Feature Nobody Uses Anymore",
+    "url": "https://kd-200.medium.com/the-bug-hiding-in-a-feature-nobody-uses-anymore-28b215352398",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-20T11:31:01.000Z",
+    "added_at": "2026-10-20T12:19:16.223Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A legacy remote‑publishing feature let the server fetch arbitrary URLs, enabling a Server‑Side Request Forgery that could expose internal services.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Example scenario:\n\n1. **Vulnerable endpoint** – The fictional site `target.example` offers a legacy publishing API at `GET /api/notify?link=`. The `link` parameter is taken and the server performs an HTTP GET to the supplied URL to verify the link exists before sending a notification.\n   - *HTTP request*: the text a client sends to a server.\n   - *parameter*: a value appended to the URL (here `link`).\n   - *payload*: the data the attacker controls (the URL we supply).\n\n2. **Attacker payload** – `https://target.example/api/notify?link=http://169.254.169.254/latest/meta-data/iam/security-credentials/`\n   - `http://169.254.169.254/...` is the AWS metadata service URL that only the server can reach.\n   - By placing this URL in the `link` parameter, we force the server to request the internal address.\n\n3. **Why it works** – The server code does something like `file_get_contents($_GET['link']);` without validating the scheme or host. This lack of validation is the *root cause* (unsanitized user‑controlled URL). The server makes the request (Server‑Side Request Forgery) and returns the response to the attacker, leaking internal data.\n\n4. **Result** – The attacker receives the IAM role credentials of the instance, which can be used to take over the cloud account.\n\nAll steps are simple: discover the old endpoint, supply a malicious URL, and read the server’s response.\n\nThe example demonstrates the same class of bug described in the article – an unused legacy feature that still performs outbound HTTP calls based on attacker‑controlled input.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Computer Science Student | Bug Hunter | Cyber Security Enthusiast | Contact : https://linktr.ee/ydv_nitin writer Member-only story Bug Bounty Cybersecurity Penetration Testing Ssrf Security # The Bug Hiding In A Feature Nobody Uses Anymore ## Everyone tests the login page. The finding was in a publishing interface from 2005 that the site owner did not know existed. Image 3: Nitin yadav Nitin yadav 5 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F28b215352398&operation=register&redirect=https%3A%2F%2Fkd-200.medium.com%2Fthe-bug-hiding-in-a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d248f2ae9bda",
     "title": "Exposed MCP Server: From Recon to OAuth Security Flaws",
     "url": "https://scriptjacker.medium.com/exposed-mcp-server-from-recon-to-oauth-security-flaws-8c40084e0e6d",
