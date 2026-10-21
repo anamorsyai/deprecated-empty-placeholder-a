@@ -1,5 +1,45 @@
 [
   {
+    "id": "fbd373c3e218",
+    "title": "Triaged to Spam: How Cosmos Dismissed Valid CosmWasm IBC v2 Bugs Before Shipping Patches",
+    "url": "https://medium.com/@hdny679/triaged-to-spam-how-cosmos-dismissed-valid-cosmwasm-ibc-v2-bugs-before-shipping-patches-e620b402d77c",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "7Tecra7"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-21T12:08:35.000Z",
+    "added_at": "2026-10-21T12:28:59.819Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "advanced",
+    "summary_en": "This report discusses the initial dismissal and eventual patching of valid security vulnerabilities within the Cosmos CosmWasm IBC v2 implementation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "In blockchain technology, a 'Smart Contract' is a digital agreement that automatically executes when conditions are met. 'IBC' (Inter-Blockchain Communication) is a protocol (a set of rules) that allows different blockchains to talk to each other. We assume a contract on target.example is designed to receive tokens from another chain.\n\nVulnerable Code Snippet:\n```rust\npub fn execute_ibc_receive(msg: Packet) {\n    // This function handles incoming data from another blockchain\n    mint_tokens(msg.receiver, msg.amount);\n}\n```\n\nAttack Request:\nAn attacker sends a custom-crafted message directly to the contract instead of through the official communication channel:\n`{\"execute_ibc_receive\": {\"receiver\": \"attacker_wallet\", \"amount\": \"1000000\"}}`\n\nWhy it works:\nThe contract fails to verify the 'Source Channel' (the specific, trusted path between two blockchains). Because it doesn't check if the message came from a verified 'Relayer' (a program that moves data between chains), it treats the attacker's fake message as a legitimate transfer from another chain, allowing the attacker to create money out of thin air.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "e8eb8cd6a83f",
     "title": "Prompt injection, XSS and SIEM-exfil payloads living in reverse DNS, plus 28 fake Googlebots that passed FCrDNS",
     "url": "https://www.reddit.com/r/netsec/comments/1xaqo61/prompt_injection_xss_and_siemexfil_payloads",
