@@ -1,5 +1,47 @@
 [
   {
+    "id": "8555a4baccd2",
+    "title": "i HACKED nasa in just 4 days",
+    "url": "https://medium.com/@choudharyyash127/i-hacked-nasa-in-just-4-days-1fb93bed2fd7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "yash "
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-21T22:34:59.000Z",
+    "added_at": "2026-10-21T23:47:36.811Z",
+    "categories": [
+      "info-disclosure",
+      "xss",
+      "other"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A researcher successfully identified sensitive data exposure and insecure directory listings on NASA assets after refining their methodology based on the Vulnerability Rating Taxonomy.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The primary flaw was a server misconfiguration that enabled directory listing, which is a setting that allows any visitor to see a complete list of files within a folder. This lack of access control (rules that determine who can see specific data) combined with the storage of sensitive information in publicly reachable directories created a significant security risk. The researcher also noted that previous attempts failed because they focused on low-impact features like view counters rather than core data protection.",
+      "walkthrough": "RECON\n1. The researcher joined the NASA VDP (Vulnerability Disclosure Program: a formal system where organizations allow hackers to report bugs) and began exploring public domains.\n\"\"\nWhy: To identify which systems are legally allowed to be tested for security flaws.\nDISCOVERY\n2. On Day 2, the researcher identified a post with a view counter (a feature that tracks how many times a page is seen).\n\"\"\nWhy: To find interactive elements that might be susceptible to manipulation.\n3. The researcher attempted to manipulate the counter using repeated HTTP requests (a digital message sent from a browser to a server to ask for data).\n\"\"\nWhy: To see if the server lacked rate limiting (a security limit on how many times an action can be performed).\n4. NASA marked this finding as P5 (the lowest priority level for a bug report).\n\"\"\nWhy: Because manipulating a view counter has negligible security impact on the organization.\n5. On Day 3, the researcher triggered an error response (a message a website sends back when a request fails) on a NASA page.\n\"\"\nWhy: Error messages often reveal internal details about how a website is built.\n6. The researcher observed an email ID and password exposed within the error text.\n\"\"\nWhy: This is a form of information disclosure where the system leaks credentials due to poor error handling.\n7. NASA marked this as a Duplicate (a report for a bug that another researcher already found).\n\"\"\nWhy: Multiple researchers often find the same obvious flaws on large public targets.\n8. On Day 4, the researcher looked for Stored XSS (Cross-Site Scripting: a bug where a hacker saves malicious code onto a website for others to see).\n\"\"\nWhy: XSS can allow an attacker to steal user sessions or deface pages.\n9. The researcher found a potential XSS on a related domain and submitted it.\n\"\"\nWhy: To demonstrate the ability to execute unauthorized scripts in a user's browser.\n10. NASA marked the report as Out of Scope (a bug found on a system that the company has not authorized for testing).\n\"\"\nWhy: Bug bounty programs have strict lists of which websites are allowed to be hacked.\nSTRATEGY SHIFT\n11. The researcher stopped testing and studied the VRT (Vulnerability Rating Taxonomy: a standard guide used to rank the severity of security bugs).\n\"\"\nWhy: To understand what types of bugs organizations actually consider dangerous and worth fixing.\n12. The researcher performed new reconnaissance (the process of gathering information about a target) focusing on exposed resources.\n\"\"\nWhy: To find structural weaknesses in how files are stored rather than simple interface bugs.\nEXPLOITATION\n13. The researcher discovered an insecure directory exposure (a folder on a website that lists all its files to the public).\n\"\"\nWhy: This occurs when a server is not configured to hide the contents of its folders.\n14. The researcher browsed the exposed files and found sensitive data exposure (private or internal information accidentally left unprotected).\n\"\"\nWhy: Without proper authentication (the process of verifying a user's identity), any file in that folder could be downloaded.\nIMPACT\n15. The researcher documented the exposed files and submitted a final report to NASA.\n\"\"\nWhy: To provide proof that internal data was accessible to any unauthorized user.\n16. NASA triaged (the process where a security team confirms a bug is real) the report as a valid P4 vulnerability.\n\"\"\nWhy: Directory and data exposure represent a genuine risk to the organization's information security.",
+      "example": "Suppose a fictional site 'target.example' has a folder for user uploads. If a researcher visits 'https://target.example/uploads/' and the server displays a list of files like 'backup_db.sql' or 'internal_notes.txt', this is a directory listing vulnerability. \n\nAttack Request:\nGET /uploads/ HTTP/1.1\nHost: target.example\n\nWhy it works: The web server (like Apache or Nginx) is configured with 'indexing' turned on. Instead of showing a specific webpage or a '403 Forbidden' error, it generates an HTML page listing every file in that folder. An attacker can then click these files to download sensitive database backups or private documents.",
+      "takeaway": "When hunting, prioritize 'impact' over 'discovery'; a bug is only valuable if it hurts the target's security. Always check for directory listings by removing the filename from a URL (e.g., change /assets/img/logo.png to /assets/img/). Use tools like 'ffuf' or 'dirsearch' to find hidden directories that might be misconfigured. A common variant is finding '.git' or '.env' folders, which often contain the entire source code or secret keys. A common beginner mistake is reporting 'P5' bugs like 'missing security headers' or 'view counter bugs' which rarely get accepted; focus on finding actual data or system access.",
+      "fix": "To fix this, you must disable directory indexing in your web server configuration. For an Apache server, add 'Options -Indexes' to your .htaccess file or server config. For Nginx, ensure the 'autoindex' directive is set to 'off'. Additionally, sensitive files should never be stored in the web root (the folder accessible to the internet) and should require strict authentication to access.\n\nExample Nginx Fix:\nserver {\n    location /uploads/ {\n        autoindex off;\n    }\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I started with excitement, motivation, and the confidence of someone who had watched a few bug bounty videos and thought: Press enter or click to view image in full size Image 3 **“How hard can it be? Find a bug, write a report, get rewarded. Easy!”** Narrator: _It was not easy._ 💀 ## Day 1: My First NASA Bug! 🎉 I started hunting on NASA’s VDP, exploring the target and looking for security issues. And guess what? Within just **two hours, I found my first bug!** I was excited. My brain had already started celebrating. _“That’s it! My bug bounty journey with NASA has officially begun!”_ Then c",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "fbd373c3e218",
     "title": "Triaged to Spam: How Cosmos Dismissed Valid CosmWasm IBC v2 Bugs Before Shipping Patches",
     "url": "https://medium.com/@hdny679/triaged-to-spam-how-cosmos-dismissed-valid-cosmwasm-ibc-v2-bugs-before-shipping-patches-e620b402d77c",
