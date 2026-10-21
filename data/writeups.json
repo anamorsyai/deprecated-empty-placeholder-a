@@ -1,5 +1,46 @@
 [
   {
+    "id": "751674c43e80",
+    "title": "$5,500 for Asking a GraphQL API What It Was: Introspection Schema Leakage That Mapped an Entire…",
+    "url": "https://medium.com/@t4nv1/5-500-for-asking-a-graphql-api-what-it-was-introspection-schema-leakage-that-mapped-an-entire-67ae1b9c99d5",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-21T06:31:01.000Z",
+    "added_at": "2026-10-21T06:41:30.573Z",
+    "categories": [
+      "graphql",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A GraphQL API endpoint had introspection enabled, allowing an attacker to download the entire schema and map out all available queries and data structures.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume the application at target.example uses a GraphQL server to handle data requests. A GraphQL API is a system that allows a user to request exactly the data they need. Introspection is a built-in feature that describes the API's own structure.\n\nVulnerable Code (Conceptual):\nThe server is initialized without disabling the introspection setting:\nconst server = new ApolloServer({ typeDefs, resolvers, introspection: true });\n\nAttack Request:\nPOST /graphql HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"query\": \"{ __schema { queryType { name fields { name } } } }\"}\n\nWhy: The researcher sends a POST request (a type of HTTP message used to send data to a server) containing the `__schema` query. The `__schema` keyword is a special internal command in GraphQL used to retrieve the API's blueprint. Because the `introspection` setting is enabled, the server responds with a JSON object listing every available query and data field, providing a complete map of the application's internal data model.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "e8eb8cd6a83f",
     "title": "Prompt injection, XSS and SIEM-exfil payloads living in reverse DNS, plus 28 fake Googlebots that passed FCrDNS",
     "url": "https://www.reddit.com/r/netsec/comments/1xaqo61/prompt_injection_xss_and_siemexfil_payloads",
@@ -157,6 +198,46 @@
       "fix_ar": null
     },
     "excerpt": "Bug bounty hunter and security researcher focused on web app security, auth flaws, and access control vulnerabilities. Sharing real findings and writeups. Press enter or click to view image in full size Image 3 Cybersecurity Bug Bounty Bug Bounty Writeup Information Security Web Security # IDOR in a Third-Party AI Chat Widget: Sensitive Data Exposure Image 4: Priyanshu parmar Priyanshu parmar 2 min read · Just now [](https://infosecwriteups.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F49bd64c01f3c&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40priyanshuuparmar%2F",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "f9644938bb25",
+    "title": "Insecure Direct Object Reference (IDOR) — Unauthorized Product Price Modification",
+    "url": "https://medium.com/@mo.muwafak2001/insecure-direct-object-reference-idor-unauthorized-product-price-modification-4a4b3da74aad",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "MUWAFAK HELAL"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-19T19:03:08.000Z",
+    "added_at": "2026-10-21T06:42:31.067Z",
+    "categories": [
+      "idor-bola"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An Insecure Direct Object Reference (IDOR) vulnerability allowed unauthorized users to modify product prices by manipulating product identifiers in web requests.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume a website 'target.example' allows sellers to update the prices of their own items. \n\nVulnerable Code Snippet:\napp.post('/api/update-item', (req, res) => {\n  const { productId, newPrice } = req.body;\n  // VULNERABILITY: The server updates the price for any productId provided without checking ownership.\n  db.query('UPDATE products SET price = ? WHERE id = ?', [newPrice, productId]);\n  res.send('Price updated successfully');\n});\n\nAttack Request:\nPOST /api/update-item HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"productId\": \"999\", \"newPrice\": \"0.01\"}\n\nWhy it works:\n1. HTTP Request: A message sent from your computer to a server to ask for information or perform an action.\n2. Endpoint: A specific location or 'doorway' on a server (like /api/update-item) that handles certain tasks.\n3. IDOR (Insecure Direct Object Reference): A security flaw where an app uses an identifier (like an ID number) to access data without checking if the user is allowed to see or change that specific data.\n\nThe server receives the 'productId' (a unique number identifying a product) and the 'newPrice' from the user. It then runs a database command to change the price for that specific ID. However, the server fails to check if the person sending the request actually owns product '999'. An attacker can change the 'productId' to any number they want, allowing them to change the price of any product on the site to $0.01.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
     "ai_generated": true,
     "engagement": null,
     "score": 53

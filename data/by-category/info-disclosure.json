@@ -1,5 +1,46 @@
 [
   {
+    "id": "751674c43e80",
+    "title": "$5,500 for Asking a GraphQL API What It Was: Introspection Schema Leakage That Mapped an Entire…",
+    "url": "https://medium.com/@t4nv1/5-500-for-asking-a-graphql-api-what-it-was-introspection-schema-leakage-that-mapped-an-entire-67ae1b9c99d5",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-21T06:31:01.000Z",
+    "added_at": "2026-10-21T06:41:30.573Z",
+    "categories": [
+      "graphql",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A GraphQL API endpoint had introspection enabled, allowing an attacker to download the entire schema and map out all available queries and data structures.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume the application at target.example uses a GraphQL server to handle data requests. A GraphQL API is a system that allows a user to request exactly the data they need. Introspection is a built-in feature that describes the API's own structure.\n\nVulnerable Code (Conceptual):\nThe server is initialized without disabling the introspection setting:\nconst server = new ApolloServer({ typeDefs, resolvers, introspection: true });\n\nAttack Request:\nPOST /graphql HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"query\": \"{ __schema { queryType { name fields { name } } } }\"}\n\nWhy: The researcher sends a POST request (a type of HTTP message used to send data to a server) containing the `__schema` query. The `__schema` keyword is a special internal command in GraphQL used to retrieve the API's blueprint. Because the `introspection` setting is enabled, the server responds with a JSON object listing every available query and data field, providing a complete map of the application's internal data model.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "85e340f7cf66",
     "title": "IDOR in a Third-Party AI Chat Widget: Sensitive Data Exposure",
     "url": "https://infosecwriteups.com/idor-in-a-third-party-ai-chat-widget-sensitive-data-exposure-49bd64c01f3c",
