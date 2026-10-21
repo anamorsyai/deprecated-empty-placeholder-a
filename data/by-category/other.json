@@ -16,28 +16,30 @@
     "published_at": "2026-10-21T12:08:35.000Z",
     "added_at": "2026-10-21T12:28:59.819Z",
     "categories": [
+      "access-control",
+      "auth-bypass",
       "other"
     ],
-    "severity": "high",
-    "difficulty": "advanced",
-    "summary_en": "This report discusses the initial dismissal and eventual patching of valid security vulnerabilities within the Cosmos CosmWasm IBC v2 implementation.",
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "Vulnerabilities in Cosmos CosmWasm allowed attackers to spoof source ports and authorize malicious packet acknowledgments by bypassing ownership checks in the IBC v2 implementation.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "In blockchain technology, a 'Smart Contract' is a digital agreement that automatically executes when conditions are met. 'IBC' (Inter-Blockchain Communication) is a protocol (a set of rules) that allows different blockchains to talk to each other. We assume a contract on target.example is designed to receive tokens from another chain.\n\nVulnerable Code Snippet:\n```rust\npub fn execute_ibc_receive(msg: Packet) {\n    // This function handles incoming data from another blockchain\n    mint_tokens(msg.receiver, msg.amount);\n}\n```\n\nAttack Request:\nAn attacker sends a custom-crafted message directly to the contract instead of through the official communication channel:\n`{\"execute_ibc_receive\": {\"receiver\": \"attacker_wallet\", \"amount\": \"1000000\"}}`\n\nWhy it works:\nThe contract fails to verify the 'Source Channel' (the specific, trusted path between two blockchains). Because it doesn't check if the message came from a verified 'Relayer' (a program that moves data between chains), it treats the attacker's fake message as a legitimate transfer from another chain, allowing the attacker to create money out of thin air.",
-      "takeaway": null,
-      "fix": null,
+      "cause": "The root cause was a failure to validate ownership of Inter-Blockchain Communication (IBC) ports—unique identifiers used to route messages between blockchains. In the vulnerable version of wasmd, the system checked if a port ID was provided but did not verify if the smart contract making the request actually owned that port. This allowed any contract to claim it was sending or acknowledging data on behalf of a different, legitimate contract.",
+      "walkthrough": "RECON\n1. Identify the target as the Cosmos wasmd module, which allows WebAssembly (Wasm) smart contracts to interact with the Inter-Blockchain Communication (IBC) protocol.\n2. Focus on the IBC v2 implementation (ibc-go v10) which handles how different blockchains send and confirm data packets.\nDISCOVERY: ASYNC ACK AUTHORIZATION\n3. Analyze the code in x/wasm/keeper/handler_plugin.go responsible for 'asynchronous acknowledgments' (a way for a contract to confirm it received a message later rather than immediately).\n4. Observe the vulnerable logic in the IBC2RawPacketHandler function:\ncase msg.IBC2.WriteAcknowledgement != nil: if contractIBC2PortID == \"\" { ... }\n5. Why: The code only checks if the contractIBC2PortID (the identifier for the contract's communication channel) is not empty. It does not check if the contract is the actual recipient of the packet it is trying to acknowledge.\nEXPLOITATION: ASYNC ACK\n6. A malicious contract identifies a pending packet intended for a victim contract.\n7. The attacker calls WriteAcknowledgement using the victim's packet sequence and client ID.\n8. Because the code lacks an ownership check, the system accepts the attacker's acknowledgment as valid, potentially triggering logic in the sender chain that should only happen if the victim responded.\nDISCOVERY: SOURCE PORT SPOOFING\n9. Analyze the message encoder in x/wasm/keeper/handler_plugin_encoders.go which prepares messages to be sent to other chains.\n10. Observe how the SourcePort (the 'return address' of the message) is handled:\nSourcePort: payload.SourcePort,\n11. Why: The system takes the SourcePort directly from the contract's input without verifying if the contract owns that port. A 'Port' is like a specific phone extension on a blockchain's communication system.\nEXPLOITATION: PORT SPOOFING\n12. An attacker contract creates a SendPacket message but sets the SourcePort to the port ID of a high-value victim contract.\n13. The system signs the message with the attacker's identity but keeps the victim's SourcePort in the payload.\n14. The receiving chain and the original chain's callbacks (like 'on acknowledgment') treat the message as if it originated from the victim contract.\nIMPACT\n15. This allows an attacker to execute callbacks and state changes under the identity of any other contract on the chain, leading to potential fund theft or governance manipulation.",
+      "example": "Imagine a fictional shipping platform target.example where users can confirm deliveries. The system uses a 'TrackingID' and a 'WarehouseID'. \n\nVulnerable Code:\nfunc ConfirmDelivery(warehouseID, trackingID) {\n  if trackingID != \"\" {\n    MarkAsDelivered(trackingID)\n  }\n}\n\nAttack Request:\nPOST /api/confirm\n{\n  \"warehouseID\": \"ATTACKER_WH_01\",\n  \"trackingID\": \"VICTIM_PACKAGE_99\"\n}\n\nWhy it works: The system checks if the trackingID exists but doesn't check if 'ATTACKER_WH_01' is actually the warehouse assigned to 'VICTIM_PACKAGE_99'. An attacker can mark anyone's package as 'delivered' to trigger insurance payouts or hide theft. In the Cosmos bug, the 'Port' acted like the WarehouseID, and the system failed to verify the link between the sender and the port.",
+      "takeaway": "When hunting for bugs in modular systems or cross-chain protocols, look for 'ID-only' validation. This occurs when a program checks if a parameter (like a Port ID or Account ID) is valid or non-empty, but fails to check if the current user has the authority to use that specific ID. Always look for functions that 'trust' a value provided in a message payload without cross-referencing it against a secure internal database or 'store'. A common signal is seeing a 'Signer' or 'Sender' field being correctly populated while the actual 'Source' or 'Owner' field in the data payload is user-controlled and unvalidated.",
+      "fix": "The fix requires implementing a lookup before processing the action. For the acknowledgment bug, the system must use the packet sequence to look up the original 'pending' packet from the blockchain's storage and verify that the caller's Port ID matches the 'DestinationPort' recorded in that packet. For the sending bug, the system must verify that the 'SourcePort' provided in the message matches the Port ID assigned to the contract by the Wasm keeper.\n\nFixed Logic Example:\npendingPacket := store.GetAsyncPacket(packetSequence)\nif pendingPacket.DestinationPort != callingContractPort {\n  return Error(\"Unauthorized: You are not the recipient of this packet\")\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "The retrospective rule changes and mass spam closures did not just dismiss valid technical findings — they inflicted severe collateral damage on the researcher’s public profile, artificially tanking signal metrics and degrading overall platform reputation across HackerOne. Press enter or click to view image in full size Image 4 Status transition history: Initial “+7 Triaged” reputation awards changed retroactively to “-17 Spam” on March 2, 2026 Three security reports submitted against Cosmos CosmWasm wasmd / IBC v2 covered one Critical and two High vulnerabilities. All three were thoroughly re",
     "ai_generated": true,
     "engagement": null,
-    "score": 53
+    "score": 60
   },
   {
     "id": "b06a4ec27658",
