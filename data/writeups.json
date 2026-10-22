@@ -1,5 +1,45 @@
 [
   {
+    "id": "e474b3b7d42b",
+    "title": "Information Disclosure via Exposed Swagger Config",
+    "url": "https://medium.com/@v01d19/information-disclosure-via-exposed-swagger-config-dafee40ab215",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "v01d19"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-22T19:31:20.000Z",
+    "added_at": "2026-10-22T20:55:04.435Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated attacker can retrieve the full internal Swagger/OpenAPI specification by accessing a mis‑configured public endpoint, exposing admin routes, system settings and a large user dataset.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a classic security misconfiguration. The Swagger configuration endpoint ( /api/v3/api-docs/swagger-config ) was left publicly exposed, meaning anyone on the internet could reach it. No authentication or authorization checks were implemented, so the server never verified the requester’s identity. Additionally, the service was bound to the wildcard address 0.0.0.0, allowing traffic from any IP address, and there were no network‑level restrictions (IP whitelisting or firewall rules) to limit access to internal networks only. These three flaws together gave the attacker unrestricted read‑only access to internal API documentation.",
+      "walkthrough": "RECON\nStep 1: Enumerate subdomains of the target domain using a tool like sublist3r or amass. (Subdomain: a part of the domain name that points to a different server.)\nStep 2: Discover the public staging host https://public.stage.ops.example.me/ (Host: the domain name in a URL that tells the server which site you want.)\nStep 3: Run a fuzzing tool (ffuf) against the host to brute‑force hidden paths. The tool sent many HTTP requests with different path strings.\nStep 4: ffuf returns a 200 OK for https://public.stage.ops.example.me/api/v3/api-docs/swagger-config (Endpoint: a URL path that a server listens on.)\n\nDISCOVERY\nStep 5: Send a normal GET request to the discovered endpoint.\nGET /api/v3/api-docs/swagger-config HTTP/1.1\nHost: public.stage.ops.example.me\n\nWhy: The server responded with HTTP status 418 (\"I'm a teapot\"), indicating the request reached the service but was not blocked.\nStep 6: Modify the Host header by replacing the first word (e.g., \"public\" → \"internal\") or removing the header entirely, then resend the request.\nGET /api/v3/api-docs/swagger-config HTTP/1.1\nHost: internal.stage.ops.example.me\n\nWhy: Changing the Host header tricks the virtual host routing; the server treats the request as coming to a different internal service and returns a different response.\n\nEXPLOITATION\nStep 7: Observe that the response now contains a reference to another file: /api/v3/api-docs/Internal%20APIs (URL‑encoded space = %20).\nStep 8: Request the internal file directly.\nGET /api/v3/api-docs/Internal%20APIs HTTP/1.1\nHost: public.stage.ops.example.me\n\nWhy: The server serves the internal OpenAPI spec because no auth check blocks it.\n\nIMPACT\nStep 9: The returned JSON/YAML document lists 756 internal endpoints, admin authentication routes, API‑key management paths, Jira integration webhooks, system‑settings endpoints, and connector names.\nStep 10: Note the leaked data includes a staging dataset of 75,325 users and version numbers for Redis and the backend service.\nStep 11: An attacker can now map the entire backend, locate privileged admin endpoints, and plan further attacks (e.g., credential stuffing, privilege escalation).\nStep 12: Report the finding to the bug‑bounty program and receive a bounty for the disclosed information‑disclosure vulnerability.",
+      "example": "Example target: https://target.example/api/v1/docs/swagger-config\nVulnerable code (pseudo‑Java Spring):\n@Bean\npublic Docket api() {\n    return new Docket(DocumentationType.SWAGGER_2)\n        .select()\n        .apis(RequestHandlerSelectors.any())\n        .paths(PathSelectors.any())\n        .build();\n}\n// No security filter is applied to \"/api/v1/docs/**\"\n\nAttack request (curl):\ncurl -H \"Host: internal.target.example\" https://target.example/api/v1/docs/swagger-config\n\nWhy it works: The Swagger endpoint is exposed without authentication, and the server accepts any Host header, so the attacker receives the full OpenAPI spec containing internal routes.\nThe response includes endpoints like /admin/login, /internal/db/backup, and a list of user IDs, giving the attacker a blueprint for further exploitation.",
+      "takeaway": "When hunting, always look for publicly accessible documentation endpoints such as /swagger-config, /v2/api-docs, or /openapi.json. Tools like ffuf, dirsearch, or Burp Suite's spider can quickly reveal them. The presence of a 4xx/5xx status (e.g., 418) that changes when the Host header is altered is a strong indicator of virtual‑host misconfiguration. Variants of this bug appear in other frameworks (e.g., ASP.NET Core's Swagger UI, FastAPI's /openapi.json). A common beginner mistake is to assume a non‑200 status means the endpoint is safe; instead, test header manipulation to see if the server reveals hidden resources.",
+      "fix": "Restrict the Swagger documentation to internal networks only. In a Spring Boot app, bind the Swagger UI to localhost and protect it with HTTP Basic or OAuth2:\n@Configuration\npublic class SwaggerSecurityConfig {\n    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http.authorizeRequests()\n            .antMatchers(\"/api/v*/api-docs/**\").authenticated()\n            .and()\n            .httpBasic();\n        return http.build();\n    }\n}\nAdditionally, configure the web server or load balancer to allow the IP ranges of the internal network (e.g., 10.0.0.0/8) and block all other source IPs. Ensure the service binds to 127.0.0.1 or the internal interface instead of 0.0.0.0. These steps prevent unauthenticated external users from retrieving the internal OpenAPI specification.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "If there’s one vulnerability class I have truly fallen in love with as a bug bounty hunter, it’s Information Disclosure. You don’t need complex exploits, a specific CVE, or even a single line of payload. Sometimes, all it takes is some recon, navigating through the target, and letting your curiosity guide you. Just by playing around, that curiosity hands you a bug on a silver platter. That’s exactly what happened in this writeup. The vulnerability was a security misconfiguration, allowing absolutely anyone to access the internal map of the entire server without needing any authentication at al",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "74c6a5ea31cf",
     "title": "Security Write-Up: Authentication Bypass via Response Manipulation on Email Change Feature",
     "url": "https://aboutal3b.medium.com/security-write-up-authentication-bypass-via-response-manipulation-on-email-change-feature-c8efbc15c0b1",
