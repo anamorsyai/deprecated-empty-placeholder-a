@@ -1,5 +1,46 @@
 [
   {
+    "id": "74c6a5ea31cf",
+    "title": "Security Write-Up: Authentication Bypass via Response Manipulation on Email Change Feature",
+    "url": "https://aboutal3b.medium.com/security-write-up-authentication-bypass-via-response-manipulation-on-email-change-feature-c8efbc15c0b1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yousef"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-22T14:22:40.000Z",
+    "added_at": "2026-10-22T17:53:43.817Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can bypass the OTP verification for email changes by altering the server’s JSON response flag, allowing unauthorized account modifications.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application decides whether the OTP is correct only by looking at a boolean flag (\"success\") that is sent back in the HTTP response. The front‑end code trusts this flag without any additional server‑side check. Because the server does not re‑validate the OTP before applying the email change, an attacker who can modify the response can force the flag to true. The GraphQL mutation `validateOtpForAccountChange` returns the flag directly, and the client uses it to decide if the email should be updated. This client‑side trust is the root cause of the authentication bypass.",
+      "walkthrough": "RECON\nStep 1: Open the account settings page on hollisterco.com. (We assume the user is logged in.)\nWhy: The page contains the UI for changing the registered email address.\nStep 2: Click the “Change Email” button to start the flow. (A button is an interactive element that triggers a request.)\nWhy: This action sends an HTTP request to the backend to begin the email‑change process.\nStep 3: Enter a new email address and submit. (Submitting sends a GraphQL request.)\nWhy: The server records the pending change and will later require OTP verification.\nStep 4: When prompted, type an arbitrary OTP such as 000000 and press Verify. (The OTP field is a one‑time password used to prove ownership of the new email.)\nWhy: The client sends a GraphQL mutation `validateOtpForAccountChange` with the entered code.\nStep 5: Intercept the GraphQL request/response in Burp Suite. (Burp Suite is a proxy that lets you view and edit HTTP traffic.)\nWhy: Interception lets us see the server’s JSON response.\nStep 6: Observe the failure JSON returned by the server:\n{ \"errors\": [ { \"message\": \"INVALID_OTP\", \"extensions\": { \"code\": \"UNAUTHENTICATED\" } } ], \"data\": { \"validateOtpForAccountChange\": { \"success\": false, \"errors\": [\"Invalid OTP code\"] } } }\nWhy: The field \"success\": false tells the client that the OTP was wrong.\nStep 7: Edit the intercepted response body, changing \"success\": false to \"success\": true and setting \"errors\": null. The modified JSON looks like:\n{ \"data\": { \"validateOtpForAccountChange\": { \"success\": true, \"errors\": null, \"__typename\": \"APIResponse\" } } }\nWhy: By flipping the flag to true we trick the front‑end into believing the OTP was valid.\nStep 8: Forward the edited response to the browser. (Burp Suite can resend the modified packet.)\nWhy: The browser receives the tampered JSON and proceeds as if verification succeeded.\nStep 9: The client‑side JavaScript checks the \"success\" flag and, seeing true, calls the endpoint that actually updates the email address. (JavaScript is the language that runs in the browser.)\nWhy: Because the client trusts the flag, the email change is applied without real OTP validation.\nStep 10: Verify that the account’s email address has been changed to the attacker‑controlled address. (A verification step confirms impact.)\nWhy: This proves the authentication bypass works.\nStep 11: Capture the final HTTP request that performed the email update. (The request contains the new email in its payload.)\nWhy: This request shows the ultimate effect of the manipulated response.\nStep 12: Report the finding to the Hollister bug‑bounty program with proof of concept and remediation advice.\nWhy: Responsible disclosure helps the vendor fix the issue.",
+      "example": "Example target: https://target.example\nVulnerable endpoint: GraphQL mutation `validateOtpForAccountChange` returns a JSON object with a boolean `success` flag.\nServer‑side code (vulnerable):\nfunction validateOtpForAccountChange(otp, newEmail) {\n    // Only checks OTP locally, then returns flag\n    const isValid = (otp === storedOtp);\n    return { success: isValid, errors: isValid ? null : [\"Invalid OTP\"] };\n}\nClient‑side code (vulnerable):\nfetch('/graphql', { method: 'POST', body: JSON.stringify({ query: `mutation { validateOtpForAccountChange(otp:\"${otp}\", email:\"${newEmail}\") { success errors } }` }) })\n    .then(r => r.json())\n    .then(data => { if (data.data.validateOtpForAccountChange.success) { // proceed to change email\n        fetch('/updateEmail', { method: 'POST', body: JSON.stringify({ email: newEmail }) });\n    } });\nAttack: Intercept the response and replace \"success\": false with \"success\": true.\nModified response:\n{ \"data\": { \"validateOtpForAccountChange\": { \"success\": true, \"errors\": null } } }\nWhy it works: The client only looks at the `success` flag; after we force it to true it believes the OTP is correct and sends the email‑update request.",
+      "takeaway": "When testing account‑change flows, always look for client‑side decisions that rely on a simple boolean flag in the API response. Intercept and tamper with that flag using a proxy like Burp Suite or OWASP ZAP. This pattern appears in many OTP, password‑reset, and 2FA implementations that return {\"status\":\"ok\"} or similar. Variants include flipping \"error\": false to true or changing HTTP status codes from 400 to 200. Beginners often forget to verify that the server performed the critical check, assuming the UI’s success message means the operation really succeeded.",
+      "fix": "Move the OTP verification entirely to the server and return an appropriate HTTP error code (e.g., 401 Unauthorized) when the code is wrong. Do not expose a mutable `success` flag that the client can trust; instead, only send a generic success response after the server has updated the email. Example fixed server code:\nfunction validateOtpForAccountChange(otp, newEmail) {\n    if (otp !== storedOtp) {\n        return { error: \"INVALID_OTP\" }, 401; // HTTP 401 indicates authentication failure\n    }\n    // OTP is correct, update email securely\n    updateUserEmail(userId, newEmail);\n    return { success: true }, 200;\n}\nAlso, the front‑end should not decide to change the email based on the flag alone; it should wait for the server’s confirmation that the email was actually updated.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "If you’re interested in web security, bug bounties, or just curious about how authentication and verification flows can break, this article is for you! So grab your favorite drink ☕, and let’s dive right in. ## 💡 Understanding the Concept: What is an Email Change Bypass? Imagine you want to update your registered email address on an online platform. To protect your account, the system requires you to enter a one-time password (OTP) sent to your new email to prove ownership. Now, what if the application decides whether your code is correct based _solely_ on a simple flag sent back in the HTTP",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "13e86c9735e9",
     "title": "Apple HOF (July 2026): A Logic Flaw in iCloud Family Sharing",
     "url": "https://medium.com/@anas-nady/apple-hof-july-2026-a-logic-flaw-in-icloud-family-sharing-b2400549fe2c",

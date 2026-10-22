@@ -1,5 +1,87 @@
 [
   {
+    "id": "74c6a5ea31cf",
+    "title": "Security Write-Up: Authentication Bypass via Response Manipulation on Email Change Feature",
+    "url": "https://aboutal3b.medium.com/security-write-up-authentication-bypass-via-response-manipulation-on-email-change-feature-c8efbc15c0b1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yousef"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-22T14:22:40.000Z",
+    "added_at": "2026-10-22T17:53:43.817Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can bypass the OTP verification for email changes by altering the server’s JSON response flag, allowing unauthorized account modifications.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application decides whether the OTP is correct only by looking at a boolean flag (\"success\") that is sent back in the HTTP response. The front‑end code trusts this flag without any additional server‑side check. Because the server does not re‑validate the OTP before applying the email change, an attacker who can modify the response can force the flag to true. The GraphQL mutation `validateOtpForAccountChange` returns the flag directly, and the client uses it to decide if the email should be updated. This client‑side trust is the root cause of the authentication bypass.",
+      "walkthrough": "RECON\nStep 1: Open the account settings page on hollisterco.com. (We assume the user is logged in.)\nWhy: The page contains the UI for changing the registered email address.\nStep 2: Click the “Change Email” button to start the flow. (A button is an interactive element that triggers a request.)\nWhy: This action sends an HTTP request to the backend to begin the email‑change process.\nStep 3: Enter a new email address and submit. (Submitting sends a GraphQL request.)\nWhy: The server records the pending change and will later require OTP verification.\nStep 4: When prompted, type an arbitrary OTP such as 000000 and press Verify. (The OTP field is a one‑time password used to prove ownership of the new email.)\nWhy: The client sends a GraphQL mutation `validateOtpForAccountChange` with the entered code.\nStep 5: Intercept the GraphQL request/response in Burp Suite. (Burp Suite is a proxy that lets you view and edit HTTP traffic.)\nWhy: Interception lets us see the server’s JSON response.\nStep 6: Observe the failure JSON returned by the server:\n{ \"errors\": [ { \"message\": \"INVALID_OTP\", \"extensions\": { \"code\": \"UNAUTHENTICATED\" } } ], \"data\": { \"validateOtpForAccountChange\": { \"success\": false, \"errors\": [\"Invalid OTP code\"] } } }\nWhy: The field \"success\": false tells the client that the OTP was wrong.\nStep 7: Edit the intercepted response body, changing \"success\": false to \"success\": true and setting \"errors\": null. The modified JSON looks like:\n{ \"data\": { \"validateOtpForAccountChange\": { \"success\": true, \"errors\": null, \"__typename\": \"APIResponse\" } } }\nWhy: By flipping the flag to true we trick the front‑end into believing the OTP was valid.\nStep 8: Forward the edited response to the browser. (Burp Suite can resend the modified packet.)\nWhy: The browser receives the tampered JSON and proceeds as if verification succeeded.\nStep 9: The client‑side JavaScript checks the \"success\" flag and, seeing true, calls the endpoint that actually updates the email address. (JavaScript is the language that runs in the browser.)\nWhy: Because the client trusts the flag, the email change is applied without real OTP validation.\nStep 10: Verify that the account’s email address has been changed to the attacker‑controlled address. (A verification step confirms impact.)\nWhy: This proves the authentication bypass works.\nStep 11: Capture the final HTTP request that performed the email update. (The request contains the new email in its payload.)\nWhy: This request shows the ultimate effect of the manipulated response.\nStep 12: Report the finding to the Hollister bug‑bounty program with proof of concept and remediation advice.\nWhy: Responsible disclosure helps the vendor fix the issue.",
+      "example": "Example target: https://target.example\nVulnerable endpoint: GraphQL mutation `validateOtpForAccountChange` returns a JSON object with a boolean `success` flag.\nServer‑side code (vulnerable):\nfunction validateOtpForAccountChange(otp, newEmail) {\n    // Only checks OTP locally, then returns flag\n    const isValid = (otp === storedOtp);\n    return { success: isValid, errors: isValid ? null : [\"Invalid OTP\"] };\n}\nClient‑side code (vulnerable):\nfetch('/graphql', { method: 'POST', body: JSON.stringify({ query: `mutation { validateOtpForAccountChange(otp:\"${otp}\", email:\"${newEmail}\") { success errors } }` }) })\n    .then(r => r.json())\n    .then(data => { if (data.data.validateOtpForAccountChange.success) { // proceed to change email\n        fetch('/updateEmail', { method: 'POST', body: JSON.stringify({ email: newEmail }) });\n    } });\nAttack: Intercept the response and replace \"success\": false with \"success\": true.\nModified response:\n{ \"data\": { \"validateOtpForAccountChange\": { \"success\": true, \"errors\": null } } }\nWhy it works: The client only looks at the `success` flag; after we force it to true it believes the OTP is correct and sends the email‑update request.",
+      "takeaway": "When testing account‑change flows, always look for client‑side decisions that rely on a simple boolean flag in the API response. Intercept and tamper with that flag using a proxy like Burp Suite or OWASP ZAP. This pattern appears in many OTP, password‑reset, and 2FA implementations that return {\"status\":\"ok\"} or similar. Variants include flipping \"error\": false to true or changing HTTP status codes from 400 to 200. Beginners often forget to verify that the server performed the critical check, assuming the UI’s success message means the operation really succeeded.",
+      "fix": "Move the OTP verification entirely to the server and return an appropriate HTTP error code (e.g., 401 Unauthorized) when the code is wrong. Do not expose a mutable `success` flag that the client can trust; instead, only send a generic success response after the server has updated the email. Example fixed server code:\nfunction validateOtpForAccountChange(otp, newEmail) {\n    if (otp !== storedOtp) {\n        return { error: \"INVALID_OTP\" }, 401; // HTTP 401 indicates authentication failure\n    }\n    // OTP is correct, update email securely\n    updateUserEmail(userId, newEmail);\n    return { success: true }, 200;\n}\nAlso, the front‑end should not decide to change the email based on the flag alone; it should wait for the server’s confirmation that the email was actually updated.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "If you’re interested in web security, bug bounties, or just curious about how authentication and verification flows can break, this article is for you! So grab your favorite drink ☕, and let’s dive right in. ## 💡 Understanding the Concept: What is an Email Change Bypass? Imagine you want to update your registered email address on an online platform. To protect your account, the system requires you to enter a one-time password (OTP) sent to your new email to prove ownership. Now, what if the application decides whether your code is correct based _solely_ on a simple flag sent back in the HTTP",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "ba9c4313252c",
+    "title": "When a “Secret” S3 Link Isn’t So Secret: IDOR in a Whistleblowing System",
+    "url": "https://medium.com/@prabaswaradaffa2/when-a-secret-s3-link-isnt-so-secret-idor-in-a-whistleblowing-system-4e6b47471435",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Revalda Haryadaffa Prabaswara"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-22T14:10:19.000Z",
+    "added_at": "2026-10-22T17:54:36.550Z",
+    "categories": [
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated attacker can download confidential whistleblower attachments by simply using the S3 URL returned after upload, due to an IDOR that relies on secret URLs instead of proper access control.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application stores uploaded files in an Amazon S3 bucket but does not enforce any bucket‑level or application‑level access control. The server returns the full S3 URL in the response field `attached_file_path`, assuming the URL itself is secret. Because the bucket is publicly readable, anyone who knows the URL can retrieve the object without authentication. No additional checks (e.g., signed URLs, token validation) are performed when the URL is accessed. This design flaw turns the URL into an insecure identifier, enabling an Insecure Direct Object Reference (IDOR).",
+      "walkthrough": "RECON\nStep 1: Submit the whistleblowing form with a test file.\n- Action: Fill out the form, attach `Hello world.pdf`, and click submit.\n- Why: This creates a new object in the S3 bucket (HTTP request = a message from browser to server; file = binary data).\n\nStep 2: Intercept the server response with a proxy (e.g., Burp Suite).\n- Action: Capture the HTTP response that contains JSON.\n- Why: A proxy lets us view raw traffic (HTTP = protocol; response = data server sends back).\n\nStep 3: Locate the `attached_file_path` field in the JSON body.\n- Action: Find a line like `\"attached_file_path\":\"https://s3.amazonaws.com/whistlebucket/abc123.pdf\"`.\n- Why: This field holds the direct S3 URL (URL = address of a resource on the web).\n\nEXPLOITATION\nStep 4: Copy the full S3 URL.\n- Action: Highlight and copy the value after `attached_file_path`.\n- Why: The URL points to the exact object stored in S3.\n\nStep 5: Issue a GET request to the copied URL.\n- Action: `GET https://s3.amazonaws.com/whistlebucket/abc123.pdf HTTP/1.1`\n- Why: GET = request to retrieve data; the bucket returns the PDF because it is publicly readable.\n\nStep 6: Observe the PDF content returned byte‑for‑byte.\n- Action: The response body contains the PDF file.\n- Why: No authentication or 403 (Forbidden) is required, proving the IDOR.\n\nIMPACT\nStep 7: Repeat the GET request with any other `attached_file_path` values observed in logs or traffic.\n- Action: Use other URLs discovered from different uploads.\n- Why: All files are exposed, leaking confidential whistleblower evidence.",
+      "example": "**Fictional target:** https://target.example/upload\n**Vulnerable code snippet (pseudo‑Python):**\n```python\nfile_url = f\"https://s3.amazonaws.com/secret-bucket/{file_name}\"  # builds public URL\nreturn jsonify({\"attached_file_path\": file_url})\n```\n**Attack request:**\n```\nGET https://s3.amazonaws.com/secret-bucket/confidential_report.pdf HTTP/1.1\nHost: s3.amazonaws.com\n```\n**Why it works:** The server returns a plain public URL without signing it. Because the S3 bucket allows `s3:GetObject` for anyone, the attacker can download `confidential_report.pdf` simply by requesting the URL. No token, cookie, or header is needed (HTTP GET = retrieve; public bucket = no access control).",
+      "takeaway": "When testing file‑upload features, always look for URLs returned to the client after upload; a plain S3 or CDN link is a red flag. Use tools like Burp Suite or browser dev tools to capture the response and copy the URL. Variants include signed‑URL bypass (if signatures are predictable) and misconfigured Azure Blob or Google Cloud Storage links. Beginners often assume that a long, random‑looking URL is safe—remember that security must be enforced on the server, not hidden in the URL.",
+      "fix": "Enforce bucket‑level access control so objects are not publicly readable. Generate time‑limited, signed URLs (e.g., AWS S3 pre‑signed URLs) when a user needs to download a file, and validate the request on the server side. Alternatively, store files in a private bucket and proxy downloads through an authenticated endpoint that checks the reporter’s permissions before streaming the file. Example fix (pseudo‑Python):\n```python\n# upload stores file in private bucket\ns3.put_object(Bucket='whistlebucket', Key=file_name, Body=file_data, ACL='private')\n# when download is requested, verify user and create signed URL\nif user_can_view(report_id):\n    url = s3.generate_presigned_url('get_object', Params={'Bucket':'whistlebucket','Key':file_name}, ExpiresIn=300)\n    return jsonify({\"download_url\": url})\n```\nThis removes the permanent public link and ensures only authorized users can retrieve the attachment.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A whistleblowing channel exists for exactly one reason: so a reporter can say what happened without fear of being identified. So what happens when the attachment they upload — a document, a photo, evidence — ends up sitting behind a link that anyone can open, no login required? That’s the bug this write-up walks through: a straightforward IDOR that turned an S3 bucket into an open filing cabinet for confidential reports. _Note: identifying details (bucket name, domain, object paths) have been redacted since remediation is still in progress. This post focuses on the vulnerability class and the",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "048b4c7e0a90",
     "title": "$19,500 for a Package Name That Didn’t Exist Yet: A Dependency Confusion Supply Chain Takeover",
     "url": "https://medium.com/@t4nv1/19-500-for-a-package-name-that-didnt-exist-yet-a-dependency-confusion-supply-chain-takeover-b6c0be37ea78",

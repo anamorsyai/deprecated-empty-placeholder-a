@@ -1,5 +1,46 @@
 [
   {
+    "id": "ba9c4313252c",
+    "title": "When a “Secret” S3 Link Isn’t So Secret: IDOR in a Whistleblowing System",
+    "url": "https://medium.com/@prabaswaradaffa2/when-a-secret-s3-link-isnt-so-secret-idor-in-a-whistleblowing-system-4e6b47471435",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Revalda Haryadaffa Prabaswara"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-22T14:10:19.000Z",
+    "added_at": "2026-10-22T17:54:36.550Z",
+    "categories": [
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated attacker can download confidential whistleblower attachments by simply using the S3 URL returned after upload, due to an IDOR that relies on secret URLs instead of proper access control.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application stores uploaded files in an Amazon S3 bucket but does not enforce any bucket‑level or application‑level access control. The server returns the full S3 URL in the response field `attached_file_path`, assuming the URL itself is secret. Because the bucket is publicly readable, anyone who knows the URL can retrieve the object without authentication. No additional checks (e.g., signed URLs, token validation) are performed when the URL is accessed. This design flaw turns the URL into an insecure identifier, enabling an Insecure Direct Object Reference (IDOR).",
+      "walkthrough": "RECON\nStep 1: Submit the whistleblowing form with a test file.\n- Action: Fill out the form, attach `Hello world.pdf`, and click submit.\n- Why: This creates a new object in the S3 bucket (HTTP request = a message from browser to server; file = binary data).\n\nStep 2: Intercept the server response with a proxy (e.g., Burp Suite).\n- Action: Capture the HTTP response that contains JSON.\n- Why: A proxy lets us view raw traffic (HTTP = protocol; response = data server sends back).\n\nStep 3: Locate the `attached_file_path` field in the JSON body.\n- Action: Find a line like `\"attached_file_path\":\"https://s3.amazonaws.com/whistlebucket/abc123.pdf\"`.\n- Why: This field holds the direct S3 URL (URL = address of a resource on the web).\n\nEXPLOITATION\nStep 4: Copy the full S3 URL.\n- Action: Highlight and copy the value after `attached_file_path`.\n- Why: The URL points to the exact object stored in S3.\n\nStep 5: Issue a GET request to the copied URL.\n- Action: `GET https://s3.amazonaws.com/whistlebucket/abc123.pdf HTTP/1.1`\n- Why: GET = request to retrieve data; the bucket returns the PDF because it is publicly readable.\n\nStep 6: Observe the PDF content returned byte‑for‑byte.\n- Action: The response body contains the PDF file.\n- Why: No authentication or 403 (Forbidden) is required, proving the IDOR.\n\nIMPACT\nStep 7: Repeat the GET request with any other `attached_file_path` values observed in logs or traffic.\n- Action: Use other URLs discovered from different uploads.\n- Why: All files are exposed, leaking confidential whistleblower evidence.",
+      "example": "**Fictional target:** https://target.example/upload\n**Vulnerable code snippet (pseudo‑Python):**\n```python\nfile_url = f\"https://s3.amazonaws.com/secret-bucket/{file_name}\"  # builds public URL\nreturn jsonify({\"attached_file_path\": file_url})\n```\n**Attack request:**\n```\nGET https://s3.amazonaws.com/secret-bucket/confidential_report.pdf HTTP/1.1\nHost: s3.amazonaws.com\n```\n**Why it works:** The server returns a plain public URL without signing it. Because the S3 bucket allows `s3:GetObject` for anyone, the attacker can download `confidential_report.pdf` simply by requesting the URL. No token, cookie, or header is needed (HTTP GET = retrieve; public bucket = no access control).",
+      "takeaway": "When testing file‑upload features, always look for URLs returned to the client after upload; a plain S3 or CDN link is a red flag. Use tools like Burp Suite or browser dev tools to capture the response and copy the URL. Variants include signed‑URL bypass (if signatures are predictable) and misconfigured Azure Blob or Google Cloud Storage links. Beginners often assume that a long, random‑looking URL is safe—remember that security must be enforced on the server, not hidden in the URL.",
+      "fix": "Enforce bucket‑level access control so objects are not publicly readable. Generate time‑limited, signed URLs (e.g., AWS S3 pre‑signed URLs) when a user needs to download a file, and validate the request on the server side. Alternatively, store files in a private bucket and proxy downloads through an authenticated endpoint that checks the reporter’s permissions before streaming the file. Example fix (pseudo‑Python):\n```python\n# upload stores file in private bucket\ns3.put_object(Bucket='whistlebucket', Key=file_name, Body=file_data, ACL='private')\n# when download is requested, verify user and create signed URL\nif user_can_view(report_id):\n    url = s3.generate_presigned_url('get_object', Params={'Bucket':'whistlebucket','Key':file_name}, ExpiresIn=300)\n    return jsonify({\"download_url\": url})\n```\nThis removes the permanent public link and ensures only authorized users can retrieve the attachment.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A whistleblowing channel exists for exactly one reason: so a reporter can say what happened without fear of being identified. So what happens when the attachment they upload — a document, a photo, evidence — ends up sitting behind a link that anyone can open, no login required? That’s the bug this write-up walks through: a straightforward IDOR that turned an S3 bucket into an open filing cabinet for confidential reports. _Note: identifying details (bucket name, domain, object paths) have been redacted since remediation is still in progress. This post focuses on the vulnerability class and the",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "85e340f7cf66",
     "title": "IDOR in a Third-Party AI Chat Widget: Sensitive Data Exposure",
     "url": "https://infosecwriteups.com/idor-in-a-third-party-ai-chat-widget-sensitive-data-exposure-49bd64c01f3c",
