@@ -1,5 +1,45 @@
 [
   {
+    "id": "048b4c7e0a90",
+    "title": "$19,500 for a Package Name That Didn’t Exist Yet: A Dependency Confusion Supply Chain Takeover",
+    "url": "https://medium.com/@t4nv1/19-500-for-a-package-name-that-didnt-exist-yet-a-dependency-confusion-supply-chain-takeover-b6c0be37ea78",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-22T06:41:01.000Z",
+    "added_at": "2026-10-22T07:04:24.753Z",
+    "categories": [
+      "supply-chain"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "A dependency‑confusion supply‑chain flaw let an attacker publish a malicious package with a name that didn’t exist yet, enabling code execution on victims and earning a $19,500 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "061527f90250",
     "title": "The Verizon Report Just Proved Something Terrifying: Attackers Are Using AI to Exploit Bugs in…",
     "url": "https://medium.com/@riyalimba/the-verizon-report-just-proved-something-terrifying-attackers-are-using-ai-to-exploit-bugs-in-f0a1a4d2ead3",

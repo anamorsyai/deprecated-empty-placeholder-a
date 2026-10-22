@@ -1,5 +1,45 @@
 [
   {
+    "id": "13e86c9735e9",
+    "title": "Apple HOF (July 2026): A Logic Flaw in iCloud Family Sharing",
+    "url": "https://medium.com/@anas-nady/apple-hof-july-2026-a-logic-flaw-in-icloud-family-sharing-b2400549fe2c",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Anas NadY"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-21T20:00:28.000Z",
+    "added_at": "2026-10-22T07:04:43.644Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": null,
+    "summary_en": "A logic flaw in Apple's iCloud Family Sharing feature allowed for unauthorized manipulation of family group settings or access.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a family subscription service at target.example where users can join a 'Family Plan'. A logic flaw occurs when the application fails to verify the relationship between the person sending an invite and the person receiving it, or fails to restrict who can change administrative settings.\n\nVulnerable Code Snippet:\n```javascript\n// This function handles role changes in a family group\napp.post('/api/family/set-role', (req, res) => {\n  const { targetUserId, role } = req.body;\n  // BUG: The code updates the role without checking if the requester is the 'Organizer'\n  db.execute('UPDATE members SET role = ? WHERE user_id = ?', [role, targetUserId]);\n  res.json({ status: 'success' });\n});\n```\n\nAttack Request:\n```http\nPOST /api/family/set-role HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\n  \"targetUserId\": \"12345\",\n  \"role\": \"organizer\"\n}\n```\n\nWhy it works: The server receives an HTTP request (a digital message sent from your computer to a server) containing a JSON payload (a structured data format used to send information). Because the server does not perform an authorization check (a security step where the computer verifies if you are actually allowed to perform the action), any member of the family—even a child account—can send this request to promote themselves to 'organizer' status, gaining control over billing and other members' permissions.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "80ace8941158",
     "title": "How I Bypassed a Region-Locked Comment Feature on a Public Bug Bounty Program",
     "url": "https://medium.com/@mostafa23110006/how-i-bypassed-a-region-locked-comment-feature-on-a-public-bug-bounty-program-b5c65fdfe67b",
