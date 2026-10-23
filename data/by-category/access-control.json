@@ -1,5 +1,45 @@
 [
   {
+    "id": "463c5cadbbb6",
+    "title": "Discovering and Responsibly Disclosing a Path Traversal Vulnerability in a WordPress Plugin",
+    "url": "https://medium.com/@YusifMammadzada/discovering-and-responsibly-disclosing-a-path-traversal-vulnerability-in-a-wordpress-plugin-23def8cd2c67",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yusif Mammadzada"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-23T11:40:25.000Z",
+    "added_at": "2026-10-23T12:44:48.788Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A path traversal vulnerability in the Easy Testimonial Slider and Form WordPress plugin allowed attackers to delete arbitrary files on the server by manipulating the CAPTCHA cleanup process.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a lack of input validation in the plugin's CAPTCHA file deletion routine. The application accepted a file path or filename from the user and passed it directly to a file deletion function without checking if the path pointed outside the intended temporary directory. This allowed the use of 'dot-dot-slash' (../) sequences to navigate the server's file system and target sensitive files.",
+      "walkthrough": "RECON\n1. Identify a WordPress website using the 'Easy Testimonial Slider and Form' plugin (version < 1.0.32).\n2. Locate a public-facing page that displays a testimonial submission form.\nDISCOVERY\n3. Observe that the form includes a CAPTCHA (a security test to distinguish humans from bots).\n4. Note that the CAPTCHA generates a temporary image file on the server's disk.\n5. Use a web proxy (a tool like Burp Suite that intercepts traffic between your browser and the server) to monitor requests when the form is submitted or refreshed.\n6. Look for a specific HTTP request (a message sent from your browser to the server) that handles the cleanup of old CAPTCHA images.\nEXPLOITATION\n7. Identify the parameter (a specific piece of data in the request) that specifies which file should be deleted.\n8. We assume the application uses a parameter like 'captcha_file' to identify the target for deletion.\n9. Attempt to manipulate this parameter by adding path traversal sequences.\n10. Use the sequence '../' which tells the operating system to move up one directory level.\n11. Construct a payload (a malicious piece of data) designed to reach a critical file, such as the WordPress configuration file.\n12. Example payload: '../../../../wp-config.php'\n13. Send the modified request to the server.\n14. The server receives the request and processes the deletion command.\nIMPACT\n15. Because the server does not validate the path, it follows the '../' instructions out of the CAPTCHA folder.\n16. The server deletes 'wp-config.php', which contains the site's database credentials.\n17. The website immediately goes offline or enters a setup state because it can no longer find its configuration, resulting in a Denial of Service (DoS).",
+      "example": "Imagine a fictional site 'target.example' that has a profile picture feature. When you change your picture, it deletes the old one using this URL: https://target.example/edit-profile?delete_old=user123_old.jpg. The server-side code looks like this: unlink('/var/www/html/uploads/' . $_GET['delete_old']);. An attacker changes the request to: https://target.example/edit-profile?delete_old=../../index.php. The server combines the paths to get '/var/www/html/uploads/../../index.php', which resolves to '/var/www/html/index.php'. The server then deletes the main homepage file because it blindly trusted the 'delete_old' input.",
+      "takeaway": "Always look for features that handle file management, such as image uploads, downloads, or 'cleanup' routines. If you see a filename in a URL or POST parameter, try adding '../' to see if you can access or affect files in other folders. A common signal is a parameter ending in a file extension like .jpg or .pdf. Avoid the mistake of assuming that 'hidden' cleanup processes are safe; if the browser sends the filename, the user can change it.",
+      "fix": "To fix this, developers should use the basename() function in PHP, which strips out all path information and returns only the filename. Additionally, they should validate that the file exists within a specific, hardcoded directory before attempting any operation. \n\nFixed code example:\n$filename = basename($_GET['captcha_file']);\n$safe_path = '/var/www/html/wp-content/uploads/captcha/' . $filename;\nif (file_exists($safe_path)) {\n    unlink($safe_path);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a security analysis of the **Easy Testimonial Slider and Form** WordPress plugin, I discovered a **Path Traversal vulnerability** associated with its CAPTCHA file deletion functionality. ## 🔍 The Vulnerability The issue was related to insufficient file path validation during the CAPTCHA cleanup process. Under certain conditions, this flaw could potentially allow unauthorized deletion of files outside the intended directory. ## 🛠️ Responsible Disclosure After identifying the vulnerability, I reported it directly to the plugin’s development team. The developers responded promptly and to",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "ba9c4313252c",
     "title": "When a “Secret” S3 Link Isn’t So Secret: IDOR in a Whistleblowing System",
     "url": "https://medium.com/@prabaswaradaffa2/when-a-secret-s3-link-isnt-so-secret-idor-in-a-whistleblowing-system-4e6b47471435",

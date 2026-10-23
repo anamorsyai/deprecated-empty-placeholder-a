@@ -1,5 +1,86 @@
 [
   {
+    "id": "463c5cadbbb6",
+    "title": "Discovering and Responsibly Disclosing a Path Traversal Vulnerability in a WordPress Plugin",
+    "url": "https://medium.com/@YusifMammadzada/discovering-and-responsibly-disclosing-a-path-traversal-vulnerability-in-a-wordpress-plugin-23def8cd2c67",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yusif Mammadzada"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-23T11:40:25.000Z",
+    "added_at": "2026-10-23T12:44:48.788Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A path traversal vulnerability in the Easy Testimonial Slider and Form WordPress plugin allowed attackers to delete arbitrary files on the server by manipulating the CAPTCHA cleanup process.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a lack of input validation in the plugin's CAPTCHA file deletion routine. The application accepted a file path or filename from the user and passed it directly to a file deletion function without checking if the path pointed outside the intended temporary directory. This allowed the use of 'dot-dot-slash' (../) sequences to navigate the server's file system and target sensitive files.",
+      "walkthrough": "RECON\n1. Identify a WordPress website using the 'Easy Testimonial Slider and Form' plugin (version < 1.0.32).\n2. Locate a public-facing page that displays a testimonial submission form.\nDISCOVERY\n3. Observe that the form includes a CAPTCHA (a security test to distinguish humans from bots).\n4. Note that the CAPTCHA generates a temporary image file on the server's disk.\n5. Use a web proxy (a tool like Burp Suite that intercepts traffic between your browser and the server) to monitor requests when the form is submitted or refreshed.\n6. Look for a specific HTTP request (a message sent from your browser to the server) that handles the cleanup of old CAPTCHA images.\nEXPLOITATION\n7. Identify the parameter (a specific piece of data in the request) that specifies which file should be deleted.\n8. We assume the application uses a parameter like 'captcha_file' to identify the target for deletion.\n9. Attempt to manipulate this parameter by adding path traversal sequences.\n10. Use the sequence '../' which tells the operating system to move up one directory level.\n11. Construct a payload (a malicious piece of data) designed to reach a critical file, such as the WordPress configuration file.\n12. Example payload: '../../../../wp-config.php'\n13. Send the modified request to the server.\n14. The server receives the request and processes the deletion command.\nIMPACT\n15. Because the server does not validate the path, it follows the '../' instructions out of the CAPTCHA folder.\n16. The server deletes 'wp-config.php', which contains the site's database credentials.\n17. The website immediately goes offline or enters a setup state because it can no longer find its configuration, resulting in a Denial of Service (DoS).",
+      "example": "Imagine a fictional site 'target.example' that has a profile picture feature. When you change your picture, it deletes the old one using this URL: https://target.example/edit-profile?delete_old=user123_old.jpg. The server-side code looks like this: unlink('/var/www/html/uploads/' . $_GET['delete_old']);. An attacker changes the request to: https://target.example/edit-profile?delete_old=../../index.php. The server combines the paths to get '/var/www/html/uploads/../../index.php', which resolves to '/var/www/html/index.php'. The server then deletes the main homepage file because it blindly trusted the 'delete_old' input.",
+      "takeaway": "Always look for features that handle file management, such as image uploads, downloads, or 'cleanup' routines. If you see a filename in a URL or POST parameter, try adding '../' to see if you can access or affect files in other folders. A common signal is a parameter ending in a file extension like .jpg or .pdf. Avoid the mistake of assuming that 'hidden' cleanup processes are safe; if the browser sends the filename, the user can change it.",
+      "fix": "To fix this, developers should use the basename() function in PHP, which strips out all path information and returns only the filename. Additionally, they should validate that the file exists within a specific, hardcoded directory before attempting any operation. \n\nFixed code example:\n$filename = basename($_GET['captcha_file']);\n$safe_path = '/var/www/html/wp-content/uploads/captcha/' . $filename;\nif (file_exists($safe_path)) {\n    unlink($safe_path);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During a security analysis of the **Easy Testimonial Slider and Form** WordPress plugin, I discovered a **Path Traversal vulnerability** associated with its CAPTCHA file deletion functionality. ## 🔍 The Vulnerability The issue was related to insufficient file path validation during the CAPTCHA cleanup process. Under certain conditions, this flaw could potentially allow unauthorized deletion of files outside the intended directory. ## 🛠️ Responsible Disclosure After identifying the vulnerability, I reported it directly to the plugin’s development team. The developers responded promptly and to",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "1690d9d6439b",
+    "title": "When the PDF Started Oversharing: From XXE to Reading /etc/passwd",
+    "url": "https://0mar-3lsayed.medium.com/when-the-pdf-started-oversharing-from-xxe-to-reading-etc-passwd-d19360a702a8",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Omar Elsayed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-23T11:21:01.000Z",
+    "added_at": "2026-10-23T12:45:17.179Z",
+    "categories": [
+      "xxe",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A PDF export feature was found to be vulnerable to XML External Entity (XXE) injection, allowing an attacker to read sensitive server files like /etc/passwd by embedding them into the generated document.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was an insecurely configured XML parser used by the /api/generate-pdf endpoint. XML (a format for organizing data) allows for 'Entities,' which are essentially variables. The server's parser was configured to allow 'External Entities,' which are instructions to fetch data from external sources or local files. Because the parser did not restrict these entities, it followed the researcher's instruction to read a system file and include its content in the XML structure, which was then rendered into the final PDF.",
+      "walkthrough": "RECON\n1. Locate the 'Export as PDF' feature within the application.\n2. Click the button to trigger a document generation request.\nDISCOVERY\n3. Open Burp Suite (a tool used to intercept and modify web traffic) to monitor the request.\n4. Identify the specific endpoint being used: POST /api/generate-pdf.\n5. Observe the 'Content-Type: application/xml' header, indicating the server expects XML data.\n6. Examine the XML body of the request:\n<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><title>Security Report</title><author>Researcher</author><content>Report content goes here.</content></document>\nWhy: This shows the application takes user-controlled XML tags like <title> and <content> and puts them in the PDF.\nTESTING\n7. Formulate a hypothesis that the XML parser (software that reads XML) might be vulnerable to XXE (a bug where the parser follows malicious shortcuts).\n8. Modify the request to include a DOCTYPE (a section that defines XML rules) with an external entity.\n9. Use a payload designed to trigger an external interaction:\n<!DOCTYPE test [ <!ENTITY xxe SYSTEM \"http://[YOUR_COLLABORATOR_ID].oastify.com\"> ]>\nWhy: The 'SYSTEM' keyword tells the server to fetch data from the provided URL (a beginner gloss: like telling the server to visit a website).\n10. Reference the entity '&xxe;' inside one of the tags:\n<content>&xxe;</content>\nWhy: The '&' and ';' tell the parser to replace this text with whatever the 'xxe' variable fetched.\n11. Send the request and check Burp Collaborator (a tool that listens for server connections) for a DNS or HTTP hit.\n12. Confirm the server attempted to reach the external URL, proving it processes external entities.\nEXPLOITATION\n13. Change the external entity to target a local file on the server instead of a URL.\n14. Use the following payload to target the Linux password file:\n<!DOCTYPE test [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\nWhy: The 'file://' protocol tells the server to look at its own internal storage (a beginner gloss: like opening a file on your own hard drive).\n15. Ensure the entity reference '&xxe;' is still inside the <content> tag.\n16. Send the finalized malicious request to the /api/generate-pdf endpoint.\nIMPACT\n17. Receive the generated PDF file from the server response.\n18. Open the PDF and observe that the 'content' section now contains the text of the server's /etc/passwd file.\nWhy: The server read the file, put it into the XML, and then 'printed' that XML into the PDF document.",
+      "example": "Suppose a fictional site 'target.example' has a 'Update Profile' feature that uses XML. A normal request looks like: <user><name>Alice</name><bio>Hello!</bio></user>. An attacker sends: <!DOCTYPE r [<!ENTITY shhh SYSTEM \"file:///C:/Windows/win.ini\">]><user><name>Alice</name><bio>&shhh;</bio></user>. If the server is vulnerable, Alice's profile 'bio' will now display the contents of the server's internal Windows configuration file. This works because the XML parser is not told to ignore 'SYSTEM' entities, so it fetches the file content and treats it as part of the user's bio text.",
+      "takeaway": "Always test features that generate documents (PDF, Excel, Word) or accept structured data (XML, SVG, JSON). Use 'Out-of-Band' (OOB) testing with tools like Burp Collaborator to find 'blind' XXE where the server doesn't show you the result directly. A common variant is XXE via SVG file uploads, as SVGs are actually XML files. A common beginner mistake is assuming that if an app uses JSON, it isn't vulnerable; however, many servers will still process XML if you manually change the 'Content-Type' header to 'application/xml'.",
+      "fix": "The most effective fix is to completely disable DTDs (Document Type Definitions) and external entity processing in the XML parser configuration. In Java, this is done by setting specific features on the DocumentBuilderFactory. For example: factory.setFeature(\"http://apache.org/xml/features/disallow-doctype-decl\", true); and factory.setFeature(\"http://xml.org/sax/features/external-general-entities\", false);. This ensures the parser ignores any 'SYSTEM' or 'ENTITY' instructions provided by the user.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A bug bounty journey that started with an ordinary Export button and ended with a server putting the contents of its own files inside a PDF. Talk about going above and beyond._ In the world of bug bounty hunting, not every vulnerability hides behind a complicated dashboard or some obscure API endpoint. Sometimes, you find a security issue in a feature that looks completely harmless , so harmless that the last thing you would expect is for it to expose files stored on the server itself. This time, it started with a simple feature: **Export as PDF**. Press enter or click to view image in full s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "e474b3b7d42b",
     "title": "Information Disclosure via Exposed Swagger Config",
     "url": "https://medium.com/@v01d19/information-disclosure-via-exposed-swagger-config-dafee40ab215",

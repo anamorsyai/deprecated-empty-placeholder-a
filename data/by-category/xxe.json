@@ -1,5 +1,46 @@
 [
   {
+    "id": "1690d9d6439b",
+    "title": "When the PDF Started Oversharing: From XXE to Reading /etc/passwd",
+    "url": "https://0mar-3lsayed.medium.com/when-the-pdf-started-oversharing-from-xxe-to-reading-etc-passwd-d19360a702a8",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Omar Elsayed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-23T11:21:01.000Z",
+    "added_at": "2026-10-23T12:45:17.179Z",
+    "categories": [
+      "xxe",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A PDF export feature was found to be vulnerable to XML External Entity (XXE) injection, allowing an attacker to read sensitive server files like /etc/passwd by embedding them into the generated document.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was an insecurely configured XML parser used by the /api/generate-pdf endpoint. XML (a format for organizing data) allows for 'Entities,' which are essentially variables. The server's parser was configured to allow 'External Entities,' which are instructions to fetch data from external sources or local files. Because the parser did not restrict these entities, it followed the researcher's instruction to read a system file and include its content in the XML structure, which was then rendered into the final PDF.",
+      "walkthrough": "RECON\n1. Locate the 'Export as PDF' feature within the application.\n2. Click the button to trigger a document generation request.\nDISCOVERY\n3. Open Burp Suite (a tool used to intercept and modify web traffic) to monitor the request.\n4. Identify the specific endpoint being used: POST /api/generate-pdf.\n5. Observe the 'Content-Type: application/xml' header, indicating the server expects XML data.\n6. Examine the XML body of the request:\n<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><title>Security Report</title><author>Researcher</author><content>Report content goes here.</content></document>\nWhy: This shows the application takes user-controlled XML tags like <title> and <content> and puts them in the PDF.\nTESTING\n7. Formulate a hypothesis that the XML parser (software that reads XML) might be vulnerable to XXE (a bug where the parser follows malicious shortcuts).\n8. Modify the request to include a DOCTYPE (a section that defines XML rules) with an external entity.\n9. Use a payload designed to trigger an external interaction:\n<!DOCTYPE test [ <!ENTITY xxe SYSTEM \"http://[YOUR_COLLABORATOR_ID].oastify.com\"> ]>\nWhy: The 'SYSTEM' keyword tells the server to fetch data from the provided URL (a beginner gloss: like telling the server to visit a website).\n10. Reference the entity '&xxe;' inside one of the tags:\n<content>&xxe;</content>\nWhy: The '&' and ';' tell the parser to replace this text with whatever the 'xxe' variable fetched.\n11. Send the request and check Burp Collaborator (a tool that listens for server connections) for a DNS or HTTP hit.\n12. Confirm the server attempted to reach the external URL, proving it processes external entities.\nEXPLOITATION\n13. Change the external entity to target a local file on the server instead of a URL.\n14. Use the following payload to target the Linux password file:\n<!DOCTYPE test [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\nWhy: The 'file://' protocol tells the server to look at its own internal storage (a beginner gloss: like opening a file on your own hard drive).\n15. Ensure the entity reference '&xxe;' is still inside the <content> tag.\n16. Send the finalized malicious request to the /api/generate-pdf endpoint.\nIMPACT\n17. Receive the generated PDF file from the server response.\n18. Open the PDF and observe that the 'content' section now contains the text of the server's /etc/passwd file.\nWhy: The server read the file, put it into the XML, and then 'printed' that XML into the PDF document.",
+      "example": "Suppose a fictional site 'target.example' has a 'Update Profile' feature that uses XML. A normal request looks like: <user><name>Alice</name><bio>Hello!</bio></user>. An attacker sends: <!DOCTYPE r [<!ENTITY shhh SYSTEM \"file:///C:/Windows/win.ini\">]><user><name>Alice</name><bio>&shhh;</bio></user>. If the server is vulnerable, Alice's profile 'bio' will now display the contents of the server's internal Windows configuration file. This works because the XML parser is not told to ignore 'SYSTEM' entities, so it fetches the file content and treats it as part of the user's bio text.",
+      "takeaway": "Always test features that generate documents (PDF, Excel, Word) or accept structured data (XML, SVG, JSON). Use 'Out-of-Band' (OOB) testing with tools like Burp Collaborator to find 'blind' XXE where the server doesn't show you the result directly. A common variant is XXE via SVG file uploads, as SVGs are actually XML files. A common beginner mistake is assuming that if an app uses JSON, it isn't vulnerable; however, many servers will still process XML if you manually change the 'Content-Type' header to 'application/xml'.",
+      "fix": "The most effective fix is to completely disable DTDs (Document Type Definitions) and external entity processing in the XML parser configuration. In Java, this is done by setting specific features on the DocumentBuilderFactory. For example: factory.setFeature(\"http://apache.org/xml/features/disallow-doctype-decl\", true); and factory.setFeature(\"http://xml.org/sax/features/external-general-entities\", false);. This ensures the parser ignores any 'SYSTEM' or 'ENTITY' instructions provided by the user.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A bug bounty journey that started with an ordinary Export button and ended with a server putting the contents of its own files inside a PDF. Talk about going above and beyond._ In the world of bug bounty hunting, not every vulnerability hides behind a complicated dashboard or some obscure API endpoint. Sometimes, you find a security issue in a feature that looks completely harmless , so harmless that the last thing you would expect is for it to expose files stored on the server itself. This time, it started with a simple feature: **Export as PDF**. Press enter or click to view image in full s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "a49310f702bd",
     "title": "One File, Zero Clicks Needed: A Stored DoS Story",
     "url": "https://medium.com/@devyanipardesh7010/one-file-zero-clicks-needed-a-stored-dos-story-68725c5703c3",
