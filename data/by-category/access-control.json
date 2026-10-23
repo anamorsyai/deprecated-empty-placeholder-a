@@ -1,5 +1,47 @@
 [
   {
+    "id": "c61c27ac753a",
+    "title": "Private Bug Bounty Experience— Tata Play Bug Bounty Program",
+    "url": "https://medium.com/@sh1v4ng/private-bug-bounty-experience-tata-play-bug-bounty-program-ad12b049a2b1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Shivang Tiwari"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-23T20:02:09.000Z",
+    "added_at": "2026-10-23T20:38:36.684Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated Spring Boot Actuator interface was exposed on a Tata Play subdomain, revealing sensitive infrastructure details and management endpoints like /shutdown.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a misconfiguration in the Spring Boot framework where management endpoints, designed for internal monitoring, were exposed to the public internet. By default, Spring Boot Actuator provides several 'endpoints' (specific web addresses used for monitoring) that can reveal system health, environment variables, or even allow remote application shutdown if not explicitly secured with authentication (a login process).",
+      "walkthrough": "RECON\n1. The researcher performed reconnaissance (the process of gathering information about a target) on Tata Play's subdomains to find interesting web services.\n\nDISCOVERY\n2. The researcher identified a subdomain running a Java-based application and attempted to access the Actuator index (a directory of management tools).\n3. The researcher sent a GET request (a standard message used by browsers to ask a server for a page) to the following endpoint:\nGET /actuator HTTP/1.1\nWhy: This request asks the server to list all available management functions. (An endpoint is a specific URL path that performs a task).\n4. The server responded with an HTTP 200 OK status ( a code meaning the request was successful) and a JSON body (a structured text format used for data exchange).\n5. The JSON response contained a list of links, including sensitive ones like \"shutdown\" and \"refresh\".\n6. The researcher then checked the health endpoint to see what information it revealed.\n7. The researcher sent the following request:\nGET /actuator/health HTTP/1.1\nWhy: This endpoint is used to check if the application is running, but it often leaks details about the underlying infrastructure like database status.\n8. The server returned detailed information about the application's internal health and infrastructure components.\n\nEXPLOITATION\n9. The researcher noted the presence of the shutdown endpoint:\n\"shutdown\": { \"href\": \"https://[redacted]/actuator/shutdown\", \"templated\": false }\nWhy: This indicates that the application might allow an unauthenticated user to stop the entire service. (Unauthenticated means the user has not logged in).\n10. The researcher followed ethical guidelines and did not attempt to trigger the shutdown, as this would cause a Denial of Service (an attack that makes a service unavailable to users).\n11. The researcher observed that while some endpoints returned an HTTP 403 Forbidden (a code meaning access is denied), the main index and health data remained public.\n\nIMPACT\n12. The researcher documented the findings, showing that an attacker could gain deep knowledge of the server's setup or potentially crash the application.",
+      "example": "Imagine a fictional company 'target.example' that uses Spring Boot for its backend. A researcher finds that the developers forgot to secure the management tools. \n\n1. The researcher visits: https://api.target.example/actuator/env\n2. The server responds with a list of all environment variables (settings used by the app).\n3. Inside the response, the researcher finds: \"DB_PASSWORD\": \"SuperSecret123!\"\n4. This happens because the 'env' endpoint (which shows environment settings) was not restricted to administrators. \n\nAn attacker could now use this password to log into the company's database and steal user data.",
+      "takeaway": "When hunting for bugs, always check for common framework-specific paths like '/actuator', '/heapdump', or '/env' on Java applications. Use automated scanners or wordlists (lists of common file names) to find these hidden management interfaces. A key signal is finding a server that returns a JSON list of links when you visit '/actuator'. A common mistake is assuming that if the main '/actuator' page is blocked, the sub-pages are also blocked; always test individual endpoints like '/actuator/health' or '/actuator/info' separately.",
+      "fix": "To fix this, developers should use Spring Security to ensure that all actuator endpoints require a valid administrator login. Additionally, sensitive endpoints like 'shutdown' should be disabled entirely if not needed. In the 'application.properties' file, you can restrict exposure using the following configuration:\n\nmanagement.endpoints.web.exposure.include=health,info\nmanagement.endpoint.health.show-details=never\nmanagement.endpoint.shutdown.enabled=false\n\nThis configuration ensures only basic health and info are visible, details are hidden, and the shutdown command is completely turned off.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "On 13 October 2026, I reported several findings through Tata Play’s bug bounty program. Three were marked duplicate. I can accept that outcome if someone reported them first. What concerns me is what happened with one of those reports: an exposed Spring Boot Actuator management interface on a Tata Play subdomain. I am withholding the hostname and reproduction details while the behavior I observed may still be present. **What I originally reported** At **15:00:45 IST on 13 October**, an unauthenticated request to the Actuator index returned HTTP 200. Its response listed management links, includ",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "463c5cadbbb6",
     "title": "Discovering and Responsibly Disclosing a Path Traversal Vulnerability in a WordPress Plugin",
     "url": "https://medium.com/@YusifMammadzada/discovering-and-responsibly-disclosing-a-path-traversal-vulnerability-in-a-wordpress-plugin-23def8cd2c67",
