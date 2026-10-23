@@ -42,6 +42,47 @@
     "score": 53
   },
   {
+    "id": "7016647bc744",
+    "title": "How I found BAC leads to De-escalate the Administrator privilege",
+    "url": "https://medium.com/@0xRaccoon/how-i-found-bac-leads-to-de-escalate-the-administrator-privilege-c855a1e61994",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Raccoon"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-23T13:13:55.000Z",
+    "added_at": "2026-10-23T23:32:21.353Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A low-privileged user can strip an administrator of their permissions by sending them a team invitation, which triggers a logic error that downgrades the admin's account to a 'pending' state.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's invitation logic failed to verify if an email address was already associated with an active, high-privileged account before processing a new invite. When the 'Internal User' (attacker) sent an invitation to the 'Administrator' (victim) at victim@gmail.com, the system likely updated the existing user record's status to 'pending' or 'invited.' This design flaw allowed a subordinate to overwrite the state of a superior account, effectively performing an unauthorized privilege de-escalation.",
+      "walkthrough": "RECON\nStep 1: Identify the hierarchy of roles within the organization-based application.\nCode: Administrator (Full Control), Internal User (Limited), External User (N/A)\nWhy: To understand the target (Administrator) and the attacker's starting position (Internal User). A Role is a set of permissions assigned to a user.\n\nDISCOVERY\nStep 2: Locate the user invitation feature available to the 'Internal User' role.\nCode: [Invitation Functionality]\nWhy: This is the target endpoint where the vulnerability resides. An Endpoint is a specific web address or 'door' on a server where a function lives.\n\nEXPLOITATION\nStep 3: Identify the email address of the target Administrator.\nCode: victim@gmail.com\nWhy: The email serves as the unique identifier for the account the attacker wants to disrupt.\n\nStep 4: Use the 'Internal User' account to send a new invitation to the Administrator's email address.\nCode: attacker@gmail.com invites victim@gmail.com\nWhy: The researcher is testing if the system allows 're-inviting' an existing user. A Parameter is a piece of information, like an email, sent to the server to process.\n\nIMPACT\nStep 5: Log in as the Administrator to check the account status.\nCode: [Administrator Dashboard]\nWhy: To see if the invitation affected the existing account. The UI (User Interface) is the visual part of the website you click and see.\n\nStep 6: Observe that administrative control buttons have vanished from the Administrator's view.\nCode: \"The buttons of accepting and ignoring had disappeared\"\nWhy: The system processed the invite and downgraded the Admin's active session to a restricted 'pending' state. This is Privilege De-escalation, a bug where a user's power is reduced by an unauthorized person.",
+      "example": "On a fictional site called target.example, a 'Project Member' can invite others via a form. The vulnerable backend code looks like this: \n\nfunction invite(email) { \n  User.findOneAndUpdate({email: email}, {status: 'invited', role: 'guest'}); \n}\n\nAn attacker sends a request: \nPOST /api/invite \nHost: target.example\nContent-Type: application/json\n\n{\"email\": \"admin@target.example\"}\n\nBecause the code uses 'findOneAndUpdate' without checking the current role, it finds the existing Admin and changes their role to 'guest' and status to 'invited,' locking the Admin out of their management tools.",
+      "takeaway": "When hunting for logic bugs, always test how 'Invite' or 'Add User' features handle emails that are already registered in the system. Look for instances where a system 'updates' an existing record instead of 'rejecting' the duplicate input. A common signal is when an app allows you to 're-send' an invite to someone who is already a member. A variant of this bug involves 'Self-Registration' where signing up with an existing admin's email might trigger a password reset or account merge. Avoid the mistake of assuming that 'Invite' forms only create new records; they often interact with existing ones.",
+      "fix": "The application must implement a check to see if an email is already registered before creating an invitation. If the user exists, the system should return an error or simply do nothing. Additionally, the system should never allow a lower-privileged role to modify the status or role of a higher-privileged account.\n\nFixed Code Example:\n\nif (User.exists({email: invitedEmail})) {\n    return error(\"User is already a member of this organization.\");\n} else {\n    createNewInvitation(invitedEmail);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This bug enables me to De-escalate any user in my organization has an administrator role (( The highest role )) to a lower privilege Although i don’t have the permission to do so **The Program** The program was an organization based program , The flaw was in the function of inviting users to the team or the organization, But first let me show you the roles Administarator ==> The role which can control everything in the organization Internal User ==>This role has permissions on some function including the invitation , But Internal user can only invite user with the same privilege (( Internal us",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "463c5cadbbb6",
     "title": "Discovering and Responsibly Disclosing a Path Traversal Vulnerability in a WordPress Plugin",
     "url": "https://medium.com/@YusifMammadzada/discovering-and-responsibly-disclosing-a-path-traversal-vulnerability-in-a-wordpress-plugin-23def8cd2c67",
