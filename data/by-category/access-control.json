@@ -1,5 +1,45 @@
 [
   {
+    "id": "776124d87990",
+    "title": "Insufficient Session Expiration leads to Account Takeover via Password Change",
+    "url": "https://medium.com/@xlr99/insufficient-session-expiration-leads-to-account-takeover-via-password-change-8ba38191df52",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "xlr9"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-23T23:43:31.000Z",
+    "added_at": "2026-10-24T01:55:30.394Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A session management flaw allowed an attacker to use an expired session token to change a user's password, leading to full account takeover. The platform failed to invalidate tokens upon logout and did not require the current password for security updates.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is insufficient session expiration, where the server fails to invalidate (make unusable) a session token (a secret key identifying a user) after logout. This occurred on the presentation platform's profile and password change endpoints (specific web addresses for tasks). The backend code accepted the 'auth_token' parameter (a piece of data in a request) regardless of whether the user had officially logged out. Furthermore, the password change feature lacked a requirement for the 'old password' or 2FA (an extra security code). This allowed a 24-hour window for an attacker to reuse a captured token to gain full control.",
+      "walkthrough": "RECON\n1. The researcher logged into the presentation platform and captured the session token (a secret key identifying the user).\nauth_token=abk193\nWhy: To identify the parameter (a piece of data in a request) used for authentication (proving who you are).\n2. The researcher navigated to the user profile page to test for access control (rules about who can see what).\nGET /user/profile HTTP/1.1\nWhy: To find an endpoint (a specific URL for a task) where user data can be modified.\nDISCOVERY\n3. The researcher attempted to change the account name using a token from a different account.\nauth_token=[attacker_token]\nWhy: To test if the system properly checks if the token belongs to the account being changed.\n4. The researcher observed that the name change was successful, indicating an initial access control flaw.\nHTTP/1.1 200 OK\nWhy: This confirmed the server was not strictly validating the relationship between the token and the specific user data.\n5. The researcher logged out of the account to end the session (a temporary connection).\nGET /logout HTTP/1.1\nWhy: To trigger the invalidation (making a token unusable) process on the server side.\n6. The researcher logged back in to generate a new, active session token.\nauth_token=[new_token]\nWhy: To establish a baseline for what a 'valid' current token looks like.\n7. The researcher attempted to use the old token to change the name again.\nauth_token=abk193\nWhy: To see if the server still accepts the token after logout, which is a sign of insufficient session expiration.\n8. The researcher confirmed the name changed successfully using the old token.\nHTTP/1.1 200 OK\nWhy: This proved the server does not delete or blacklist tokens from its database when a user logs out.\nEXPLOITATION\n9. The researcher navigated to the password change feature to increase the impact of the bug.\nPOST /change-password HTTP/1.1\nWhy: To target a high-impact feature that could lead to Account Takeover (gaining full control of an account).\n10. The researcher entered a new password in the form fields provided by the platform.\nnew_password=attacker_pass&confirm_password=attacker_pass\nWhy: To prepare the payload (the actual data being sent) for the password change request.\n11. The researcher captured the password change request and replaced the active token with the old victim token.\nCookie: auth_token=abk193\nWhy: To exploit the fact that the server still considers the old token valid for critical actions.\n12. The researcher sent the modified request to the server.\nPOST /change-password HTTP/1.1\nWhy: To execute the final step of the exploit and change the victim's password.\nIMPACT\n13. The researcher observed that the server accepted the old token and updated the password.\nHTTP/1.1 200 OK\nWhy: This confirmed that the password change endpoint lacks security protections like requiring the 'old password'.\n14. The researcher logged out and successfully logged back in using the victim's email and the new password.\nLogin: victim@example.com / attacker_pass\nWhy: To prove a permanent Account Takeover (ATO) was achieved.\n15. The researcher noted that the token remained valid for over 24 hours.\nValidity: > 24 hours\nWhy: To demonstrate the long window of opportunity an attacker has to use a stolen token.\n16. The researcher concluded that even if a victim clicks 'Logout', an attacker with the token maintains access.\nImpact: Critical\nWhy: Because the server-side session is never truly destroyed until a long timeout occurs.",
+      "example": "Imagine a site target.example where you log in and get a cookie 'session_id=xyz'. When you click 'Logout', the site deletes the cookie from your browser, but the server still has 'xyz' marked as 'active' in its database. An attacker who stole 'xyz' earlier can send a request: 'POST /account/email-update HTTP/1.1' with 'Cookie: session_id=xyz' and 'new_email=hacker@evil.com'. Because the server doesn't check if the user actually logged out or ask for the current password, it changes the email. Now the attacker can use the 'Forgot Password' feature to send a reset link to hacker@evil.com and take over the account. This works because the server failed to 'invalidate' (kill) the session on its end.",
+      "takeaway": "Always test if session tokens (secret keys for sessions) remain functional after a logout or a password change. Look for critical endpoints (specific URLs for tasks) like 'change email' or 'change password' that do not require the user to enter their current password. Use tools like Burp Suite to capture a token, log out, and then try to reuse that token in a 'Repeater' request. A common variant is 'Session Fixation', where an attacker forces a specific token on a victim. A beginner mistake is assuming that because a cookie is gone from the browser, it is also gone from the server's memory.",
+      "fix": "To fix this, the server must implement strict session management. First, when a user logs out, the server must invalidate the session token in its database so it can never be used again. Second, when a password is changed, the server should automatically kill all other active sessions for that user. Third, critical actions like changing a password must require the user to provide their 'current password' or a 2FA code. Finally, tokens should have a short expiration time. \n\n```python\ndef logout_user(session_token):\n    # CORRECT: Delete the session from the server-side store\n    db.execute('DELETE FROM active_sessions WHERE token = ?', (session_token,))\n    return 'Logged out successfully'\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "H owdy fellers! During my recent bug hunting in VDP programs, I was analyzing a presentation platform and came across a vulnerability. At first glance, it seemed like an ordinary issue that might easily be classified as low or P4. However, once you fully understand the impact, the true danger becomes clear. In this write-up, I am going to share a session management vulnerability and show how a simple mistake in the back-end code can expose users’ accounts to complete takeover. ### Vulnerability Analysis and Discovery Method While searching for access control vulnerabilities on the platform, I",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c61c27ac753a",
     "title": "Private Bug Bounty Experience— Tata Play Bug Bounty Program",
     "url": "https://medium.com/@sh1v4ng/private-bug-bounty-experience-tata-play-bug-bounty-program-ad12b049a2b1",
