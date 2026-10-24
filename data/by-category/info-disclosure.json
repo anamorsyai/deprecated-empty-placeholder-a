@@ -1,5 +1,47 @@
 [
   {
+    "id": "c656ec527968",
+    "title": "Reading 400 Million Git Pushes: GitHub OSINT at Full Population",
+    "url": "https://osintteam.blog/reading-400-million-git-pushes-github-osint-at-full-population-2fc279e0612b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Dzianis Skliar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-24T18:25:30.000Z",
+    "added_at": "2026-10-24T22:03:31.812Z",
+    "categories": [
+      "info-disclosure",
+      "recon",
+      "supply-chain"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher reconstructed the entire 2025 GitHub public push stream into a queryable database, uncovering nearly 10,000 live credentials and widespread corporate data leaks from personal repositories.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a systemic 'blind spot' in GitHub's security architecture: secret scanning and push protection (tools that block secrets from being uploaded) only apply to repositories owned by an organization. When employees, contractors, or ex-employees push code to their personal public repositories, they often use their corporate email addresses or include sensitive files like .env or .pem, which are completely invisible to the employer's security team. This creates a massive third-party risk where corporate secrets are exposed in unmonitored personal spaces.",
+      "walkthrough": "RECON\n1. The researcher used the GitHub Archive (a public record of every event on GitHub) to identify when a 'push' (sending code updates to a server) occurred.\n2. Because the archive doesn't show what changed, they used the GitHub REST Compare API (a tool to see differences between two versions of code) to fetch the list of changed files for 405 million pushes.\n3. They loaded this data into BigQuery (a powerful Google database for searching massive amounts of information) to make it searchable using SQL (a language for querying databases).\nDISCOVERY\n4. To find corporate identities, they searched for commit emails (the email address attached to a code change) that didn't belong to common providers like Gmail.\nSELECT REGEXP_EXTRACT(author_email, r'@(.+)$') AS domain FROM `ghscan.commits_2025` WHERE author_email NOT LIKE '%gmail.com%';\nWhy: This extracts the domain (the part after the @) to identify employees from companies like NVIDIA or Microsoft committing to personal repos.\n5. They filtered out 'bots' (automated programs) by looking for accounts with a massive number of pushes but very few repositories.\nSELECT actor, COUNT(*) AS pushes FROM `ghscan.commits_2025` GROUP BY actor ORDER BY pushes DESC;\nWhy: High push counts on single repos usually indicate automated systems rather than human developers.\nEXPLOITATION\n6. The researcher searched for sensitive file paths (locations of files) that commonly contain secrets, such as .env (environment variables) or .pem (security keys).\nSELECT repository, actor, f AS path FROM `ghscan.commits_2025`, UNNEST(files) AS f WHERE f LIKE '%.env' OR f LIKE '%.pem';\nWhy: Developers often accidentally include these files, which contain passwords or private keys, in their code uploads.\n7. They identified 639,806 repositories containing .env files and tens of thousands with private keys (.pem) or cloud configuration files (.tfstate).\nIMPACT\n8. By checking the contents of these files (outside the database), they found 9,965 live credentials that still worked.\n9. Among these were 22 AWS root keys (master keys for Amazon Cloud accounts) that had been public for over a year.\n10. They discovered that corporate identities leak even when the code itself is harmless, allowing attackers to map out an organization's developers and their side projects.",
+      "example": "Imagine a developer at 'target.example' is working on a personal side project at home. They use their work laptop and have their git configuration set to their work email (dev@target.example). They create a new project and accidentally include a file named '.env' which contains the production database password for target.example. They run 'git push' to their personal public GitHub account. An attacker queries a database like the one in the article for any commits where the email ends in '@target.example' and the file list includes '.env'. The attacker finds the repo, downloads the .env file, and uses the password to steal the company's entire customer database.",
+      "takeaway": "Corporate security does not end at the organization's GitHub boundary; employee personal repositories are a primary leak vector. When hunting, don't just search for company names (which leads to false positives); search for corporate email domains in commit metadata. Look for specific high-value file extensions like .env, .tfstate, .pem, and .npmrc. A key variant is the 'CLAUDE.md' or 'AGENTS.md' files, which are used by AI coding assistants and can be manipulated for prompt injection. Avoid the mistake of assuming a deleted repository means the secret is gone; if it was indexed or archived, it is still findable.",
+      "fix": "Organizations should implement a strict policy forbidding the use of corporate email addresses for personal GitHub accounts. Use tools like 'canary tokens' (fake secrets that alert you when used) to detect leaks early. Instead of relying on GitHub's built-in scanning, companies should use external OSINT tools to monitor the public push stream for their own domains and employee handles. Most importantly, secrets should never be stored in files; use a dedicated secret management service (like AWS Secrets Manager or HashiCorp Vault) where access is tied to identity, not a text string in a file. If a leak occurs, the only safe response is to revoke the credential entirely, as rotating it does not remove the historical exposure.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> TL;DR > > > I’ve rebuilt the entire 2025 Personal Public GitHub push stream (405M pushes, 32.8M repos, 2.41B file paths) into a single queryable BigQuery table and measured what actually leaks at full population rather than from a sample. The dataset is available to anyone with a valid Google Cloud account: https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sghscan-corpus-12520!2sghscan > > > **Secrets that still work:**after removing the scanner noise we were left with 9,965 credentials that still authenticated (a floor), 57% of which were database logins. In our focused cloud pass",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "c61c27ac753a",
     "title": "Private Bug Bounty Experience— Tata Play Bug Bounty Program",
     "url": "https://medium.com/@sh1v4ng/private-bug-bounty-experience-tata-play-bug-bounty-program-ad12b049a2b1",
