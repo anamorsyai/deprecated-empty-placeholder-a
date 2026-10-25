@@ -1,5 +1,46 @@
 [
   {
+    "id": "eabced558d19",
+    "title": "My First $$ From Real Bug — And It Was Very Simple",
+    "url": "https://meetcyber.net/my-first-from-real-bug-and-it-was-very-simple-60cf697649f0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nishant kumar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-25T09:23:21.000Z",
+    "added_at": "2026-10-25T09:27:40.013Z",
+    "categories": [
+      "xss",
+      "other"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A lead-generation form on an e-commerce site allowed HTML injection in the 'Name' field, enabling attackers to send weaponized phishing links via the company's official email domain.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application failed to sanitize or encode user input in the 'Name' field before including it in an automated email. Sanitization is the process of cleaning input to remove dangerous characters (like < or >). Because the server trusted the input, it allowed raw HTML tags to flow from the form directly into the email template, where the recipient's email client executed the code.",
+      "walkthrough": "RECON\n1. The researcher identified an e-commerce platform and looked for less-obvious input areas.\n2. They located a knowledge base page containing a lead-generation form for a free ebook.\nDISCOVERY\n3. The researcher examined the form, which required three parameters: an email, a phone number, and a name.\nParameter: A specific piece of information sent within a request.\n4. They hypothesized that the 'Name' field might not be properly checked before being used in automated emails.\nEXPLOITATION\n5. The researcher entered a payload into the 'Name' field designed to create a clickable link.\nPayload: \"><a href=\"https://evil.com\">Click Me!</a>\nWhy: The \"> characters attempt to close any HTML tag the server might be using to wrap the name, while <a> creates a hyperlink (a clickable link to another site).\n6. They provided a valid email address they controlled to receive the resulting message.\n7. They submitted the form, triggering an HTTP request to the server.\nHTTP request: A message sent by your computer to a server asking for data or sending information.\nIMPACT\n8. The researcher opened their inbox and found an official email from the company's domain.\n9. The email contained a rendered, clickable link pointing to 'evil.com' instead of a plain-text name.\n10. This confirmed HTML Injection, allowing for high-reputation phishing where the company's own server sends the malicious link.",
+      "example": "Assume a fictional site target.example has a 'Sign up for our Newsletter' form. The backend code looks like this: email_content = '<h1>Welcome, ' + user_name + '!</h1>'. If an attacker sets their name to: <img src=x onerror=alert(1)>, the email_content becomes: <h1>Welcome, <img src=x onerror=alert(1)>!</h1>. When the victim opens the email, the browser or email client sees the <img> tag, fails to find the image 'x', and runs the 'onerror' code, which is a JavaScript alert. This demonstrates how simple text fields can be turned into execution points for code.",
+      "takeaway": "Never assume 'boring' fields like Name, Subject, or Address are safe; developers often skip security checks on these compared to passwords. Always test fields that trigger automated responses or emails, as these are prime targets for HTML injection and phishing. Look for 'Out-of-Band' impacts where your input shows up in a different place (like an inbox) than where you typed it. A common mistake is only testing for <script> tags; sometimes simple <a> or <img> tags are enough to prove a high-impact phishing vulnerability.",
+      "fix": "The correct fix is to use HTML Encoding on all user-supplied data before it is included in an email or web page. Encoding converts special characters like < into &lt; and > into &gt;, ensuring the email client treats them as literal text rather than instructions to create a link or run code. In a language like C#, you would use: string safeName = WebUtility.HtmlEncode(userInput.Name); emailBody = $\"Hello {safeName}, here is your ebook!\";",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "For the last several months, **I’ve been documenting my cybersecurity learning journey — Linux fundamentals, networking protocols, ARP, HTTP/HTTPS, Wi-Fi security, the works**. It was a lot of theory, a lot of “here’s how this attack conceptually works.” Then I decided it was time to talk about vulnerabilities and start _finding_ them. > This is the story of the first real bug I found — and honestly, it was hiding somewhere so mundane I almost didn’t bother testing it. Image 4 ## The Target Nobody Thinks to Test Most beginners go straight for login forms and search bars — everyone tests those.",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c61c27ac753a",
     "title": "Private Bug Bounty Experience— Tata Play Bug Bounty Program",
     "url": "https://medium.com/@sh1v4ng/private-bug-bounty-experience-tata-play-bug-bounty-program-ad12b049a2b1",
