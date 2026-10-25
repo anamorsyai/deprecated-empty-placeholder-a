@@ -1,5 +1,46 @@
 [
   {
+    "id": "2483e09e5ba7",
+    "title": "How I Earned 252.60 USDC from an ENS Bug",
+    "url": "https://medium.com/@anandvashishtha/how-i-earned-252-60-usdc-from-an-ens-bug-a31c8a253f5f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "ANAND VASHISHTHA"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-25T16:52:26.000Z",
+    "added_at": "2026-10-25T17:19:49.222Z",
+    "categories": [
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "A transfer flow in ENS Explorer updates the name’s ETH address before transferring ownership, so if the ownership transfer fails the address remains pointing to the recipient, allowing them to receive payments while the original owner still holds the name.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a mismatch between the UI’s displayed options (options) and the actual transaction builder (effectiveOptions). The UI hides the resolver‑detachment action because the owner lacks that permission, yet it still disables the ETH‑address field with an incorrect explanation. The transaction plan updates the ENS name’s ETH address first and then attempts the ownership transfer as two independent blockchain transactions. Because these transactions are not atomic, a failure in the second step leaves the address record changed while ownership stays with the original owner. This inconsistent state lets the recipient collect payments intended for the name’s owner.",
+      "walkthrough": "RECON\nStep 1: Open the ENS Explorer transfer page in a browser. \nWhy: The web page (UI) is the user interface that lets a user initiate name transfers.\nStep 2: Observe that the \"Detach resolver\" checkbox is hidden (owner lacks permission) while the ETH‑address field is disabled with the note \"Not needed while the resolver is being detached.\" \nWhy: The UI reflects the owner’s permissions but shows a misleading explanation.\n\nDISCOVERY\nStep 3: Open the browser’s developer tools and watch the network requests when the transfer is submitted. \nWhy: Network requests reveal the exact transactions the UI is sending to the blockchain.\nStep 4: Notice two separate JSON payloads: one that calls the resolver’s setAddress function, and a second that calls the registrar’s transferFrom function. \nWhy: The first payload updates the ENS name’s ETH address record; the second attempts to change name ownership. \n\nEXPLOITATION\nStep 5: In the UI, enter a recipient address (e.g., 0xRecipient) and click \"Transfer\". \nWhy: This triggers the two transactions described above.\nStep 6: Payload sent to update the address (verbatim from the article – none provided, so left blank). \nWhy: This transaction succeeds and writes the new ETH address into the ENS record.\nStep 7: Payload sent to transfer ownership (verbatim – none provided). \nWhy: This second transaction is expected to move the name to the recipient.\nStep 8: As the recipient, cause the ownership transfer to revert (for example, by refusing to accept the name or by sending a transaction with insufficient gas). \nWhy: A reverted transaction leaves the ownership unchanged but does not undo the earlier address update.\nStep 9: Verify that the address update succeeded while the ownership transfer failed. \nWhy: The blockchain state now shows the original owner still listed as the name’s owner, but the ETH address points to the recipient.\n\nIMPACT\nStep 10: Resolve the ENS name using any wallet (e.g., MetaMask) to retrieve the ETH address. \nWhy: Resolution reads the resolver’s address record, which now contains the recipient’s address.\nStep 11: Send a small amount of ETH to the ENS name. \nWhy: The payment is routed to the address stored in the resolver, i.e., the recipient’s wallet.\nStep 12: Confirm that the original owner can later restore the address record, but the earlier payment cannot be reclaimed. \nWhy: The state inconsistency caused a one‑time loss of funds to the recipient while the name remained with the original owner.",
+      "example": "**Fictional target:** target.example is a web‑based domain manager that stores an email address for payment notifications. The UI lets a domain owner change the email and then transfer the domain to a new owner. The backend builds two separate transactions: (1) update the email record, (2) transfer domain ownership. If the second transaction fails, the email stays changed while the original owner still controls the domain, allowing the new owner to receive payment notifications. \n\n**Vulnerable snippet (pseudo‑code):**\n```js\nif (canEditEmail) {\n  txs.push(updateEmail(domainId, newEmail)); // first tx\n}\nif (canTransfer) {\n  txs.push(transferDomain(domainId, newOwner)); // second tx\n}\nsendBatch(txs);\n``` \n**Attack request (illustrative):**\n```\nPOST /api/transferDomain\n{\n  \"domain\":\"example.com\",\n  \"newOwner\":\"0xAttacker\",\n  \"newEmail\":\"attacker@evil.com\"\n}\n``` \n**Why it works:** The server creates two independent blockchain calls. The email update succeeds, but the domain transfer can be forced to revert (e.g., by the attacker refusing the transfer). The email remains pointing to the attacker, so any future payment notifications are sent to them. This mirrors the ENS bug where address and ownership changes are not atomic.",
+      "takeaway": "When reviewing smart‑contract or dApp workflows, always ask: if part of a multi‑step process fails, what state changes have already been committed? Look for UI elements that hide unavailable actions but still disable related fields with misleading text. Tools like transaction‑tracing, blockchain explorers, and network‑request inspection can reveal separate calls. Variants of this issue appear in token‑swap interfaces that approve a token before executing a trade, or in NFT marketplaces that update metadata before transferring ownership. Beginners often assume a UI button equals a single atomic operation; the key mistake is not verifying that the backend groups related state changes into one atomic transaction or rolls back on failure.",
+      "fix": "The application should make the address update and ownership transfer an atomic operation: either both succeed or both revert. This can be done by a single smart‑contract function that first checks permissions, then updates the resolver’s address and transfers the name in one transaction, reverting on any error. The UI must generate the transaction plan from the same effective options it displays, ensuring the explanatory text matches the actual actions. Additionally, the UI should clearly show that the resolver will not be detached and should not disable the ETH‑address field with an unrelated message. By aligning the form’s `options` and `effectiveOptions` and using atomic contract calls, the inconsistent state is eliminated.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_While building AdReceipt for ETHOnline, I found a transfer flow that could fail after changing a name’s payment address._ The name transfer failed. The payment address had already changed. The ENS name still belonged to its original owner, but someone sending ETH to that name could now send it to the recipient of the unsuccessful transfer. That was the inconsistent state I reproduced and reported in the ENS Audit Competition on Immunefi. The project confirmed it as a new Medium-severity finding. On October 9, 2026, it became a paid report. The story started while I was building something else",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "8588e58b3e22",
     "title": "Breaking the Vault: Bypassing Chatbot Limits via Race Conditions & Response Manipulation",
     "url": "https://medium.com/@aazzazy772/breaking-the-vault-bypassing-chatbot-limits-via-race-conditions-response-manipulation-e8f68ce3e354",

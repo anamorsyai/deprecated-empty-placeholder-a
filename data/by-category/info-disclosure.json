@@ -1,5 +1,47 @@
 [
   {
+    "id": "c407e6be341e",
+    "title": "The User Was Removed. The Access Wasn’t.",
+    "url": "https://medium.com/@ashour2j83/i-found-an-api-endpoint-i-couldnt-explain-then-i-realized-i-could-still-access-a-private-project-5721172a6c22",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Ashour0x"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-25T16:19:22.000Z",
+    "added_at": "2026-10-25T17:20:05.426Z",
+    "categories": [
+      "access-control",
+      "idor-bola",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An API endpoint failed to verify if a user was still a member of a private project, allowing removed users to continue accessing sensitive project metadata and member lists.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a failure to distinguish between authentication and authorization at the /api/page/{pageId}/info endpoint. While the server correctly verified that the requester had a valid JWT (authentication), it did not check if that specific user still held permissions for the requested pageId (authorization). This logic flaw meant that any logged-in user with a known Page ID could retrieve its details, regardless of their membership status. The application likely assumed that if a user knew the ID, they must have access, or it simply failed to update its access control list (ACL) checks for this specific undocumented endpoint.",
+      "walkthrough": "RECON\n1. The researcher examined the application's API documentation, which is a manual for how different parts of the software talk to each other.\n2. They discovered an endpoint that was not being used by the visible website interface.\nGET /api/page/{pageId}/info\nWhy: To find 'hidden' or undocumented functionality that might have weaker security than the main site.\n\nDISCOVERY\n3. The researcher logged into a test account to obtain a valid JWT, which is a digital ID card used to prove who a user is.\nAuthorization: Bearer <VALID_JWT>\nWhy: The API requires the user to be logged in (authenticated) before it will process any request.\n4. They identified a Page ID, which is a unique number identifying a specific project page, by looking at the URL while they were still a member of that project.\n/api/page/12345/info\nWhy: You need a valid target ID to see what information the server returns for a legitimate request.\n5. They sent the request and observed a detailed response containing member emails, names, and permission levels.\n{\n \"name\": \"Private Project\",\n \"users\": [{\"email\": \"admin@example.com\", \"permissions\": 500}]\n}\nWhy: This establishes a baseline of what data is exposed by the endpoint.\n\nEXPLOITATION\n6. Using an administrator account, the researcher removed the test user from the project page.\nWhy: This simulates a real-world scenario where a user is fired or leaves a team and should no longer see private data.\n7. The researcher sent the exact same request again using the removed user's JWT.\nGET /api/page/12345/info HTTP/2\nHost: <TARGET_HOST>\nAuthorization: Bearer <VALID_JWT>\nWhy: To see if the server checks if the user is still a member before sending the data.\n8. The server responded with a 200 OK status, meaning the request was successful, and returned all the private project data.\nWhy: This proves the server only checks if the user is logged in, not if they are allowed to see this specific project.\n\nIMPACT\n9. The researcher updated the project members using the admin account while the user was still removed.\nWhy: To see if the removed user can see 'live' changes they were never supposed to know about.\n10. The researcher requested the endpoint again and saw the new member list reflected in the response.\nWhy: This confirms the leak is not just cached (old) data, but a persistent, real-time unauthorized access to private information.",
+      "example": "Imagine a fictional website 'target.example' that manages private photo albums. Each album has a unique ID. \n\nVulnerable Code (Node.js/Express):\napp.get('/api/album/:albumId', verifyToken, (req, res) => {\n  // verifyToken only checks if the user is logged in\n  const album = db.findAlbum(req.params.albumId);\n  res.json(album); // Fails to check if req.user.id is in album.authorizedUsers\n});\n\nAn attacker who was once invited to 'Album_99' but was later kicked out can still send this request:\nGET /api/album/Album_99\nAuthorization: Bearer [Attacker_JWT]\n\nBecause the code only checks if the JWT is valid (verifyToken) and then immediately fetches the album by ID, the attacker receives the full list of private photos and member comments, even though they are no longer on the guest list.",
+      "takeaway": "Always test 'Access Revocation' scenarios: if a user is removed from a group, folder, or project, do their old links and API calls still work? When hunting, look for API documentation (like Swagger or Redoc) to find endpoints that the developers might have forgotten to secure as strictly as the main UI. A common mistake is relying on 'Security by Obscurity,' assuming that if a user doesn't see a button in the interface, they won't find the API endpoint. Variants of this bug include 'BOLA' (Broken Object Level Authorization), where you change an ID to see someone else's data, and 'Insecure Direct Object Reference' (IDOR).",
+      "fix": "The fix requires adding an authorization check after the authentication check. The server must query the database to ensure the user ID extracted from the JWT is currently associated with the Page ID requested. \n\nFixed Code Example:\napp.get('/api/page/:pageId/info', verifyToken, async (req, res) => {\n  const userId = req.user.id;\n  const pageId = req.params.pageId;\n  \n  // Check if the user is actually a member of this page\n  const isMember = await db.checkMembership(userId, pageId);\n  \n  if (!isMember) {\n    return res.status(403).send('Access Denied: You are not a member of this page.');\n  }\n  \n  const pageInfo = await db.getPageInfo(pageId);\n  res.json(pageInfo);\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Junior Penetration Tester | Web Security Enthusiast Sharing PortSwigger Labs write-ups & security concepts in simple words. writer Cybersecurity Bug Bounty Idor Web Security Access Control # The User Was Removed. The Access Wasn’t. Image 3: Ashour0x Ashour0x 4 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F5721172a6c22&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40ashour2j83%2Fi-found-an-api-endpoint-i-couldnt-explain-then-i-realized-i-could-still-access-a-private-project-5721172a6c22&user=Ashour0x&userId=717ae25de14a&source",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c656ec527968",
     "title": "Reading 400 Million Git Pushes: GitHub OSINT at Full Population",
     "url": "https://osintteam.blog/reading-400-million-git-pushes-github-osint-at-full-population-2fc279e0612b",
