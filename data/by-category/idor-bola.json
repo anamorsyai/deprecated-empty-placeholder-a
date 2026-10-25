@@ -1,5 +1,47 @@
 [
   {
+    "id": "53143eef6f71",
+    "title": "How I Use AI to Find Potential IDOR Vulnerabilities: A Practical 6-Step Guide | by [Samadhan Shimple](https://samadhanshimple.medium.com/)",
+    "url": "https://samadhanshimple.medium.com/how-i-use-ai-to-find-potential-idor-vulnerabilities-a-practical-6-step-guide-by-samadhan-shimple-54b873c7d560",
+    "source": {
+      "slug": "medium-tag-bugbounty",
+      "name": "Medium — #bugbounty"
+    },
+    "authors": [
+      "Samadhan shimple"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-25T13:43:36.000Z",
+    "added_at": "2026-10-25T13:51:38.692Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "recon"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A methodology for using AI to identify potential Insecure Direct Object Reference (IDOR) parameters in HTTP requests, followed by manual verification using Burp Suite.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a failure in server-side authorization logic where the application trusts a client-provided identifier without verifying ownership. This happens when a developer assumes that an authenticated user should be able to access any resource they can name, failing to check if the user's session matches the resource's owner. In the article, endpoints like /api/orders/1001 are vulnerable because they rely solely on the ID provided in the request.",
+      "walkthrough": "RECON\n1. Create two separate test accounts, Account A and Account B, to act as the attacker and the victim.\n2. Use Burp Suite, a tool for intercepting and inspecting web traffic, to capture HTTP requests (messages sent from your browser to a server).\n3. Browse the application to find features that read or update data, looking for endpoints (specific web addresses that perform tasks) like /api/users/123.\nDISCOVERY\n4. Identify parameters, which are specific pieces of information sent in a request, that look like database IDs.\n5. Prepare a sanitized HTTP request by removing sensitive data like cookies (small files used to keep you logged in) or passwords.\n6. Use an AI prompt to analyze the request: \"Analyze the following sanitized HTTP request for potential broken access control and IDOR risks.\"\n7. Review the AI's suggestions for common IDOR candidates like user_id, account_id, or document_id.\nEXPLOITATION\n8. Check the URL path, the part of the address after the site name, for IDs: GET /api/users/123\nWhy: The number 123 identifies a specific user profile (an object reference).\n9. Check query parameters, extra details added after a question mark in a URL: GET /api/documents?document_id=456\nWhy: The document_id tells the server which file to fetch (a query-based reference).\n10. Check the JSON body, a structured data format used in requests: {\"document_id\": 456, \"title\": \"Test\"}\nWhy: The server might use the ID inside the data list to decide which record to update (a body-based reference).\n11. Use Burp Suite Repeater, a tool to modify and re-send requests, to take a request from Account A and replace the ID with one belonging to Account B.\nIMPACT\n12. Send the modified request and observe if the server returns Account B's private data to Account A.\nWhy: If the server returns the data, it proves it is not checking if Account A actually owns that ID (successful IDOR).",
+      "example": "Imagine a fictional site called target.example that lets users view their private medical reports. When a user clicks 'View Report', the browser sends this request: GET /api/v1/reports/view?report_id=8821. The server-side code looks like this: report = database.query(\"SELECT * FROM reports WHERE id = \" + request.params.report_id); return report;. This code is vulnerable because it fetches the report based only on the ID provided by the user. An attacker logged in as User A can change the report_id to 8822 (User B's report). Because the code never checks if the logged-in user's ID matches the 'owner_id' column in the database, User A will successfully see User B's private medical information.",
+      "takeaway": "Always look for parameters that appear to be database keys or resource names, even if they aren't simple numbers. Use AI to quickly scan large amounts of traffic for these patterns, but never trust AI to confirm the bug; manual testing with two accounts is mandatory. A common variant is finding IDs in custom HTTP headers (metadata sent with requests) or nested inside complex JSON objects. A beginner mistake is assuming that long, random-looking IDs (UUIDs) are safe; they are still vulnerable if the server doesn't check ownership.",
+      "fix": "The server must implement an authorization check for every request that accesses a resource. Instead of just querying by the ID, the query should include the authenticated user's ID. For example, in Node.js: app.get('/api/reports/:id', (req, res) => { const reportId = req.params.id; const userId = req.session.userId; db.query('SELECT * FROM reports WHERE id = ? AND owner_id = ?', [reportId, userId], (err, result) => { if (result.length === 0) return res.status(403).send('Unauthorized'); res.json(result); }); });",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Sometimes, the interesting part is hidden inside a JSON request, an API endpoint, or a feature that allows users to view or update their own information. The challenge is knowing which requests are worth testing and how to verify whether the application is actually missing an access control check. While testing web applications, one thing becomes clear: **AI can help you identify potential IDOR parameters faster, but manual testing is still needed to confirm the vulnerability.** In this article, I will explain a practical six-step workflow for using AI and Burp Suite to identify and test poten",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "ba9c4313252c",
     "title": "When a “Secret” S3 Link Isn’t So Secret: IDOR in a Whistleblowing System",
     "url": "https://medium.com/@prabaswaradaffa2/when-a-secret-s3-link-isnt-so-secret-idor-in-a-whistleblowing-system-4e6b47471435",
