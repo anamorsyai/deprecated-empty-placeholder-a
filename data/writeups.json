@@ -1,5 +1,45 @@
 [
   {
+    "id": "ca7590b323a9",
+    "title": "Improper Input Validation and Parameter Acceptance",
+    "url": "https://medium.com/@akashmotkar001/improper-input-validation-and-parameter-acceptance-e344a7b103cb",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-26T07:01:21.000Z",
+    "added_at": "2026-10-26T10:38:23.680Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "An API endpoint fails to validate input parameters, processing malformed data types and unexpected fields instead of rejecting them with an error.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is the lack of strict server-side validation schemas for API inputs. The application logic at the /ns/api/v1/event/list endpoint is designed to be permissive, meaning it ignores or attempts to process data even when it does not match the expected format (e.g., receiving a string like 'test' when it expects a number). This happens because the backend code likely lacks a 'fail-fast' mechanism that checks parameter types, lengths, and names against a predefined allowlist before passing them to deeper processing layers.",
+      "walkthrough": "PHASE 1: AUTHENTICATION\n1. Log in to the target application using valid credentials to obtain an active session.\n2. Identify your authentication token (a digital key used to prove you are logged in).\nAuthorization: Bearer <VALID_TOKEN>\nWhy: Most APIs require you to prove who you are before they will talk to you.\n\nPHASE 2: CAPTURE VALID REQUEST\n3. Open Burp Suite (a tool used to intercept and modify web traffic).\n4. Navigate to the events or notifications section of the app to trigger an API call.\n5. Locate the specific GET request (a request to retrieve data) in your history.\nGET /ns/api/v1/event/list?page=1&limit=20 HTTP/1.1\nWhy: You need a 'baseline' or a working example of what the server expects to see.\n\nPHASE 3: PARAMETER MANIPULATION\n6. Send the captured request to the 'Repeater' tool in Burp Suite to experiment with it.\n7. Change the 'page' parameter (a variable in the URL) from a number to a word.\nGET /ns/api/v1/event/list?page=test&limit=20\nWhy: This tests if the server checks the 'data type' (whether it is a number, text, etc.).\n8. Change the 'limit' parameter to an invalid string.\nGET /ns/api/v1/event/list?page=1&limit=invalid\nWhy: To see if the server has a second layer of validation for other variables.\n9. Add a completely new, made-up parameter to the end of the URL.\nGET /ns/api/v1/event/list?page=1&limit=20&unexpected=test\nWhy: This tests if the server only accepts known parameters or if it is 'permissive' and ignores unknown ones.\n\nPHASE 4: ANALYSIS AND IMPACT\n10. Send the modified requests and look at the Status Code (a 3-digit number from the server indicating the result).\nHTTP/1.1 200 OK\nWhy: A '200 OK' means the server accepted the garbage data. A secure server should return '400 Bad Request'.\n11. Examine the response body (the data sent back by the server) to see if the malformed input caused any errors or weird behavior.\n12. Compare the processing time between the valid request and the invalid one to check for potential backend strain.",
+      "example": "Imagine a fictional website 'https://library.target.example' that lets you search for books by year. A normal request looks like this: GET /api/books?year=1995. The server expects 'year' to be a 4-digit number. An attacker changes the request to: GET /api/books?year=banana&admin=true. If the server is poorly programmed, it might ignore 'banana' and return all books, or worse, it might see the 'admin=true' parameter and accidentally grant the user extra privileges because it wasn't told to reject unknown parameters. The attack works because the developer only wrote code for what SHOULD happen, not for what happens when the input is WRONG.",
+      "takeaway": "Always test how an API handles 'garbage' data. Look for endpoints that accept parameters and try changing numbers to letters, adding extremely long strings, or injecting unexpected parameter names. If the server returns a '200 OK' for invalid input, it is a sign of weak architecture. This is a 'hygiene' bug; while not critical on its own, it often points to a backend that might be vulnerable to more serious issues like SQL Injection (injecting database commands) or SSRF (tricking the server into visiting other sites). Avoid the mistake of only testing what the UI allows; use a proxy to send what the UI would never send.",
+      "fix": "Implement a strict 'Allowlist' validation strategy using a schema validator. For every endpoint, define exactly what parameters are allowed, their data types (integer, string, boolean), and their allowed ranges. If a request contains an unknown parameter or a malformed value, the server should immediately stop processing and return an HTTP 400 Bad Request error. Example fix in pseudo-code: if (!isInteger(params.page)) { return response(400, 'Invalid Page Parameter'); } if (params.keys().notIn(['page', 'limit'])) { return response(400, 'Unexpected Parameters'); }",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The affected API endpoint accepts user-supplied parameters without sufficiently enforcing strict server-side validation. During testing, it was observed that the endpoint continued to process requests containing unexpected, malformed, or unsupported parameter values instead of rejecting them with an appropriate validation error. The application appears to rely on permissive parameter handling, allowing parameters outside the expected input format to reach the backend processing logic. Although this behavior does not directly demonstrate unauthorized access or remote code execution, insufficien",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
     "id": "2483e09e5ba7",
     "title": "How I Earned 252.60 USDC from an ENS Bug",
     "url": "https://medium.com/@anandvashishtha/how-i-earned-252-60-usdc-from-an-ens-bug-a31c8a253f5f",
