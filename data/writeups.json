@@ -1,5 +1,45 @@
 [
   {
+    "id": "7cef5a9d64c5",
+    "title": "How I Found SSRF in 6 Known Companies Using One Methodology in 2026",
+    "url": "https://medium.com/@shawkat7h/how-i-found-ssrf-in-6-known-companies-using-one-methodology-in-2026-987d79b27620",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Shawkatemad"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-26T20:28:09.000Z",
+    "added_at": "2026-10-26T21:32:43.936Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher exploited SSRF across multiple companies by bypassing application-level URL filters using HTTP redirects and IPv6-mapped address notation to access sensitive internal services.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability is caused by the application server fetching user-provided URLs without proper validation against internal network ranges. Developers relied on string-based blocklists (lists of forbidden words) and application-layer checks rather than network-level egress filtering (firewalls). This allowed attackers to use alternative representations of internal IP addresses or external redirects to trick the server into accessing private resources. The root issue is that the server trusts the destination of a URL provided by an untrusted user and fails to re-validate the destination after following an HTTP redirect.",
+      "walkthrough": "RECON\n1. Identify features where the server fetches data from a URL (a web address), such as webhooks, API integrations, or 'Import from URL' tools.\n2. Set up a listener like Burp Collaborator (a tool that records incoming internet traffic) to see if the server actually makes an HTTP request (a message asking for data).\n3. Submit the listener URL to the application and check if the server's IP address (a unique numerical label for a device) appears in your logs.\nDISCOVERY\n4. Test if the application blocks internal addresses by submitting a standard local IP.\nhttp://127.0.0.1\nWhy: This checks if the server has a basic filter against 'localhost' (the server's own internal address).\n5. Observe the error message; a specific 'Address is blocked' error suggests the check is happening in the code (input validation), not the network.\nEXPLOITATION: REDIRECT BYPASS\n6. Create a script on your own server that tells any visitor to go to an internal address using a redirect (a command telling the requester to look elsewhere).\nheader(\"Location: http://127.0.0.1:15000/config_dump\");\nWhy: This script sends a 302 Found response, which instructs the application server to fetch a new location.\n7. Submit the URL of your script to the vulnerable application.\nhttps://your-server.com/r.php\nWhy: The application validates your external URL as safe, but then follows the redirect to the 'unsafe' internal endpoint (a specific URL path on a server) without re-checking it.\n8. Use a 307 Temporary Redirect if you need to preserve the HTTP method (like POST) when hitting internal APIs (tools for software to talk to each other).\nEXPLOITATION: IPV6 BYPASS\n9. Use an IPv6-mapped address (a way to write IPv4 addresses in a newer format) to represent a forbidden IPv4 address.\nhttps://[::ffff:127.0.0.1]:15000/\nWhy: The blocklist (a list of forbidden items) looks for the string '127.0.0.1' but doesn't recognize the IPv6 version, which points to the same internal location.\nIMPACT\n10. Access internal services like the Envoy Admin interface or HashiCorp Vault (a secret management service).\nhttps://[::ffff:10.100.133.55]:8200/v1/sys/health\nWhy: This reaches a private service that stores sensitive company secrets and credentials, which are normally hidden from the public internet.",
+      "example": "A fictional site 'target.example' has a 'Fetch Profile Picture' feature where you provide a URL. If you provide 'http://169.254.169.254/latest/meta-data/', the server blocks it. To bypass this, you host a file at 'http://attacker.example/pic.php' containing: header('Location: http://169.254.169.254/latest/meta-data/iam/security-credentials/'). When you submit your URL to target.example, its server fetches your script, follows the redirect, and returns the cloud provider's secret access keys in the response because it failed to validate the redirect destination.",
+      "takeaway": "Always test URL inputs with a collaborator tool to confirm the server is making the request. Look for 'Address blocked' errors as a sign of bypassable application-level filters. Try alternative IP formats like decimal, hex, or IPv6-mapped addresses to evade string-based blocklists. A common mistake is stopping after a 'blocked' message; instead, use that as a signal to try different bypass techniques like redirects or DNS rebinding. Remember that 307 redirects are essential for preserving POST requests to internal APIs. Variants of this bug often appear in features like PDF generators, image processors, or webhook integrations.",
+      "fix": "The most effective fix is to implement network-level egress filtering (firewalls) that prevent the application server from reaching any internal IP ranges (like 10.0.0.0/8 or 127.0.0.1). Additionally, use a strict allowlist of permitted domains rather than a blocklist of forbidden ones. In code, resolve the DNS of the user-provided URL once, verify the resulting IP is not in a private range, and then connect directly to that IP to prevent DNS rebinding attacks. Ensure that redirects are also validated before being followed by the server.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "1. What Even Is SSRF? (Simple Explanation) 2. Finding the Entry Point 3. Understanding the Protection 4. The 4 Bypass Techniques I Used 5. Reading Responses Like a Pro 6. What to Target Internally 7. The Full Methodology Checklist 8. Real Findings and What They Revealed 9. Lessons Learned (The Honest Part) 10. Your Toolkit > “The best SSRF bugs aren’t the ones you find — they’re the ones you understand well enough to find again, in a different shape, in a different app.” Hey. Before we start — this writeup is for **everyone**. Whether you learned what SSRF means yesterday, or you’ve been hunti",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "d34ca641aba8",
     "title": "Predicting the Unpredictable: How a Weak Random Number Generator Let Me Forge Password Reset Tokens",
     "url": "https://medium.com/@t4nv1/predicting-the-unpredictable-how-a-weak-random-number-generator-let-me-forge-password-reset-tokens-366b46d73b4f",
