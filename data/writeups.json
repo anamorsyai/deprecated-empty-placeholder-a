@@ -1,5 +1,45 @@
 [
   {
+    "id": "d34ca641aba8",
+    "title": "Predicting the Unpredictable: How a Weak Random Number Generator Let Me Forge Password Reset Tokens",
+    "url": "https://medium.com/@t4nv1/predicting-the-unpredictable-how-a-weak-random-number-generator-let-me-forge-password-reset-tokens-366b46d73b4f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-26T16:26:01.000Z",
+    "added_at": "2026-10-26T17:02:28.953Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A weak random number generator allowed the researcher to predict password reset tokens and forge them, enabling account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "ca7590b323a9",
     "title": "Improper Input Validation and Parameter Acceptance",
     "url": "https://medium.com/@akashmotkar001/improper-input-validation-and-parameter-acceptance-e344a7b103cb",
