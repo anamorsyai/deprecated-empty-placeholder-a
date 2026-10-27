@@ -755,22 +755,22 @@
       "supply-chain"
     ],
     "severity": "critical",
-    "difficulty": null,
-    "summary_en": "A dependency‑confusion supply‑chain flaw let an attacker publish a malicious package with a name that didn’t exist yet, enabling code execution on victims and earning a $19,500 bounty.",
+    "difficulty": "beginner",
+    "summary_en": "A researcher earned $19,500 by identifying internal package names in a company's public GitHub repositories and registering those same names on a public registry to hijack their build pipeline.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The vulnerability, known as Dependency Confusion, occurs when a company's build system (an automated process that compiles code) is configured to fetch packages (reusable code blocks) from both internal and public libraries. If a package name exists in both places, the system often defaults to the public version or the one with the higher version number. Hartwell Digital exposed their internal package names in public configuration files but failed to 'claim' or reserve those names on public registries like npm or PyPI.",
+      "walkthrough": "RECON\n1. The researcher identified the target, Hartwell Digital, a fintech platform with public-facing code.\n2. They used an LLM (Large Language Model—an AI tool that processes text) to scan the company's public GitHub repositories (online storage for code).\n3. The researcher looked specifically for configuration files like package.json (a file listing a project's required code libraries).\n\nDISCOVERY\n4. Inside the package.json files, the researcher found names of 'internal' packages that were not available on the public internet.\n5. They checked public registries (digital libraries where developers share code) to see if these specific names were available for anyone to register.\n6. The researcher found a package name that 'didn't exist yet' on the public registry but was being called by the company's internal systems.\n\nEXPLOITATION\n7. The researcher registered the exact internal package name on the public registry.\n8. They uploaded a benign 'placeholder' package to this name.\n9. They assigned a very high version number to their public package (e.g., 99.9.9).\n\nIMPACT\n10. When Hartwell's build pipeline (the automated system that prepares the app for use) ran an install command, it checked the public registry.\n11. Because the public registry had a 'newer' version (99.9.9) than the internal one, the system automatically downloaded the researcher's code.\n12. This allowed the researcher's code to execute inside the company's secure build environment, proving they could have stolen data or sabotaged the software.",
+      "example": "Imagine a company called 'Target Example' uses a private tool named 'target-secret-login'. In their public GitHub, they have a file called package.json:\n{\n  \"dependencies\": {\n    \"target-secret-login\": \"1.0.0\"\n  }\n}\nAn attacker sees this and goes to npmjs.com (a public registry). They see 'target-secret-login' is not taken. They register it and upload a version labeled '2.0.0'. The next time Target Example's servers update, they see version 2.0.0 on the internet and download the attacker's code instead of their own version 1.0.0.",
+      "takeaway": "This is a 'Supply Chain' attack because it targets the tools used to build the software rather than the software itself. To find these, always check public repositories for configuration files (package.json, requirements.txt, pom.xml) and cross-reference internal-looking names with public registries. A common variant is 'Typosquatting,' where an attacker registers a name very similar to a popular package (e.g., 'requesst' instead of 'requests'). Beginners often forget that even if a package is 'private,' the name itself must be protected globally.",
+      "fix": "To prevent this, companies should use 'Scoped Packages' (e.g., @hartwell/package-name) and reserve that scope on public registries so no one else can use it. Additionally, build systems should be configured to use 'lockfiles' (like package-lock.json) which record the exact source and hash (a unique digital fingerprint) of every package to ensure it hasn't changed. Finally, internal registries should be prioritized over public ones in the system configuration.\n\nExample of a scoped package in package.json:\n{\n  \"dependencies\": {\n    \"@hartwell/internal-tool\": \"1.0.0\"\n  }\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "This bug never touched Hartwell’s actual application code, their servers, or anything resembling a traditional request-response exploit chain. The entire attack happened on a public package registry, days before anyone at the company would run the install command that quietly pulled my code into their build pipeline instead of their own. The target, which I’ll call **Hartwell Digital** here per their program’s anonymization terms, is a fintech platform with a large internal engineering org and, like most companies that size, a mix of open-source dependencies and internally-built packages used",
     "ai_generated": true,
     "engagement": null,
     "score": 60
@@ -876,26 +876,26 @@
     "categories": [
       "business-logic"
     ],
-    "severity": "medium",
-    "difficulty": null,
-    "summary_en": "A logic flaw in Apple's iCloud Family Sharing feature allowed for unauthorized manipulation of family group settings or access.",
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A logic flaw in iCloud Family Sharing allowed an Organizer to permanently disband their own family group and lose management privileges by accepting a self-invitation sent to a secondary email address.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "Imagine a family subscription service at target.example where users can join a 'Family Plan'. A logic flaw occurs when the application fails to verify the relationship between the person sending an invite and the person receiving it, or fails to restrict who can change administrative settings.\n\nVulnerable Code Snippet:\n```javascript\n// This function handles role changes in a family group\napp.post('/api/family/set-role', (req, res) => {\n  const { targetUserId, role } = req.body;\n  // BUG: The code updates the role without checking if the requester is the 'Organizer'\n  db.execute('UPDATE members SET role = ? WHERE user_id = ?', [role, targetUserId]);\n  res.json({ status: 'success' });\n});\n```\n\nAttack Request:\n```http\nPOST /api/family/set-role HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\n  \"targetUserId\": \"12345\",\n  \"role\": \"organizer\"\n}\n```\n\nWhy it works: The server receives an HTTP request (a digital message sent from your computer to a server) containing a JSON payload (a structured data format used to send information). Because the server does not perform an authorization check (a security step where the computer verifies if you are actually allowed to perform the action), any member of the family—even a child account—can send this request to promote themselves to 'organizer' status, gaining control over billing and other members' permissions.",
-      "takeaway": null,
-      "fix": null,
+      "cause": "The vulnerability was caused by a lack of holistic state validation, which is a failure to check the overall status of a user across different identifiers. While the system blocked direct self-invitations to the primary Apple ID, it failed to correlate the device's active session (the Organizer) with the secondary email address receiving the invite. When the Organizer accepted the invite on the same device, the backend (the server-side software that processes data) incorrectly triggered a 'leave and join' workflow. Because the Organizer was the only member, 'leaving' the group reduced the member count to zero, causing the system to automatically disband the group and enter a corrupted state.",
+      "walkthrough": "RECON\n1. Identify the roles in iCloud Family Sharing, specifically the 'Organizer' who has the power to manage the group.\n2. Note that the system has a 'state' (the current memory of who belongs where) that prevents an Organizer from inviting their own primary email.\n\nDISCOVERY\n3. Observe that the system does not block sending an invitation to a secondary email address (e.g., a Gmail account) even if that email is managed by the same person.\n4. Send an invitation from the Organizer account (Account A) to a secondary email (Account B).\n\nEXPLOITATION\n5. On the same physical iPhone where Account A is signed in, open the Mail App (the software used to read emails).\n6. Open the invitation email sent to Account B.\n7. Tap the 'Accept Invitation' link, which sends an HTTP request (a message from your phone to Apple's server) to process the join request.\n8. Observe the system prompt: 'You are already in a family group with only you. Do you want to leave current group and join with this?'\n9. Tap 'Accept'. This triggers the 'leave' logic on the backend.\n\nIMPACT\n10. The backend processes the 'leave' command for the only member of the group.\n11. Because the group now has zero members, the system disbands it entirely.\n12. The Organizer loses all privileges, and shared services like Apple Music or iCloud storage are immediately severed.\n13. Connected devices enter an infinite loading loop (a state where the software keeps trying to refresh but never finishes) because the group they expect to find no longer exists.",
+      "example": "Imagine a project management website called 'task-master.example'. \n1. A user, 'boss@email.com', creates a private workspace. \n2. The website has a rule: 'If a user joins a new workspace, they must leave their current one.' \n3. 'boss@email.com' sends an invite to their alias, 'boss-backup@email.com'. \n4. While logged into the 'boss@email.com' account, they click the invite link for the backup email. \n5. The server sees the request and says: 'This user is joining a new group, so I will delete them from the old one.' \n6. Since 'boss@email.com' was the only person in the original workspace, the server deletes the entire workspace because it is now empty. \n7. The user is now 'joined' to a group that doesn't exist, and their original work is gone forever.",
+      "takeaway": "When hunting for business logic flaws, look for 'identity mapping' issues where a single person can be represented by multiple identifiers (like different email addresses). Test what happens when these identities interact on the same device or session. Specifically, look for 'destructive cascades'—actions that seem small (like leaving a group) but cause massive damage because the system doesn't check if that user was the last remaining administrator or owner. A common beginner mistake is assuming that if a 'primary' path is blocked (like self-inviting a primary email), all 'secondary' paths (like aliases) are also protected.",
+      "fix": "The fix involves implementing robust identity correlation. The backend should check the 'Subject' (the person currently logged in) against the 'Resource Owner' (the person who owns the group) before allowing a 'leave' action to occur. If the person accepting an invite is already the Organizer of the target group, the system must block the action and display an error message instead of processing the 'leave' logic. \n\nExample logic check:\nif (current_session.user_id == target_group.organizer_id) {\n  return Error('You are already the Organizer of this group.');\n} else {\n  proceed_with_join_logic();\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "During an exploration of iCloud Family Sharing mechanics, a **Business Logic Vulnerability** was discovered that allowed a Family Organizer to inadvertently disband their own Family Group. The flaw occurred in a specific edge case: when the current Family Organizer invited a secondary email address (which they also owned) to the family, and then accepted that invitation _on the same device_ where they were already signed in as the Organizer. Instead of recognizing the user’s existing ownership, the system treated the secondary email as a new entity, triggered a “leave and join” workflow, and p",
     "ai_generated": true,
     "engagement": null,
-    "score": 47
+    "score": 53
   },
   {
     "id": "fbd373c3e218",
