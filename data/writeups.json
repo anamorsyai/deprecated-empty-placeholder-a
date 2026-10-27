@@ -1,5 +1,47 @@
 [
   {
+    "id": "6dde1bb2d5ba",
+    "title": "How Stale Reset Tokens Led to Full Account Takeover (Even After Changing Email)",
+    "url": "https://aboutal3b.medium.com/how-stale-reset-tokens-led-to-full-account-takeover-even-after-changing-email-2f5c984e39b0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yousef"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-27T16:11:01.000Z",
+    "added_at": "2026-10-27T16:18:31.117Z",
+    "categories": [
+      "business-logic",
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A logic flaw allowed password reset tokens to remain valid after a user changed their email address, enabling full account takeover via the old email inbox.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's password reset mechanism only checked if a token (a unique secret string used for identification) was expired or already used. It failed to verify if the account's primary email address had changed since the token was generated. Because the token was not 'bound' (permanently linked) to the specific email state at the time of creation, it remained 'stale' but functional, allowing anyone with access to the old email to hijack the account even after the user tried to secure it.",
+      "walkthrough": "RECON\n1. The researcher identified the account management workflow, specifically how the application handles password resets and email updates.\n\nDISCOVERY\n2. Sign up for a new account using a primary email address, referred to as Email A.\n3. Trigger the 'Forgot Password' feature for Email A to generate a reset token.\n4. Receive the password-reset link in the inbox for Email A.\nhttps://target.com/reset-password?token=unique_token_123\nWhy: This creates a 'token' (a secret code) that the server uses to identify which account is being reset without requiring a password.\n\nEXPLOITATION\n5. Before using the reset link, log into the account normally using the current credentials.\n6. Navigate to the account settings (Settings -> General -> User account).\n7. Change the account's registered email from Email A to a new address, Email B.\n8. Save the changes and confirm that the account is now officially linked to Email B.\n9. Open the original reset link that was sent to Email A in step 4.\nhttps://target.com/reset-password?token=unique_token_123\nWhy: The researcher is testing if the server 'invalidates' (cancels) the old token when a sensitive security setting like the email address is changed.\n10. Enter a new password into the reset form and submit the request.\nPOST /api/set-new-password HTTP/1.1\n{\"token\": \"unique_token_123\", \"password\": \"NewSecurePassword123!\"}\nWhy: This sends the 'payload' (the data intended to exploit the flaw) to the server's 'endpoint' (the specific URL that processes password changes).\n\nIMPACT\n11. Observe that the application accepts the password change despite the token being 'stale' (issued before the email change).\n12. Attempt to log in using the new email (Email B) and the password just set via the old token.\n13. Confirm the login is successful, proving a full Account Takeover (ATO) is possible if an attacker has access to an old, abandoned, or compromised email inbox.",
+      "example": "Imagine a fictional site 'target.example'. The site uses a database table for reset tokens that looks like this: {token: 'xyz', user_id: 1, expires: '2023-12-01'}. When a user changes their email, the site updates the 'users' table but forgets to delete entries in the 'reset_tokens' table. An attacker who previously gained access to the user's old email (Email A) finds a reset link from two days ago. Even though the user switched to Email B to stay safe, the attacker clicks the link. The server checks the 'reset_tokens' table, sees 'xyz' is still there and not expired, and allows the attacker to change the password for user_id 1. The attacker then logs in as the user using Email B and the new password.",
+      "takeaway": "When hunting for business logic flaws, always test the 'persistence' of security tokens across state changes. If a user changes their password, email, or enables Two-Factor Authentication (2FA), all previously issued tokens (reset links, session cookies, API keys) should be immediately 'invalidated' (made useless). Look for 'stale' tokens by performing an action, changing a setting, and then trying to complete the original action. A common mistake is only checking the expiration date of a token rather than its relationship to the current state of the account.",
+      "fix": "To fix this, the server must invalidate all active reset tokens whenever a user's email or password is changed. Additionally, tokens should be 'bound' to the email they were sent to. Before processing a reset, the code should verify: if (token.email == user.current_email && token.created_at > user.last_email_change_timestamp). \n\nExample fix in code:\n```javascript\n// When email is updated\nasync function updateEmail(userId, newEmail) {\n  await db.users.update({ id: userId }, { email: newEmail, email_last_changed: Date.now() });\n  await db.reset_tokens.deleteMany({ user_id: userId }); // Invalidate all old tokens\n}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "My name is Yousef Abdullah, and I’m a cybersecurity researcher. Welcome to my latest write-up! Today, I want to share a story about a subtle yet dangerous logic flaw I recently discovered during a security assessment: **Stale Password-Reset Tokens Remaining Active After an Email Change**. If you’re passionate about web security, bug bounties, or interested in how account recovery flows can introduce severe account takeover risks, grab your favorite drink ☕, and let me walk you through it! ## 💡 Understanding the Flaw: What is Stale Token Persistence? When a user requests a password reset, the",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "1cfb2e8d62fb",
     "title": "The WAF Said No: Finding XSS Through JavaScript Recon",
     "url": "https://0xgh4zy.medium.com/the-waf-said-no-finding-xss-through-javascript-recon-2225ef137b52",
