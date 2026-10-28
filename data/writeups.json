@@ -1,5 +1,45 @@
 [
   {
+    "id": "9583769e3adf",
+    "title": "Cache Me If You Can: XSS in Cloudflare's /cdn-cgi/image/",
+    "url": "https://www.reddit.com/r/netsec/comments/1xhqdx6/cache_me_if_you_can_xss_in_cloudflares_cdncgiimage",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/albinowax"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-28T14:58:48.000Z",
+    "added_at": "2026-10-28T17:26:50.595Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "A Cross-Site Scripting (XSS) vulnerability was discovered in Cloudflare's image resizing service (/cdn-cgi/image/), which could allow attackers to execute malicious scripts.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website target.example that resizes images via a URL: https://target.example/resize?img=https://othersite.com/pic.jpg. An HTTP Request is a message your browser sends to a server to ask for data. An attacker provides a link to a malicious SVG file: https://target.example/resize?img=https://attacker.com/malicious.svg. An SVG is an image format that uses code (XML) to draw shapes. The attacker's SVG contains a script: <svg xmlns='http://www.w3.org/2000/svg'><script>alert('XSS')</script></svg>. If the server fetches this file and serves it with the 'Content-Type' header (a label telling the browser what the file is) set to 'image/svg+xml', the browser will execute the script. This is XSS (Cross-Site Scripting), a bug where a hacker runs code on a site they don't own.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "50379213a558",
     "title": "How a Forgotten Legacy JS File Landed Me My First Bug Bounty",
     "url": "https://medium.com/@aekmohop/how-a-forgotten-legacy-js-file-landed-me-my-first-bug-bounty-ee8398a77a1f",
