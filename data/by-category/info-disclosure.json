@@ -1,5 +1,46 @@
 [
   {
+    "id": "4fbb8b36da18",
+    "title": "I Didn’t Even Open Burp Suite — One URL Change Exposed Hidden WordPress Content",
+    "url": "https://medium.com/@The_Knower/i-didnt-even-open-burp-suite-one-url-change-exposed-hidden-wordpress-content-04c2a56125d2",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "The Knower"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-27T22:01:58.000Z",
+    "added_at": "2026-10-28T00:08:32.024Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A WordPress print endpoint let anyone retrieve private, draft, or pending posts by changing URL query parameters, exposing hidden content without authentication.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The endpoint parses the full query string from the request (parse_str($url_data['query'], $args)) and then removes only the \"print\" argument. It passes the remaining arguments directly to WordPress's query_posts() function. Because query_posts() accepts parameters such as post_status, an attacker can set post_status=private, draft, or pending to force the database to return non‑public posts. The code never checks whether the requester is logged in or has permission to view those posts. Consequently, unauthenticated users can control the WP_Query arguments and read content that should be restricted.",
+      "walkthrough": "RECON\nStep 1: Identify the target runs WordPress by looking at page source and common WP paths. Why: WordPress sites often expose predictable URLs (e.g., /wp‑admin, /wp‑content) which tells us the platform.\nStep 2: Find a print‑related endpoint by browsing the site and noting URLs like /archives/123/?print=pdf. Why: The \"print\" query parameter suggests a feature that generates a printable version of a post.\n\nDISCOVERY\nStep 3: Open the URL in a browser and note the normal behaviour (PDF of public post). Why: Baseline shows the endpoint works for public content.\nStep 4: Modify the URL to add extra parameters: ?print=print‑custom&post_status=private&posts_per_page=10. Payload: https://target.com/archives/123/?print=print‑custom&post_status=private&posts_per_page=10. Why: Adding \"post_status=private\" tells WordPress to query posts with status private; the endpoint does not filter this argument.\nStep 5: Observe that the response now contains private posts even though no login occurred. Why: The server accepted the attacker‑controlled argument and returned the data.\nStep 6: Repeat with post_status=draft and other statuses (pending) using similar URLs. Payload example: https://target.com/archives/123/?print=print‑custom&post_status=draft&posts_per_page=10. Why: Confirms the issue works for multiple non‑public states.\n\nEXPLOITATION\nStep 7: Review the server‑side code (shown in the article) that parses the query string: parse_str($url_data['query'], $args); unset($args['print']); if (!empty($args)) { $posts = query_posts($args); }. Why: Shows that after removing only \"print\", all other arguments are passed unchecked to query_posts().\nStep 8: Realise that any WP_Query argument can be supplied, allowing enumeration of hidden content. Why: WP_Query supports many filters (author, category, post_type) which can be abused.\n\nIMPACT\nStep 9: Capture the returned HTML/PDF that contains private drafts. Why: Demonstrates the confidentiality breach – information that should be internal is now publicly accessible.\nStep 10: Report the finding to the bug‑bounty program, noting that the issue is an access‑control flaw with high severity. Why: The impact includes potential leakage of confidential business data.",
+      "example": "Imagine a site target.example that offers a printable view at /print.php?post=45&format=pdf. Vulnerable code: <?php $url = $_SERVER['REQUEST_URI']; $parts = parse_url($url); parse_str($parts['query'], $args); unset($args['format']); $posts = query_posts($args); ?> An attacker can request https://target.example/print.php?post=45&format=custom&post_status=private to retrieve a private post because the script passes the attacker‑controlled post_status to query_posts() without checking login. The URL is the payload; \"post_status=private\" tells WordPress to fetch private entries, and the script returns them because it never verifies the user.",
+      "takeaway": "When testing WordPress or any CMS, look for endpoints that accept query parameters and then forward them to internal query functions. Search for patterns like parse_str(...); query_posts($args) or WP_Query($args) without an authentication check. Tools such as Burp Suite or a simple browser can be used to fuzz parameters like post_status, author, or post_type. Variants of this bug appear in custom plugins that expose search or export features. Beginners often forget to verify that the endpoint enforces user permissions before using user‑supplied arguments – always check for that missing check.",
+      "fix": "Add an explicit authentication and capability check before processing any query arguments. For example: if (!is_user_logged_in() || !current_user_can('read_private_posts')) { wp_die('Unauthorized'); } Then whitelist only safe parameters (e.g., only \"format\") and discard others: $allowed = ['format']; foreach ($args as $key => $value) { if (!in_array($key, $allowed)) { unset($args[$key]); } } Finally, call query_posts() with the sanitized $args. This ensures unauthenticated users cannot influence WP_Query and only permitted data is returned.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m **TheKnower**, a Bug Bounty Hunter passionate about discovering vulnerabilities and making the digital world more secure. In this article, I’ll share my findings and walk you through my research. ## Summary _How a simple browser test uncovered a potential access-control vulnerability in a WordPress print feature._ When people think about web application security testing, they often imagine complicated payloads, proxy tools, and hours spent analyzing HTTP requests. But sometimes, the most interesting discoveries start with something much simpler. **I didn’t even need to open Burp Suite for",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c407e6be341e",
     "title": "The User Was Removed. The Access Wasn’t.",
     "url": "https://medium.com/@ashour2j83/i-found-an-api-endpoint-i-couldnt-explain-then-i-realized-i-could-still-access-a-private-project-5721172a6c22",

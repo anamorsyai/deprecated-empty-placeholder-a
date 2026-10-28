@@ -1,5 +1,45 @@
 [
   {
+    "id": "32e2b14bb9ef",
+    "title": "Discovering and Reporting SQL Injection: A Technical Walkthrough of CAN-2026–2040978",
+    "url": "https://medium.com/@mjoker22mjoker22/discovering-and-reporting-sql-injection-a-technical-walkthrough-of-can-2026-2040978-f3d52aabcdb1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mjokermjoker"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-27T21:40:33.000Z",
+    "added_at": "2026-10-28T00:09:45.987Z",
+    "categories": [
+      "sqli"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A SQL Injection vulnerability in a government news portal allowed unauthenticated attackers to extract sensitive database records and schema information through URL parameters.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is the direct concatenation of user-supplied data into a database command. In the file 'readnews.php', the 'id' parameter is taken from the URL and placed directly into a SQL query (a command used to talk to a database) string. Because the application does not use prepared statements, the database cannot distinguish between the developer's instructions and the user's input. This allows an attacker to append their own logic to the query, effectively taking control of the database's actions.",
+      "walkthrough": "RECON\nStep 1: Identify a dynamic URL that fetches data based on a number.\nhttp://www.lnrbda.gov.ng/readnews.php?id=1\nWhy: This is an HTTP request (a message sent to a server) using a GET parameter (data in the URL) named 'id' to find a specific news article.\n\nDISCOVERY\nStep 2: Inject a single quote character into the parameter to test for errors.\nhttp://www.lnrbda.gov.ng/readnews.php?id=1'\nWhy: The single quote ' is a special character in SQL (database language) used to wrap text; adding an extra one breaks the query structure and causes the page to behave differently.\nStep 3: Test Boolean-based logic to see if the database evaluates math.\nAND 3792=3792\nWhy: This is a Boolean-based (true or false) test; if the page loads normally, the database is executing the attacker's math as a valid command.\nStep 4: Test Time-based logic to force a delay.\nSLEEP(5)\nWhy: This is a Time-based (measuring delays) test that tells the database to wait 5 seconds; if the browser takes 5 seconds to load, the injection is confirmed.\n\nEXPLOITATION\nStep 5: Use an automated tool to confirm the vulnerability and bypass filters.\npython sqlmap -u \"http://www.lnrbda.gov.ng/readnews.php?id=1\" --level=5 --risk=3 --tamper=space2comment --random-agent --batch\nWhy: sqlmap is a tool that automates SQL Injection (SQLi). The --tamper=space2comment flag replaces spaces with comments like /**/ to bypass simple security filters.\n\nIMPACT\nStep 6: Extract the database schema and table names.\n(Automated via sqlmap)\nWhy: Once the injection is confirmed, the attacker can ask the database for its schema (the blueprint or structure of the database) to find where sensitive user data is stored.",
+      "example": "Assume a fictional site target.example has a profile page: http://target.example/user.php?id=5. The backend code looks like this: $id = $_GET['id']; $sql = \"SELECT username FROM users WHERE id = \" . $id;. An attacker sends the request: http://target.example/user.php?id=5 UNION SELECT password FROM users. The database sees the command as 'SELECT username FROM users WHERE id = 5 UNION SELECT password FROM users'. Because the UNION command combines results, the page will now display the user's password instead of their username.",
+      "takeaway": "Always look for numeric parameters in URLs like ?id=, ?cat=, or ?page=, as these are frequently used in database queries. Use tools like sqlmap to test for 'Blind' variants where the page doesn't show an error but still processes the command. A common beginner mistake is assuming a site is safe because it doesn't show a 'SQL Error' message; always use time-based tests (SLEEP) to be sure. Look for this pattern in search results using Google Dorks like 'inurl:readnews.php?id='.",
+      "fix": "The correct fix is to use Prepared Statements and Parameterized Queries. This method sends the SQL command and the user data to the database separately, so the database never treats the user data as a command. In PHP using PDO, the fix looks like this: $stmt = $pdo->prepare('SELECT * FROM news WHERE id = :id'); $stmt->execute(['id' => $_GET['id']]); $newsItem = $stmt->fetch();. This ensures that even if the user enters a single quote or a SLEEP command, it is treated only as a harmless piece of text.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Author: Mahdi Karimi Date: October 28, 2026 Vulnerability Type: SQL Injection (CWE-89) Affected Target: Lower Niger River Basin Development Authority Web Portal (lnrbda.gov.ng) Tracking ID: CAN-2026–2040978 (Pending CVE Publication) Introduction Web application security remains one of the most critical challenges for public and private organizations alike. Even a minor oversight in handling user input can lead to severe data breaches. In this write-up, I will walk through the discovery of a SQL Injection (SQLi) vulnerability on a public sector web portal (lnrbda.gov.ng), how it was verified, a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "ea54155c6437",
     "title": "$11,500 for a Payload That Waited: Second-Order SQL Injection in an Admin Report",
     "url": "https://medium.com/@t4nv1/11-500-for-a-payload-that-waited-second-order-sql-injection-in-an-admin-report-44bab854bbe1",
