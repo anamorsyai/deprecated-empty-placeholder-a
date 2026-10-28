@@ -1,5 +1,46 @@
 [
   {
+    "id": "63a5650f5e5e",
+    "title": "Catatan tentang Penetrasi Keamanan Sistem Oracle Identity Manager di U.S. Environmental Protection Agency | US EPA",
+    "url": "https://medium.com/@rdennisius/catatan-tentang-penetrasi-keamanan-sistem-oracle-identity-manager-di-u-s-c7bfb97e37fe",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Dennisius Reki"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-28T08:18:52.000Z",
+    "added_at": "2026-10-28T11:36:26.454Z",
+    "categories": [
+      "auth-bypass",
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "Attackers bypassed authentication in Oracle Identity Manager using matrix parameters and achieved Remote Code Execution (RCE) by abusing Groovy's @ASTTest annotation during script compilation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a flawed 'SecurityFilter' (a Java component that checks if a user is allowed to see a page) which used a 'regex' (a text-matching pattern) to identify public files. This regex, '\\.[wW][aA][dD][lL](.)*\\z', only checked if the URL ended with '.wadl', failing to account for 'matrix parameters' (extra data added with a semicolon ';'). This allowed an attacker to reach the 'groovyscriptstatus' 'endpoint' (a specific web function) without logging in. Furthermore, this endpoint used a 'compiler' (a tool that translates code) to check script syntax. The compiler supported '@ASTTest', an 'annotation' (a special code tag) that executes logic during the 'compilation phase' (the translation process), allowing code execution even if the script is never officially 'run'.",
+      "walkthrough": "RECON\n1. The researcher identified a protected function used to check Groovy scripts.\nGET /iam/governance/applicationmanagement/api/v1/applications/groovyscriptstatus\nWhy: The server returns a '401 Unauthorized' error, meaning an 'authentication' (identity check) is required.\n\nBYPASS\n2. The researcher attempted to bypass the 'SecurityFilter' using a 'matrix parameter' (a way to add data to a URL segment using a semicolon).\nPOST /iam/governance/applicationmanagement/api/v1/applications/groovyscriptstatus;.wadl\nWhy: The 'SecurityFilter' sees '.wadl' at the end and thinks it is a public file, while the backend 'router' (the system that directs traffic) ignores the semicolon and sends the request to the protected function.\n\nEXPLOITATION\n3. The researcher crafted a 'payload' (malicious input) using the '@ASTTest' annotation to run code during the 'compilation' (the process of checking the code's structure).\n@ASTTest(phase = CompilePhase.SEMANTIC_ANALYSIS, value = { ... })\nWhy: This tells the Groovy compiler to run the code inside the curly braces immediately while it is still just 'checking' the script for errors.\n4. The researcher used 'Reflection' (a way for a program to inspect and modify its own internal structure) to find the current 'thread' (a single path of execution in a program).\ndef thread = Thread.currentThread()\nWhy: To gain control over the specific process currently handling the attacker's web request.\n5. The researcher accessed the 'HttpServletResponse' (the object the server uses to send data back to the user's browser).\ndef res = handler.getClass().getMethod(\"getServletResponse\").invoke(handler)\nWhy: By grabbing this object, the attacker can force the server to send the results of malicious commands directly back in the web response.\n6. The researcher used 'ProcessBuilder' to execute a system command on the server.\nnew ProcessBuilder(\"/bin/sh\", \"-c\", \"id\")\nWhy: This starts a 'shell' (a command-line interface) on the server to run the 'id' command, which shows the current user's permissions.\n\nIMPACT\n7. The researcher sent the full payload to the bypassed URL.\nPOST /.../groovyscriptstatus;.wadl\nWhy: The server 'compiles' the malicious script, triggers the '@ASTTest' code, executes the system command, and writes the output (e.g., 'uid=4622(oracle)') back to the attacker's screen.",
+      "example": "Imagine a website 'target.example' that lets you 'test' custom CSS styles. When you submit CSS, the server uses a 'parser' (a tool that reads the code) to check for errors. If the parser is 'vulnerable' (has a weakness), an attacker could use a special CSS feature like '@import' combined with a server-side flaw to make the server read private files. For example, the attacker sends: '@import url(\"file:///etc/passwd\");'. If the parser doesn't block local file access, it might include the contents of the server's password file in the 'syntax error' message shown to the attacker. This is similar to the Groovy bug because the 'check' itself becomes the 'attack'.",
+      "takeaway": "Always look for 'syntax checkers', 'compilers', or 'validators' that process complex languages (Groovy, Java, Python, YAML). These tools often have 'side effects' during the parsing stage that can lead to RCE. When hunting for 'authentication bypasses', test how the 'SecurityFilter' handles special characters like semicolons (';'), dots ('.'), or null bytes ('%00'). A common mistake is trusting a 'regex' that only looks at the end of a URL string. A variant of this is 'Path Traversal', where an attacker uses '../' to move between folders on the server.",
+      "fix": "To fix this, the 'SecurityFilter' must 'normalize' (clean and standardize) the URL before checking it against any 'regex' patterns. This ensures that 'matrix parameters' (;) are removed or handled correctly so they cannot hide the true destination. For the Groovy execution, the developers should use a 'SecureASTCustomizer'. This is a security configuration for the Groovy compiler that allows you to 'allowlist' (only permit) safe features and 'blocklist' (forbid) dangerous ones like '@ASTTest'. Example fix: 'SecureASTCustomizer customizer = new SecureASTCustomizer(); customizer.setIndirectImportCheckEnabled(true);' which restricts what the script can do during compilation.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Latar belakang sistem: Oracle Identity Manager (OIM) dilindungi oleh komponen yang disebut OWSM (Oracle Web Services Manager). Setiap permintaan yang masuk akan diperiksa oleh SecurityFilter, yaitu sebuah kelas Java yang dikenal dengan nama lengkap oracle.wsm.agent.handler.servlet.SecurityFilter. Berikut cara kerja filter ini: Filter ini memeriksa URI permintaan berdasarkan pola regex: WADL_PATTERN = Pattern.compile(\"\\\\.[wW][aA][dD]lL*\\\\z\"); Regex ini berarti: “apakah URI diakhiri dengan .wadl (tanpa memperhatikan huruf besar atau kecil), diikuti oleh karakter apa pun?” Logika yang keliru: Jik",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "6dde1bb2d5ba",
     "title": "How Stale Reset Tokens Led to Full Account Takeover (Even After Changing Email)",
     "url": "https://aboutal3b.medium.com/how-stale-reset-tokens-led-to-full-account-takeover-even-after-changing-email-2f5c984e39b0",

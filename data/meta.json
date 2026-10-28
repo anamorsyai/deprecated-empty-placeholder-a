@@ -1,25 +1,26 @@
 {
-  "lastRun": "2026-10-28T05:32:49.462Z",
-  "totalItems": 219,
-  "newItemsThisRun": 1,
+  "lastRun": "2026-10-28T11:36:27.182Z",
+  "totalItems": 222,
+  "newItemsThisRun": 3,
   "aiProvider": "custom",
-  "aiOkThisRun": 1,
+  "aiOkThisRun": 3,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 173,
+  "aiGeneratedTotal": 176,
   "bySource": {
-    "medium-tag-bug-bounty": 122,
+    "medium-tag-bug-bounty": 124,
+    "medium-tag-writeup": 39,
     "medium-tag-bugbounty": 2,
-    "medium-tag-writeup": 38,
     "reddit-netsec": 8,
     "infosec-writeups": 1,
     "pentesterland": 48
   },
   "byCategory": {
-    "access-control": 87,
-    "info-disclosure": 44,
+    "info-disclosure": 46,
+    "access-control": 88,
+    "auth-bypass": 52,
+    "rce": 31,
     "sqli": 7,
     "business-logic": 40,
-    "auth-bypass": 51,
     "xss": 26,
     "file-upload": 7,
     "ssrf": 5,
@@ -32,12 +33,10 @@
     "graphql": 7,
     "cache-smuggling": 2,
     "oauth-jwt": 10,
-    "rce": 30,
     "csrf": 3,
     "ssti": 2,
     "mass-assignment": 1,
     "subdomain-takeover": 1,
     "cors": 2
-  },
-  "backfilledThisRun": 1
+  }
 }
