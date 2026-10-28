@@ -1,5 +1,46 @@
 [
   {
+    "id": "3c99f18c2959",
+    "title": "Turning the Valve - Exploiting RCE and LPE in the Steam Platform",
+    "url": "https://www.reddit.com/r/netsec/comments/1xi11fq/turning_the_valve_exploiting_rce_and_lpe_in_the",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/FILLABUSTA"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-28T21:24:39.000Z",
+    "added_at": "2026-10-28T21:47:42.723Z",
+    "categories": [
+      "rce",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A technical analysis of Remote Code Execution (RCE) and Local Privilege Escalation (LPE) vulnerabilities discovered within the Steam platform.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume a fictional website at target.example allows users to test their connection. An endpoint (a specific web address used to interact with a service) takes a parameter (a piece of data sent to the app) called 'ip'. Vulnerable Code: system('ping ' + ip). Attack Request: https://target.example/test?ip=1.1.1.1;id. Why: The semicolon (;) is a character that tells the computer to start a new command (an instruction for the operating system). By adding ';id', the attacker sends a payload (malicious data designed to exploit a bug) that forces the server (a computer hosting the app) to run the 'id' command. This is Remote Code Execution (RCE), which is the ability to run any code on a remote computer. This happens because the app does not check if the 'ip' contains dangerous characters before using it.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "63a5650f5e5e",
     "title": "Catatan tentang Penetrasi Keamanan Sistem Oracle Identity Manager di U.S. Environmental Protection Agency | US EPA",
     "url": "https://medium.com/@rdennisius/catatan-tentang-penetrasi-keamanan-sistem-oracle-identity-manager-di-u-s-c7bfb97e37fe",
