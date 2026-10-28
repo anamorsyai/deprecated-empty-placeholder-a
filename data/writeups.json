@@ -1,5 +1,45 @@
 [
   {
+    "id": "bbfd0029ce13",
+    "title": "From P4 to P1 — Day 5: Open Redirect Vulnerabilities in Bug Bounty Hunting",
+    "url": "https://medium.com/@cyb3rD1vvya/from-p4-to-p1-day-5-open-redirect-vulnerabilities-in-bug-bounty-hunting-396b9bb7d8b5",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "cyb3rD1vvy@"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-28T05:14:02.000Z",
+    "added_at": "2026-10-28T05:32:45.751Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An open redirect vulnerability allows attackers to manipulate a website's navigation parameters to send users to malicious external domains. This can be used to make phishing attacks appear more credible by using a trusted domain as the starting point.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application accepts a destination URL from a user-controlled parameter, such as 'url' or 'next', and uses it in a redirect response without validation. This occurs because the server-side code blindly trusts the input provided in the HTTP request (a message sent from your browser to a server). Instead of checking if the destination is an internal path or an approved domain, the application places the untrusted input directly into the Location header ( the part of a server's response that tells the browser where to go). This lack of an allowlist (a list of approved safe items) creates a bridge for attackers to redirect users anywhere on the internet.",
+      "walkthrough": "RECON\n1. Browse the target application to find features that involve navigation, such as login, logout, or 'return to page' links.\n2. Identify a URL (a web address) that contains a redirect-related parameter (a piece of data added to a URL after a '?').\nhttps://example.com/redirect?url=https%3A%2F%2Ftrusted.example\nWhy: We are looking for 'doorways' where the application asks the browser where it should go next.\nDISCOVERY\n3. Observe the original request to understand how the application normally behaves.\nGET /redirect?url=https%3A%2F%2Ftrusted.example HTTP/1.1\nWhy: We need a baseline of a 'good' request to compare against our attack. (GET is a type of request used to retrieve data).\n4. Use a tool like curl (a command-line program for sending web requests) to inspect the server's response headers.\ncurl -sS -D - -o /dev/null 'https://example.com/redirect?url=https%3A%2F%2Ftrusted.example'\nWhy: We want to see the hidden instructions the server sends back to the browser.\n5. Look for a 302 Found status code in the response.\nHTTP/1.1 302 Found\nWhy: A 302 status is the server's way of saying 'this page has moved, go to the address in the Location header'.\n6. Verify the Location header matches the parameter value.\nLocation: https://trusted.example\nWhy: This confirms the application is using the 'url' parameter to decide where to send the user.\nEXPLOITATION\n7. Create a payload (malicious data) by replacing the trusted destination with an external site you control.\nhttps://example.com/redirect?url=https://attacker.example\nWhy: We are testing if the application will blindly follow our instructions to leave its own domain.\n8. Note that the URL uses URL encoding (translating special characters like / into %2F) to ensure the browser reads it correctly.\nhttps://example.com/redirect?url=https%3A%2F%2Fattacker.example\nWhy: Proper formatting ensures the server processes the full address we provided.\n9. Send the modified request to the server.\nGET /redirect?url=https://attacker.example HTTP/1.1\nWhy: We are executing the test to see if the security gate is open.\nIMPACT\n10. Check the server's response for the new Location header.\nLocation: https://attacker.example\nWhy: If the server sends this header, it has successfully been tricked into redirecting the user to our site.\n11. Test for weak validation by trying to trick simple filters, such as adding the trusted domain as a subdomain.\nhttps://example.com/redirect?url=https://trusted.example.attacker.example\nWhy: Some apps only check if the 'trusted' name exists anywhere in the string, which is a common mistake.\n12. Document the final result by showing that a user clicking a link on 'example.com' ends up on 'attacker.example'.\nFinal Destination: https://attacker.example\nWhy: This proves the vulnerability exists and demonstrates the potential for phishing.",
+      "example": "Imagine a site called target.example that has a 'language switcher' feature. When you click a language, it redirects you back to the page you were on using a 'return_to' parameter. The vulnerable URL looks like this: https://target.example/set-lang?lang=en&return_to=/home. An attacker notices this and changes the 'return_to' parameter to an external site: https://target.example/set-lang?lang=en&return_to=https://evil-phishing-site.com. Because the server-side code simply takes whatever is in 'return_to' and puts it into a 'Location' header, the user's browser is automatically sent to the phishing site. The user might not notice because the link they clicked started with the trusted 'target.example' domain.",
+      "takeaway": "Always look for parameters like 'next', 'redirect', 'url', and 'callback', especially in authentication flows like login or OAuth. A key signal is seeing a 302 or 301 redirect status code in your proxy history. A common variant is the 'folder bypass', where an attacker uses '../' to navigate out of intended directories. Avoid the mistake of assuming open redirects are always 'low' severity; if they can be used to leak sensitive tokens in an OAuth flow, they can become critical. Use automated scanners to find these parameters, but always manually verify if you can break out to an external domain like google.com.",
+      "fix": "The most secure way to handle redirects is to use relative paths instead of absolute URLs. For example, instead of redirecting to 'https://example.com/dashboard', redirect to '/dashboard'. If you must allow external redirects, implement a strict allowlist of permitted domains. Never trust the user input directly; instead, parse the URL and verify that the host matches your approved list. \n\nExample of a secure fix in Node.js:\n```javascript\nconst allowedHosts = ['target.example', 'api.target.example'];\nconst url = new URL(req.query.url);\nif (allowedHosts.includes(url.hostname)) {\n  res.redirect(url.href);\n} else {\n  res.status(400).send('Invalid redirect destination');\n}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Sometimes, this behavior is intentional. Websites redirect users after login, send them to external documentation, or forward them to a requested page. But what happens when an application allows an attacker to influence the destination of that redirect? This is where an **open redirect vulnerability** may occur. Open redirects are often considered low-severity findings, but their actual risk depends on the application’s behavior, the surrounding authentication flow, and the impact that can be demonstrated. In previous articles, we explored cookie security, verbose error messages, and technolo",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4fbb8b36da18",
     "title": "I Didn’t Even Open Burp Suite — One URL Change Exposed Hidden WordPress Content",
     "url": "https://medium.com/@The_Knower/i-didnt-even-open-burp-suite-one-url-change-exposed-hidden-wordpress-content-04c2a56125d2",
