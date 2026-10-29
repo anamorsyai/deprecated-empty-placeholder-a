@@ -1,5 +1,45 @@
 [
   {
+    "id": "b3369206b72f",
+    "title": "Public Disclosure: Anyone Can Send Email as OYO Rooms — Reported, Rejected, and Still Wide Open",
+    "url": "https://cyphernova1337.medium.com/public-disclosure-anyone-can-send-email-as-oyo-rooms-reported-rejected-and-still-wide-open-0b3f9576b402",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "CypherNova1337"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-29T17:27:16.000Z",
+    "added_at": "2026-10-29T19:47:07.176Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "Multiple production domains belonging to OYO Rooms lack SPF, DKIM, and DMARC records, allowing attackers to send perfectly forged emails that appear to come from official company addresses.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a total lack of email authentication records in the DNS (Domain Name System, the internet's phonebook) for the domains oyorooms.io, oyoos.com, and leisure-partners.net. Specifically, they lack SPF (Sender Policy Framework, a list of authorized servers allowed to send mail for a domain), DKIM (DomainKeys Identified Mail, a digital signature proving the email wasn't altered), and DMARC (Domain-based Message Authentication, Reporting, and Conformance, instructions for what to do if authentication fails). Because these domains are not managed by a provider like Google Workspace that enforces its own rules, there is no security layer to stop a forged message from reaching a victim's inbox.",
+      "walkthrough": "RECON\n1. Identify production domains used by the target company for communication.\n2. Use a DNS lookup tool to check for TXT records associated with the domain.\n\nDISCOVERY\n3. Query the DNS for SPF records on the target domain.\n`dig txt oyorooms.io` \nWhy: This checks if the domain has a list of authorized senders (beginner: checking the 'approved list' for who can send mail).\n4. Query the DNS for DMARC records.\n`dig txt _dmarc.oyorooms.io` \nWhy: This checks if the domain tells other servers to reject fake mail (beginner: checking the 'instruction manual' for handling fakes).\n5. Confirm that no records are returned, indicating the domain is unprotected.\n\nEXPLOITATION\n6. Access a VPS (Virtual Private Server, a remote computer you rent) to bypass home internet restrictions on sending mail.\n7. Connect to a public mail server using SMTP (Simple Mail Transfer Protocol, the standard language for sending email) on port 25.\n8. Start the connection with the EHLO command.\n`EHLO mail.oyorooms.io` \nWhy: This initiates the conversation and identifies the sender to the receiving server (beginner: saying 'Hello, I am OYO').\n9. Specify the 'Envelope' sender address.\n`MAIL FROM:<support@oyorooms.io>` \nWhy: This tells the server who the mail is officially from (beginner: the return address written on the outside of a physical envelope).\n10. Specify the recipient's address.\n`RCPT TO:<victim@mailinator.com>` \nWhy: This tells the server where to deliver the message.\n11. Use the DATA command to begin the email body.\n`DATA` \nWhy: This tells the server that the following text is the actual message content.\n12. Craft the visible 'From' header and Subject.\n`From: Support <support@oyorooms.io>` \n`Subject: Action required: verify your account` \nWhy: This is the information the user sees in their email app (beginner: the letter inside the envelope).\n\nIMPACT\n13. Send the message and verify it arrives in the recipient's inbox without any 'Spam' or 'Unverified' warnings.\n14. Observe that the email appears identical to a legitimate message from the company.",
+      "example": "Imagine a fictional company 'travel-easy.example'. They use this domain for customer receipts but never set up security records. An attacker wants to steal credit card info. They rent a server and send an email to a customer: 'MAIL FROM:<billing@travel-easy.example>'. Inside the email, they write 'From: TravelEasy Billing' and 'Subject: Refund Processed - Click here to claim'. Because travel-easy.example has no DMARC record, the customer's email provider (like a small corporate mail server) sees the 'billing@travel-easy.example' address, checks for a security policy, finds nothing, and assumes the email is real. The customer clicks the link and enters their data on a fake site.",
+      "takeaway": "When hunting for this bug, look for domains that are actively used for business but lack a DMARC 'p=reject' policy. Use tools like 'checkdmarc' or simple DNS queries to find these gaps. A key signal is a domain that is not hosted on major platforms like Microsoft 365 or Google Workspace, as those platforms often provide 'invisible' protection even if DNS records are missing. A common beginner mistake is reporting missing SPF on a domain that isn't used for mail; focus on domains that users would actually trust, like those used for support or billing. A variant of this is 'Subdomain Spoofing,' where the main domain is secure but a forgotten subdomain like 'dev.company.com' is wide open.",
+      "fix": "The company must implement a full email authentication suite. First, create an SPF record listing all authorized mail servers: `v=spf1 include:_spf.google.com -all`. The '-all' is critical as it tells servers to fail any mail not on the list. Second, enable DKIM signing on their mail server so every outgoing mail has a cryptographic signature. Third, and most importantly, publish a DMARC record with a reject policy: `v=DMARC1; p=reject; rua=mailto:security@oyorooms.io`. This record explicitly instructs every mail server in the world to block any email claiming to be from OYO Rooms that fails the SPF or DKIM checks.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This is a public disclosure. The finding below was reported to Prism Life Ltd (prismlife.com), the company operating the OYO Rooms hospitality platform, through HackerOne on September 19, 2026. It was closed as Not Applicable two hours later — not by a human reviewer, but by the platform’s automated agent, citing the program’s policy exclusion for SPF/DKIM/DMARC findings. The same details were emailed directly to the company’s security team the same day. It is now October 29, 2026. Nothing has changed, and nothing has been answered. ## The finding The domains OYO Rooms uses for customer commun",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "7591b50babe0",
     "title": "From an Android APK to Production MQTT: Exposed Credentials in Attendo (formerly Petpooja Payroll)",
     "url": "https://medium.com/@TheWildEye/from-an-android-apk-to-production-mqtt-exposed-credentials-in-attendo-formerly-petpooja-payroll-eb701d23233e",
