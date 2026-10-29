@@ -1,5 +1,46 @@
 [
   {
+    "id": "7591b50babe0",
+    "title": "From an Android APK to Production MQTT: Exposed Credentials in Attendo (formerly Petpooja Payroll)",
+    "url": "https://medium.com/@TheWildEye/from-an-android-apk-to-production-mqtt-exposed-credentials-in-attendo-formerly-petpooja-payroll-eb701d23233e",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "TheWildEye"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-29T13:52:51.000Z",
+    "added_at": "2026-10-29T14:24:29.299Z",
+    "categories": [
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "Hardcoded production MQTT credentials were discovered within the Attendo Android APK, allowing unauthorized access to real-time messaging data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by hardcoding sensitive production credentials directly within the Attendo Android APK. An APK (Android Package Kit - the file format for Android apps) can be easily decompiled (turning a finished app back into readable code) to reveal its internal strings (sequences of text) and logic. By including MQTT (a messaging protocol used for real-time data exchange) credentials in the code, the developers made them accessible to anyone who downloads the app. This represents a failure to secure secrets in a client-side environment, where code is essentially public. The credentials provided direct access to the production environment rather than being restricted to a development or testing setup.",
+      "walkthrough": null,
+      "example": "Imagine a fictional delivery app 'fast-drop.example' that sends live GPS data to a server using MQTT (a server that manages real-time messages). A developer hardcodes the login details directly in the Java code: \n\n`String mqttUser = \"app_user\";` \n`String mqttPass = \"tracker_pass_2024\";` \n\nAn attacker downloads the app's APK (the installer file), uses a tool like 'strings' (a program that finds text in files) to search for 'mqtt', and finds the credentials. They then use a command-line tool to listen to all messages: \n\n`mosquitto_sub -h mqtt.fast-drop.example -u app_user -P tracker_pass_2024 -t '#'` \n\nThe '#' symbol is a wildcard (a special character that matches any text), telling the server to send every single message it processes to the attacker. Because the credentials were left in the app, the attacker now sees the real-time location of every user.",
+      "takeaway": "When analyzing mobile applications, always decompile the APK (Android Package Kit) to check for hardcoded secrets like API keys or protocol credentials. Use tools like 'grep' (a tool for searching text) or automated scanners to find keywords like 'key', 'pass', or 'secret'. A common mistake is believing that 'obfuscation' (making code confusing to read) will hide these secrets; in reality, strings often remain in plain text. Always verify if the credentials found work on production endpoints rather than just staging environments. Variants of this bug include hardcoded AWS keys or internal database connection strings found in configuration files.",
+      "fix": "To fix this, remove all hardcoded credentials from the application source code. Instead of using static credentials, the application should authenticate users through a secure API that issues temporary, scoped access tokens (digital keys that only work for specific tasks). For MQTT, each client should have its own unique, dynamically generated credentials with limited permissions. Additionally, integrate secret-scanning tools into the CI/CD (the automated process of building and testing software) pipeline to automatically detect secrets before they are released. If a secret is accidentally exposed, it must be immediately rotated (changing a password to a new one) across all systems.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "3c99f18c2959",
     "title": "Turning the Valve - Exploiting RCE and LPE in the Steam Platform",
     "url": "https://www.reddit.com/r/netsec/comments/1xi11fq/turning_the_valve_exploiting_rce_and_lpe_in_the",
