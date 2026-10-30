@@ -1,5 +1,45 @@
 [
   {
+    "id": "b622b2611776",
+    "title": "IDOR in Munshi: Changing a Purchase Inquiry ID Exposed Another User’s Thread",
+    "url": "https://medium.com/@TheWildEye/idor-in-munshi-changing-a-purchase-inquiry-id-exposed-another-users-thread-540323a91bf5",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "TheWildEye"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-30T13:12:51.000Z",
+    "added_at": "2026-10-30T20:52:18.657Z",
+    "categories": [
+      "idor-bola"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An Insecure Direct Object Reference (IDOR) in the Munshi platform allowed users to view private purchase inquiry threads belonging to other users by simply changing the inquiry ID in the request.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application failed to implement proper authorization checks to ensure that the user requesting a specific purchase inquiry thread was the actual owner or an authorized participant. It relied solely on the 'Purchase Inquiry ID' (a unique number identifying a specific record) provided in the request. Because the server did not verify the relationship between the logged-in user and the requested ID, any authenticated user could access any thread by guessing or incrementing the ID value.",
+      "walkthrough": "RECON\n1. Log into the Munshi application using valid credentials to establish a session. (Session: A temporary way for a server to remember who you are after you log in).\n2. Navigate to the dashboard where purchase inquiries are listed.\nDISCOVERY\n3. Click on a legitimate purchase inquiry that belongs to your account.\n4. Use a proxy tool or browser developer tools to inspect the network traffic. (HTTP Request: A message sent by your browser to a server asking for information).\n5. Identify the specific endpoint used to fetch the inquiry details. (Endpoint: A specific web address used by an application to perform a task).\nGET /api/purchase-inquiry/view?id=12345\nWhy: The application uses the 'id' parameter to determine which inquiry thread to display. (Parameter: A piece of information passed to a program to customize its behavior).\nEXPLOITATION\n6. Modify the 'id' parameter in the request to a different number, such as one digit higher. (Payload: The part of the data sent to a target to exploit a vulnerability).\nGET /api/purchase-inquiry/view?id=12346\nWhy: By changing the ID, we are testing if the server checks if we own the data or just looks up the number.\n7. Send the modified request to the server.\nIMPACT\n8. Observe that the server returns the full conversation and details of a purchase inquiry belonging to a completely different user.\n9. Confirm the vulnerability by repeating the process with other random IDs to see various private threads.",
+      "example": "Imagine a website called target.example where users view their private invoices. A user logs in and sees their invoice at 'https://target.example/invoice/view?num=500'. The server-side code looks like this: 'SELECT * FROM invoices WHERE invoice_id = ' + request.query.num. An attacker changes the URL to 'https://target.example/invoice/view?num=501'. Because the code only looks for the invoice number and doesn't check if the 'owner_id' matches the logged-in user's ID, the attacker can see someone else's private billing information.",
+      "takeaway": "This is a classic IDOR (Insecure Direct Object Reference) pattern. Always look for numeric IDs in URLs or JSON bodies that refer to private resources like messages, orders, or profiles. A key signal is when you can access your own data using a simple ID; try changing that ID to see if the system blocks you. A common variant is 'Mass Assignment' where you can change IDs in a POST request to update someone else's data. Avoid the mistake of thinking long IDs (UUIDs) are a fix; while harder to guess, they still require authorization checks.",
+      "fix": "The application must verify that the currently logged-in user has permission to access the specific object ID requested. This is done by including the user's unique ID in the database query. Instead of 'SELECT * FROM inquiries WHERE id = ?', use 'SELECT * FROM inquiries WHERE id = ? AND user_id = ?'.\n\nExample fix in code:\n\n// Get the user ID from the secure session\nconst currentUserId = session.user_id;\nconst inquiryId = request.query.id;\n\n// Query both the inquiry ID and the owner ID\nconst inquiry = db.query('SELECT * FROM inquiries WHERE id = ? AND owner_id = ?', [inquiryId, currentUserId]);\n\nif (!inquiry) {\n  return response.status(403).send('Access Denied');\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c407e6be341e",
     "title": "The User Was Removed. The Access Wasn’t.",
     "url": "https://medium.com/@ashour2j83/i-found-an-api-endpoint-i-couldnt-explain-then-i-realized-i-could-still-access-a-private-project-5721172a6c22",
