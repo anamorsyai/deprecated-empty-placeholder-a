@@ -1,5 +1,45 @@
 [
   {
+    "id": "de11160deea9",
+    "title": "CoRover.ai leaked two million phone calls. Yours might be one.",
+    "url": "https://medium.com/@cybercitizen.tech/corover-ai-leaked-two-million-phone-calls-yours-might-be-one-168bf354a009",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "CyberCitizen"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-30T09:05:51.000Z",
+    "added_at": "2026-10-30T09:38:17.521Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "CoRover.ai leaked two million phone calls. Yours might be one.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "7591b50babe0",
     "title": "From an Android APK to Production MQTT: Exposed Credentials in Attendo (formerly Petpooja Payroll)",
     "url": "https://medium.com/@TheWildEye/from-an-android-apk-to-production-mqtt-exposed-credentials-in-attendo-formerly-petpooja-payroll-eb701d23233e",
