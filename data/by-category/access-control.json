@@ -1,5 +1,47 @@
 [
   {
+    "id": "5025cc68afc2",
+    "title": "From Shodan to an Unpaid Delivery: How a Chain of Weaknesses Led to Real-World Impact",
+    "url": "https://medium.com/@gjethva10/from-shodan-to-an-unpaid-delivery-how-a-chain-of-weaknesses-led-to-real-world-impact-266a4ef00b1e",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Gaurang Jethva"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-30T18:38:15.000Z",
+    "added_at": "2026-10-31T00:13:41.329Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A chain of vulnerabilities involving a predictable OTP and a lack of server-side payment verification allowed researchers to order and receive physical products for free.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by two primary failures: first, the use of a hardcoded or predictable OTP (One-Time Password) value of '1234' in a UAT (User Acceptance Testing) environment exposed to the public internet. Second, the application's backend (the server-side logic) failed to independently verify payment status, instead trusting a client-side 'success' signal from a demo payment gateway to mark orders as paid and initiate shipping.",
+      "walkthrough": "RECON\n1. Use Shodan (a search engine for internet-connected devices) to find IP addresses (unique numerical labels for computers) associated with the target domain.\n2. Access the discovered IP address directly in a web browser to reveal a functional application.\nDISCOVERY\n3. Identify the login page which requires an OTP (One-Time Password - a temporary security code).\n4. Test the predictable value '1234' in the OTP field.\n1234\nWhy: The developer used a simple, easy-to-remember code for testing that was never removed (a hardcoded credential).\n5. Navigate through the application to find a link to a separate retail UAT (User Acceptance Testing - a sandbox for testing new features) environment.\n6. Attempt to log in to the UAT environment using the same '1234' OTP bypass.\nEXPLOITATION\n7. Browse the e-commerce section of the UAT site and add a physical product to the shopping cart.\n8. Proceed to the checkout page and select the company's internal payment option.\n9. Observe the redirect to a demo bank interface provided by Razorpay.\n10. Click the button labeled 'Success' on the demo bank page.\nWhy: This demo page is meant for developers to simulate a successful transaction, but it should not be connected to real shipping workflows.\nIMPACT\n11. Observe the application backend processing the order as 'Paid' based on the demo result.\n12. Track the order through the shipping provider (Delhivery) to confirm a real product is being delivered.\nWhy: The system failed to perform server-side verification (checking with the bank's actual records) before fulfilling the order.",
+      "example": "Suppose a fictional site 'target.example' has a checkout page. When a user pays, the bank redirects them to 'target.example/success?paid=true'. A beginner researcher sees this and tries to access that URL directly without paying. If the code looks like this: \n\nif (url.params.get('paid') === 'true') { \n  database.updateOrder(orderId, 'PAID'); \n}\n\nThe researcher can simply type the URL into their browser to get a free item. The attack request would be: \nGET /success?paid=true HTTP/1.1\nHost: target.example\n\nThis works because the server trusts the 'paid=true' parameter (a piece of data in the URL) provided by the user's browser instead of asking the bank's server if the money was actually received.",
+      "takeaway": "Always perform 'Recon' on IP addresses found via Shodan, as they often host 'shadow' or UAT environments with weaker security than the main domain. Look for predictable patterns in OTPs or default credentials in non-production environments. A critical lesson is that payment status must never be determined by the client's browser; always use server-to-server webhooks (automated messages between servers) to confirm financial transactions. A common mistake is assuming that because a site is a 'test' site, it cannot trigger real-world actions like shipping.",
+      "fix": "To fix this, first restrict access to UAT environments using a VPN or IP whitelisting so they are not public. Second, replace predictable OTPs with cryptographically secure random codes and implement rate limiting (restricting the number of attempts). Finally, implement server-side payment verification using webhooks. \n\nExample fix in Node.js:\napp.post('/webhook/payment', (req, res) => {\n  const signature = req.headers['x-razorpay-signature'];\n  if (verifySignature(req.body, signature)) {\n    if (req.body.status === 'captured') {\n      db.orders.update({ id: req.body.order_id }, { status: 'PAID' });\n    }\n  }\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This investigation started with Shodan and ended with a real physical product being delivered without genuine payment being collected. ## It Started With an IP Address While enumerating the external attack surface of a target, I discovered an IP address associated with its domain. Opening it directly in a browser revealed a fully functional application that appeared identical to the website accessible through the target’s domain. The application relied on OTP-based authentication, but a predictable value, `1234`, was accepted, allowing access. Exploring the application hosted on IP address rev",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "7591b50babe0",
     "title": "From an Android APK to Production MQTT: Exposed Credentials in Attendo (formerly Petpooja Payroll)",
     "url": "https://medium.com/@TheWildEye/from-an-android-apk-to-production-mqtt-exposed-credentials-in-attendo-formerly-petpooja-payroll-eb701d23233e",
