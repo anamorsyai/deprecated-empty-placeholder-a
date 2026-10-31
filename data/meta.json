@@ -17,7 +17,7 @@
   "byCategory": {
     "auth-bypass": 53,
     "business-logic": 41,
-    "access-control": 91,
+    "access-control": 92,
     "idor-bola": 20,
     "info-disclosure": 48,
     "other": 40,
@@ -38,5 +38,6 @@
     "mass-assignment": 1,
     "subdomain-takeover": 1,
     "cors": 2
-  }
+  },
+  "backfilledThisRun": 4
 }
