@@ -1,5 +1,46 @@
 [
   {
+    "id": "390ec8f3100d",
+    "title": "CVE Decoded #7: CVE-2026–77304 (llm-council-core)",
+    "url": "https://medium.com/@workwithsaijal/cve-decoded-7-cve-2026-77304-llm-council-core-125b90c9da96",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Saijalpreet Kaur"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-31T15:38:23.000Z",
+    "added_at": "2026-10-31T16:12:15.119Z",
+    "categories": [
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "The llm-council-core tool accidentally included sensitive files like .env and .npmrc in the data sent to third-party AI providers, exposing private API keys and passwords.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by an overly broad 'whitelist' (a list of allowed items) in the file selection logic. The tool was programmed to identify all 'text-like' files to send to the AI for review, but it included '.env', '.npmrc', and '.yarnrc' in this list. Because there was no 'denylist' (a list of forbidden items) to specifically block sensitive paths, the tool treated secret-heavy files exactly like regular source code. This logic lived in the `TEXT_EXTENSIONS` set within the `constants.py` file and was executed by the `collect_files` function.",
+      "walkthrough": "RECON\nStep 1: Identify the tool's purpose as a CI/CD (Continuous Integration/Continuous Deployment — an automated system that tests and moves code) quality gate.\nStep 2: Note that the tool uses a CLI (Command Line Interface — a way to talk to a computer by typing text) command to start the process.\n`llm-council gate` \nWhy: This command triggers the code review process. (A command is a text instruction for a program).\n\nDISCOVERY\nStep 3: Examine the file selection configuration in the source code.\n`TEXT_EXTENSIONS = { \".py\", \".js\", \".env\", \".npmrc\" }` \nWhy: The researcher found that sensitive file types were explicitly listed as allowed text files. (A whitelist is a list of allowed items).\nStep 4: Analyze how the tool gathers files from the project.\n`for filename in files: if filepath.endswith(tuple(TEXT_EXTENSIONS)): collected.append(filepath)` \nWhy: The tool loops through every file and checks if its name ends with one of the allowed extensions. (A loop is a way to repeat an action for every item in a list).\n\nEXPLOITATION\nStep 5: Create or identify a .env file (Environment file — a text file used to store sensitive settings like passwords) in a Git repository.\n`DATABASE_URL=postgres://admin:s3cretP@ssw0rd@db.example.com:5432/production` \nWhy: This file contains the 'crown jewels' or secrets that should never be shared. (A Git repository is a folder where code history is tracked).\nStep 6: Run the verification tool on a commit (Commit — a saved version of code in Git).\n`council-verify --commit <sha>` \nWhy: The tool uses a SHA (a unique fingerprint for a specific code version) to grab a snapshot of the files. \nStep 7: Observe the tool reading the secret file contents.\n`git show <sha>:.env` \nWhy: The tool uses Git commands to extract the text from the sensitive file. (Git show is a command that displays the contents of a file at a specific version).\n\nIMPACT\nStep 8: The tool bundles the secrets into a prompt (Prompt — the text instructions sent to an AI) and sends it to an external provider.\n`POST https://api.openai.com/v1/chat/completions { \"prompt\": \"Review this code: ... DATABASE_URL=...\" }` \nWhy: The tool sends an HTTP request (a message sent over the internet) containing the secrets to a third-party server. (A POST request is a method used to send data to a web address).",
+      "example": "Imagine a fictional tool called 'Doc-Summarizer.example' that helps office workers by sending their documents to an AI for summaries. The tool is configured to look for any file ending in '.txt'. A worker has a file named 'passwords.txt' on their desktop. \n\nVulnerable Code:\n```python\nALLOWED = [\".txt\", \".doc\"]\nfor file in folder:\n    if file.suffix in ALLOWED:\n        upload_to_ai(file)\n```\n\nAttack Request:\nThe tool sees 'passwords.txt', matches the '.txt' extension, and sends the following payload (the actual data being sent) to the AI provider:\n`POST /summarize HTTP/1.1\nHost: ai.example.com\nContent: \"Banking: admin/12345, Email: user/password\"` \n\nWhy it works: The tool only checks the file extension (the part after the dot) and does not check if the filename or content is sensitive.",
+      "takeaway": "When hunting for information disclosure bugs, always look for 'file collectors' or 'sync' features that bridge local data to the cloud. Check if the tool uses a whitelist for file extensions and see if that list includes sensitive types like .env, .config, or .pem. A common signal is any tool that integrates with Git but doesn't respect the .gitignore file (a file that tells Git which files to ignore). A variant of this bug occurs in 'Log Forwarders' that accidentally upload log files containing session cookies (a small piece of data used to keep you logged in). Avoid the mistake of assuming that 'text-only' filters are safe; text files are often where the most sensitive secrets live.",
+      "fix": "The fix involves removing sensitive extensions from the whitelist and implementing a mandatory, non-overridable denylist (a list of forbidden items) for specific filenames and extensions. \n\n```python\n# Patched constants.py\nSENSITIVE_FILE_NAMES = {\".env\", \".npmrc\", \".yarnrc\", \"id_rsa\"}\nSENSITIVE_EXTENSIONS = (\".pem\", \".key\")\n\ndef should_include_file(filepath):\n    filename = os.path.basename(filepath).lower()\n    # Block forbidden names first\n    if filename in SENSITIVE_FILE_NAMES:\n        return False\n    # Block forbidden extensions\n    if filename.endswith(SENSITIVE_EXTENSIONS):\n        return False\n    # Only then check the whitelist\n    return filename.endswith(tuple(TEXT_EXTENSIONS))\n``` \nThis ensures that even if a file is 'text', it is blocked if it is known to contain secrets.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "An AI code-review tool accidentally scooped up your `.env` file..passwords, API keys, and all and mailed it straight to a third-party AI provider as part of its homework. **What Even Is llm-council?** Imagine you’re a teacher grading essays. You’ve got a stack of papers, and you want a second opinion, so you photocopy each essay and mail a copy to three different tutors for feedback. Each tutor reads the essay independently, grades it, and then they also review each other’s feedback, rank the responses, and a head tutor synthesizes everything into one final verdict. That’s essentially what **l",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b3369206b72f",
     "title": "Public Disclosure: Anyone Can Send Email as OYO Rooms — Reported, Rejected, and Still Wide Open",
     "url": "https://cyphernova1337.medium.com/public-disclosure-anyone-can-send-email-as-oyo-rooms-reported-rejected-and-still-wide-open-0b3f9576b402",

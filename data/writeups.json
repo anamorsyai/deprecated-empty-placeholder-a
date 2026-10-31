@@ -1,5 +1,88 @@
 [
   {
+    "id": "62e8924fcae1",
+    "title": "How I Hunt for Information Disclosure Bugs: My Complete Bug Bounty Methodology | by Samadhan…",
+    "url": "https://samadhanshimple.medium.com/how-i-hunt-for-information-disclosure-bugs-my-complete-bug-bounty-methodology-by-samadhan-fca0c7ca5eee",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Samadhan shimple"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-31T15:41:01.000Z",
+    "added_at": "2026-10-31T16:10:09.685Z",
+    "categories": [
+      "info-disclosure",
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "The researcher details a methodology for discovering Information Disclosure vulnerabilities by analyzing API responses for excessive data, inspecting client-side JavaScript for secrets, and triggering error messages to reveal internal system architecture. This approach identifies instances where applications inadvertently leak sensitive data like internal IDs, PII, or configuration details to unauthorized users.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is often 'Excessive Data Exposure,' where developers return full database objects to the frontend and rely on the user interface to filter what is visible. This occurs because it is easier to code a generic 'select *' query than to specify individual fields for every API endpoint (a specific web address where data is exchanged). Additionally, security misconfigurations like leaving debug modes enabled or failing to remove source maps (files that map compressed code back to readable code) allow internal logic to be exposed. Finally, a lack of strict authorization checks allows users to access data belonging to others by simply guessing their ID.",
+      "walkthrough": "RECONNAISSANCE\n1. Open Burp Suite, a tool used to intercept and inspect data moving between your browser and the website.\n2. Browse the target website normally to capture all background traffic.\n3. Identify all API endpoints, which are URLs used by the application to fetch data (e.g., /api/v1/user/profile).\n\nCLIENT-SIDE ANALYSIS\n4. Open the browser's Developer Tools (F12) and navigate to the 'Sources' or 'Debugger' tab.\n5. Search through JavaScript files for keywords like 'API_KEY', 'secret', or 'internal' to find hardcoded credentials.\n6. Check if the application loads '.map' files, which are files that reveal the original, uncompressed source code of the application.\n7. Inspect 'localStorage' and 'sessionStorage' in the browser to see if sensitive tokens or user data are stored insecurely on your computer.\n\nAPI EXPLOITATION\n8. Locate a request in Burp Suite that retrieves user information, such as:\nGET /api/v1/account/settings HTTP/1.1\n9. Examine the response body, which is the data the server sends back, usually in JSON format (a text-based way to organize data).\n10. Look for 'hidden' fields that the website doesn't show on the screen, such as 'is_admin: false' or 'internal_db_id: 5521'.\n11. Attempt to change the ID in the request to see if you can view another user's data (IDOR):\nGET /api/v1/account/settings?id=1002 HTTP/1.1\nWhy: This tests if the server checks if you own the data you are asking for (Authorization).\n\nERROR AND DEBUG PROBING\n12. Send invalid data to an endpoint, such as putting a word where the app expects a number:\nGET /api/v1/product/abc HTTP/1.1\n13. Analyze the error response for a 'stack trace,' which is a detailed report of the server's internal code execution path.\n14. Check for common debug paths like '/actuator/env' or '/phpinfo' which might be left open by mistake.\n15. If a debug interface is found, look for 'environment variables,' which are settings that often contain database passwords or secret keys.\n\nIMPACT ASSESSMENT\n16. Document how the leaked information (like an internal file path or a private email) could be used to launch a more dangerous attack.",
+      "example": "Suppose a fictional site 'target.example' has a profile page. When you view your profile, your browser sends this HTTP request (a message asking for data):\nGET /api/users/me\n\nThe server responds with this JSON (data format):\n{\n  \"username\": \"hunter1\",\n  \"bio\": \"Hello world\",\n  \"internal_password_reset_token\": \"9922-8811-X\",\n  \"last_login_ip\": \"10.0.0.5\"\n}\n\nWhile the website only displays the 'username' and 'bio' on the screen, the server is leaking a 'password_reset_token' and an internal IP address. An attacker can see this hidden data by using a proxy tool like Burp Suite. The attacker could then use that reset token to take over the account because the server sent too much information to the browser.",
+      "takeaway": "Always look at the raw data returned by the server, not just what appears on the webpage. Use Burp Suite's 'Target' tab to find all JavaScript files and search them for secrets or internal URLs. A common variant of this bug is 'BOLA' (Broken Object Level Authorization), where changing a number in a URL reveals someone else's private data. Avoid the mistake of thinking a bug is 'low' severity just because it's an error message; if that message reveals a database version, it helps an attacker choose the right exploit later.",
+      "fix": "To fix this, developers should use Data Transfer Objects (DTOs), which are specific code structures that only include the fields intended for the user. Instead of returning a whole 'User' object from the database, create a 'UserPublicProfile' object that only contains the name and bio. Additionally, ensure all debug modes are disabled in production and that error messages are generic (e.g., 'An error occurred') rather than detailed. \n\nExample of a secure fix in code:\npublic UserDTO getProfile(Long id) {\n  User user = userRepository.findById(id);\n  return new UserDTO(user.getUsername(), user.getBio()); // Only return safe fields\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "When I started learning bug bounty hunting, I thought finding security vulnerabilities was mostly about testing parameters and running automated tools. But as I learned more about web application security, I realized that some important bugs are hidden in places most people do not pay attention to. Information disclosure is one of those vulnerability types. A small detail in an API response, an exposed configuration file, a debug message, or an old backup file can reveal information that should not be publicly accessible. In this article, I will explain the methodology I use to approach inform",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "390ec8f3100d",
+    "title": "CVE Decoded #7: CVE-2026–77304 (llm-council-core)",
+    "url": "https://medium.com/@workwithsaijal/cve-decoded-7-cve-2026-77304-llm-council-core-125b90c9da96",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Saijalpreet Kaur"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-31T15:38:23.000Z",
+    "added_at": "2026-10-31T16:12:15.119Z",
+    "categories": [
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "The llm-council-core tool accidentally included sensitive files like .env and .npmrc in the data sent to third-party AI providers, exposing private API keys and passwords.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by an overly broad 'whitelist' (a list of allowed items) in the file selection logic. The tool was programmed to identify all 'text-like' files to send to the AI for review, but it included '.env', '.npmrc', and '.yarnrc' in this list. Because there was no 'denylist' (a list of forbidden items) to specifically block sensitive paths, the tool treated secret-heavy files exactly like regular source code. This logic lived in the `TEXT_EXTENSIONS` set within the `constants.py` file and was executed by the `collect_files` function.",
+      "walkthrough": "RECON\nStep 1: Identify the tool's purpose as a CI/CD (Continuous Integration/Continuous Deployment — an automated system that tests and moves code) quality gate.\nStep 2: Note that the tool uses a CLI (Command Line Interface — a way to talk to a computer by typing text) command to start the process.\n`llm-council gate` \nWhy: This command triggers the code review process. (A command is a text instruction for a program).\n\nDISCOVERY\nStep 3: Examine the file selection configuration in the source code.\n`TEXT_EXTENSIONS = { \".py\", \".js\", \".env\", \".npmrc\" }` \nWhy: The researcher found that sensitive file types were explicitly listed as allowed text files. (A whitelist is a list of allowed items).\nStep 4: Analyze how the tool gathers files from the project.\n`for filename in files: if filepath.endswith(tuple(TEXT_EXTENSIONS)): collected.append(filepath)` \nWhy: The tool loops through every file and checks if its name ends with one of the allowed extensions. (A loop is a way to repeat an action for every item in a list).\n\nEXPLOITATION\nStep 5: Create or identify a .env file (Environment file — a text file used to store sensitive settings like passwords) in a Git repository.\n`DATABASE_URL=postgres://admin:s3cretP@ssw0rd@db.example.com:5432/production` \nWhy: This file contains the 'crown jewels' or secrets that should never be shared. (A Git repository is a folder where code history is tracked).\nStep 6: Run the verification tool on a commit (Commit — a saved version of code in Git).\n`council-verify --commit <sha>` \nWhy: The tool uses a SHA (a unique fingerprint for a specific code version) to grab a snapshot of the files. \nStep 7: Observe the tool reading the secret file contents.\n`git show <sha>:.env` \nWhy: The tool uses Git commands to extract the text from the sensitive file. (Git show is a command that displays the contents of a file at a specific version).\n\nIMPACT\nStep 8: The tool bundles the secrets into a prompt (Prompt — the text instructions sent to an AI) and sends it to an external provider.\n`POST https://api.openai.com/v1/chat/completions { \"prompt\": \"Review this code: ... DATABASE_URL=...\" }` \nWhy: The tool sends an HTTP request (a message sent over the internet) containing the secrets to a third-party server. (A POST request is a method used to send data to a web address).",
+      "example": "Imagine a fictional tool called 'Doc-Summarizer.example' that helps office workers by sending their documents to an AI for summaries. The tool is configured to look for any file ending in '.txt'. A worker has a file named 'passwords.txt' on their desktop. \n\nVulnerable Code:\n```python\nALLOWED = [\".txt\", \".doc\"]\nfor file in folder:\n    if file.suffix in ALLOWED:\n        upload_to_ai(file)\n```\n\nAttack Request:\nThe tool sees 'passwords.txt', matches the '.txt' extension, and sends the following payload (the actual data being sent) to the AI provider:\n`POST /summarize HTTP/1.1\nHost: ai.example.com\nContent: \"Banking: admin/12345, Email: user/password\"` \n\nWhy it works: The tool only checks the file extension (the part after the dot) and does not check if the filename or content is sensitive.",
+      "takeaway": "When hunting for information disclosure bugs, always look for 'file collectors' or 'sync' features that bridge local data to the cloud. Check if the tool uses a whitelist for file extensions and see if that list includes sensitive types like .env, .config, or .pem. A common signal is any tool that integrates with Git but doesn't respect the .gitignore file (a file that tells Git which files to ignore). A variant of this bug occurs in 'Log Forwarders' that accidentally upload log files containing session cookies (a small piece of data used to keep you logged in). Avoid the mistake of assuming that 'text-only' filters are safe; text files are often where the most sensitive secrets live.",
+      "fix": "The fix involves removing sensitive extensions from the whitelist and implementing a mandatory, non-overridable denylist (a list of forbidden items) for specific filenames and extensions. \n\n```python\n# Patched constants.py\nSENSITIVE_FILE_NAMES = {\".env\", \".npmrc\", \".yarnrc\", \"id_rsa\"}\nSENSITIVE_EXTENSIONS = (\".pem\", \".key\")\n\ndef should_include_file(filepath):\n    filename = os.path.basename(filepath).lower()\n    # Block forbidden names first\n    if filename in SENSITIVE_FILE_NAMES:\n        return False\n    # Block forbidden extensions\n    if filename.endswith(SENSITIVE_EXTENSIONS):\n        return False\n    # Only then check the whitelist\n    return filename.endswith(tuple(TEXT_EXTENSIONS))\n``` \nThis ensures that even if a file is 'text', it is blocked if it is known to contain secrets.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "An AI code-review tool accidentally scooped up your `.env` file..passwords, API keys, and all and mailed it straight to a third-party AI provider as part of its homework. **What Even Is llm-council?** Imagine you’re a teacher grading essays. You’ve got a stack of papers, and you want a second opinion, so you photocopy each essay and mail a copy to three different tutors for feedback. Each tutor reads the essay independently, grades it, and then they also review each other’s feedback, rank the responses, and a head tutor synthesizes everything into one final verdict. That’s essentially what **l",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "5025cc68afc2",
     "title": "From Shodan to an Unpaid Delivery: How a Chain of Weaknesses Led to Real-World Impact",
     "url": "https://medium.com/@gjethva10/from-shodan-to-an-unpaid-delivery-how-a-chain-of-weaknesses-led-to-real-world-impact-266a4ef00b1e",

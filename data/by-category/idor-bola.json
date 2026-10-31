@@ -1,5 +1,47 @@
 [
   {
+    "id": "62e8924fcae1",
+    "title": "How I Hunt for Information Disclosure Bugs: My Complete Bug Bounty Methodology | by Samadhan…",
+    "url": "https://samadhanshimple.medium.com/how-i-hunt-for-information-disclosure-bugs-my-complete-bug-bounty-methodology-by-samadhan-fca0c7ca5eee",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Samadhan shimple"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-31T15:41:01.000Z",
+    "added_at": "2026-10-31T16:10:09.685Z",
+    "categories": [
+      "info-disclosure",
+      "idor-bola",
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "The researcher details a methodology for discovering Information Disclosure vulnerabilities by analyzing API responses for excessive data, inspecting client-side JavaScript for secrets, and triggering error messages to reveal internal system architecture. This approach identifies instances where applications inadvertently leak sensitive data like internal IDs, PII, or configuration details to unauthorized users.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is often 'Excessive Data Exposure,' where developers return full database objects to the frontend and rely on the user interface to filter what is visible. This occurs because it is easier to code a generic 'select *' query than to specify individual fields for every API endpoint (a specific web address where data is exchanged). Additionally, security misconfigurations like leaving debug modes enabled or failing to remove source maps (files that map compressed code back to readable code) allow internal logic to be exposed. Finally, a lack of strict authorization checks allows users to access data belonging to others by simply guessing their ID.",
+      "walkthrough": "RECONNAISSANCE\n1. Open Burp Suite, a tool used to intercept and inspect data moving between your browser and the website.\n2. Browse the target website normally to capture all background traffic.\n3. Identify all API endpoints, which are URLs used by the application to fetch data (e.g., /api/v1/user/profile).\n\nCLIENT-SIDE ANALYSIS\n4. Open the browser's Developer Tools (F12) and navigate to the 'Sources' or 'Debugger' tab.\n5. Search through JavaScript files for keywords like 'API_KEY', 'secret', or 'internal' to find hardcoded credentials.\n6. Check if the application loads '.map' files, which are files that reveal the original, uncompressed source code of the application.\n7. Inspect 'localStorage' and 'sessionStorage' in the browser to see if sensitive tokens or user data are stored insecurely on your computer.\n\nAPI EXPLOITATION\n8. Locate a request in Burp Suite that retrieves user information, such as:\nGET /api/v1/account/settings HTTP/1.1\n9. Examine the response body, which is the data the server sends back, usually in JSON format (a text-based way to organize data).\n10. Look for 'hidden' fields that the website doesn't show on the screen, such as 'is_admin: false' or 'internal_db_id: 5521'.\n11. Attempt to change the ID in the request to see if you can view another user's data (IDOR):\nGET /api/v1/account/settings?id=1002 HTTP/1.1\nWhy: This tests if the server checks if you own the data you are asking for (Authorization).\n\nERROR AND DEBUG PROBING\n12. Send invalid data to an endpoint, such as putting a word where the app expects a number:\nGET /api/v1/product/abc HTTP/1.1\n13. Analyze the error response for a 'stack trace,' which is a detailed report of the server's internal code execution path.\n14. Check for common debug paths like '/actuator/env' or '/phpinfo' which might be left open by mistake.\n15. If a debug interface is found, look for 'environment variables,' which are settings that often contain database passwords or secret keys.\n\nIMPACT ASSESSMENT\n16. Document how the leaked information (like an internal file path or a private email) could be used to launch a more dangerous attack.",
+      "example": "Suppose a fictional site 'target.example' has a profile page. When you view your profile, your browser sends this HTTP request (a message asking for data):\nGET /api/users/me\n\nThe server responds with this JSON (data format):\n{\n  \"username\": \"hunter1\",\n  \"bio\": \"Hello world\",\n  \"internal_password_reset_token\": \"9922-8811-X\",\n  \"last_login_ip\": \"10.0.0.5\"\n}\n\nWhile the website only displays the 'username' and 'bio' on the screen, the server is leaking a 'password_reset_token' and an internal IP address. An attacker can see this hidden data by using a proxy tool like Burp Suite. The attacker could then use that reset token to take over the account because the server sent too much information to the browser.",
+      "takeaway": "Always look at the raw data returned by the server, not just what appears on the webpage. Use Burp Suite's 'Target' tab to find all JavaScript files and search them for secrets or internal URLs. A common variant of this bug is 'BOLA' (Broken Object Level Authorization), where changing a number in a URL reveals someone else's private data. Avoid the mistake of thinking a bug is 'low' severity just because it's an error message; if that message reveals a database version, it helps an attacker choose the right exploit later.",
+      "fix": "To fix this, developers should use Data Transfer Objects (DTOs), which are specific code structures that only include the fields intended for the user. Instead of returning a whole 'User' object from the database, create a 'UserPublicProfile' object that only contains the name and bio. Additionally, ensure all debug modes are disabled in production and that error messages are generic (e.g., 'An error occurred') rather than detailed. \n\nExample of a secure fix in code:\npublic UserDTO getProfile(Long id) {\n  User user = userRepository.findById(id);\n  return new UserDTO(user.getUsername(), user.getBio()); // Only return safe fields\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "When I started learning bug bounty hunting, I thought finding security vulnerabilities was mostly about testing parameters and running automated tools. But as I learned more about web application security, I realized that some important bugs are hidden in places most people do not pay attention to. Information disclosure is one of those vulnerability types. A small detail in an API response, an exposed configuration file, a debug message, or an old backup file can reveal information that should not be publicly accessible. In this article, I will explain the methodology I use to approach inform",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "b622b2611776",
     "title": "IDOR in Munshi: Changing a Purchase Inquiry ID Exposed Another User’s Thread",
     "url": "https://medium.com/@TheWildEye/idor-in-munshi-changing-a-purchase-inquiry-id-exposed-another-users-thread-540323a91bf5",
