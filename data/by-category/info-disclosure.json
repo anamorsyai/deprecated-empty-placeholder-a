@@ -83,6 +83,47 @@
     "score": 53
   },
   {
+    "id": "976aa591e6ea",
+    "title": "Breaking into a Major Bank",
+    "url": "https://medium.com/@l4zz3rj0d/breaking-into-a-major-bank-064fe170cc3a",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-31T10:31:01.000Z",
+    "added_at": "2026-10-31T23:07:43.471Z",
+    "categories": [
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "Exposed Spring Boot Actuator endpoints allowed the researcher to download a full memory heapdump, revealing plaintext credentials and internal secrets. This misconfiguration in a major bank's production environment led to a $4,800 bounty reward.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was the failure to disable or secure Spring Boot Actuator endpoints in a production environment. These endpoints, specifically `/actuator/heapdump`, are designed for internal monitoring and debugging but were left publicly accessible without authentication. Furthermore, the application's default error pages leaked its underlying framework (Spring Boot), allowing the researcher to fingerprint the technology stack and target known sensitive paths.",
+      "walkthrough": "RECON\n1. The researcher started by performing directory enumeration (using a tool to guess common folder names) on the bank's main website.\n2. They discovered two hidden endpoints: `/error` and `/health` (specific web addresses where an application receives requests).\n3. By visiting `/error`, the researcher observed a specific JSON (a data format) structure and timestamp format.\n4. They recognized this specific error layout as a 'fingerprint' (identifying software by its unique behavior) for the Spring Boot framework (a popular tool for building Java web apps).\nDISCOVERY\n5. To confirm the presence of more hidden management tools, the researcher ran Nuclei (an automated scanner that looks for known vulnerabilities).\n6. The scanner identified several exposed 'Actuator' endpoints (tools in Spring Boot used to monitor and manage the application).\n7. The researcher checked `/env` (an endpoint that shows environment variables) but found no immediate secrets there.\n8. The researcher then identified the `/actuator/heapdump` endpoint as being publicly accessible.\nEXPLOITATION\n9. The researcher sent a request to download the heapdump file (a snapshot of everything currently stored in the computer's memory/RAM by the application).\nGET /actuator/heapdump HTTP/1.1\nHost: bank.example\nWhy: This request triggers the server to generate and send a large binary file containing the entire state of the application's memory.\n10. Once the file was downloaded, the researcher used the `strings` command (a tool that finds and prints readable text inside binary files).\nstrings heapdump_file_name\nWhy: Even if a file is mostly computer code, 'strings' extracts human-readable text like passwords or API keys that were temporarily stored in memory.\nIMPACT\n11. By searching through the extracted text, the researcher found sensitive internal secrets and the 'flag' (proof of access).\n12. The researcher confirmed that while data might be encrypted in a database, the JVM (the engine running the Java code) must decrypt it into plaintext (unencrypted text) to use it, making it visible in the heapdump.",
+      "example": "Imagine a fictional site 'shop.target.example' built with Spring Boot. A researcher notices that visiting a non-existent page returns a 'White Label Error Page'. They immediately try to access 'https://shop.target.example/actuator/env'. The server responds with a JSON object containing 'SPRING_DATASOURCE_PASSWORD: \"super-secret-db-pass\"'. This happens because the developers forgot to set 'management.endpoints.web.exposure.exclude=*' in their application configuration, allowing anyone to see the server's private environment variables.",
+      "takeaway": "Always fingerprint the technology stack by looking at error messages and headers; a 'White Label Error Page' is a massive signal for Spring Boot. Once identified, immediately check for common actuator paths like /env, /heapdump, /trace, and /mappings. Use automated scanners like Nuclei with specific 'misconfiguration' templates to find these quickly across large attack surfaces. A common mistake is assuming that because /env is masked or empty, the other endpoints are safe; always check /heapdump as it contains decrypted secrets from the application's runtime memory.",
+      "fix": "To fix this, developers should restrict Actuator endpoint exposure in the 'application.properties' or 'application.yml' file by only enabling necessary, non-sensitive endpoints. Ideally, all management endpoints should be moved to a different port or protected behind strict authentication using Spring Security. To disable all web exposure, use: 'management.endpoints.web.exposure.exclude=*'. To only allow health checks, use: 'management.endpoints.web.exposure.include=health,info'.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "A bank’s web application this time, and the brief points straight at debugging and monitoring endpoints developers forget to actually lock down before shipping to production. Same Nagli-hosted Bug Bounty Masterclass series, and this one’s confirmed too, Wiz’s own published benchmark data lists it as Bank Actuator, a Spring Boot actuator heapdump leak, based on a real critical finding at an actual financial institution where exposed debugging endpoints leaked credentials and internal secrets. Confirmed bounty on that one, $4,800. So this is just a mimic of that real hunt so lets jump in. Image",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "de11160deea9",
     "title": "CoRover.ai leaked two million phone calls. Yours might be one.",
     "url": "https://medium.com/@cybercitizen.tech/corover-ai-leaked-two-million-phone-calls-yours-might-be-one-168bf354a009",

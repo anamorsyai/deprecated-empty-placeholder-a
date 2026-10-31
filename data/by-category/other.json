@@ -1,5 +1,46 @@
 [
   {
+    "id": "561ce24e9d5d",
+    "title": "When a Security Product Can’t Protect Itself: My Responsible Disclosure Story with the Endpoint…",
+    "url": "https://medium.com/@furkanyasinkeskin/when-a-security-product-cant-protect-itself-my-responsible-disclosure-story-with-the-endpoint-c374c475f2eb",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Furkan Yasin Keskin"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-31T20:06:36.000Z",
+    "added_at": "2026-10-31T23:07:05.310Z",
+    "categories": [
+      "access-control",
+      "other"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "A vulnerability in ManageEngine Endpoint Central allowed local administrators to bypass 'Self-Defense' protections and uninstall the security agent by manipulating MSI and registry components.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The security agent relied on user-mode protections, which are security mechanisms running in the same space as standard applications. Because these protections were not enforced at the kernel level (the core part of the operating system), a user with Administrator privileges could manipulate the Windows Registry (a database of settings) and the MSI (Microsoft Installer) files to trick the system into allowing an uninstallation that should have been blocked.",
+      "walkthrough": "RECON\n1. Identify the installed version of the ManageEngine Endpoint Central agent on the Windows machine.\nVersion: 11.4.2516.37.W\nWhy: To confirm if the target is running a version known to have weak self-protection (an agent is a small program that monitors a computer).\n2. Verify that 'Self-Defense' and 'Uninstall Password Protection' are enabled in the management console.\nWhy: To establish that the security features are active and should theoretically prevent removal.\n\nDISCOVERY\n3. Attempt a standard uninstallation through the Windows Control Panel.\nWhy: To confirm the 'Uninstall Password' prompt appears, blocking the removal (a prompt is a window asking for user input).\n4. Locate the MSI (Microsoft Installer) file associated with the agent installation.\nWhy: MSI files contain the instructions for how a program is installed or removed; if these instructions can be modified, the security checks might be bypassed.\n\nEXPLOITATION\n5. Access the Windows Registry Editor (regedit).\nWhy: The Registry is a central database where Windows and programs store configuration settings; changing these can change how a program behaves.\n6. Identify registry keys related to the agent's self-protection status.\nWhy: The researcher found that by manipulating specific registry components, the 'Self-Defense' logic could be confused.\n7. Modify the MSI installation database or its cached components on the local disk.\nWhy: By altering the installer's logic, the researcher could remove the requirement for a password during the uninstallation process.\n8. Execute the uninstallation command using the modified components.\nmsiexec /x {AGENT_PRODUCT_CODE}\nWhy: This command tells Windows to uninstall the product associated with a specific ID (msiexec is the tool that processes MSI files).\n\nIMPACT\n9. Observe that the agent is successfully removed from the system without providing a password.\nWhy: This proves the 'Self-Defense' mechanism failed to protect the agent from a local administrator.\n10. Verify that security policies (like USB blocking or patch management) are no longer active.\nWhy: Once the agent is gone, the central server can no longer enforce security rules on that computer.",
+      "example": "Imagine a security program called 'SafeGuard' on target.example. SafeGuard has a 'Lock' feature that prevents it from being deleted. However, SafeGuard stores its 'Lock' status in a simple text file at C:\\ProgramData\\SafeGuard\\config.ini. An attacker with Administrator rights opens this file and changes 'Locked=1' to 'Locked=0'. They then run the standard uninstaller. Because the program only checks that local file to see if it should allow uninstallation, it sees 'Locked=0' and proceeds to delete itself, leaving the computer unprotected.",
+      "takeaway": "When hunting for bypasses in security software, look for 'Self-Defense' features that rely on user-accessible locations like the Registry or local configuration files. If an Administrator can modify the files or settings that the security tool uses to protect itself, the protection is effectively useless. Always check if the product uses a Kernel Driver (a high-privilege component) to protect its files; if it doesn't, it is likely vulnerable to tampering by a local admin. A common mistake is assuming that 'Administrator' privileges mean 'Game Over'—in security products, the goal is often to protect the system *from* a compromised administrator.",
+      "fix": "The vendor fixed this by implementing a kernel-level driver. A kernel driver operates at a deeper level than the user or administrator, allowing it to intercept and block any attempt to modify the agent's files or registry keys, even if the user has full admin rights. Users should upgrade to version 11.5.2605 or later and ensure 'Prevent Agent Data Tampering' is enabled in the Agent Protection Settings.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "## An agent that could be removed with Self-Defense enabled, a report closed as “Informative,” and the kernel-level protection that followed. _🇹🇷 Bu yazının Türkçesi için tıklayın_ We trust an EDR, DLP or UEM agent for a simple reason: it is on the machine when we are not. But there is a question we rarely ask: **who protects the agent itself?** This post covers a roughly six-month disclosure process for a behavior I found in the ManageEngine Endpoint Central agent. ## What I found While testing Endpoint Central Agent **v11.4.2516.37.W**, I found that the agent could be completely removed by",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "390ec8f3100d",
     "title": "CVE Decoded #7: CVE-2026–77304 (llm-council-core)",
     "url": "https://medium.com/@workwithsaijal/cve-decoded-7-cve-2026-77304-llm-council-core-125b90c9da96",
