@@ -81,6 +81,46 @@
     "score": 53
   },
   {
+    "id": "780047a768bd",
+    "title": "The Debugging File Nobody Removed Before Shipping: Secrets Exposed Through a Public Source Map",
+    "url": "https://medium.com/@t4nv1/the-debugging-file-nobody-removed-before-shipping-secrets-exposed-through-a-public-source-map-420ce5afddcc",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-10-31T16:56:01.000Z",
+    "added_at": "2026-11-01T02:11:59.545Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An exposed source‑map file leaked the full, readable frontend source of Glasswing Analytics, revealing internal logic and potentially secrets.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The developers configured the build tool to generate source‑map files (a .map JSON file that maps minified code back to original sources). The production server was set to serve static files from the build output without filtering .map extensions. Because the .map files were copied to the public /static/js/ directory, an attacker could request them directly. The server responded with the raw .map content, exposing the original source code, comments, and any embedded secrets. This happened because the deployment script did not delete or block source‑map files before publishing.",
+      "walkthrough": "RECON\nStep 1: Open the target web page and view its source code.\nWhy: The page source shows the <script> tag that loads the bundled JavaScript file (an HTTP request is a message a browser sends to a server). The <script> tag contains the URL of the minified bundle.\n\nStep 2: Note the bundle path, e.g. /static/js/main.a8f3e9.js.\nWhy: This is the endpoint (a URL that accepts requests) that serves the production JavaScript.\n\nStep 3: Append the literal string \".map\" to the bundle filename and send a GET request.\nGET /static/js/main.a8f3e9.js.map HTTP/1.1\nHost: glasswing.example.com\nWhy: Adding \".map\" asks the server for the source‑map file; a GET request asks for data without changing anything.\n\nStep 4: Receive a large JSON document (several megabytes).\nWhy: The server returned the source‑map because it was publicly accessible; the JSON describes how each minified line maps to the original source.\n\nStep 5: Load the JSON into a source‑map consumer (e.g., Chrome DevTools > Sources > \"Load source map\").\nWhy: The consumer reconstructs the original, readable JavaScript files from the mapping data.\n\nStep 6: Browse the reconstructed files for hard‑coded API keys, internal endpoints, or business logic.\nWhy: The original source often contains secrets that developers left in code; reading them gives the attacker deeper knowledge of the application.\n\nEXPLOITATION\nStep 7: Use any discovered secret (e.g., an API token) in subsequent API calls.\nWhy: An API token is a credential that authorises requests; reusing it lets the attacker act as a legitimate user.\n\nStep 8: Combine the knowledge of internal endpoints with the token to retrieve sensitive data.\nWhy: Knowing hidden routes plus a valid token enables data extraction that would otherwise be hidden from the public UI.",
+      "example": "Assume a fictional site https://target.example that uses Webpack. The webpack.config.js contains:\n```js\nmodule.exports = {\n  entry: './src/index.js',\n  output: {filename: 'bundle.js', path: __dirname + '/dist'},\n  devtool: 'source-map' // <-- generates bundle.js.map\n};\n```\nDuring deployment the entire /dist folder is copied to the web server and served publicly. An attacker discovers the bundle URL:\nGET /bundle.js HTTP/1.1\nHost: target.example\nThey then request the map:\nGET /bundle.js.map HTTP/1.1\nHost: target.example\nThe server returns the JSON map, which the attacker opens in Chrome DevTools to view the original src/index.js containing:\n```js\nconst API_KEY = 'abcd1234-secret';\nfetch('https://api.target.example/data', {headers:{'Authorization':`Bearer ${API_KEY}`}});\n```\nWhy it works: The map links the minified code back to the original file where the API_KEY is hard‑coded, exposing a secret that can be reused in API calls.",
+      "takeaway": "Always check for .map files after you locate a JavaScript bundle; a simple \"GET <bundle>.map\" often reveals the source. Tools like \"gau\" or \"ffuf\" can automate the discovery of *.js.map endpoints. Exposed source maps are a common variant of information disclosure and can also leak internal API endpoints, authentication tokens, or business logic. Remember that the presence of a source map does not automatically mean a secret is exposed—review the reconstructed files to see what is actually sensitive. Beginners often forget to delete source‑map artifacts from the production build, so make it a habit to verify the build output before deployment.",
+      "fix": "Configure the build pipeline to generate source maps only for development builds. In Webpack, set `devtool: false` (or omit the option) for production, e.g.:\n```js\n// webpack.prod.js\nmodule.exports = {\n  // ...other config\n  devtool: false // disables .map generation\n};\n```\nIf source maps must be generated for debugging, store them in a non‑public location and block HTTP access with server rules, e.g., Nginx:\n```nginx\nlocation ~ \\.map$ {\n  deny all; # prevent public download\n}\n```\nFinally, add a step in the CI/CD pipeline that scans the output directory for *.map files and fails the build if any are found. This ensures no source‑map reaches production.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Modern frontend build tooling produces a specific kind of file that exists purely to help developers debug production code without reading minified, unreadable JavaScript directly — a source map, mapping every compressed, mangled line in the shipped bundle back to its original, readable source. These files are enormously useful during development and, left accessible in production by mistake, hand anyone who finds them a nearly complete, readable copy of the application’s actual frontend source code, comments and all. The target, which I’ll call **Glasswing Analytics** here per their program’s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "62e8924fcae1",
     "title": "How I Hunt for Information Disclosure Bugs: My Complete Bug Bounty Methodology | by Samadhan…",
     "url": "https://samadhanshimple.medium.com/how-i-hunt-for-information-disclosure-bugs-my-complete-bug-bounty-methodology-by-samadhan-fca0c7ca5eee",
