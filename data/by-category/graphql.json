@@ -1,5 +1,46 @@
 [
   {
+    "id": "eb6a9aad4e7a",
+    "title": "The Mutation Everyone Tested, and the One Field Nobody Did: GraphQL Field-Level Authorization…",
+    "url": "https://medium.com/@t4nv1/the-mutation-everyone-tested-and-the-one-field-nobody-did-graphql-field-level-authorization-1dd74c83ddcf",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-01T16:56:01.000Z",
+    "added_at": "2026-11-01T20:28:54.831Z",
+    "categories": [
+      "graphql",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A GraphQL authorization flaw in Coppergate Learning's updateEnrollment mutation allowed users to potentially modify sensitive fields due to missing field-level access controls.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "GraphQL (a language for requesting and changing data from an API) authorization (the process of checking if a user has permission) often fractures because it requires finer-grained control than traditional systems. In this case, the updateEnrollment mutation (a specific type of request used to modify data) at Coppergate Learning was accessible to students for self-service tasks. However, the application failed to enforce authorization for every specific field (a single piece of data within a record) accepted within that mutation. This created a coverage gap where a user could potentially set fields they were not authorized to change. The author notes that it is easier for developers to review a mutation's primary purpose than to audit every optional field. This oversight allowed the vulnerability to persist despite the mutation appearing secure for its intended use.",
+      "walkthrough": null,
+      "example": "Imagine a fictional site target.example that uses GraphQL (a language for requesting and changing data from an API). A GraphQL mutation is a type of request used to change data on a server. The site has a mutation called updateUserAccount which students use to change their email address. However, the mutation also accepts a hidden field (a specific piece of data) called isInstructor. Vulnerable GraphQL Mutation Structure: mutation UpdateAccount($input: AccountInput!) { updateUserAccount(input: $input) { id email isInstructor } }. Attack Payload (JSON - a standard format for sending data): { \"input\": { \"email\": \"student@example.com\", \"isInstructor\": true } }. Why it works: The server checks if the student is logged in (authentication - the process of proving who you are) before allowing the updateUserAccount mutation to run. However, it does not check if the student is allowed to modify the isInstructor field specifically (authorization - the process of checking permissions). Because the backend code automatically saves all fields provided in the input parameter (a piece of information passed to the request) to the database, the student successfully grants themselves instructor privileges. This is called a Field-Level Authorization bypass because the permission check happened at the start of the request but not for the specific data being changed.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "GraphQL’s flexibility is also where its security model tends to quietly fracture. A REST API typically ties authorization to an entire endpoint — you either can or can’t call it. GraphQL collapses dozens of conceptually separate operations into a handful of query and mutation entry points, which means authorization has to be enforced at a much finer grain: not just “can this user call this mutation,” but “can this user set _this specific field_ within it.” That finer grain is exactly where coverage gaps hide, because it’s considerably easier to review and test a mutation’s primary, obvious pur",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "751674c43e80",
     "title": "$5,500 for Asking a GraphQL API What It Was: Introspection Schema Leakage That Mapped an Entire…",
     "url": "https://medium.com/@t4nv1/5-500-for-asking-a-graphql-api-what-it-was-introspection-schema-leakage-that-mapped-an-entire-67ae1b9c99d5",
