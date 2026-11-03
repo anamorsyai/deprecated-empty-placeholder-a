@@ -1,5 +1,47 @@
 [
   {
+    "id": "09d712ce68e0",
+    "title": "Intent Redirection to One-Click Account Takeover (But It’s a Duplicate)",
+    "url": "https://abdelnasserr.medium.com/intent-redirection-to-one-click-account-takeover-but-its-a-duplicate-275f5a0aefaf",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "abdelnasser"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-03T15:59:25.000Z",
+    "added_at": "2026-11-03T17:28:06.464Z",
+    "categories": [
+      "access-control",
+      "auth-bypass",
+      "graphql"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "An intent redirection vulnerability allowed attackers to bypass URL filters and launch internal WebViews with arbitrary HTML. By spoofing the app's origin, the attacker could execute a one-click account takeover via the GraphQL API.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from the app's unsafe handling of external URLs (web addresses used to find resources) through Intent.parseUri() without validating the resulting Intent (a messaging object in Android used to request an action). The DeepLinkRouterActivity (a specific screen or 'Activity' in the app) allowed arbitrary URLs to be processed. A weak whitelist check (a list of allowed items) using contains() was easily bypassed. This permitted the researcher to target the internal WebViewActivity (a component that displays web pages inside an app), which lacked its own access controls. Furthermore, the WebView used loadDataWithBaseURL() with an attacker-supplied base URL (the starting address used to determine security permissions), effectively granting the injected script (a small program) the same permissions as the legitimate site.",
+      "walkthrough": "RECON\n1. The researcher identified an 'exported' activity (a screen accessible to other apps) named DeepLinkRouterActivity in the app's manifest file.\n2. They found that the activity accepted a 'deeplink' parameter (a specific piece of information passed in a URL) but failed to properly verify the domain.\nDISCOVERY\n3. The researcher discovered that adding '/event-tickets/' to the URL bypassed the app's internal security filters.\n4. They observed that the app used Intent.parseUri() to convert text URLs into 'Intents' (internal Android messages used to start actions).\n5. A security check looked for the word 'ride-share' in the URL to skip a warning dialog, but it used a simple 'contains' check.\n6. The researcher bypassed this by placing the keyword in the URL path: intent://x/ride-share-path#Intent;... (Why: The contains() check is too broad and doesn't verify where the word appears).\nEXPLOITATION\n7. The researcher targeted an internal (non-exported) screen called WebViewActivity (an in-app browser component).\n8. They crafted a malicious intent:// URI that included 'extras' (additional data pieces or 'parameters' attached to the Intent) for the WebView.\n9. The payload (the part of the data that performs the actual attack) used S.ARG_HTML_DATA to hold malicious code and S.ARG_BASE_URL to set the security context.\nwindow.location = \"intent://x/ride-share-path#Intent;component=com.redacted.app/com.redacted.app.activity.WebViewActivity;S.ARG_HTML_DATA=\" + encodeURIComponent(atoPayload) + \";S.ARG_BASE_URL=https%3A%2F%2Fwww.redacted.com;end\";\nWhy: This command forces the app to open its own internal browser and load the attacker's code while pretending it is on the official website (the 'origin' or security boundary).\n10. The app's code received the Intent and called loadDataWithBaseURL() using the attacker's values.\nthis.mWebView.loadDataWithBaseURL(this.mBaseUrl, this.mHtmlData, \"text/html\", \"UTF-8\", null);\nWhy: This function tells the browser to treat the injected HTML as if it came from the official domain, giving it access to the user's login session.\n11. The injected JavaScript used fetch() (a way for scripts to send network requests) to talk to the site's GraphQL API (a way to ask a server for specific data).\n12. The script sent a 'mutation' (a command to change data) to update the user's email address.\nfetch(\"/graphql\", { method: \"POST\", credentials: \"include\", headers: { \"Content-Type\": \"application/json\" }, body: JSON.stringify({ operationName: \"userSettingFormSubmit\", query: mutation, variables: { actionContext: \"change_email\", inputs: [{ key: \"email\", value: \"attacker@evil.com\" }] } }) });\nWhy: Because the script is running in the site's origin, the browser automatically attaches the user's 'HttpOnly' cookie (a secret ID used for login) to the request.\nIMPACT\n13. The researcher successfully changed the victim's email to their own.\n14. They then used the standard 'forgot password' feature to reset the account password and gain full control.",
+      "example": "Assume a banking app has a deep link handler that takes a URL and opens it. If the app uses Intent.parseUri(url, 1) and then startActivity(intent), an attacker can send a link like intent://#Intent;component=com.bank.app/.InternalTransferActivity;S.to_account=12345;S.amount=1000;end. When the victim clicks this, the app opens its own internal transfer screen with the attacker's details pre-filled. This works because the 'intent://' scheme allows the attacker to define the exact internal component and data to be used, bypassing the intended user interface flow.",
+      "takeaway": "When hunting for mobile bugs, always look for activities that handle URLs and pass them to Intent.parseUri(). This is a classic 'Intent Redirection' pattern. Check if you can reach internal, non-exported activities by crafting a specific intent:// URI. Pay close attention to WebViews that use loadDataWithBaseURL(), as they can be turned into powerful 'Same-Origin' execution tools if the base URL is controllable. A common mistake is using contains() for security checks; always use strict domain parsing or exact matches. A variant of this bug involves 'File-based WebViews' where an attacker can steal local app files by setting the base URL to file:///.",
+      "fix": "To fix this, never use Intent.parseUri() on untrusted strings to start activities directly. Instead, use 'Explicit Intents' where the destination component is hardcoded in the app. If you must use dynamic Intents, validate that the destination component is exported and belongs to your own package using intent.getComponent().getPackageName(). For WebViews, never allow external input to define the baseUrl in loadDataWithBaseURL(). Use a hardcoded, trusted domain and sanitize any HTML data before loading it. Example fix: Intent intent = new Intent(); intent.setComponent(new ComponentName(\"com.example\", \"com.example.TargetActivity\")); intent.putExtra(\"data\", validatedInput); startActivity(intent);",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**بِسْمِ اَللَّهِ وَالْحَمْدِ لِلَّهِ الَّذِي عَلَّمَ بِالْقَلَمِ عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ وَالصَّلَاةَ وَالسَّلَامَ عَلَى خَيْرِ مُعَلِّمِي اَلنَّاسِ اَلْخَيْرِ مُحَمَّدْ وَبَعْدٍ** ## Description I found an intent redirection in the Android app of a major online travel booking platform. The app has a URL handler that passes URLs to `Intent.parseUri()` followed by `startActivity()` with no validation. There is a URL safety check, but it only looks for a ride-sharing URL fragment using a simple `contains()` call, so embedding that fragment in the `intent://` URI path bypasses it",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "eb6a9aad4e7a",
     "title": "The Mutation Everyone Tested, and the One Field Nobody Did: GraphQL Field-Level Authorization…",
     "url": "https://medium.com/@t4nv1/the-mutation-everyone-tested-and-the-one-field-nobody-did-graphql-field-level-authorization-1dd74c83ddcf",
