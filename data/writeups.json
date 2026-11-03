@@ -1,5 +1,45 @@
 [
   {
+    "id": "326488c9b0c5",
+    "title": "This Is How Phishing Links Slip Into Trusted Business Emails",
+    "url": "https://medium.com/@TheWildEye/this-is-how-phishing-links-slip-into-trusted-business-emails-c44cb79890f8",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "TheWildEye"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-02T20:13:59.000Z",
+    "added_at": "2026-11-03T02:28:17.354Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "User‑supplied URLs in the purchase‑inquiry description are stored and later inserted into platform‑generated business emails, enabling trusted‑channel phishing.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is that the description field of the purchase‑inquiry form accepts any text, including external URLs, without validation. The application then takes that raw input and injects it directly into the HTML body of the notification email. No output encoding or sanitisation is applied when the email template is rendered, so the URL remains unchanged. This creates a trust boundary violation: untrusted user input is treated as trusted system‑generated content. Because the email is sent from a legitimate business platform, recipients are more likely to click the malicious link.",
+      "walkthrough": "RECON\nStep 1: Identify the purchase‑inquiry feature that lets a buyer submit a product description.\nWhy: The feature is a public form (HTTP request) that collects a \"description\" parameter.\n\nDISCOVERY\nStep 2: Observe that the description field accepts plain text and URLs.\nWhy: The form does not restrict the characters or patterns in the description (no validation).\n\nEXPLOITATION\nStep 3: Submit a purchase inquiry with an attacker‑controlled URL in the description.\nPayload: https://evil.example/phish\nWhy: The URL is stored as‑is because the server does not filter or encode it.\nStep 4: After submission, the platform generates an email to the supplier.\nEmail snippet (verbatim from the article): \"... the submitted description ... the external URL ...\"\nWhy: The email template concatenates the stored description directly into the HTML body, so the malicious URL appears in the email.\n\nIMPACT\nStep 5: The recipient receives a seemingly legitimate business email containing the attacker‑controlled link.\nWhy: Users trust emails from the platform, increasing the chance they click the link, leading to phishing or data collection.",
+      "example": "**Fictional vulnerable code (target.example)**\n```python\n# server-side pseudo‑code for handling a purchase inquiry\ndescription = request.POST[\"description\"]  # user‑controlled input\nemail_body = f\"<p>New request:</p><p>{description}</p>\"\nsend_email(to=supplier, subject=\"New purchase request\", html=email_body)\n```\n**Attack request**\n```\nPOST /inquiry HTTP/1.1\nHost: target.example\nContent-Type: application/x-www-form-urlencoded\n\ndescription=Check+out+this+offer+https%3A%2F%2Fevil.example%2Flogin\n```\n**Why it works**: The server stores the raw `description` value and inserts it into the HTML email without escaping. The `<a>` tag is not required; most email clients automatically link URLs, so the attacker‑controlled link becomes clickable in the trusted email.",
+      "takeaway": "Hunters should look for any workflow that stores user‑provided text and later re‑uses it in system‑generated communications such as emails, PDFs, or notifications. Search for keywords like \"description\", \"notes\", or \"comments\" in form handlers and then trace the data flow to output templates. Tools like Burp Suite or OWASP ZAP can help capture the request and the resulting email. Variants of this issue appear in ticket‑tracking systems, comment sections that trigger email alerts, and CRM platforms that embed user notes in outbound messages. A common beginner mistake is assuming that because the input came from an authenticated form, it is safe – always treat it as untrusted.",
+      "fix": "Validate and sanitise the description field before storing or rendering it. Reject or strip URLs if they are not required, or enforce an allow‑list of safe characters. When generating the email, apply HTML‑encoding to the user‑provided content so that any special characters are rendered harmless. Example fix in pseudo‑code:\n```python\nimport html\nraw_desc = request.POST[\"description\"]\nclean_desc = html.escape(raw_desc)  # encode <, >, &, \"\nemail_body = f\"<p>New request:</p><p>{clean_desc}</p>\"\nsend_email(to=supplier, subject=\"New purchase request\", html=email_body)\n```\nIf URLs are needed, extract them, validate the domain, and embed them using a safe template that forces `rel=\"noopener\"` and `target=\"_blank\"`. This breaks the trust boundary and prevents stored phishing injection.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_How a vulnerable purchase-inquiry workflow allowed attacker-controlled links to reach recipients through legitimate business emails._ **By Vyom Nagpal | Cybersecurity Researcher** ## The Phishing Link Was Hiding Inside a Trusted Business Email _How a seemingly harmless business inquiry became a potential phishing delivery channel, exposing a weakness in the way applications handle user-generated content._ Most phishing attacks try to earn your trust before you even click a link. They arrive disguised as payment notifications, account alerts, delivery updates, or business requests. The attacke",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "4766beb664c4",
     "title": "WordPress pingback and Brotli RCE",
     "url": "https://www.reddit.com/r/netsec/comments/1xlsgc8/wordpress_pingback_and_brotli_rce",
