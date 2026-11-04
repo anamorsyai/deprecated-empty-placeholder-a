@@ -1,5 +1,47 @@
 [
   {
+    "id": "74ee4ae1ce2a",
+    "title": "1 AI Subscription made me 100k$ in 2 months",
+    "url": "https://anontriager.medium.com/1-ai-subscription-made-me-100k-in-2-months-f900750d6661",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Anonymous Traiger"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-04T20:13:46.000Z",
+    "added_at": "2026-11-04T22:54:48.295Z",
+    "categories": [
+      "ssrf",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher earned $100,000 by identifying SSRF, PII leaks, API misconfigurations, and hardcoded credentials across various bug bounty programs. These vulnerabilities allowed unauthorized server-side requests and exposure of sensitive user data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause of these issues is a failure to define and enforce strict trust boundaries. For SSRF, the server trusts user-provided URLs (web addresses) to fetch resources without validating if the destination is internal or external. PII (Personally Identifiable Information) disclosure happens when APIs (rules for software communication) return excessive data, relying on the UI (User Interface) to hide it rather than the server to filter it. API misconfigurations occur when endpoints (specific API addresses) lack authorization checks, assuming any successful request is valid. Lastly, hardcoded credentials in JavaScript (code running in the browser) expose secrets because developers forget that client-side code is entirely public.",
+      "walkthrough": "PHASE: SSRF DISCOVERY\n1. Find a feature that fetches resources, like a preview generator.\n2. Input a URL (a web address) you control to see if the server contacts you.\nhttp://your-attacker-server.com\nWhy: This confirms the server makes outbound HTTP requests (messages sent from a client to a server).\n3. Attempt to reach internal services.\nhttp://localhost:8080\nWhy: This tests if the server can talk to its own internal ports (entry points for software).\nPHASE: PII DISCLOSURE\n4. Open the browser's Network tab to see API (rules for software communication) responses.\n5. Trigger a request for a user profile.\nGET /api/v1/user/profile\nWhy: This fetches user data to display on the page.\n6. Inspect the raw JSON (a text-based format for data) returned.\n7. Look for PII (Personally Identifiable Information) not visible in the UI (User Interface).\nWhy: Developers often send the whole user object instead of just the name and photo.\nPHASE: API MISCONFIGURATION\n8. Identify an endpoint (a specific API address) that performs an action.\nPOST /api/v1/settings/update\nWhy: This endpoint changes user preferences.\n9. Change the user ID in the payload (the actual data sent) to another user's ID.\n{\"user_id\": \"999\", \"email\": \"hacker@example.com\"}\nWhy: This tests if the server checks if User A is allowed to change User B's settings.\n10. Check if the server returns a 200 OK success message.\nWhy: A success message without permission checks indicates a broken access control.\nPHASE: CREDENTIALS IN JS\n11. Load the target website in a browser.\n12. Open the Sources tab in Developer Tools.\n13. Search for strings like key, secret, or token.\nconst API_KEY = \"sk_live_51...\"\nWhy: JavaScript (code that runs in your browser) is entirely public and readable by anyone.\n14. Verify if the key is a sensitive secret or just a public identifier.\nWhy: Public keys are safe; private secrets grant unauthorized access to services.",
+      "example": "Imagine a site target.example that lets you 'Import a Profile Picture from URL'. The server takes your URL and downloads the image. A vulnerable code snippet might look like: app.post('/import', (req, res) => { downloadImage(req.body.imageUrl); }). An attacker sends a request like: POST /import HTTP/1.1 \\n Host: target.example \\n Content-Type: application/json \\n\\n {\"imageUrl\": \"http://169.254.169.254/latest/meta-data/\"}. This works because the server (the computer running the site) blindly follows the URL (web address) provided by the user. Instead of an image, it fetches sensitive internal configuration data from its own cloud provider's metadata service.",
+      "takeaway": "Look for features that process URLs or return user profiles. Always check the Network tab in your browser to see the full data sent by the server, as it often contains more than the UI shows. Use automated scanners to find secrets in JS files, but manually verify their impact. A common mistake is assuming a hidden field in the UI is secure; if it's in the HTTP response (the data sent from server to browser), it's public. Variants include SSRF via PDF generators or PII leaks in search suggestions.",
+      "fix": "To fix SSRF, implement a strict allow-list of domains and block access to internal IP addresses. For PII disclosure, use Data Transfer Objects (DTOs) to ensure only the minimum required data is sent to the browser. API endpoints must implement robust authorization checks to verify that the requester has permission for the specific action or data. Finally, never store sensitive credentials in JavaScript; instead, use server-side environment variables and proxy requests through the backend. For example, a fix for SSRF would involve checking: if (!allowedDomains.includes(new URL(inputUrl).hostname)) return error;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "What interests me more is the gap behind each finding: the difference between what an application was supposed to protect and what it actually exposed. My findings covered four categories. Each raises a different question about trust. Who is making that request? Who should receive that information? What protects that endpoint? And why is that credential in the browser? I’m keeping this account at the category level to avoid identifying private programs. ## 1. SSRF: When the Server Becomes the Way In Press enter or click to view image in full size Image 4 _Concept illustration: a request crosse",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "4766beb664c4",
     "title": "WordPress pingback and Brotli RCE",
     "url": "https://www.reddit.com/r/netsec/comments/1xlsgc8/wordpress_pingback_and_brotli_rce",
