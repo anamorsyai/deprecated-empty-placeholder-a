@@ -1,5 +1,45 @@
 [
   {
+    "id": "53f914854eb4",
+    "title": "The Jail That Gave Its Prisoner a Staff Badge: Escaping WordPress Playground’s Sandbox",
+    "url": "https://medium.com/@mohamed.adel.887275/the-jail-that-gave-its-prisoner-a-staff-badge-escaping-wordpress-playgrounds-sandbox-db7e8eb89a9f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Burrito"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-05T20:33:55.000Z",
+    "added_at": "2026-11-05T23:37:39.094Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A stored XSS in WordPress Playground lets an attacker break out of the sandbox and run arbitrary JavaScript in other users' browsers, leading to session hijacking or data theft.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "bfbea9abab5f",
     "title": "One-Click Cookie Theft via Deep Link XSS (But Deep Links Are Out of Scope)",
     "url": "https://abdelnasserr.medium.com/one-click-cookie-theft-via-deep-link-xss-but-deep-links-are-out-of-scope-b9cb1b43dacb",
