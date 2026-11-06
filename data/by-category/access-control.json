@@ -1,5 +1,89 @@
 [
   {
+    "id": "b04d559f47f5",
+    "title": "The Shipment You Shouldn’t Be Able to Touch",
+    "url": "https://medium.com/@ohyunwoods663/the-shipment-you-shouldnt-be-able-to-touch-525fbc4b7277",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Ohyunwoods"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-05T23:58:58.000Z",
+    "added_at": "2026-11-06T03:41:27.434Z",
+    "categories": [
+      "access-control",
+      "idor-bola",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A logic flaw in the Solidus e-commerce API allowed warehouse staff to move items into shipments they were not authorized to manage by bypassing a missing permission check on the target shipment.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from an incomplete authorization check in the 'transfer_to_shipment' endpoint. While the code correctly verified the user's permissions for the source shipment, it performed a direct database lookup for the target shipment using 'find_by!' without any subsequent permission validation. This implementation flaw allowed a user with limited access to one warehouse to interact with shipments in any other warehouse, provided they knew the shipment number.",
+      "walkthrough": "RECON\nStep 1: The researcher reviews the Solidus API source code and identifies a potential flaw in how shipments are handled.\nStep 2: They notice that the 'transfer_to_shipment' function, which moves items between packages, only validates the first ID it receives.\nDISCOVERY\nStep 3: Define HTTP request: A message sent from a client to a server.\nStep 4: Define Endpoint: A specific web address where an API performs a task.\nStep 5: Define Authorization: The process of checking if a user has permission.\nStep 6: Attempt to directly edit a shipment in a restricted warehouse to confirm security rules are active.\nPUT /api/shipments/WEST-B\nWhy: The server correctly identifies the user lacks permission for the 'West' warehouse and returns a 401 Unauthorized error (access denied).\nEXPLOITATION\nStep 7: Define Parameter: A piece of data passed to a web program.\nStep 8: Define Payload: The part of the request that performs the exploit.\nStep 9: Use the vulnerable transfer endpoint to move an item from an authorized shipment (East) to a restricted one (West).\nPOST /transfer_to_shipment?source=EAST-A&target=WEST-B\nWhy: The application validates the user can manage 'EAST-A' but uses a plain lookup for 'WEST-B' without checking permissions, allowing the transfer to succeed.\nIMPACT\nStep 10: Verify the item has been moved to the unauthorized shipment.\nOrder B: [Mug, Shirt]\nWhy: The item is now in a shipment the user should not have been able to touch, causing data inconsistency and incorrect shipping.",
+      "example": "Imagine a fictional file-sharing site 'box.example' where users can move files between folders. The 'Move' function takes a 'source_folder_id' and a 'destination_folder_id'. The code looks like this: \n\nfolder1 = current_user.folders.find(params[:source_folder_id])\nfolder2 = Folder.find(params[:destination_folder_id])\nfolder1.move_to(folder2)\n\nAn attacker sends: POST /move?source_folder_id=MY_FOLDER&destination_folder_id=SECRET_ADMIN_FOLDER. Because the code only checks ownership of the source folder and uses a global 'Folder.find' for the destination, the attacker can push their files into a folder they don't own.",
+      "takeaway": "Always look for 'multi-object' endpoints where a user provides two or more IDs (like source/target or parent/child). Developers frequently forget to authorize the second object. Use restricted test accounts rather than admin accounts to find these bugs, as admins usually have permission for everything. Look for keywords like 'transfer', 'move', 'merge', or 'copy' in API documentation. A common variant is 'Mass Assignment' where you can change the parent ID of an object to one you don't own.",
+      "fix": "The fix involves ensuring every object involved in a transaction is explicitly authorized against the current user's permissions. Instead of a global search, the target object should be looked up within an authorized scope or passed through an authorization check. \n\n@desired_shipment = @original_shipment.order.shipments.find_by!(number: params[:target_shipment_number])\nauthorize! :update, @desired_shipment",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I found this one while reading the Solidus API controllers. I noticed one endpoint checked permission on the first shipment it received but looked up the second one with a plain `find_by!`. I tested it, it worked, and I reported it privately to the maintainers. They fixed it fast. This is the story. To explain it, meet Sam. Sam works at the East warehouse of an online store built on Solidus. The store admin gave Sam a narrow permission: manage shipments at East only. can :manage, Spree::Shipment, stock_location_id: user.stock_locations.pluck(:id) That is a sensible rule. Let’s see if it holds.",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "b3ea6180ab16",
+    "title": "How a Broken Email Confirmation Flow Took Over Any Shopify Store",
+    "url": "https://medium.com/@l4zz3rj0d/how-a-broken-email-confirmation-flow-took-over-any-shopify-store-0bc8ea8cc5ad",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-05T12:54:14.000Z",
+    "added_at": "2026-11-06T03:41:56.943Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A flaw in Shopify's email verification and account merge logic allowed attackers to claim any email address and bypass password checks to take over merchant accounts.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stemmed from two primary failures: first, the system allowed an attacker to access an email confirmation token that should have been restricted to the recipient's inbox. Second, the multi-step account merge process relied on the URL path (client-side navigation) to determine the current step, failing to verify on the server that the user had actually passed the mandatory password verification step before allowing them to set a new password.",
+      "walkthrough": "RECON\n1. The researcher created a standard, low-privilege Shopify trial account using their own email address.\n2. They navigated to the account settings page to identify how the platform handles email changes.\nDISCOVERY (BUG 1)\n3. The researcher initiated an email change request, entering a target email address already associated with a real Shopify merchant.\n4. An HTTP request (a message sent by your browser to a server) was sent to the email update endpoint (a specific web address where a service is accessed).\n5. Instead of the confirmation link being sent only to the victim's inbox, the researcher found they could access the confirmation token (a unique secret string used for proof) directly from their own active session (a temporary connection that remembers who you are).\nEXPLOITATION (BUG 1)\n6. The researcher used the leaked confirmation link to 'verify' that they owned the victim's email address.\n7. Because the email was now 'verified,' the system triggered the account-merge logic, which combines a trial account with an existing account sharing the same email.\nDISCOVERY (BUG 2)\n8. The researcher attempted to merge into an account protected by SSO (Single Sign-On, a system for logging into multiple services with one set of credentials).\n9. The system redirected the researcher to a login page to verify the victim's password before completing the merge.\n10. The researcher examined the URL in the browser's address bar:\nhttps://accounts.shopify.com/login?session_id=xyz123\n11. They noticed the URL contained a query string (the part after the '?' carrying data) that identified the merge session.\nEXPLOITATION (BUG 2)\n12. The researcher hypothesized that the server only checked the URL path (the part of the URL like /login) to decide which page to show, rather than checking if the password was actually entered.\n13. They manually edited the URL path in the browser, changing '/login' to '/accounts_merge/new-password' while keeping the session ID.\nhttps://accounts.shopify.com/accounts_merge/new-password?session_id=xyz123\n14. Why: This bypassed the password check because the server trusted the user's request to access the 'new-password' step without verifying they had completed the 'login' step (a beginner gloss: the server assumed if you are at the 'new password' address, you must have finished the previous step).\nIMPACT\n15. The researcher was presented with a screen to set a new password for the victim's account.\n16. After setting the password, they gained full control over the target merchant account, effectively completing a full account takeover.",
+      "example": "Imagine a fictional site 'target.example' that has a 3-step password reset: 1. Enter Email (/reset/step1), 2. Enter Code (/reset/step2), 3. Set Password (/reset/step3). A user enters their email and is sent to step 2. Instead of entering the code, they simply change the URL in their browser to 'target.example/reset/step3?user=victim'. If the server does not check if the code from step 2 was successfully verified for that specific session, the attacker can set a new password for the victim. This works because the application uses the URL to track progress rather than a secure server-side record.",
+      "takeaway": "When hunting for logic bugs, always look for multi-step processes like signups, checkouts, or merges. Test if you can skip steps by manually changing the URL path or parameters. A common signal is a URL that looks like /step1, /step2, etc. A variant of this is 'Parameter Pollution,' where adding extra data to a request might confuse the server into skipping a check. Avoid the mistake of assuming that because a button is hidden or a page is 'next' in the flow, the server is actually enforcing that order.",
+      "fix": "To fix this, the server must implement a 'State Machine' that tracks the user's progress server-side. Each step must be marked as 'completed' in the database or session only after successful validation. When a user requests a specific endpoint like '/new-password', the server should check: 'Has this session successfully completed the password-verification step?' If not, it must reject the request. Additionally, sensitive tokens should never be returned in the HTTP response of the requester.\n\nExample of a secure check:\nif (session.current_step != 'PASSWORD_VERIFIED') {\n    return redirect('/login_error');\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The whole chain hinges on one specific moment every account system has to handle correctly: what happens the instant a user changes their email address, and how the system decides that the new address actually belongs to them before trusting it. Nearly every platform does this the same way, you submit a new email, the system sends a confirmation link to that new address, and nothing about the account actually changes until someone clicks that link proving they control the inbox it landed in. Simple in concept. The entire bug lived in exactly where that verification step actually anchors its tr",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "74ee4ae1ce2a",
     "title": "1 AI Subscription made me 100k$ in 2 months",
     "url": "https://anontriager.medium.com/1-ai-subscription-made-me-100k-in-2-months-f900750d6661",

