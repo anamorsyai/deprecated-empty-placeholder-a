@@ -1,5 +1,47 @@
 [
   {
+    "id": "0efdb16e49a0",
+    "title": "Scrambled Isn’t Secret: What I Learned From an MD5-Hashed User ID",
+    "url": "https://mufasa-noir.medium.com/scrambled-isnt-secret-what-i-learned-from-an-md5-hashed-user-id-5700e326699f",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mufasa"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-06T12:21:50.000Z",
+    "added_at": "2026-11-06T18:20:33.113Z",
+    "categories": [
+      "idor-bola",
+      "auth-bypass",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A web application used MD5-hashed sequential user IDs in cookies, allowing attackers to predict other users' identifiers and potentially take over their accounts.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The developers used MD5 hashing to obscure sequential user IDs (like 1, 2, 3), mistakenly believing that hashing makes a value secret. Because hashing is deterministic (the same input always produces the same output) and lacks a secret key, an attacker can easily pre-calculate the hashes for all possible user IDs. The application then trusted this client-side cookie value to identify the user without verifying if the requester was actually authorized to access that account.",
+      "walkthrough": "RECON\n1. Open the browser's Developer Tools (a built-in suite for inspecting website code and network traffic).\n2. Log into the Next.js web application with a test account.\n3. Navigate to the 'Application' or 'Storage' tab to inspect cookies (small data files stored by the browser to track sessions).\nDISCOVERY\n4. Locate a cookie named 'userId'.\n5. Observe the value of the cookie, which is a 32-character string of numbers and letters.\n'c81e728d9d4c2f636f067f89cc14862c'\nWhy: This specific length and format (hexadecimal) strongly suggest an MD5 hash (a mathematical fingerprint of data).\n6. Hypothesize that the application is hashing simple, sequential numbers (1, 2, 3...) used in its database.\nANALYSIS\n7. Use a terminal or online tool to calculate the MD5 hash of the number '2'.\necho -n '2' | md5sum\nWhy: To verify if the output matches the cookie value found in the browser (it does).\n8. Recognize that MD5 is 'deterministic' (the same input always yields the same output) and has no secret key.\n9. Write a short Python script to generate a 'lookup table' (a list of inputs and their corresponding outputs).\nimport hashlib; table = {hashlib.md5(str(i).encode()).hexdigest(): i for i in range(1, 1000)}\nWhy: This allows the attacker to instantly translate any MD5 hash back into its original user ID number.\nEXPLOITATION\n10. Choose a target ID to test, such as '1' (which is frequently the site administrator).\n11. Calculate the MD5 hash for the number '1'.\n'c4ca4238a0b923820dcc509a6f75849b'\nWhy: This is the 'payload' (malicious data) used to trick the server into thinking we are user #1.\n12. Open the cookie editor in the browser and replace your own 'userId' hash with the hash for user #1.\n13. Refresh the page or send a new HTTP request (a message from your browser to the server).\nIMPACT\n14. Observe the server's response code (a three-digit number indicating the result of the request).\n15. If the server returns '200 OK' and displays user #1's private dashboard, Account Takeover is confirmed.\n16. If the server returns different codes like '404 Not Found' for non-existent users, User Enumeration (listing all valid users) is possible.",
+      "example": "Imagine a site 'target.example' that shows user profiles at 'https://target.example/profile?id=eccbc87e4b5ce2fe28308fd9f2a7baf3'. A researcher notices the 'id' is 32 characters long. They hash the number '3' using MD5 and get the exact same string. They then hash the number '1' to get 'c4ca4238a0b923820dcc509a6f75849b' and change the URL to 'https://target.example/profile?id=c4ca4238a0b923820dcc509a6f75849b'. The server, seeing a valid hash, displays the administrator's private profile page because it assumes the person who provided the hash must be the owner of that ID.",
+      "takeaway": "Never assume that 'scrambled' data is 'secret' data. If a value is derived from a predictable sequence (like 1, 2, 3), hashing it provides zero security because an attacker can brute-force (systematically guess) every possible hash in seconds. When hunting, look for 32-character (MD5) or 40-character (SHA1) hex strings in URLs or cookies and test them against common small integers. A common mistake is thinking that 'security through obscurity' (hiding how something works) is a substitute for actual authorization checks.",
+      "fix": "The application should use UUIDs (Universally Unique Identifiers), which are long, random strings that cannot be predicted. Instead of trusting a 'userId' cookie provided by the client, the server should use a secure, signed session token (like a JWT) or a server-side session store. Every request must be checked against an Authorization layer to ensure the currently logged-in user has permission to access the requested object. Set cookie flags to 'HttpOnly' to prevent access via scripts and 'Secure' to ensure they are only sent over encrypted connections.\n\nExample of generating a secure ID in Node.js:\nimport { randomUUID } from 'crypto';\nconst secureId = randomUUID(); // Result: '123e4567-e89b-12d3-a456-426614174000'",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Embedded systems engineer/security researcher. I build, break and contribute to things across the tech ecosystem. Github: @mufasa-noir Web Security Bug Bounty Writeup Technology # Scrambled Isn’t Secret: What I Learned From an MD5-Hashed User ID Image 3: Mufasa Mufasa 4 min read · 5 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F5700e326699f&operation=register&redirect=https%3A%2F%2Fmufasa-noir.medium.com%2Fscrambled-isnt-secret-what-i-learned-from-an-md5-hashed-user-id-5700e326699f&user=Mufasa&userId=50c7cd6b8405&source=---header_actions--5700e326",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "dfaa53db65a0",
     "title": "How Four Lines of Code Could Delete Any Facebook Photo Album",
     "url": "https://medium.com/@l4zz3rj0d/how-four-lines-of-code-could-delete-any-facebook-photo-album-68626d5766b6",
