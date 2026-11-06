@@ -1,5 +1,45 @@
 [
   {
+    "id": "dfaa53db65a0",
+    "title": "How Four Lines of Code Could Delete Any Facebook Photo Album",
+    "url": "https://medium.com/@l4zz3rj0d/how-four-lines-of-code-could-delete-any-facebook-photo-album-68626d5766b6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-06T09:09:41.000Z",
+    "added_at": "2026-11-06T11:31:49.636Z",
+    "categories": [
+      "idor-bola"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An Insecure Direct Object Reference (IDOR) in Facebook's Graph API allowed any user with a mobile access token to delete any photo album they could view by simply changing the album ID in a DELETE request.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure in authorization, which is the process of checking if a user has permission to perform a specific action on a specific resource. While Facebook correctly performed authentication (verifying the user's identity via an access token), it failed to verify the relationship between the user and the album ID. The Graph API endpoint accepted a DELETE request if the access token came from the Android app. However, the server-side code did not check if the owner of the album matched the user associated with the token. This allowed any valid mobile user to delete any album they could view.",
+      "walkthrough": "RECON\n1. Researcher identifies the Facebook Graph API (a system for apps to talk to Facebook).\nhttps://graph.facebook.com\nWhy: To find the endpoint (a specific web address for computer communication) used for data management.\n2. Researcher notes documentation says deleting albums is impossible via API.\n\"Graph API didn’t support deleting photo albums at all\"\nWhy: To establish the baseline behavior of the system and identify potential gaps.\n3. Researcher observes the official Facebook mobile app has a \"delete album\" button.\n[Delete Album Button in UI]\nWhy: If a feature exists in a client (the app on your phone), the API (the server's receiver) must support it somewhere.\nDISCOVERY\n4. Researcher sends a DELETE request (a command to remove data) to their own album ID (a unique number for a folder of photos).\nDELETE /518171421550249 HTTP/1.1\nWhy: Testing if the documentation is a hard rule or just a guideline for standard users.\n5. The request fails with an error message about application capabilities.\nResponse: {\"error\": {\"message\": \"(#3) Application does not have the capability...\"}}\nWhy: The error suggests the server checks the application type (the software sending the request) rather than the action itself.\n6. Researcher extracts a Facebook-for-Android access token (a digital key that identifies the user as using the official mobile app).\naccess_token=<Facebook_for_Android_Access_Token>\nWhy: To impersonate the official mobile app which has the required permissions.\n7. Researcher prepares a new request using the mobile token.\nHost: graph.facebook.com\nWhy: Directing the request to the correct server host (the computer receiving the message).\n8. Researcher sends the DELETE request using the mobile token on their own album.\nDELETE /518171421550249?access_token=<Android_Token> HTTP/1.1\nWhy: Checking if the mobile app has higher privileges (special permissions) than the standard web API.\n9. The server responds with \"true,\" meaning the researcher's own album was successfully deleted.\nResponse: true\nWhy: Confirming the mobile token unlocks the delete functionality.\nEXPLOITATION\n10. Researcher finds a victim's album ID (the unique number found in the URL of another person's photo album).\n<victim_album_id>\nWhy: To identify a target resource that the researcher does not own.\n11. Researcher sends the DELETE request again, but swaps their own ID for the victim's ID.\nDELETE /<victim_album_id> HTTP/1.1\nWhy: Testing for IDOR (a bug where you can access someone else's data by just changing an ID number) by checking if the server verifies ownership.\nIMPACT\n12. The server responds \"true,\" and the victim's album is deleted.\nResponse: true\nWhy: Proving the server only checked if the user was logged in (authentication), not if they owned the album (authorization).",
+      "example": "Assume a fictional site target.example allows users to delete their notes. The app uses a request like DELETE /api/notes/123. The server-side code looks like this: app.delete('/api/notes/:id', (req, res) => { const noteId = req.params.id; db.notes.delete(noteId); res.send('Deleted'); });. An attacker logs in as User A, but sends the request DELETE /api/notes/456 (where 456 is User B's note). Because the code never checks if User A actually owns note 456, the server deletes it. This works because the developer assumed that only the owner would know the ID or have the button available in their browser.",
+      "takeaway": "When hunting for IDOR, always look for numeric IDs in URLs or request bodies that represent objects like photos, files, or user profiles. A key signal is when an application has different client types (like a mobile app vs. a website), as the mobile API often has broader permissions that might lack ownership checks. Use tools like Burp Suite to swap your ID with a victim's ID while keeping your own session cookie (a small file that keeps you logged in). A common variant is Blind IDOR, where you can't see the data but can still modify or delete it. Avoid the mistake of assuming that a complex or long ID (like a UUID) is a substitute for proper authorization checks.",
+      "fix": "The correct fix is to implement a server-side ownership check for every request that modifies data. The server must use the authenticated user's ID (from the session or token) to verify they own the resource before performing the action. For example: app.delete('/api/album/:id', async (req, res) => { const album = await db.albums.findOne({ id: req.params.id }); if (album.ownerId !== req.user.id) { return res.status(403).send('Unauthorized'); } await db.albums.delete(req.params.id); });. This ensures that even if a user changes the ID in the request, the server will block the action if they are not the owner.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Real one again, and this time it’s about as clean a textbook IDOR as you’ll ever find written up, which is exactly why it’s worth actually sitting with rather than skipping past as “old news.” Laxman Muthiyah found this on Facebook back in 2015, got paid $12,500 for it, and Facebook patched it within two hours of his report landing, which tells you something on its own about how serious they treated it despite how simple the actual bug turned out to be. His original writeup is still up, here it is directly: How I Hacked Your Facebook Photos. Worth reading in his own words, what follows is a wa",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "353349ce95d5",
     "title": "Dependency Confusion Explained: How a Missing NPM Package Becomes Remote Code Execution",
     "url": "https://medium.com/@vigneshkumaroffsec/dependency-confusion-explained-how-a-missing-npm-package-becomes-remote-code-execution-bba0fa514e49",
