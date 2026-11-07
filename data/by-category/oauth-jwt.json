@@ -1,5 +1,47 @@
 [
   {
+    "id": "88b09cc9da6a",
+    "title": "When OAuth Works Correctly and Security Doesn’t: A Bug in OAuth Account Linking",
+    "url": "https://medium.com/@0xnexus0xfault0x/when-oauth-works-correctly-and-security-doesnt-a-bug-in-oauth-account-linking-7f24bfdf91f0",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nexus0xFault"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-06T23:42:00.000Z",
+    "added_at": "2026-11-07T02:57:22.053Z",
+    "categories": [
+      "oauth-jwt",
+      "csrf",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A flaw in the OAuth account-linking process allowed attackers to connect their own Microsoft accounts to a victim's profile. This resulted in full account takeover because the attacker could then log in to the victim's account using their own credentials.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application failed to cryptographically bind the OAuth 'state' parameter to the specific user session that initiated the request. While the server checked if the 'state' value was valid and not expired, it did not verify that the person finishing the login was the same person who started it. Consequently, the server processed the linking request based on whoever was currently logged in (the victim) rather than the original requester (the attacker).",
+      "walkthrough": "RECON\n1. The researcher identified an 'Account Linking' feature that allows users to connect a Microsoft account to their existing profile.\n2. They defined a 'Session' (the server's way of remembering a logged-in user) and a 'Cookie' (a digital ID card stored in the browser to prove who you are).\n\nPREPARATION (ATTACKER)\n3. The attacker logs into their own account and clicks 'Link Microsoft account'.\n4. The website sends an 'HTTP Request' (a digital message sent to a server) to Microsoft with a 'Parameter' (extra information in a URL) called 'state'.\n5. The attacker completes the Microsoft login and is redirected back to the website's 'Endpoint' (a specific web address that performs a task).\n6. The attacker uses a tool to intercept the 'Callback' (the URL the user is sent back to after logging in) and stops it from loading.\nGET https://target.example/callback?code=MOCK_CODE_123&state=ATTACKER_STATE\nWhy: This URL contains a valid 'Authorization Code' (a temporary password used to get account data) tied to the attacker's Microsoft account.\n\nEXPLOITATION (VICTIM)\n7. The attacker sends this intercepted URL to a victim who is already logged into the website.\n8. The victim clicks the link, sending the attacker's code and state to the server.\n9. The server receives the request and checks the 'state' parameter.\nWhy: The server sees the 'state' is valid but fails to check if it belongs to the victim's current session.\n10. The server takes the attacker's Microsoft identity and attaches it to the victim's profile.\n\nIMPACT\n11. The attacker now goes to the login page and selects 'Sign in with Microsoft'.\n12. Because the attacker's Microsoft account is now linked to the victim's profile, the website logs the attacker directly into the victim's account.\nWhy: The site trusts the linked Microsoft identity as a valid way to access the victim's data.",
+      "example": "Imagine a fictional site 'photo-share.example'. It has a 'Link Google' button. A vulnerable server-side script looks like this: \n\nfunction handleGoogleCallback(request) {\n  let user = session.getCurrentUser();\n  let googleAccount = googleApi.getAccount(request.query.code);\n  database.link(user.id, googleAccount.id);\n}\n\nAn attacker starts the link process on their own account, gets the URL 'https://photo-share.example/google/callback?code=ATTACKER_CODE', and sends it to a victim. When the victim clicks it, 'session.getCurrentUser()' returns the victim's ID, but 'googleAccount.id' belongs to the attacker. The database now links the attacker's Google ID to the victim's account.",
+      "takeaway": "When hunting for OAuth bugs, always test if the 'state' parameter is tied to the session. Try generating a callback URL in one browser and opening it in another where a different user is logged in. If the account links successfully, you have a CSRF (Cross-Site Request Forgery) vulnerability. Look for this in 'Settings' or 'Profile' pages where third-party accounts (GitHub, Google, Microsoft) can be added. A common mistake is only checking if the 'state' exists in a database, rather than checking if it belongs to the specific user who is currently active.",
+      "fix": "To fix this, the server must store the 'state' value in the user's private session data when the flow starts. When the callback arrives, the server must compare the 'state' in the URL to the 'state' in the session. If they don't match, the request must be rejected. \n\n// Fixed Code Example\nfunction startLink(user) {\n  let state = generateRandomString();\n  session.save('oauth_state', state);\n  return 'https://provider.com/auth?state=' + state;\n}\n\nfunction handleCallback(request) {\n  let savedState = session.get('oauth_state');\n  if (request.query.state !== savedState) {\n    throw new Error('Invalid state - possible CSRF attack');\n  }\n  // Proceed with linking...\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_How a flaw in account linking lets an attacker attach their own Microsoft account to your profile, and why having a state parameter guarantees nothing._ Press enter or click to view image in full size Image 4 **Note.**At the request of the company’s security team, I’m not naming the platform or sharing screenshots or internal URLs. The report was submitted through the official channel. Status: fixed. **TL;DR.**The account-linking callback accepted a state value that was never tied to the session that created it, and attached the external account to whoever was logged in when the callback arri",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "d248f2ae9bda",
     "title": "Exposed MCP Server: From Recon to OAuth Security Flaws",
     "url": "https://scriptjacker.medium.com/exposed-mcp-server-from-recon-to-oauth-security-flaws-8c40084e0e6d",
