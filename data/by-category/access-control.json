@@ -126,6 +126,46 @@
     "score": 47
   },
   {
+    "id": "bb27c62a5916",
+    "title": "Broken Access Control #2: I Flipped One Cookie From “false” to “true” and Walked Into the Admin Panel",
+    "url": "https://osintteam.blog/broken-access-control-2-i-flipped-one-cookie-from-false-to-true-and-walked-into-the-admin-6bf2988c28e7",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Zahid Hussain Shah"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-05T19:15:53.000Z",
+    "added_at": "2026-11-08T09:15:29.779Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A web application trusted a client-side cookie to determine user privileges, allowing any user to gain administrative access by simply changing a 'false' value to 'true' in their browser.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's security model relied on the 'Honesty Principle,' where the server asked the browser if the user was an administrator instead of checking its own internal database. By storing the 'Admin' status in a cookie—a piece of data that lives on the user's computer—the developers allowed the user to edit their own permission level. The server then accepted this tampered cookie as a valid proof of identity without any server-side verification.",
+      "walkthrough": "RECON\n1. Attempt to access the restricted administrative area directly by navigating to the /admin URL.\nURL: https://target.example/admin\nWhy: To see if the page is hidden or if there is an active check blocking unauthorized users (an 'endpoint' is a specific web address that performs a function).\n\nDISCOVERY\n2. Log in with standard, low-privileged credentials provided for testing.\nCredentials: wiener : peter\nWhy: To establish a valid session and observe what 'paperwork' (cookies) the server gives to a normal user.\n3. Open the browser's Developer Tools (F12) and navigate to the Storage or Application tab to view active cookies.\nWhy: Cookies are small pieces of data stored in your browser that websites use to remember who you are.\n4. Identify a suspicious cookie named 'Admin' with the value 'false'.\nCookie: Admin=false\nWhy: This suggests the application is using this specific piece of data to decide if the user has administrative rights.\n\nEXPLOITATION\n5. Manually edit the cookie value within the browser's developer tools, changing 'false' to 'true'.\nPayload: Admin=true\nWhy: Since cookies live on your computer, you can rewrite them; the 'payload' is the specific data used to trigger the bug.\n6. Refresh the page or navigate back to the /admin endpoint.\nURL: https://target.example/admin\nWhy: To send the modified cookie back to the server in a new 'HTTP request' (a message from your computer to the website).\n\nIMPACT\n7. Observe that the server now grants full access to the Admin Panel, displaying sensitive management functions.\n8. Locate the target user 'carlos' and click the 'Delete' button to confirm full administrative control.\nAction: Click 'Delete' next to user 'carlos'\nWhy: This proves that the attacker can perform high-privilege actions that should be restricted to staff.",
+      "example": "Imagine a fictional site 'video-stream.example' that gives users a cookie called 'is_premium=0' when they sign up for a free account. A user opens their browser's Developer Tools, finds the cookie, and changes the '0' to a '1'. When they refresh the page, the website sees 'is_premium=1' and unlocks all paid movies for free. The site failed because it trusted the 'sticky note' (the cookie) the user handed them, rather than checking its own records to see if the user actually paid.",
+      "takeaway": "Always assume that any data coming from the user's browser (cookies, headers, or URL parameters) is a lie. This bug is a classic 'Broken Access Control' pattern where the 'source of truth' is placed in the hands of the attacker. When hunting, look for cookies with names like 'role', 'admin', 'staff', or 'debug'. A common beginner mistake is thinking that cookies are encrypted or 'safe' just because they aren't visible on the page; in reality, they are just text files that any user can edit.",
+      "fix": "The server must never trust the client to define its own permissions. Instead of storing 'Admin=true' in a cookie, the server should store a random, long 'Session ID' in the cookie. When the user visits /admin, the server takes that ID, looks it up in its own secure database, and checks the 'role' column associated with that ID. If the database says the user is a 'guest', the server denies access regardless of what the browser says. \n\nExample of secure logic (Pseudo-code):\nif (Session.lookup(cookie.sessionID).role == 'admin') { \n  allow_access(); \n} else { \n  deny_access(); \n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Back in Part 1 of this series, I deleted a user from a shopping site without ever logging in as an admin. The server simply forgot to check who I was. Classic Broken Access Control. I got a few messages after that one saying, “okay but that felt too easy, surely real apps don’t mess up access control like that.” Fair. So let me show you a second flavour of the exact same bug — one that looks a little smarter on the surface, and is still completely broken underneath. This time the website does check. It asks a question before it lets anyone near the admin panel: _“Are you an administrator?”_ Th",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b3ea6180ab16",
     "title": "How a Broken Email Confirmation Flow Took Over Any Shopify Store",
     "url": "https://medium.com/@l4zz3rj0d/how-a-broken-email-confirmation-flow-took-over-any-shopify-store-0bc8ea8cc5ad",

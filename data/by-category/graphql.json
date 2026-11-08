@@ -1,5 +1,47 @@
 [
   {
+    "id": "536b2a094cb3",
+    "title": "How Peloton Confused Authentication with Authorization",
+    "url": "https://medium.com/@l4zz3rj0d/how-peloton-confused-authentication-with-authorization-714b8b70116e",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-08T06:41:24.000Z",
+    "added_at": "2026-11-08T09:15:19.008Z",
+    "categories": [
+      "idor-bola",
+      "auth-bypass",
+      "graphql"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "Peloton's API allowed unauthenticated access to private user data, including weight and workout history. Even after a partial fix, the system failed to verify if a logged-in user had permission to view other users' private profiles.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure to distinguish between authentication (verifying who a user is) and authorization (verifying what a user is allowed to do). Initially, endpoints like /stats/workouts/details lacked any identity checks. When Peloton attempted to fix this, they only required a valid login (authentication) but failed to implement Object-Level Authorization, meaning any valid user could still request data belonging to any other user regardless of privacy settings.",
+      "walkthrough": "RECON\n1. Identify the API (a system that allows two applications to talk to each other) used by the Peloton bike and mobile app.\n2. Locate a specific endpoint (a specific web address where an API receives requests) that handles workout data.\napi.onepeloton.co.uk/stats/workouts/details\nWhy: The researcher wanted to see if the server required proof of identity to share data (a beginner gloss: checking if the door is locked).\nDISCOVERY\n3. Send a raw HTTP request (a message sent over the internet to a server) to that address without any login cookies (small files used to remember your identity) or tokens (digital keys used for access).\nGET /stats/workouts/details HTTP/1.1\nHost: api.onepeloton.co.uk\nWhy: To test if the API is 'unauthenticated,' meaning it gives data to anyone who asks.\n4. Observe the response containing sensitive user ID, workout stats, and personal details.\n5. Test the user search endpoint to see if it respects privacy settings.\napi.onepeloton.com/api/user/search/\nWhy: To see if the backend (the server-side code) enforces the 'private profile' setting chosen by users.\n6. Confirm that private profile data is returned for any query string (the part of a URL that sends data to the server, like ?name=john).\n7. Discover a third path to the same data using GraphQL (a specific language for querying APIs that allows users to ask for exactly what they need).\nEXPLOITATION (POST-FIX)\n8. After the company's first fix, attempt the same request and observe it now fails with a 401 Unauthorized error.\n9. Create a free Peloton account to obtain a valid authentication token (a digital signature proving you are a registered user).\n10. Log in as the new user and capture the new request header (extra information sent with a request, like a digital ID card).\nAuthorization: Bearer [YOUR_TOKEN]\nWhy: To provide the 'authentication' the server now requires.\n11. Use this valid token to request the data of a different user by changing the ID in the request.\nGET /api/user/search/?id=[VICTIM_ID]\nWhy: To test for Broken Object Level Authorization (BOLA), where the server checks IF you are logged in, but not WHAT you are allowed to see.\nIMPACT\n12. Confirm that the server returns the private data of the victim user to the attacker's account.\nWhy: This proves that any of Peloton's millions of users could scrape the private data of every other user.",
+      "example": "Imagine a medical site 'health-tracker.example'. A user logs in and sees their profile at 'health-tracker.example/api/v1/user/123'. The researcher logs in as User 999 and tries to access 'health-tracker.example/api/v1/user/123'. If the server only checks 'Is this person logged in?' (Authentication) but doesn't check 'Is User 999 allowed to see User 123?' (Authorization), User 999 will see User 123's private medical records. The attack request would look like: GET /api/v1/user/123 HTTP/1.1 [Host: health-tracker.example, Cookie: sessionid=user999]. It works because the code likely looks like 'return database.findUser(requested_id)' instead of 'return database.findUserIfOwnedBy(requested_id, current_session_id)'.",
+      "takeaway": "Always test for authorization even if authentication is present. A common mistake is assuming that because a user is 'logged in,' they are 'safe.' When hunting, look for parameters (variables in a request) like 'id', 'user_id', or 'uuid' and try replacing them with IDs from other accounts. Use two different accounts (Account A and Account B) to see if Account A can access Account B's private resources. A key signal is when an app has a 'private' setting in the UI, but the API still returns the data when queried directly.",
+      "fix": "The fix requires implementing a check at the database query level to ensure the requesting user has permission to access the specific object. Instead of just checking if a user is logged in, the code must verify ownership. For example, in a Node.js environment: \n\n// WRONG: Only checks if user exists\napp.get('/user/:id', (req, res) => {\n  const user = db.users.find(u => u.id === req.params.id);\n  res.json(user);\n});\n\n// RIGHT: Checks if the logged-in user matches the requested ID\napp.get('/user/:id', (req, res) => {\n  if (req.session.userId !== req.params.id) {\n    return res.status(403).send('Unauthorized');\n  }\n  const user = db.users.find(u => u.id === req.params.id);\n  res.json(user);\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Moving into API security for this one, and it’s a genuinely great teaching case because the company involved got the fix wrong not once but twice, which tells you almost everything about how commonly this exact mistake gets made. Found by Jan Masters at Pen Test Partners in January 2021, reported responsibly, and it took a journalist getting involved before Peloton actually took it seriously. His own writeup is still up, full technical detail: Tour de Peloton: Exposed user data. Genuine respect due to him here too, not just for finding it, but for sitting through 90 days of being ignored, watc",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "09d712ce68e0",
     "title": "Intent Redirection to One-Click Account Takeover (But It’s a Duplicate)",
     "url": "https://abdelnasserr.medium.com/intent-redirection-to-one-click-account-takeover-but-its-a-duplicate-275f5a0aefaf",
