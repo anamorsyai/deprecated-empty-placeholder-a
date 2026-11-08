@@ -1,5 +1,47 @@
 [
   {
+    "id": "dad3fb46a6ae",
+    "title": "The WAF Was Never the Wall",
+    "url": "https://cyphernova1337.medium.com/the-waf-was-never-the-wall-00dcb280105e",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "CypherNova1337"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-08T21:05:09.000Z",
+    "added_at": "2026-11-08T23:51:40.366Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "By discovering the secret 'origin' IP addresses of servers hidden behind a Web Application Firewall (WAF), a researcher bypassed all security filters to access internal admin portals and exploit a critical logic flaw in a regulated case-management system.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stemmed from a 'security by obscurity' design where the organization assumed the Web Application Firewall (WAF) was an impenetrable wall. Because they relied solely on the WAF to block bad traffic, the backend 'origin' servers were left unprotected and directly accessible from the internet. Furthermore, the application logic incorrectly trusted client-side data (a fixed user ID) for authorization, and predictable naming conventions allowed the researcher to find unprotected 'regional twin' servers containing sensitive source code.",
+      "walkthrough": "RECON\n1. The researcher used Certificate Transparency logs—public records of every security certificate (the 'lock' icon in browsers) issued to a domain—to find all subdomains.\n2. They used Shodan (a search engine for internet-connected devices) and passive DNS records to find a list of candidate IP addresses (the unique digital addresses of servers) that might belong to the target.\n3. They ran a tool called VoidOrigin to verify which IPs were the real 'origins' (the secret home servers) by checking if the IP presented the correct certificate when queried via SNI (Server Name Indication—a way to tell a server which website you want to talk to).\n4. The tool confirmed the origin by comparing the 'byte-identity' (checking if every single character of the website's code matches) between the public WAF version and the direct IP version.\n\nDISCOVERY\n5. By accessing the origin IP directly, the researcher bypassed the WAF (a security filter that blocks 'bad' traffic) and found an administration portal.\n6. They discovered that the admin portal still had default vendor credentials (standard passwords like 'admin/admin' set by the manufacturer) enabled.\n7. By analyzing the naming patterns of the discovered servers, they guessed the names of 'regional twins' (identical servers in different geographic areas) that had no WAF protection at all.\n8. On one of these twins, they found a public directory containing unminified client source code (original, easy-to-read programming code that hasn't been compressed for speed).\n\nEXPLOITATION\n9. The researcher read the source code and found a critical logic flaw: the system checked if a user was an 'operator' based on a single field in the request called 'user ID'.\n10. They crafted a POST request (an HTTP message used to send data to a server) to the case creation endpoint (a specific 'door' or URL on a server) using the fixed user ID found in the code.\nPOST /api/v1/cases HTTP/1.1\nHost: [ORIGIN_IP]\nContent-Type: application/json\n\n{\"user_id\": \"FIXED_OPERATOR_ID\", \"case_data\": {\"subject\": \"Attacker Case\"}}\nWhy: This payload tells the server to create a new case while pretending to be an authorized operator using the hardcoded ID found in the source code.\n\nIMPACT\n11. The researcher successfully created cases in the production system without an account, bypassing all authentication (the process of proving who you are).\n12. They used the 'duplicate-check' endpoint to create a 'privacy oracle' (a bug that leaks private info by answering yes/no questions) to see if specific people already had cases in the system.\n13. They demonstrated 'suppression poisoning' by injecting fake cases that made real customer requests look like duplicates, causing the system to ignore the real customers.\n14. Finally, they showed they could update any existing case or trigger the system to mail sensitive reports to an attacker-controlled address by simply changing the case ID in a request.",
+      "example": "Imagine a bank that has a high-tech security guard (the WAF) at the front door of its main building. However, the bank also has a back delivery door (the Origin IP) that is completely unlocked because they assume nobody knows it exists. A researcher finds the back door by looking at the building's blueprints (Certificate Transparency logs). Once inside, they find a manual (unminified source code) that says 'To open the vault, just show a badge with the number 999.' The researcher makes a cardboard badge with '999' (the fixed user ID) and the vault computer lets them in because it trusts the badge without checking if the person is actually an employee.",
+      "takeaway": "Always assume your 'hidden' infrastructure will be found. Security must be 'defense in depth,' meaning the application itself must require authentication even if the WAF is bypassed. Researchers should look for 'origin' IPs by monitoring certificate logs and using SNI-based verification tools. A common signal for this is finding 'regional' naming patterns (like 'api-us-east.target.com') where one region might be less protected than another. Avoid the mistake of thinking a WAF is a replacement for secure code; it is only a temporary filter.",
+      "fix": "To fix this, first implement IP whitelisting on the origin servers so they only accept traffic coming from the WAF's known IP addresses. Second, move all authorization logic to the server-side; never trust a 'user_id' or 'is_admin' flag sent from the user's browser. Third, ensure all administrative portals use the same centralized SSO (Single Sign-On) as the rest of the company. Finally, minify and obfuscate all production JavaScript to make it harder for attackers to find logic flaws. \n\nExample of a secure check (Pseudo-code):\n// BAD: Trusting the user-supplied ID\n// if (request.body.user_id == 'FIXED_ID') { allow_access() }\n\n// GOOD: Checking the user's session token on the server\nuser = SessionStore.get_user(request.cookies['session_token'])\nif (user && user.has_role('OPERATOR')) { allow_access() } else { deny_access() }",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Every serious engagement against a modern estate starts the same way: ignore the WAF. It’s not the wall — it’s a curtain. Behind it are the origins, and the origins are where the real attack surface lives. This is the story of a tool I built to find them, and the critical it unlocked on a large enterprise target.** Press enter or click to view image in full size Image 3 ## The assumption The company in this story — call it the target — runs a large data and analytics estate with dozens of customer-facing applications. Every application sits behind a commercial WAF. The security model, like m",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "435d0e12ca05",
     "title": "My first AI bug report got closed within hours (and that was good for me)",
     "url": "https://medium.com/@manuelfdzgo/my-first-ai-bug-report-got-closed-within-hours-and-that-was-good-for-me-eb68c002c326",
