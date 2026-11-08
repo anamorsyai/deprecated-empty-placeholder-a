@@ -1,5 +1,45 @@
 [
   {
+    "id": "7f377be1e660",
+    "title": "Pwning Home Assistant Green: Pre-Auth RCE in Eclipse Mosquitto",
+    "url": "https://www.reddit.com/r/netsec/comments/1xr33yo/pwning_home_assistant_green_preauth_rce_in",
+    "source": {
+      "slug": "reddit-netsec",
+      "name": "r/netsec"
+    },
+    "authors": [
+      "/u/parzel"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-08T16:58:09.000Z",
+    "added_at": "2026-11-08T20:21:54.229Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A pre-authentication Remote Code Execution (RCE) vulnerability was identified in the Eclipse Mosquitto message broker as integrated into Home Assistant Green, allowing full system compromise without credentials.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "353349ce95d5",
     "title": "Dependency Confusion Explained: How a Missing NPM Package Becomes Remote Code Execution",
     "url": "https://medium.com/@vigneshkumaroffsec/dependency-confusion-explained-how-a-missing-npm-package-becomes-remote-code-execution-bba0fa514e49",

@@ -1,5 +1,47 @@
 [
   {
+    "id": "6af79a22be35",
+    "title": "The Template That Closes Real Findings: Anatomy of a CORS Dismissal",
+    "url": "https://cyphernova1337.medium.com/the-template-that-closes-real-findings-anatomy-of-a-cors-dismissal-c7c3ee8ce17f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "CypherNova1337"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-08T17:37:50.000Z",
+    "added_at": "2026-11-08T20:21:14.124Z",
+    "categories": [
+      "cors",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A flawed origin validation mechanism in Verisk's portals allowed attackers to bypass CORS protections and steal sensitive actuarial data by using specially crafted domain names.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a flawed 'transformation' logic used to validate the Origin header (a label sent by browsers indicating which website is making a request). Instead of comparing the Origin against a strict list of allowed websites, the server attempted to 'clean' the input by stripping certain characters and then reflecting the result. Because the server also set the Access-Control-Allow-Credentials header to true, it instructed the browser to include the victim's private login cookies in these cross-site requests. This, combined with the portal's use of SameSite=None cookies (cookies that can be sent to different websites), created a direct channel for data theft.",
+      "walkthrough": "RECON\n1. Identify the target portal used for viewing sensitive claims and actuarial data.\nhttps://claimsinsights.verisk.com/\nWhy: This is the endpoint (a specific web address) where the sensitive data is stored.\n\nDISCOVERY\n2. Test the server's response to a custom Origin header using a command-line tool called curl.\ncurl -i -H \"Origin: https://claimsinsightsxverisk.com\" https://claimsinsights.verisk.com/callosum/v1/tspublic/v1/user/me\nWhy: An Origin header tells the server which website is asking for data. The researcher is testing if the server will trust a fake website.\n3. Observe the server's response headers.\naccess-control-allow-origin: https://claimsinsightsxverisk.com\naccess-control-allow-credentials: true\nWhy: The server 'reflects' (repeats back) the fake domain and says 'true' to credentials, meaning it will accept the victim's private login cookies from this fake site.\n4. Analyze the transformation logic by trying different domain variations.\nWhy: The researcher discovered the server strips characters to try and match its own domain name, but the logic is flawed.\n\nEXPLOITATION\n5. Register a 'shaped' domain name that the server's logic will mistakenly trust.\nhttps://claimsinsightsxverisk.com\nWhy: By adding an 'x' or other characters, the attacker creates a legitimate domain they own that bypasses the server's weak character-stripping filter.\n6. Create a malicious webpage hosted on the attacker's shaped domain.\nWhy: This page will contain code that runs in the victim's browser when they visit the attacker's site.\n7. Write a script on that page to 'fetch' (request) data from the target portal.\nfetch('https://claimsinsights.verisk.com/callosum/v1/tspublic/v1/user/me', {credentials: 'include'})\nWhy: The 'credentials: include' part tells the browser to send the victim's real login cookies to the Verisk portal.\n\nIMPACT\n8. Capture the response from the portal, which now includes the victim's private data.\nWhy: Because the server trusts the attacker's domain and the cookies were sent, it returns sensitive identity and actuarial information to the attacker's script.",
+      "example": "Imagine a bank website at 'secure.bank.example' that has a flawed security check. When it sees a request from another site, it removes all dashes '-' from the name and checks if the result is 'securebank.example'. An attacker registers 'secure-bank.example'. When the attacker's site asks for the user's balance, the bank's server strips the dash, sees 'securebank.example', thinks it is its own site, and sends the private balance data to the attacker. The attack request would look like this: GET /api/balance HTTP/1.1 | Host: secure.bank.example | Origin: https://secure-bank.example | Cookie: sessionid=victim_secret_cookie. The server responds with: Access-Control-Allow-Origin: https://secure-bank.example | Access-Control-Allow-Credentials: true, allowing the attacker's script to read the balance.",
+      "takeaway": "Always look for dynamic reflection of the Origin header. If you change the Origin and the server repeats it back to you in the 'Access-Control-Allow-Origin' header, it is a major red flag. Pay close attention to 'Access-Control-Allow-Credentials: true', as this is what makes the bug exploitable for data theft. Test for 'domain shaping' by adding prefixes, suffixes, or special characters to the Origin to see if the server's validation logic can be tricked. A common mistake is assuming that because a server doesn't reflect *any* origin, it is safe; always test variations that look like the target domain.",
+      "fix": "The correct way to handle CORS is to use a strict allowlist of trusted domains. Never 'transform' or 'clean' the Origin header; instead, compare it exactly against your list. If the Origin is not in the list, do not return any Access-Control headers. Additionally, ensure that sensitive cookies use the 'SameSite=Lax' or 'SameSite=Strict' attribute whenever possible to prevent them from being sent in cross-site requests. \n\nExample of a secure check in pseudo-code:\nallowed_origins = ['https://portal.verisk.com', 'https://data.verisk.com']\nif request.headers['Origin'] in allowed_origins:\n    response.headers['Access-Control-Allow-Origin'] = request.headers['Origin']\n    response.headers['Access-Control-Allow-Credentials'] = 'true'",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**A demonstrated cross-origin data-theft channel on licensed claims and actuarial portals was closed as “Informative” with a response that never mentions a single detail from the report. Here is the full record, the template, and why the reasoning is wrong on the merits.** Press enter or click to view image in full size Image 4 ## The finding I submitted a report to the Verisk VDP on HackerOne. In short: the Claims Insights portals — ThoughtSpot analytics hosts serving licensed claims and actuarial data — validate the `Origin` header by transforming it. They strip characters from the supplied",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "4c3393421f9f",
     "title": "How One AI Feature Exposed Data from Multiple Restricted Functions",
     "url": "https://medium.com/@hs942422/how-one-ai-feature-exposed-data-from-multiple-restricted-functions-e2d13dd0e4cd",
