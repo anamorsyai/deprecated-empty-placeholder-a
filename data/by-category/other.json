@@ -1,5 +1,45 @@
 [
   {
+    "id": "1a730fcf12d3",
+    "title": "I Found a 9.8 Critical Integer Overflow in Google’s TensorFlow. Google Refused to Pay Me.",
+    "url": "https://medium.com/@0xanubiis/i-found-a-9-8-critical-integer-overflow-in-googles-tensorflow-google-refused-to-pay-me-9d8b52bbc5c1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Aser Ahmed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-08T12:46:09.000Z",
+    "added_at": "2026-11-08T16:01:42.913Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": null,
+    "summary_en": "A researcher identified a critical integer overflow vulnerability in Google's TensorFlow framework with a CVSS score of 9.8, which Google declined to reward.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "561ce24e9d5d",
     "title": "When a Security Product Can’t Protect Itself: My Responsible Disclosure Story with the Endpoint…",
     "url": "https://medium.com/@furkanyasinkeskin/when-a-security-product-cant-protect-itself-my-responsible-disclosure-story-with-the-endpoint-c374c475f2eb",

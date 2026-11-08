@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-11-08T09:15:30.513Z",
-  "totalItems": 255,
-  "newItemsThisRun": 2,
+  "lastRun": "2026-11-08T16:01:50.309Z",
+  "totalItems": 256,
+  "newItemsThisRun": 1,
   "aiProvider": "custom",
-  "aiOkThisRun": 2,
+  "aiOkThisRun": 1,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 209,
+  "aiGeneratedTotal": 210,
   "bySource": {
-    "medium-tag-bug-bounty": 145,
+    "medium-tag-bug-bounty": 146,
     "medium-tag-writeup": 47,
     "reddit-netsec": 12,
     "medium-tag-bugbounty": 2,
@@ -15,6 +15,7 @@
     "pentesterland": 48
   },
   "byCategory": {
+    "other": 43,
     "idor-bola": 26,
     "auth-bypass": 59,
     "graphql": 10,
@@ -27,7 +28,6 @@
     "rce": 35,
     "business-logic": 44,
     "xss": 29,
-    "other": 42,
     "sqli": 7,
     "file-upload": 7,
     "recon": 7,
