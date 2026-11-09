@@ -1,5 +1,46 @@
 [
   {
+    "id": "063ede340c0a",
+    "title": "How Egor Homakov Generated Free Money on Starbucks Gift Cards",
+    "url": "https://medium.com/@l4zz3rj0d/how-egor-homakov-generated-free-money-on-starbucks-gift-cards-436396b02014",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-09T10:51:01.000Z",
+    "added_at": "2026-11-09T11:23:11.764Z",
+    "categories": [
+      "race-condition",
+      "business-logic"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A race condition in the gift card transfer feature allowed a researcher to transfer the same balance multiple times simultaneously, effectively creating free money.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server processed balance transfers in three non-atomic steps: checking the balance, adding it to the destination, and then subtracting it from the source. Because these steps were not grouped into a single, uninterruptible action, a second request could 'race' in and read the original balance before the first request had finished subtracting it. This flaw exists because the application does not use database row locking to prevent multiple processes from modifying the same balance at the exact same time. The gap between the initial check and the final deduction is the window of opportunity for the exploit.",
+      "walkthrough": "RECON\n1. Researcher registers an account on the Starbucks website.\n2. Researcher links three physical gift cards to the account to test the transfer functionality.\nPHASE: DISCOVERY\n3. Researcher identifies the balance transfer endpoint, which is a specific web address (URL) that handles moving money between cards.\n4. Researcher loads $5 onto Card A and $5 onto Card B to use as test data.\n5. Researcher observes that a normal transfer moves the balance from Card A to Card B and correctly updates both totals.\nPHASE: EXPLOITATION\n6. Researcher opens two separate web browsers (like Chrome and Firefox) to act as two different users.\n7. Researcher logs into the same Starbucks account in both browsers using session cookies (digital ID cards that keep you logged in).\n8. In Browser 1, researcher prepares a request to transfer $5 from Card A to Card B.\n9. In Browser 2, researcher prepares the exact same request to transfer $5 from Card A to Card B.\n10. Researcher attempts to click the 'Submit' button in both browsers at the exact same time.\n11. The researcher fails the first five attempts because the timing of the clicks is not perfectly simultaneous.\n12. On the sixth attempt, the researcher successfully fires both requests within a tiny fraction of a second.\n13. Request 1 reaches the server and begins the 'Check Balance' step.\n14. Request 2 reaches the server and also begins the 'Check Balance' step before Request 1 has finished its work.\n15. The server's database (a digital filing cabinet) tells both requests that Card A has $5 available.\n16. Request 1 adds $5 to Card B and then subtracts $5 from Card A.\n17. Request 2, having already 'checked' the balance earlier, also adds $5 to Card B and subtracts $5 from Card A.\nPHASE: IMPACT\n18. Researcher checks the final balance of Card B.\n19. Card B now has $15 ($5 original + $5 from Request 1 + $5 from Request 2).\n20. The researcher has successfully generated $5 of free credit that was never paid for.\n21. Researcher notes that this could be automated with scripts to generate thousands of dollars across many accounts.",
+      "example": "Imagine a fictional site target.example that gives users a one-time $10 'Welcome' coupon. The code looks like this:\n\nif user.has_used_coupon == False:\n    user.balance += 10\n    user.has_used_coupon = True\n\nAn attacker sends two requests at the exact same time:\nPOST /redeem_coupon HTTP/1.1\nHost: target.example\nCookie: session=abc123\n\nWhy: If both requests reach the 'if' statement before either one sets 'has_used_coupon' to True, the server will grant the $10 bonus twice. The attacker effectively 'races' the server's own update process to double their reward.",
+      "takeaway": "Always look for 'state-changing' actions that involve a limited resource, such as money, reward points, or inventory stock. A key signal is any process that follows a 'Check -> Update -> Save' pattern. To find these, use tools like Burp Suite to send the same request many times concurrently (at the same time) rather than one after another. A common variant is the 'Limit Overrun,' where you can use a single-use coupon multiple times. Remember that race conditions are probabilistic; you must try the attack multiple times because success depends on the server's internal timing.",
+      "fix": "The fix is to make the transfer operation 'atomic,' meaning it happens as one single, inseparable unit. This is done using database transactions and 'pessimistic locking,' which locks the specific data row so no other request can read or change it until the first request is completely finished. \n\nExample fix in SQL:\nBEGIN TRANSACTION;\nSELECT balance FROM cards WHERE id = 'CardA' FOR UPDATE;\n-- This 'FOR UPDATE' lock prevents other requests from reading the balance until we are done.\nUPDATE cards SET balance = balance - 5 WHERE id = 'CardA';\nUPDATE cards SET balance = balance + 5 WHERE id = 'CardB';\nCOMMIT;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Closing out this first round with the one almost everyone in the industry ends up learning about eventually, usually secondhand, rarely from the source. Egor Homakov, founder of Sakurity, found this on Starbucks back in May 2015, and it’s still the example most security courses reach for the moment race conditions come up, for good reason. His own account is worth reading straight from him: Hacking Starbucks for unlimited coffee. Real appreciation due here too, and not just for the find, Starbucks initially responded to a researcher handing them a genuine fraud vector by threatening him rather",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "8588e58b3e22",
     "title": "Breaking the Vault: Bypassing Chatbot Limits via Race Conditions & Response Manipulation",
     "url": "https://medium.com/@aazzazy772/breaking-the-vault-bypassing-chatbot-limits-via-race-conditions-response-manipulation-e8f68ce3e354",
