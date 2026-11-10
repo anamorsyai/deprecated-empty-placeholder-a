@@ -1,5 +1,46 @@
 [
   {
+    "id": "ca72ebf65cff",
+    "title": "Pass-Back Attack on WPA Enterprise to Get Creds",
+    "url": "https://0xy37.medium.com/pass-back-attack-on-wpa-enterprise-to-get-creds-562d1587df15",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Yara AlHumaidan (0xy37)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-10T21:05:21.000Z",
+    "added_at": "2026-11-10T23:55:17.842Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A vulnerability in Yealink VP59 phones allows low-privileged users to modify Enterprise Wi-Fi settings, redirecting authentication to a rogue server to steal domain credentials.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a failure in Role-Based Access Control (RBAC), a system that limits what different users can do. The Yealink VP59 allows a standard 'user' account—which should only have basic viewing rights—to modify sensitive 802.1X (Enterprise Wi-Fi) configuration parameters. Furthermore, the device does not enforce Certificate Authority (CA) validation, meaning it will trust any server that claims to be the authentication authority without checking its digital 'ID card' (certificate).",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher identified a Yealink VP59 VoIP phone on the network.\n2. They used the default non-privileged credentials to log into the web management interface.\nuser / user\nWhy: Many IoT devices ship with default credentials (pre-set passwords) that users rarely change.\n\nDISCOVERY\n3. The researcher navigated to the Network settings to see what a low-level user could access.\nNetwork -> Wi-Fi -> Edit Wi-Fi\nWhy: An endpoint (a specific web page or function) that handles sensitive network configurations should be restricted to administrators.\n4. They observed that the 'user' account could change the RADIUS server IP. A RADIUS server is a central system that verifies Wi-Fi usernames and passwords.\n5. They noticed the 'CA Certificate' field was 'unspecified,' meaning the phone wouldn't verify if the server it talks to is legitimate.\n\nEXPLOITATION\n6. The researcher changed the RADIUS server IP address in the phone's settings to their own computer's IP address.\n7. They used a tool called 'eaphammer' to create an 'Evil Twin' Access Point (AP). This is a fake Wi-Fi hotspot with the same name (SSID) as the real corporate network.\neaphammer -i wlan0 --channel 6 --auth wpa-eap --essid CorpWiFi --creds\nWhy: This command starts a fake Wi-Fi network named 'CorpWiFi' and waits for devices to try to log in so it can steal their credentials (the '--creds' flag).\n8. Because the researcher's fake AP had a stronger signal, the phone automatically tried to connect to it.\n9. The phone sent its stored Enterprise Wi-Fi credentials to the researcher's computer, thinking it was the official corporate server.\n\nIMPACT\n10. The researcher successfully captured the domain username and password in cleartext (readable text).\nusername: jdoe | password: P@ssw0rd123!\nWhy: The phone used EAP-GTC, a protocol that sends passwords without strong encryption if the server doesn't require a secure 'tunnel' first. Even with MS-CHAPv2 (a different protocol), the researcher would have captured a 'hash' (a scrambled password) that could be cracked later.",
+      "example": "Imagine a smart office thermostat that allows any employee to log in to check the temperature. If the thermostat has a 'Network Setup' page that isn't locked, an attacker could log in as a regular employee and change the 'Update Server' address to their own laptop. The next time the thermostat checks for an update, it sends its internal serial number and secret API key to the attacker. The attacker then uses that API key to access the company's entire building management system. This works because the thermostat (the client) didn't check if the update server had a valid security certificate and allowed a non-admin to change the server address.",
+      "takeaway": "When hunting for bugs in IoT or hardware devices, always test the 'low-privilege' accounts. If a 'guest' or 'user' account can modify system-wide settings like DNS, RADIUS, or Proxy servers, it is almost always a high-severity vulnerability. Look for 'Pass-Back' patterns where you can tell a device to send its data to you instead of the intended server. A common variant of this is 'SSRF' (Server-Side Request Forgery), where you make a server fetch a URL you provide. Avoid the mistake of assuming that because a password is 'hidden' behind dots in the UI, it cannot be stolen; the device must eventually send that password to a server to work.",
+      "fix": "The vendor should implement strict RBAC to ensure only the 'admin' account can modify network and security settings. Additionally, the device should implement 're-authentication,' requiring the user to enter the admin password again before saving changes to sensitive fields. Technically, the firmware should be updated to enforce CA Certificate validation by default, preventing the device from connecting to any RADIUS server that does not present a trusted, pre-configured certificate. Fixed logic would look like this:\n\nif (currentUser.role != 'ADMIN') {\n  return Error('Unauthorized: Admin privileges required to edit 802.1X settings');\n}\nif (config.ca_cert == null) {\n  return Error('Security Risk: A CA Certificate must be uploaded to use Enterprise Wi-Fi');\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "One of those “wait, that’s it? no re-auth?” bugs. tested this on a VP59 sitting on our bench and walked away with domain creds on Wi-Fi in plaintext. ## Get Yara AlHumaidan (0xy37)’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in **Target:** Yealink VP59 **Firmware:** 91.15.0.147 **Component:** Network → Wi-Fi → Edit Wi-Fi (802.1X/RADIUS config) **Impact:** Enterprise Wi-Fi credential disclosure via rogue RADIUS / Evil Twin AP Image 4 ## 0- The Setup default creds on these phones are `user` / `user`. not admi",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "dad3fb46a6ae",
     "title": "The WAF Was Never the Wall",
     "url": "https://cyphernova1337.medium.com/the-waf-was-never-the-wall-00dcb280105e",
