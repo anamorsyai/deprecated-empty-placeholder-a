@@ -1,5 +1,45 @@
 [
   {
+    "id": "e6dfb5c059a8",
+    "title": "How a Browser Extension Check Led to Uncovering CVE-2021–44528 (Open Redirect)",
+    "url": "https://medium.com/@adarshnair135/how-a-browser-extension-check-led-to-uncovering-cve-2021-44528-open-redirect-3c525e0054ef",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Adarsh S Nair"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-10T13:49:00.000Z",
+    "added_at": "2026-11-10T18:59:09.065Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An outdated Ruby on Rails configuration allowed attackers to bypass host authorization using the X-Forwarded-Host header, leading to an open redirect.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a flaw in Ruby on Rails' Action Pack middleware (Host Authorization) in versions 6.0.0 and later. This middleware was designed to prevent Host Header Injection but failed to properly validate the 'X-Forwarded-Host' header (a label used to identify the original host requested by a client). When the application was configured with certain 'allowed host' settings, it incorrectly trusted the user-supplied header. This allowed an attacker to inject an arbitrary domain, which the server then used to generate a redirect response.",
+      "walkthrough": "RECON\n1. The researcher began by visiting the target application's login page.\n2. They used the Shodan Browser Extension (a tool that reveals technical details about a website's server) to scan the host.\n3. The extension identified a specific known vulnerability: CVE-2021-44528.\n\nDISCOVERY\n4. The researcher navigated to the login portal URL.\nhttps://app.example.com/login\nWhy: This is the entry point where the application processes user credentials and often issues redirects (a command telling the browser to go to a new page).\n5. They entered valid credentials into the login form.\n6. They prepared a proxy tool like Burp Suite (a program that lets you pause and edit web requests) to capture the outgoing data.\n\nEXPLOITATION\n7. The researcher clicked the 'Login' button to trigger a POST request (a type of HTTP request used to send data to a server).\n8. They intercepted the request in their proxy tool before it reached the server.\n9. They identified the headers (extra information sent with the request, like a 'To' or 'From' label).\n10. They manually added a new header named 'X-Forwarded-Host'.\nX-Forwarded-Host: attacker.com\nWhy: This header is meant to tell the server which website the user originally tried to reach, but here it is used to trick the server into thinking it should redirect the user to a malicious site.\n11. They forwarded the modified request to the server.\n\nIMPACT\n12. The server processed the login and generated a response.\n13. The server responded with an HTTP 302 Found status (a code that tells the browser to immediately jump to a different URL).\n14. The researcher checked the 'Location' header in the server's response.\nLocation: https://attacker.com\nWhy: Because the server trusted the 'X-Forwarded-Host' header, it built the redirect destination using the attacker's domain.\n15. The browser automatically followed the instruction and landed on the external, attacker-controlled website.\n16. This confirmed an Open Redirect (a flaw where a site sends users to an untrusted URL), which can be used for phishing attacks.",
+      "example": "Imagine a fictional site 'target.example' that uses an old version of Ruby on Rails. A hacker wants to trick users into visiting 'evil.example' to steal their passwords. \n\n1. The hacker sends a link to a victim: https://target.example/login.\n2. The hacker uses a tool to send a request to the server with a custom header:\nGET /login HTTP/1.1\nHost: target.example\nX-Forwarded-Host: evil.example\n\n3. The vulnerable server sees 'X-Forwarded-Host' and thinks, 'I should send the user to evil.example after they log in.'\n4. The server sends back:\nHTTP/1.1 302 Found\nLocation: https://evil.example/\n\n5. The victim's browser sees this and immediately takes them to the fake site 'evil.example' without the victim realizing they left the safe 'target.example' site.",
+      "takeaway": "Always check for known CVEs (Common Vulnerabilities and Exposures) using tools like Shodan or Wappalyzer when starting a hunt. If you see a Ruby on Rails application, specifically test how it handles headers like 'X-Forwarded-Host' and 'X-Forwarded-For'. A common mistake is assuming that 'Host Authorization' middleware is foolproof; however, misconfigurations or outdated versions often allow bypasses. Look for '302' or '301' redirect responses after you modify these headers.",
+      "fix": "The primary fix is to upgrade the Ruby on Rails Action Pack gem to a version where CVE-2021-44528 is patched. Additionally, developers should explicitly define allowed hosts using strict regular expressions (patterns used to match text) that do not allow for unexpected subdomains or forwarded values. In the Rails configuration file (config/environments/production.rb), ensure the host authorization is set strictly:\n\nconfig.hosts << 'app.example.com'\nconfig.action_dispatch.trusted_proxies = [IPAddr.new('127.0.0.1'), IPAddr.new('::1')]",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "W hile browsing a target Web application, I clicked on the **Shodan Browser Extension** to view quick context on the server stack, open ports, and potential known vulnerabilities associated with the host’s infrastructure. ## Get Adarsh S Nair’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in Among the listed technologies and CVE findings, one specific entry caught my attention: **CVE-2021–44528**. ## What is CVE-2021–44528? In Ruby on Rails (Action Pack versions `>= 6.0.0`), the framework implements Host Autho",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "92f1f311a460",
     "title": "Chaining an Open Redirect Into Account Takeover (P1 · CVSS 9.0)",
     "url": "https://medium.com/@josekuttykunnelthazhebinu/chaining-an-open-redirect-into-account-takeover-p1-cvss-9-0-a1aa68abb172",
