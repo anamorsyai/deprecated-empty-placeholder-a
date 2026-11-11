@@ -1,5 +1,45 @@
 [
   {
+    "id": "862816316cdf",
+    "title": "The $8,000 Kubernetes SSRF Bug Bounty: How One Hidden HTTP Header Revealed an Entire Internal…",
+    "url": "https://medium.com/@asadmohsin760/the-8-000-kubernetes-ssrf-bug-bounty-how-one-hidden-http-header-revealed-an-entire-internal-6de68593408a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Asad Mohsin"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-11T10:46:01.000Z",
+    "added_at": "2026-11-11T11:01:25.370Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A Server-Side Request Forgery (SSRF) vulnerability in a Kubernetes environment allowed an attacker to access internal services via a hidden HTTP header, resulting in an $8,000 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a web application at 'target.example' that allows users to import an avatar from a URL. The application uses a backend server to fetch the image.\n\nVulnerable Code (Python):\n```python\nimport requests\nfrom flask import request\n\n@app.route('/fetch-avatar')\ndef fetch_avatar():\n    # 'url' is a parameter: a piece of data passed to the website in the URL\n    image_url = request.args.get('url')\n    # The server makes an HTTP Request: a standard message sent to ask for data\n    # It fetches whatever URL the user provides without checking it\n    response = requests.get(image_url)\n    return response.content\n```\n\nAttack Request:\n`GET /fetch-avatar?url=http://169.254.169.254/latest/meta-data/` \n\nWhy it works:\n1. SSRF (Server-Side Request Forgery): This happens when an attacker tricks a server into making a request to a location it shouldn't access, like its own internal network.\n2. Metadata Service: A special internal address (like 169.254.169.254) used by cloud servers to store sensitive configuration data and secret keys.\n3. The attacker provides the internal metadata URL as the 'url' parameter. Because the server doesn't verify if the URL is external, it fetches the sensitive internal data and displays it to the attacker.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "6b4b11d8fa03",
     "title": "The SSRF That Mailed Out Your OAuth Token",
     "url": "https://masimshahzad.medium.com/the-ssrf-that-mailed-out-your-oauth-token-01327e8c1578",
