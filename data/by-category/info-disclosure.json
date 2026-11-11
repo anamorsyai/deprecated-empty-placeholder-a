@@ -1,5 +1,47 @@
 [
   {
+    "id": "9d4bcdb17bd4",
+    "title": "P2 — Unauthenticated AI Agent Access via Cloudflare Turnstile CAPTCHA Bypass Leading to Internal System Prompt and Tool Schema Disclosure",
+    "url": "https://medium.com/@akashmotkar001/p2-unauthenticated-ai-agent-access-via-cloudflare-turnstile-captcha-bypass-leading-to-internal-527ab9ca1ce5",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-11T03:31:02.000Z",
+    "added_at": "2026-11-11T18:32:33.771Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An AI agent's WebSocket service failed to validate Cloudflare Turnstile CAPTCHA tokens, allowing unauthenticated users to bypass security gates by sending empty or invalid tokens. This bypass granted access to a restricted event that leaked the agent's internal system prompt and tool schemas, exposing sensitive business logic and security guardrails.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure to implement server-side verification for CAPTCHA tokens. While the application included a 'captcha_verify' event, the backend code accepted any input—including empty strings or random text—as a valid token without checking it against Cloudflare's Siteverify API. This logic flaw allowed the session to be upgraded from 'unauthenticated' to 'guest' status, which had the permission to query the 'system_prompt' event.",
+      "walkthrough": "RECON\n1. Identify the target's WebSocket endpoint, which is a specialized connection for real-time data exchange.\nEndpoint: wss://<affected-host>/ws?app_type=web&origin_domain=<domain>&origin_shop=<shop>\n(WebSocket: A technology that keeps a 'live' connection open between a user and a server for two-way talking).\n\nDISCOVERY\n2. Use a tool like 'wscat' to connect to the server without any login credentials.\nwscat -c \"wss://<affected-host>/ws?app_type=web&origin_domain=<domain>&origin_shop=<shop>\"\nWhy: This establishes the initial connection to see if the server allows anonymous users to talk to it.\n3. Observe the server's welcome message which includes a 'turnstile_site_key', indicating a CAPTCHA is required.\n(CAPTCHA: A test used to tell humans and bots apart).\n4. Attempt to access the sensitive 'system_prompt' data immediately to see if it is protected.\n{\n \"event\": \"system_prompt\",\n \"action\": \"get\"\n}\nWhy: To confirm that the server currently blocks access with a '403 Forbidden' error before the CAPTCHA is solved.\n\nEXPLOITATION\n5. Attempt to bypass the CAPTCHA by sending a 'captcha_verify' event with an empty token.\n{\n \"event\": \"captcha_verify\",\n \"payload\": {\n \"token\": \"\"\n }\n}\nWhy: This tests if the server actually checks the token with Cloudflare or just blindly trusts any message it receives.\n6. Observe the server response confirming success.\n{\n \"event\": \"captcha_result\",\n \"payload\": {\n \"success\": true\n }\n}\nWhy: The server incorrectly signals that the 'empty' token is valid, granting the user 'guest' permissions.\n7. Test other variations like a fake string to confirm the bypass is universal.\n{\n \"event\": \"captcha_verify\",\n \"payload\": {\n \"token\": \"AAAA-not-a-real-token\"\n }\n}\nWhy: To prove the backend is not performing any validation at all.\n\nIMPACT\n8. Request the internal system prompt again now that the session is 'verified'.\n{\n \"event\": \"system_prompt\",\n \"action\": \"get\"\n}\nWhy: To retrieve the sensitive configuration that was previously blocked.\n9. Analyze the response, which contains over 25,000 characters of internal instructions, tool names, and business workflows.\n(System Prompt: The secret 'personality' and 'rulebook' instructions given to an AI).\n10. Note that this disclosure bypasses the AI's own internal rules (guardrails) which usually forbid it from sharing its instructions during a normal chat.",
+      "example": "Imagine a fictional website 'support-bot.target.example' that uses a WebSocket for its AI help desk. To prevent bots from scraping its data, it shows a CAPTCHA. A researcher opens a connection and sends a JSON message: {'type': 'verify_captcha', 'value': null}. The server, instead of sending that 'null' value to a verification service, simply checks if the 'value' key exists. Because it exists, the server responds with {'status': 'verified'}. The researcher then sends {'type': 'get_config'} and the server sends back the AI's entire instruction set, including private API keys and internal database names, because it thinks the researcher is a verified human guest.",
+      "takeaway": "When hunting for bugs in AI or WebSocket applications, always look for 'gatekeeper' events like CAPTCHA or OTP verification. Test these by sending empty strings, null values, or long random strings to see if the backend is actually validating the data or just checking for the presence of a parameter. Use tools like 'wscat' or Burp Suite's WebSocket history to intercept and modify these messages. A common mistake is assuming that because a CAPTCHA widget is visible on the screen, the backend is securely verifying it; often, the backend is just a 'stub' that returns 'true' for everything.",
+      "fix": "The backend must implement a mandatory server-side check using the Cloudflare Siteverify API (or equivalent for other CAPTCHA providers). The server should take the token provided by the client and send a POST request to 'https://challenges.cloudflare.com/turnstile/v0/siteverify' with the server's secret key. Only if that API returns 'success: true' should the user's session state be upgraded to allow access to sensitive events like 'system_prompt'.\n\nExample Fix (Node.js):\nconst response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {\n  method: 'POST',\n  body: `secret=${SECRET_KEY}&response=${clientToken}`\n});\nconst outcome = await response.json();\nif (!outcome.success) { throw new Error('Invalid CAPTCHA'); }",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 3: Akash motkar Akash motkar 7 min read · 15 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F527ab9ca1ce5&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40akashmotkar001%2Fp2-unauthenticated-ai-agent-access-via-cloudflare-turnstile-captcha-bypass-leading-to-internal-527ab9ca1ce5&user=Akash+motkar&userId=38c39a01cc6a&source=---header_actions--527ab9ca1ce5---------------------clap_footer--------------------) [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2F527ab9ca1ce5&operation=register&redirect=http",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "ca72ebf65cff",
     "title": "Pass-Back Attack on WPA Enterprise to Get Creds",
     "url": "https://0xy37.medium.com/pass-back-attack-on-wpa-enterprise-to-get-creds-562d1587df15",

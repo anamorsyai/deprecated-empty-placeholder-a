@@ -1,5 +1,45 @@
 [
   {
+    "id": "5c25d96c680c",
+    "title": "How to Find All Subdomains of Any Website (Free, No Install)",
+    "url": "https://medium.com/@muhammadmanamil/how-to-find-all-subdomains-of-any-website-free-no-install-7c97582accae",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Muhammad Manamil"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-11T11:51:18.000Z",
+    "added_at": "2026-11-11T18:32:16.651Z",
+    "categories": [
+      "recon"
+    ],
+    "severity": null,
+    "difficulty": "beginner",
+    "summary_en": "A guide to discovering hidden subdomains using online tools and command-line utilities to identify forgotten assets and potential security risks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a lack of asset management where organizations create subdomains (prefixes like 'dev' or 'test' added to a main domain) for temporary projects and forget to delete them. These forgotten subdomains often run outdated software or point to non-existent services, creating 'shadow IT' that is unmonitored and vulnerable to attack.",
+      "walkthrough": "RECON\n1. Identify a target domain from a bug bounty program's list of allowed targets.\n2. Navigate to an online subdomain discovery tool.\nhttps://manamil.dev/tools/subdomain-finder\nWhy: This tool searches public records to find subdomains (additional parts of a main domain, like 'api.example.com').\n3. Enter the target domain name into the search box.\nexample.com\nWhy: This defines the scope of your search to a specific organization's digital property.\n4. Run the search and wait for the tool to aggregate data from various sources like search engines and certificate logs.\nWhy: Subdomains are often indexed by search engines or recorded when security certificates are issued.\n5. Review the 'Live Status' column in the results.\nWhy: A 'live' status means the subdomain is currently connected to a working server (a computer that serves web content).\n6. Note the IP addresses (unique numbers identifying computers on the internet) and hosting countries for each result.\nWhy: This helps you understand where the company's data is physically stored.\n7. Use a command-line tool (a text-based interface for running programs) like 'subfinder' for more results.\nsubfinder -d example.com\nWhy: Command-line tools can query dozens of data sources simultaneously, often finding more than web tools.\n8. Use 'amass' to perform deeper enumeration (the process of listing all items in a collection).\namass enum -d example.com\nWhy: Amass uses advanced techniques like guessing common names to find subdomains that aren't publicly linked.\nANALYSIS\n9. Check discovered subdomains for an SSL certificate (a digital document that secures the connection).\nhttps://manamil.dev/tools/ssl-server-test\nWhy: An expired or missing certificate can indicate a neglected and potentially vulnerable server.\n10. Perform a WHOIS lookup (a query to find who registered a domain) on interesting subdomains.\nhttps://manamil.dev/tools/whois-lookup\nWhy: This confirms if the subdomain is still owned by the target company or if it has been abandoned.\n11. Use a DNS checker (a tool to verify the Domain Name System records that translate names to IPs).\nhttps://manamil.dev/tools/dns-checker-tool\nWhy: This shows exactly where traffic is being sent, which is crucial for finding 'subdomain takeovers' where a name points to a service the company no longer uses.\n12. Document all live subdomains to begin testing each one for specific software vulnerabilities.\nWhy: Every new subdomain found increases the 'attack surface' (the total number of points where an attacker can try to enter).",
+      "example": "Imagine you are hunting for bugs on 'target.example'. You use a subdomain finder and discover 'jira-testing.target.example'. \n\n1. You visit the URL: http://jira-testing.target.example\n2. You notice it is running an old version of Jira (a project management tool).\n3. Because this was a 'testing' subdomain, the company forgot to update it or put it behind a login screen.\n4. You find a known bug for that old version of Jira and report it.\n\nThis works because the company focused all their security on 'www.target.example' but forgot that 'jira-testing' was still accessible to the public.",
+      "takeaway": "Subdomain enumeration is the foundation of reconnaissance. You should always look for subdomains that look like they belong to developers or administrators, such as 'dev', 'stage', 'internal', or 'api'. A common mistake is stopping after finding a few subdomains; always use multiple tools because each one uses different data sources. Look for 'dangling' DNS records where a subdomain points to a service like AWS or GitHub that is no longer active, as this can lead to a full subdomain takeover.",
+      "fix": "Organizations should maintain a centralized asset inventory and use automated tools to monitor their attack surface. When a project or service is decommissioned, the corresponding DNS records (the entries that point the name to a server) must be deleted immediately to prevent attackers from finding or claiming them. \n\n# Example of a DNS record that should be deleted if the server is gone:\n# dev-server.example.com.  IN  A  1.2.3.4",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_Disclosure: this article was written with AI assistance. Originally published on__DEV Community__._ ## Get Muhammad Manamil’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in Subdomains often expose forgotten staging servers, old admin panels and misconfigured services. Whether you’re a bug bounty hunter, a sysadmin auditing your own domain, or an SEO checking site structure, the first step is knowing which subdomains exist. ## Why subdomain enumeration matters * **Security:** forgotten subdomains are a common",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "862816316cdf",
     "title": "The $8,000 Kubernetes SSRF Bug Bounty: How One Hidden HTTP Header Revealed an Entire Internal…",
     "url": "https://medium.com/@asadmohsin760/the-8-000-kubernetes-ssrf-bug-bounty-how-one-hidden-http-header-revealed-an-entire-internal-6de68593408a",
@@ -75,6 +115,48 @@
       "fix_ar": null
     },
     "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "9d4bcdb17bd4",
+    "title": "P2 — Unauthenticated AI Agent Access via Cloudflare Turnstile CAPTCHA Bypass Leading to Internal System Prompt and Tool Schema Disclosure",
+    "url": "https://medium.com/@akashmotkar001/p2-unauthenticated-ai-agent-access-via-cloudflare-turnstile-captcha-bypass-leading-to-internal-527ab9ca1ce5",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-11T03:31:02.000Z",
+    "added_at": "2026-11-11T18:32:33.771Z",
+    "categories": [
+      "auth-bypass",
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An AI agent's WebSocket service failed to validate Cloudflare Turnstile CAPTCHA tokens, allowing unauthenticated users to bypass security gates by sending empty or invalid tokens. This bypass granted access to a restricted event that leaked the agent's internal system prompt and tool schemas, exposing sensitive business logic and security guardrails.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure to implement server-side verification for CAPTCHA tokens. While the application included a 'captcha_verify' event, the backend code accepted any input—including empty strings or random text—as a valid token without checking it against Cloudflare's Siteverify API. This logic flaw allowed the session to be upgraded from 'unauthenticated' to 'guest' status, which had the permission to query the 'system_prompt' event.",
+      "walkthrough": "RECON\n1. Identify the target's WebSocket endpoint, which is a specialized connection for real-time data exchange.\nEndpoint: wss://<affected-host>/ws?app_type=web&origin_domain=<domain>&origin_shop=<shop>\n(WebSocket: A technology that keeps a 'live' connection open between a user and a server for two-way talking).\n\nDISCOVERY\n2. Use a tool like 'wscat' to connect to the server without any login credentials.\nwscat -c \"wss://<affected-host>/ws?app_type=web&origin_domain=<domain>&origin_shop=<shop>\"\nWhy: This establishes the initial connection to see if the server allows anonymous users to talk to it.\n3. Observe the server's welcome message which includes a 'turnstile_site_key', indicating a CAPTCHA is required.\n(CAPTCHA: A test used to tell humans and bots apart).\n4. Attempt to access the sensitive 'system_prompt' data immediately to see if it is protected.\n{\n \"event\": \"system_prompt\",\n \"action\": \"get\"\n}\nWhy: To confirm that the server currently blocks access with a '403 Forbidden' error before the CAPTCHA is solved.\n\nEXPLOITATION\n5. Attempt to bypass the CAPTCHA by sending a 'captcha_verify' event with an empty token.\n{\n \"event\": \"captcha_verify\",\n \"payload\": {\n \"token\": \"\"\n }\n}\nWhy: This tests if the server actually checks the token with Cloudflare or just blindly trusts any message it receives.\n6. Observe the server response confirming success.\n{\n \"event\": \"captcha_result\",\n \"payload\": {\n \"success\": true\n }\n}\nWhy: The server incorrectly signals that the 'empty' token is valid, granting the user 'guest' permissions.\n7. Test other variations like a fake string to confirm the bypass is universal.\n{\n \"event\": \"captcha_verify\",\n \"payload\": {\n \"token\": \"AAAA-not-a-real-token\"\n }\n}\nWhy: To prove the backend is not performing any validation at all.\n\nIMPACT\n8. Request the internal system prompt again now that the session is 'verified'.\n{\n \"event\": \"system_prompt\",\n \"action\": \"get\"\n}\nWhy: To retrieve the sensitive configuration that was previously blocked.\n9. Analyze the response, which contains over 25,000 characters of internal instructions, tool names, and business workflows.\n(System Prompt: The secret 'personality' and 'rulebook' instructions given to an AI).\n10. Note that this disclosure bypasses the AI's own internal rules (guardrails) which usually forbid it from sharing its instructions during a normal chat.",
+      "example": "Imagine a fictional website 'support-bot.target.example' that uses a WebSocket for its AI help desk. To prevent bots from scraping its data, it shows a CAPTCHA. A researcher opens a connection and sends a JSON message: {'type': 'verify_captcha', 'value': null}. The server, instead of sending that 'null' value to a verification service, simply checks if the 'value' key exists. Because it exists, the server responds with {'status': 'verified'}. The researcher then sends {'type': 'get_config'} and the server sends back the AI's entire instruction set, including private API keys and internal database names, because it thinks the researcher is a verified human guest.",
+      "takeaway": "When hunting for bugs in AI or WebSocket applications, always look for 'gatekeeper' events like CAPTCHA or OTP verification. Test these by sending empty strings, null values, or long random strings to see if the backend is actually validating the data or just checking for the presence of a parameter. Use tools like 'wscat' or Burp Suite's WebSocket history to intercept and modify these messages. A common mistake is assuming that because a CAPTCHA widget is visible on the screen, the backend is securely verifying it; often, the backend is just a 'stub' that returns 'true' for everything.",
+      "fix": "The backend must implement a mandatory server-side check using the Cloudflare Siteverify API (or equivalent for other CAPTCHA providers). The server should take the token provided by the client and send a POST request to 'https://challenges.cloudflare.com/turnstile/v0/siteverify' with the server's secret key. Only if that API returns 'success: true' should the user's session state be upgraded to allow access to sensitive events like 'system_prompt'.\n\nExample Fix (Node.js):\nconst response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {\n  method: 'POST',\n  body: `secret=${SECRET_KEY}&response=${clientToken}`\n});\nconst outcome = await response.json();\nif (!outcome.success) { throw new Error('Invalid CAPTCHA'); }",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 3: Akash motkar Akash motkar 7 min read · 15 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F527ab9ca1ce5&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40akashmotkar001%2Fp2-unauthenticated-ai-agent-access-via-cloudflare-turnstile-captcha-bypass-leading-to-internal-527ab9ca1ce5&user=Akash+motkar&userId=38c39a01cc6a&source=---header_actions--527ab9ca1ce5---------------------clap_footer--------------------) [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2F527ab9ca1ce5&operation=register&redirect=http",
     "ai_generated": true,
     "engagement": null,
     "score": 53
