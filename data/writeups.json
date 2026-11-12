@@ -1,5 +1,87 @@
 [
   {
+    "id": "04997d273e9c",
+    "title": "Unauthenticated Access to Dinas Pendidikan Provinsi Jawa Barat Exposes 7,481 Visitor Records",
+    "url": "https://medium.com/@augustkevinsanjaya/unauthenticated-access-to-dinas-pendidikan-provinsi-jawa-barat-exposes-7-481-visitor-records-66ebfcca53bb",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Kevin Sanjaya"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-12T07:04:29.000Z",
+    "added_at": "2026-11-12T08:02:01.960Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated access vulnerability at Dinas Pendidikan Provinsi Jawa Barat allowed anyone to view and download 7,481 visitor records due to a lack of permission checks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume the application target.example stores visitor logs in a database.\n- Authentication: A security check to prove you are who you say you are.\n- Endpoint: A specific web address (URL) where an application receives requests.\n- HTTP Request: A message sent by your browser to a server asking for data.\n- Database: A digital filing system where a website stores its information.\n\nVulnerable Code Snippet:\napp.get('/admin/visitor-data', (req, res) => {\n  const results = database.fetchAll('visitors');\n  res.json(results);\n});\n\nAttack Request:\nGET /admin/visitor-data HTTP/1.1\nHost: target.example\n\nWhy: The server receives the 'GET' request (a request to 'get' information) for the '/admin/visitor-data' endpoint. Because the code does not include a check for a 'Session Cookie' (a digital badge that proves you are logged in), the server immediately runs the database query and sends the private visitor list to the requester.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "ae6bd32c9e86",
+    "title": "How I Hacked an IISc Subdomain Without Knowing the Admin Password ️",
+    "url": "https://medium.com/@mvsbadm625/how-i-hacked-an-iisc-subdomain-without-knowing-the-admin-password-%EF%B8%8F-ca4aa68c3c93",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "M Venkata Sasidhar Kaushik"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-12T06:13:17.000Z",
+    "added_at": "2026-11-12T08:02:17.700Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "The researcher successfully bypassed the authentication mechanism on an IISc subdomain, gaining administrative access without requiring a password.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "An authentication bypass (a way to get into a restricted area without a valid login) occurs when a server (a computer that stores website files) trusts information sent by the user without verification. Imagine a site at target.example that uses a 'Header' (a hidden piece of information sent with your web request) to check if you are an admin.\n\nVulnerable Code:\nif (request.headers['is-admin'] === 'yes') { show_secret_data(); }\n\nAttack Request (the message your browser sends to a server):\nGET /admin-panel HTTP/1.1\nHost: target.example\nis-admin: yes\n\nWhy it works: The server looks for a header called 'is-admin'. If it sees the value 'yes', it assumes the user is an administrator. Because the user can control headers using simple tools, they can just add 'is-admin: yes' to their request to trick the system into giving them access without a password.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "5c25d96c680c",
     "title": "How to Find All Subdomains of Any Website (Free, No Install)",
     "url": "https://medium.com/@muhammadmanamil/how-to-find-all-subdomains-of-any-website-free-no-install-7c97582accae",
@@ -118,6 +200,47 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "c6cf4453db90",
+    "title": "How a Login Token for a Forum Became a Login Token for OpenAI’s Internal Code",
+    "url": "https://medium.com/@l4zz3rj0d/how-a-login-token-for-a-forum-became-a-login-token-for-openais-internal-code-0b865ed1469a",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-11T07:41:01.000Z",
+    "added_at": "2026-11-12T08:02:46.013Z",
+    "categories": [
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher discovered that a session token generated for a public OpenAI forum could be reused to authenticate against OpenAI's internal code environment, leading to unauthorized source code access.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a company, target.example, that uses a Single Sign-On (SSO) system—a service that lets you use one login for many sites. They have a public 'Fan Forum' and a private 'Secret Code' site. When you log into the forum, the server gives you a Token (a digital 'key' that proves who you are). If the 'Secret Code' site is poorly configured, it might only check if the key is 'real' (it has a valid signature, which is a mathematical proof that the token hasn't been tampered with) but not 'where it belongs' (the intended audience or 'aud' field, which specifies which website the token is allowed to be used on).\n\nVulnerable Code (Internal Site):\n```javascript\n// This code checks if the token is valid but forgets to check the 'aud' (audience) field\nfunction verifyAccess(token) {\n  const decoded = jwt.verify(token, PUBLIC_KEY);\n  if (decoded) { grantAccess(); }\n}\n```\n\nAttack Request:\n```http\nGET /internal/repos HTTP/1.1\nHost: internal-code.target.example\nAuthorization: Bearer [TOKEN_FROM_PUBLIC_FORUM]\n```\n\nWhy it works: The internal server sees the token is signed by the correct authority and lets the user in, even though that token was only meant for reading forum posts, not viewing private code. It failed to verify that the 'audience' of the token matched the internal site's identity.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
   },
   {
     "id": "9d4bcdb17bd4",

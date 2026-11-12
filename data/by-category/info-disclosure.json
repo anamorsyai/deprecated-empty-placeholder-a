@@ -1,5 +1,46 @@
 [
   {
+    "id": "04997d273e9c",
+    "title": "Unauthenticated Access to Dinas Pendidikan Provinsi Jawa Barat Exposes 7,481 Visitor Records",
+    "url": "https://medium.com/@augustkevinsanjaya/unauthenticated-access-to-dinas-pendidikan-provinsi-jawa-barat-exposes-7-481-visitor-records-66ebfcca53bb",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Kevin Sanjaya"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-12T07:04:29.000Z",
+    "added_at": "2026-11-12T08:02:01.960Z",
+    "categories": [
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unauthenticated access vulnerability at Dinas Pendidikan Provinsi Jawa Barat allowed anyone to view and download 7,481 visitor records due to a lack of permission checks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume the application target.example stores visitor logs in a database.\n- Authentication: A security check to prove you are who you say you are.\n- Endpoint: A specific web address (URL) where an application receives requests.\n- HTTP Request: A message sent by your browser to a server asking for data.\n- Database: A digital filing system where a website stores its information.\n\nVulnerable Code Snippet:\napp.get('/admin/visitor-data', (req, res) => {\n  const results = database.fetchAll('visitors');\n  res.json(results);\n});\n\nAttack Request:\nGET /admin/visitor-data HTTP/1.1\nHost: target.example\n\nWhy: The server receives the 'GET' request (a request to 'get' information) for the '/admin/visitor-data' endpoint. Because the code does not include a check for a 'Session Cookie' (a digital badge that proves you are logged in), the server immediately runs the database query and sends the private visitor list to the requester.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "9d4bcdb17bd4",
     "title": "P2 — Unauthenticated AI Agent Access via Cloudflare Turnstile CAPTCHA Bypass Leading to Internal System Prompt and Tool Schema Disclosure",
     "url": "https://medium.com/@akashmotkar001/p2-unauthenticated-ai-agent-access-via-cloudflare-turnstile-captcha-bypass-leading-to-internal-527ab9ca1ce5",
