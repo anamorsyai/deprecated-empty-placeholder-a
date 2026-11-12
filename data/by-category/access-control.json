@@ -1,5 +1,45 @@
 [
   {
+    "id": "a4cbf023927e",
+    "title": "Broken Access Control Missing Server-Side Authorization Allows Member to Access Billing Data and…",
+    "url": "https://medium.com/@silent_hunter_/broken-access-control-missing-server-side-authorization-allows-member-to-access-billing-data-and-b75a1569013f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mahmoud_Elkholy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-12T17:38:36.000Z",
+    "added_at": "2026-11-12T22:30:22.921Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A missing server-side authorization check allowed a regular member to access sensitive billing information of other users or the organization.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website target.example where users can view their private invoices. The site uses an endpoint (a specific web address used to get data) like https://target.example/api/billing/55. When you visit this, your browser sends an HTTP request (a digital letter sent from your browser to a server). The server checks your cookie (a small file that proves who you are) to confirm you are logged in. However, the server fails to perform authorization (the process of checking if a user has permission to see specific data). A malicious user can change the ID parameter (a piece of information in the URL) from 55 to 56. Vulnerable code: app.get('/api/billing/:id', (req, res) => { const invoice = db.find(req.params.id); res.send(invoice); });. The attack is simply requesting GET /api/billing/56 HTTP/1.1. It works because the code fetches any ID requested without verifying if the logged-in user owns that specific invoice.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "04997d273e9c",
     "title": "Unauthenticated Access to Dinas Pendidikan Provinsi Jawa Barat Exposes 7,481 Visitor Records",
     "url": "https://medium.com/@augustkevinsanjaya/unauthenticated-access-to-dinas-pendidikan-provinsi-jawa-barat-exposes-7-481-visitor-records-66ebfcca53bb",
