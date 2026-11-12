@@ -41,6 +41,46 @@
     "score": 53
   },
   {
+    "id": "5fcd0a43df2a",
+    "title": "One Modified Cookie, Any Account: Discovering a Session Forgery Vulnerability",
+    "url": "https://0xben10.medium.com/one-modified-cookie-any-account-discovering-a-session-forgery-vulnerability-fdc9ec1ea451",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "BEN10"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-12T01:30:38.000Z",
+    "added_at": "2026-11-12T16:44:15.452Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A flawed ses_id cookie allowed an attacker to change the embedded user ID via a predictable XOR operation, obtain a JWT for any account, and access that user’s private data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The ses_id cookie was only Base64‑encoded and contained a 162‑byte structure without any cryptographic integrity check such as a MAC or authenticated‑encryption tag. The user‑ID was stored as nine two‑byte digit‑pairs that could be altered by applying a simple XOR delta, because the server used a static per‑session XOR keystream and never verified the resulting bytes. When the modified cookie was sent to the authentication service, the service blindly parsed the structure, extracted the forged user‑ID, and issued a JWT that reflected the tampered identity. Because the JWT was accepted by downstream APIs, the attacker gained full account impersonation. The fix only covered some endpoints, leaving the GraphQL proxy still trusting the forged cookie.",
+      "walkthrough": "RECON\nStep 1: Capture a ses_id cookie after logging in to target.com.\nWhy: HTTP (HyperText Transfer Protocol) is the protocol browsers use to talk to web servers; a cookie is a small piece of data the server stores in the browser.\nStep 2: Observe that the cookie value looks like a long string of characters.\nWhy: The value appears to be Base64‑encoded, a text representation of binary data.\n\nDISCOVERY\nStep 3: URL‑decode then Base64‑decode the cookie value.\nPayload: (no request, just local decoding)\nWhy: Decoding reveals the raw 162‑byte binary structure.\nStep 4: Identify bytes 12‑29 (18 bytes) as the user‑ID region.\nWhy: The researcher found that these bytes correspond to nine digit‑pairs representing the numeric user ID.\nStep 5: Note that each digit is derived by digit = B[12+2*i] ^ B[12+2*i+1] ^ C[i] (XOR = bitwise exclusive‑or).\nWhy: XOR combines bits; applying the same XOR twice restores the original value.\n\nEXPLOITATION\nStep 6: Choose a target user ID visible in public URLs (e.g., 285072202).\nWhy: The numeric ID is discoverable without authentication.\nStep 7: Compute delta for each differing digit: delta = old_digit ^ new_digit.\nWhy: XORing the original byte with delta changes the decoded digit to the desired one.\nStep 8: Apply the deltas (3,4,6) to byte offsets 24,26,28 respectively.\nWhy: Changing only one byte in each pair is enough because the other byte remains unchanged.\nStep 9: Re‑encode the modified 162‑byte structure: first URL‑encode, then Base64‑encode to obtain a forged ses_id value.\nWhy: The server expects the cookie in this encoded form.\nStep 10: Send the forged cookie to the authentication endpoint:\nPOST /target.auth.Auth/Login HTTP/2\nHost: auth.api.target.com\nContent-Type: application/json\n\n{\"Token\": \"<FORGED_SES_ID>\", \"Type\": \"UAPI\"}\nWhy: The endpoint accepts a session token and returns a JWT if the token is valid.\nStep 11: Receive a JWT whose payload contains \"user_id\": 285072202.\nWhy: The server trusted the modified cookie and embedded the forged ID in the JWT.\nStep 12: Use the JWT (or the forged ses_id) to call an authenticated API:\nGET /api/users/info HTTP/2\nHost: api.target.com\nses-id: <FORGED_SES_ID>\nWhy: The API returns the target account’s profile, confirming successful impersonation.\n\nIMPACT\nStep 13: Observe that the response includes the target’s email, registration date, and settings.\nWhy: Full account data is exposed, enabling further attacks such as phishing or credential stuffing.\nStep 14: Test other services; the GraphQL proxy at www.target.com still accepts the forged ses_id.\nWhy: The fix applied to auth.api.target.com and api.target.com did not propagate to all internal services, leaving a residual attack surface.",
+      "example": "Assume a fictional site example.com uses a cookie named sess_token that is Base64‑encoded and contains a 100‑byte structure. Bytes 10‑17 hold a 4‑digit user ID as two‑byte pairs. The decoding formula is digit = B[10+2*i] ^ B[10+2*i+1] ^ K[i].\n\n1. Capture sess_token for user 1234 (decoded bytes 0x31 0x32 …).\n2. Want to become user 5678. Compute deltas: delta_i = old_digit ^ new_digit.\n3. Apply each delta to the first byte of the corresponding pair (e.g., offset 10,12,14,16).\n4. Re‑encode the structure, set Cookie: sess_token=<FORGED_VALUE>.\n5. POST to https://auth.example.com/login with JSON {\"Token\":\"<FORGED_VALUE>\",\"Type\":\"UAPI\"}.\n6. Receive JWT containing \"user_id\":5678 and use it to call https://api.example.com/profile.\nThe attack works because the server never verifies a MAC over the user‑ID bytes, allowing the XOR‑based manipulation.",
+      "takeaway": "When hunting web applications, look for session cookies that are merely Base64‑encoded and contain user identifiers. Decode them and search for predictable patterns such as repeated digit‑pairs or static offsets. Test simple XOR or additive modifications to see if the server accepts the altered token and issues a new authentication credential. Tools like CyberChef can automate Base64/URL decoding and byte‑wise XOR. Variants of this bug appear in systems that use custom token formats without MACs, such as insecure JWT \"none\" algorithms or unsigned SAML assertions. Beginners often forget to verify the integrity of each field and assume Base64 alone provides security; always check for a signature or MAC.",
+      "fix": "The proper fix is to treat the session token as an authenticated data structure. Compute a strong MAC (e.g., HMAC‑SHA256) over the entire 162‑byte payload, including the user‑ID bytes, and append the MAC before Base64 encoding. On receipt, the server must verify the MAC before extracting any fields; any mismatch should result in HTTP 403. Alternatively, encrypt the whole structure with an AEAD scheme (e.g., AES‑GCM) that provides confidentiality and integrity. Ensure all downstream services (including GraphQL proxies) validate the same token format and reject any token lacking a valid MAC or AEAD tag.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "> **_What made this issue more interesting was that the modified session was not simply accepted by one endpoint. The authentication service actually issued a valid JWT containing the target user’s identity. I then used the same modified session to access authenticated API resources._** While testing target.com I found that its `ses_id` session cookie did not properly protect the identity associated with it. The cookie contained an encoded structure. After decoding it, I identified a 162 byte blob with a user identifier represented inside it. The interesting part was that the identifier could",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c6cf4453db90",
     "title": "How a Login Token for a Forum Became a Login Token for OpenAI’s Internal Code",
     "url": "https://medium.com/@l4zz3rj0d/how-a-login-token-for-a-forum-became-a-login-token-for-openais-internal-code-0b865ed1469a",
