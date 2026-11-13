@@ -1,5 +1,47 @@
 [
   {
+    "id": "95f0fbad68b8",
+    "title": "How a Forged Token Exposed an Entire B2B Trade Catalog",
+    "url": "https://medium.com/@adelekeismailifeoluwa/how-a-forged-token-exposed-an-entire-b2b-trade-catalog-3e736a7f54bd",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Ife0x01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-10T18:26:35.000Z",
+    "added_at": "2026-11-10T18:58:44.031Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "graphql"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A GraphQL adapter for a B2B platform allowed unauthenticated users to generate valid production search tokens by providing their own identity parameters. This flaw enabled unauthorized access to sensitive trade catalogs, wholesale pricing, and customer authorization lists.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure to validate user-provided data against a trusted session. The GraphQL adapter (a middleman service) acted as a token issuer but lacked a verification step to ensure the requester was authorized to claim a specific identity. Instead of retrieving the user's email and business unit from a secure server-side database, it accepted these values directly from the HTTP request (the message sent from the browser). Because the adapter then signed these values into a JWT (a digital credential), other services trusted the forged identity as legitimate. This created a trust boundary violation where the client was allowed to dictate its own permissions.",
+      "walkthrough": "RECONNAISSANCE\n1. Open the B2B platform and use the search bar to see how it works.\n2. Monitor the Network Traffic, which is the list of messages sent between your browser and the website.\n3. Identify a GraphQL adapter, a piece of software that helps the app talk to a search service.\n4. Find the coveoToken mutation, which is a specific GraphQL command used to request a new security token.\n5. Observe that this mutation requires parameters, which are input values like username or ID.\n\nDISCOVERY\n6. Visit the guest authentication endpoint, a web address for users who haven't logged in yet.\n7. Obtain an anonymous bearer token, which is a temporary digital key that doesn't identify a specific person.\n8. Analyze the coveoToken request structure to see which fields it accepts.\n9. Notice fields like email, b2bUnitId (a business account ID), and isRestricted (a security flag).\n\nEXPLOITATION\n10. Use the anonymous token to send a custom coveoToken request to the server.\n11. Input a fake email address into the request to see if the server checks it.\n12. Input a fabricated B2B unit ID to try and impersonate a different business.\n13. Set the product-restriction flags to false to try and bypass security filters.\n14. Send the following request:\nmutation { coveoToken(email: \"fake@example.com\", b2bUnitId: \"999\", isRestricted: false) { token } }\n15. Receive a signed JWT from the server. (Why: The server blindly trusts the input and signs it, like a gatekeeper giving you a VIP pass just because you asked for one).\n16. Decode the JWT, which means translating the coded text back into readable information, to confirm it contains the fake data.\n\nIMPACT\n17. Take the forged JWT to the underlying Search API, the system that actually holds the product data.\n18. Run a query to see how many documents are accessible using this forged credential.\n19. Access 2,629 documents across 18 regional catalogs.\n20. View wholesale prices, which are the secret costs businesses pay each other.\n21. View stock information and product identifiers.\n22. Access customer-authorization lists, which show which business accounts are allowed to buy specific items.\n23. Test the token against the adapter's suggestion functionality.\n24. Receive an HTTP 200 OK response, proving the system fully accepts the forged credential.",
+      "example": "Imagine a fictional site target.example that lets users generate a 'Discount Token' for shopping. The server has an endpoint at /api/generate-token. A normal request looks like this: POST /api/generate-token {\"user_id\": \"123\", \"discount_level\": \"5%\"}. The server then signs this and gives the user a token. A beginner can exploit this by changing the request to: POST /api/generate-token {\"user_id\": \"admin_user\", \"discount_level\": \"100%\"}. If the server code looks like this: 'function createToken(req) { return jwt.sign({ user: req.body.user_id, discount: req.body.discount_level }, SECRET_KEY); }', it is vulnerable. It takes the user's input (req.body) and puts it directly into a trusted token without checking if the user is actually an admin or allowed to have a 100% discount.",
+      "takeaway": "Always test 'Token Generators' by trying to supply your own identity parameters like 'email', 'role', or 'org_id'. If the server signs a token based on what you send rather than what it knows about you from a secure session, you have found a major flaw. Look for these patterns in GraphQL mutations or specialized authentication endpoints. A common variant is 'IDOR in Token Generation,' where you can generate tokens for other users by changing a numeric ID. Avoid the mistake of assuming that because a token is 'signed' and 'secure,' the process of creating it was also verified.",
+      "fix": "The server must never use client-supplied parameters to determine identity or permissions during token generation. Instead, the application should use a secure session identifier (like a cookie) to look up the user's true identity in a server-side database. Only after verifying the user's session should the server generate a signed token using that trusted data. \n\nFixed Code Example:\napp.post('/coveoToken', (req, res) => {\n  if (!req.session.isLoggedIn) return res.status(401).send('Unauthorized');\n  // Use trusted session data, NOT req.body\n  const token = jwt.sign({\n    email: req.session.userEmail,\n    b2bUnit: req.session.userB2BUnit,\n    isRestricted: true\n  }, PROCESS_ENV_SECRET);\n  res.json({ token });\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hi, I’m Ifeoluwa (@ife0x01 on X), and I want to share how I discovered a high-severity vulnerability that exposed an entire B2B trade catalog. For legal reasons, I won’t be sharing the technical details or identifying the target, but I’ll be as specific as possible about how I found it, what I discovered, and the potential impact. I initially started looking at the platform’s search functionality, mainly to understand how it handled access control. It was a large B2B e-commerce platform where distributors and retailers could access product catalogs, negotiated prices, and purchasing permission",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "536b2a094cb3",
     "title": "How Peloton Confused Authentication with Authorization",
     "url": "https://medium.com/@l4zz3rj0d/how-peloton-confused-authentication-with-authorization-714b8b70116e",

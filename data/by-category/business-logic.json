@@ -60,23 +60,64 @@
       "access-control",
       "business-logic"
     ],
-    "severity": "high",
+    "severity": "medium",
     "difficulty": "beginner",
-    "summary_en": "A vulnerability allowed users to modify their employment contract from fixed-term to permanent by manipulating client-side role data, bypassing server-side authorization checks.",
+    "summary_en": "An unauthorized user role was able to modify contract types from fixed-term to permanent by tampering with a hidden request parameter that the server failed to validate.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "Imagine a website at target.example where employees manage their profiles. When you click 'Save', your browser sends an HTTP request (a digital message sent from your computer to a server) containing your info in JSON (a format for sending data using labels and values).\n\nVulnerable Request:\nPOST /api/profile/update\n{\n  \"user_id\": \"123\",\n  \"contract_type\": \"temporary\"\n}\n\nAn attacker changes the 'contract_type' parameter (a specific piece of information sent to a program) to 'permanent'.\n\nAttack Request:\nPOST /api/profile/update\n{\n  \"user_id\": \"123\",\n  \"contract_type\": \"permanent\"\n}\n\nWhy it works: The server (the computer hosting the site) blindly accepts the 'contract_type' from the user's message. It fails to verify if the user actually has the authority to change their own employment status. This is a 'Broken Access Control' bug because the security check is missing where it matters most: on the server.",
-      "takeaway": null,
-      "fix": null,
+      "cause": "The vulnerability stems from a failure in server-side authorization logic where the backend trusted user-supplied input without verifying the user's permissions. While the user interface (UI) restricted the 'EU' role to only viewing contracts, the backend endpoint responsible for saving data did not check if the 'EU' role was allowed to define the 'nature' (contract type) parameter. This allowed a low-privileged user to bypass intended business rules by manually injecting values into an HTTP request.",
+      "walkthrough": "RECON\n1. Log into the HR platform using a low-privileged 'EU' (Enterprise User) account.\n2. Note that as an EU user, you are intended to only consult (view) contracts, not define their legal classification.\n\nDISCOVERY\n3. Navigate to the worker registration section of the application.\n4. Open a proxy tool like Burp Suite (a tool used to capture and modify data sent between your browser and a server).\n5. Fill out the registration form and click submit to trigger an HTTP request (a message sent by your computer to a server asking it to perform an action).\n\nEXPLOITATION\n6. Intercept the POST request (a type of request used to send data to a server) directed at the following endpoint (a specific web address where a server receives data):\nPOST https://test.com/Patt/creationInterimaire_onEnregistrerCreationInterimaire.action\n7. Examine the body of the request to find the parameters (specific pieces of information sent in a request).\n8. Locate the 'nature' parameter, which is currently set to 'CDD' (a French term for a fixed-term contract).\nnature=CDD\n9. Change the value of the 'nature' parameter to 'CDI-I' (representing a permanent or indefinite contract classification).\nnature=CDI-I\nWhy: The researcher is testing if the backend (the server-side code) blindly accepts any value provided by the user, regardless of their account permissions.\n10. Forward the modified request to the server.\n\nIMPACT\n11. Observe the server's response, which returns an 'HTTP 200 OK' status (a code meaning the server successfully processed the request).\n12. Verify in the application UI that the new contract has been successfully created with the 'CDI-I' classification, proving that a restricted user successfully modified a sensitive business field.",
+      "example": "Imagine a fictional online banking app at 'bank.example' where a 'Standard User' can only view their balance. When they click 'View Statement', the browser sends a request: POST /api/view_statement?account_id=123&view_only=true. A malicious user intercepts this and changes 'view_only=true' to 'admin_edit=true' and adds a new parameter 'add_balance=1000'. If the server only checks if the user is logged in, but doesn't check if a 'Standard User' is allowed to use the 'admin_edit' flag, the user could successfully add money to their account. The 'admin_edit' flag is the payload (the data sent to achieve the exploit) and the failure to check the user's role against that specific flag is the Broken Access Control.",
+      "takeaway": "Always test parameters that look like they define a status, a type, or a permission level (e.g., 'role=user', 'status=pending', 'type=trial'). Even if the web page doesn't show you a button to change these things, the server might still accept the data if you send it manually. A common beginner mistake is assuming that because a button is hidden or 'grayed out' in the browser, the action is secure; in reality, security must be enforced on the server. Look for 'hidden' fields in forms or extra parameters in JSON requests that aren't visible in the UI.",
+      "fix": "The server must implement a 'deny-by-default' authorization check for every parameter received. Before processing the 'nature' parameter, the backend code should verify the user's session role. If the role is 'EU', the server should either ignore the 'nature' parameter or reject the request with a '403 Forbidden' error. \n\nExample of secure pseudo-code:\nif (user.role == 'EU' && request.params.has('nature')) {\n  return error(\"Unauthorized: EU users cannot set contract nature\");\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "Hello, I’m Ziad Hassan. In this write-up I’ll share a broken access control issue I found in a staffing platform through a private bug bounty program on YesWeHack I’ll use `test.com` throughout this write-up whenever referring to the target's domain. ## Background The target was an HR management platform used to manage temporary workers and their employment contracts. The application supported different user roles: * **ETT**: Represents the temporary worker provider. These users can list and consult Needs, Orders, Contracts, Missions, and RA. * **EU**: Represents the company contracting tempor",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "a4cbf023927e",
+    "title": "Broken Access Control Missing Server-Side Authorization Allows Member to Access Billing Data and Modify Any User Profile Including Admins",
+    "url": "https://medium.com/@silent_hunter_/broken-access-control-missing-server-side-authorization-allows-member-to-access-billing-data-and-b75a1569013f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Mahmoud_Elkholy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-12T17:38:36.000Z",
+    "added_at": "2026-11-12T22:30:22.921Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A regular workspace member bypassed frontend restrictions by modifying a JSON response to reveal administrative menus, then successfully edited administrator profiles because the server failed to verify their permissions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application relied on 'security by obscurity' by hiding administrative features in the frontend (the part of the site you see) based on a 'role' property in a JSON response. While the interface was hidden from regular members, the backend (the server processing the data) lacked a Role-Based Access Control check to verify if the user performing an action like 'Update Profile' actually had administrative rights. This allowed any user who knew the correct endpoint to send requests that the server would blindly process.",
+      "walkthrough": "RECON\n1. The researcher logged into a collaborative workspace as a 'Member' (a low-privileged user) and noted that the 'Team Management' section was invisible and blocked by a permission warning.\n2. They opened Burp Suite (a tool used to intercept and change web traffic) to inspect the HTTP requests (messages sent from the browser to the server) and responses (the server's reply).\n\nDISCOVERY\n3. While browsing, they found a JSON response (a text-based data format) that defined their user role.\n{\n \"tea_wRu2**********\": \"member\"\n}\nWhy: This JSON property tells the browser what the user's role is so the browser knows which buttons to show or hide.\n\nBYPASSING FRONTEND\n4. The researcher set up a 'Match & Replace' rule in Burp Suite. This feature automatically swaps specific text in web traffic as it passes through the tool.\n5. They configured the rule to find '\"member\"' and replace it with '\"admin\"' in every server response.\n{\n \"tea_wRu2**********\": \"admin\"\n}\nWhy: By tricking the browser into thinking the user is an admin, the frontend unlocks the hidden 'Team Management' and 'Billing' menus.\n\nEXPLOITATION\n6. With the UI unlocked, the researcher navigated to the Team Management page.\n[TEAM MANAGEMENT / BILLING & USERS PAGE]\nWhy: The browser now renders the page because it believes the user has permission, even though the server-side account is still just a 'Member'.\n7. The researcher attempted to edit the 'Admin' user's profile details, such as their name and profile picture.\n8. They submitted the changes, sending a POST request (a request used to send data to a server) to the backend.\n9. The server responded with a success message, indicating it processed the change without checking if a 'Member' should be allowed to edit an 'Admin'.\n\nIMPACT\n10. To prove the change was permanent, the researcher disabled the Burp Suite rule and refreshed the page.\n11. The Admin's profile remained changed, confirming a complete Broken Access Control vulnerability where a low-level user can manage high-level accounts.",
+      "example": "Imagine a website 'target.example' that manages a school. Teachers can edit grades, but students cannot. \n\nWhen a student logs in, the server sends: \n`{\"user\": \"student123\", \"can_edit_grades\": false}`. \n\nThe student uses a proxy tool to change that `false` to `true`. Suddenly, an 'Edit Grades' button appears on their screen. \n\nWhen the student clicks 'Save' on a new grade, the browser sends a request to: \n`POST /api/v1/update_grade?student_id=456&new_grade=A` \n\nIf the server only checks 'Is this user logged in?' but doesn't check 'Is this user a teacher?', the grade is updated. The vulnerability is that the server trusted the student's request just because they found the hidden button.",
+      "takeaway": "Always test if 'hidden' features are actually 'protected' features. If you see a JSON response that defines your permissions (like 'is_admin: false' or 'role: user'), try changing it in your proxy to see if the UI unlocks new areas. Once unlocked, the real test is whether the server lets you SAVE changes in those new areas. A common mistake for beginners is thinking that revealing a button is the bug; the bug is only confirmed when the server executes an action it shouldn't. Look for variants where you can change your 'OrgID' or 'TenantID' in these JSON responses to access other companies' data.",
+      "fix": "The server must implement server-side authorization checks for every sensitive request. Instead of trusting the frontend or the parameters sent by the user, the backend should look up the user's role from a secure database session before processing the request. \n\nExample of fixed logic:\n```javascript\napp.post('/api/update_profile', (req, res) => {\n  const userRole = req.session.role; // Get role from secure server session, not the request body\n  if (userRole !== 'admin') {\n    return res.status(403).send('Access Denied: Admins only');\n  }\n  // Proceed with update logic...\n});\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Image 2: Mahmoud_Elkholy Mahmoud_Elkholy 5 min read · 1 day ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fb75a1569013f&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40silent_hunter_%2Fbroken-access-control-missing-server-side-authorization-allows-member-to-access-billing-data-and-b75a1569013f&user=Mahmoud_Elkholy&userId=c8d206bcfd66&source=---header_actions--b75a1569013f---------------------clap_footer---------------------) -- [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb75a1569013f&operation=register&r",
     "ai_generated": true,
     "engagement": null,
     "score": 53

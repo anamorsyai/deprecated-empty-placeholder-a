@@ -1,47 +1,5 @@
 [
   {
-    "id": "95f0fbad68b8",
-    "title": "How a Forged Token Exposed an Entire B2B Trade Catalog",
-    "url": "https://medium.com/@adelekeismailifeoluwa/how-a-forged-token-exposed-an-entire-b2b-trade-catalog-3e736a7f54bd",
-    "source": {
-      "slug": "medium-tag-bug-bounty",
-      "name": "Medium — #bug-bounty"
-    },
-    "authors": [
-      "Ife0x01"
-    ],
-    "program": null,
-    "platform_slug": "self-disclosed",
-    "bounty_raw": null,
-    "published_at": "2026-11-10T18:26:35.000Z",
-    "added_at": "2026-11-10T18:58:44.031Z",
-    "categories": [
-      "auth-bypass",
-      "access-control",
-      "oauth-jwt"
-    ],
-    "severity": "high",
-    "difficulty": "intermediate",
-    "summary_en": "A forged security token allowed unauthorized access to a private B2B trade catalog, exposing sensitive business data. This highlights a critical failure in token validation and identity verification.",
-    "summary_ar": null,
-    "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "We assume the target website uses a JSON Web Token (JWT) — a digital ID card used to identify users — to protect its trade catalog. A JWT consists of three parts separated by dots: the header (metadata), the payload (user data), and the signature (a digital seal that ensures the data is authentic). The vulnerability occurs when the server trusts the payload without verifying the signature.\n\nVulnerable Code (JavaScript):\n// jwt.decode() is a function that reads the token data but ignores the security seal\nconst session = jwt.decode(req.headers['session-token']);\nif (session.permissions === 'all') { grantAccess(); }\n\nAttack Request:\nGET /admin/catalog HTTP/1.1\nHost: target.example\nSession-Token: eyJhbGciOiJub25lIn0.eyJwZXJtaXNzaW9ucyI6ImFsbCJ9.\n\nWhy: The attacker sends an HTTP request (a digital letter sent to a server) with a modified token. The payload 'eyJwZXJtaXNzaW9ucyI6ImFsbCJ9' is Base64 (a way to encode data into text) for '{\"permissions\":\"all\"}'. Because the server does not verify the signature, it accepts the fake permission and reveals the catalog.",
-      "takeaway": null,
-      "fix": null,
-      "cause_ar": null,
-      "walkthrough_ar": null,
-      "example_ar": null,
-      "takeaway_ar": null,
-      "fix_ar": null
-    },
-    "excerpt": null,
-    "ai_generated": true,
-    "engagement": null,
-    "score": 53
-  },
-  {
     "id": "6b4b11d8fa03",
     "title": "The SSRF That Mailed Out Your OAuth Token",
     "url": "https://masimshahzad.medium.com/the-ssrf-that-mailed-out-your-oauth-token-01327e8c1578",
