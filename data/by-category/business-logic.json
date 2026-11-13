@@ -1,5 +1,46 @@
 [
   {
+    "id": "50dd2dd98ab5",
+    "title": "Broken Access Control: How a Client-Side Role Could Rewrite a Contract from Fixed-Term to Permanent",
+    "url": "https://medium.com/@ziadh7987/broken-access-control-how-a-client-side-role-could-rewrite-a-contract-from-fixed-term-to-permanent-24e09acbecfe",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ziad Hassan"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-13T16:21:42.000Z",
+    "added_at": "2026-11-13T17:45:28.323Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A vulnerability allowed users to modify their employment contract from fixed-term to permanent by manipulating client-side role data, bypassing server-side authorization checks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website at target.example where employees manage their profiles. When you click 'Save', your browser sends an HTTP request (a digital message sent from your computer to a server) containing your info in JSON (a format for sending data using labels and values).\n\nVulnerable Request:\nPOST /api/profile/update\n{\n  \"user_id\": \"123\",\n  \"contract_type\": \"temporary\"\n}\n\nAn attacker changes the 'contract_type' parameter (a specific piece of information sent to a program) to 'permanent'.\n\nAttack Request:\nPOST /api/profile/update\n{\n  \"user_id\": \"123\",\n  \"contract_type\": \"permanent\"\n}\n\nWhy it works: The server (the computer hosting the site) blindly accepts the 'contract_type' from the user's message. It fails to verify if the user actually has the authority to change their own employment status. This is a 'Broken Access Control' bug because the security check is missing where it matters most: on the server.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "063ede340c0a",
     "title": "How Egor Homakov Generated Free Money on Starbucks Gift Cards",
     "url": "https://medium.com/@l4zz3rj0d/how-egor-homakov-generated-free-money-on-starbucks-gift-cards-436396b02014",

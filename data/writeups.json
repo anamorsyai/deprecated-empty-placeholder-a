@@ -1,5 +1,86 @@
 [
   {
+    "id": "a6cd16ba8344",
+    "title": "From VDP to Bounty: How I Earned $250 by Finding an Open Redirect",
+    "url": "https://levelup.gitconnected.com/from-vdp-to-bounty-how-i-earned-250-by-finding-an-open-redirect-5ce5c996460d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Hamza Avvan"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-13T17:35:52.000Z",
+    "added_at": "2026-11-13T17:45:08.829Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "A GET‑based open redirect was found on a Splunk SAML endpoint that accepts any external domain as the redirect target, allowing attackers to forward users to malicious sites.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The SAML endpoint accepted a URL supplied via a query parameter and redirected the user to that URL without validating that the domain was trusted. Because the code did not check the supplied domain, any external address could be used as the redirect destination.",
+      "walkthrough": null,
+      "example": "### Example of an Open Redirect on a fictional site\n**Vulnerable endpoint**: `https://target.example/login?next=`\nThe server reads the `next` query parameter and issues an HTTP 302 response with `Location: <value of next>`.\n**Attack request**:\n```\nGET /login?next=https://evil.example/phish HTTP/1.1\nHost: target.example\n```\n**Why it works**: The server blindly copies the `next` value into the `Location` header. The browser follows the header and sends the user to `https://evil.example/phish`, enabling phishing or other attacks. No validation means any URL is accepted.\n**Fix**: Only allow internal paths (e.g., start with `/`) or maintain a whitelist of allowed domains before issuing the redirect.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Discover how you can earn an easy **$100** in 5 minutes by discovering this unique bug in **Quick & Easy $100 Bug That You Can Find In 5 minutes** Read from here if you’re not a subscriber: https://levelup.gitconnected.com/4-xsss-with-a-simple-optimized-payload-900753538e90?sk=cf73bf42c2cf57a772a7d77f629184b1 Not every vulnerability starts with a complicated exploit chain. Sometimes, a single parameter is enough to uncover a security issue worth reporting. I was hunting on the Splunk Vulnerability Disclosure Program (VDP) when I came across an interesting endpoint on a Splunk-related domain. A",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
+    "id": "50dd2dd98ab5",
+    "title": "Broken Access Control: How a Client-Side Role Could Rewrite a Contract from Fixed-Term to Permanent",
+    "url": "https://medium.com/@ziadh7987/broken-access-control-how-a-client-side-role-could-rewrite-a-contract-from-fixed-term-to-permanent-24e09acbecfe",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ziad Hassan"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-13T16:21:42.000Z",
+    "added_at": "2026-11-13T17:45:28.323Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A vulnerability allowed users to modify their employment contract from fixed-term to permanent by manipulating client-side role data, bypassing server-side authorization checks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website at target.example where employees manage their profiles. When you click 'Save', your browser sends an HTTP request (a digital message sent from your computer to a server) containing your info in JSON (a format for sending data using labels and values).\n\nVulnerable Request:\nPOST /api/profile/update\n{\n  \"user_id\": \"123\",\n  \"contract_type\": \"temporary\"\n}\n\nAn attacker changes the 'contract_type' parameter (a specific piece of information sent to a program) to 'permanent'.\n\nAttack Request:\nPOST /api/profile/update\n{\n  \"user_id\": \"123\",\n  \"contract_type\": \"permanent\"\n}\n\nWhy it works: The server (the computer hosting the site) blindly accepts the 'contract_type' from the user's message. It fails to verify if the user actually has the authority to change their own employment status. This is a 'Broken Access Control' bug because the security check is missing where it matters most: on the server.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "5798a586d5e2",
     "title": "How I Found a Pre-Authentication PII Leak Affecting Every User on a Major Indian Deals Platform",
     "url": "https://medium.com/@anshbohra10/how-i-found-a-pre-authentication-pii-leak-affecting-every-user-on-a-major-indian-deals-platform-d45d5aa24c12",
