@@ -1,5 +1,45 @@
 [
   {
+    "id": "5798a586d5e2",
+    "title": "How I Found a Pre-Authentication PII Leak Affecting Every User on a Major Indian Deals Platform",
+    "url": "https://medium.com/@anshbohra10/how-i-found-a-pre-authentication-pii-leak-affecting-every-user-on-a-major-indian-deals-platform-d45d5aa24c12",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "anshh.bohara"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-13T09:40:13.000Z",
+    "added_at": "2026-11-13T10:08:55.594Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "A vulnerability on a major Indian deals platform allowed unauthenticated access to the Personally Identifiable Information (PII) of every user.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "A developer at target.example creates an endpoint to show user profiles but fails to implement an authentication check. Authentication is the process of verifying who a user is.\n\nVulnerable Endpoint:\nhttps://target.example/api/v1/get-profile?user_id=999\n\nAttack Request:\nGET /api/v1/get-profile?user_id=999 HTTP/1.1\nHost: target.example\n\nWhy it works: The application takes the 'user_id' parameter (a piece of data sent in the URL) and queries the database for that user's info. Because it doesn't check for a 'session cookie' (a digital ID card stored in the browser), anyone can view any user's private details just by changing the ID number.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "a4cbf023927e",
     "title": "Broken Access Control Missing Server-Side Authorization Allows Member to Access Billing Data and…",
     "url": "https://medium.com/@silent_hunter_/broken-access-control-missing-server-side-authorization-allows-member-to-access-billing-data-and-b75a1569013f",
