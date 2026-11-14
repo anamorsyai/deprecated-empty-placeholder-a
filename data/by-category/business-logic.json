@@ -1,5 +1,46 @@
 [
   {
+    "id": "0c96c3429f3a",
+    "title": "The Premium Paradox: A YouTube Music Bug That Worked ONLY in India — Unreproducible in Other…",
+    "url": "https://medium.com/@vasanthgn/the-premium-paradox-a-youtube-music-bug-that-worked-only-in-india-unreproducible-in-other-53f0510bec20",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Vasanth"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-14T14:47:53.000Z",
+    "added_at": "2026-11-14T16:03:26.768Z",
+    "categories": [
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A business logic vulnerability in YouTube Music allowed users to bypass premium subscription requirements by exploiting region-specific logic intended for users in India.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume the app target.example.com grants premium access based on a simple location check. \n\nVulnerable Code: \nif (request.headers[\"X-User-Location\"] === \"India\") { \n  user.isPremium = true; \n} \n\nAttack Request: \nGET /premium-content HTTP/1.1 \nHost: target.example.com \nX-User-Location: India \n\nWhy: An HTTP request is a message your browser sends to a server to ask for data. A \"header\" is a specific piece of metadata inside that message. In this case, the server trusts a header called \"X-User-Location\" to decide if a user gets free premium access. Because a user can manually change any part of the request they send, they can simply add this header to trick the server into thinking they are in a special promotion zone, bypassing the payment check.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "95a142fa7927",
     "title": "Account Takeover via Password Reset Poisoning (X-Forwarded-Host)",
     "url": "https://medium.com/@m.elsaidy35/account-takeover-via-password-reset-poisoning-x-forwarded-host-3456af71dbc9",
