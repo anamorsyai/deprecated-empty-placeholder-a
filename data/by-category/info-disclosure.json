@@ -1,5 +1,46 @@
 [
   {
+    "id": "574ac348bae9",
+    "title": "Tally Ira’s :- Hardcoded Production Secrets",
+    "url": "https://akashkansal065.medium.com/tally-iras-hardcoded-production-secrets-a64721f81c81",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Akash K@nsal"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-14T16:55:24.000Z",
+    "added_at": "2026-11-14T20:37:53.385Z",
+    "categories": [
+      "info-disclosure",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "The Tally Ira Android application bundled production API keys in cleartext within its internal asset files, allowing anyone to extract credentials and bypass backend security controls.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The developers included a .env file—a configuration file typically used to store sensitive environment variables—inside the Flutter asset bundle of the production APK (Android Package). In mobile development, any file packaged within the APK is accessible to the end-user through simple extraction. By failing to remove these development secrets or move them to a secure server-side environment, the application exposed the 'x-api-key' headers required to interact with four separate backend subsystems.",
+      "walkthrough": "RECON\n1. The researcher identified the target application as Tally Ira, an AI-powered mobile app distributed as an APK (Android Package, the file format used to install apps on Android).\n2. They obtained the production package file named `TallyIra.apk` (version 1.0.14).\n\nDISCOVERY\n3. The researcher performed reverse engineering (the process of taking an app apart to see how it works) by unpacking the APK file to view its internal contents.\n4. They navigated to the assets folder, specifically looking at the Flutter asset bundle (a collection of files like images and configs used by the Flutter app framework).\n\nEXPLOITATION\n5. Inside the directory `assets/flutter_assets/`, the researcher found a file named `.env` (a text file used to store configuration settings).\n6. They opened the file and found cleartext (unencrypted, readable text) production API keys for multiple backend services.\n7. The file contained the following verbatim path:\n`assets/flutter_assets/.env`\nWhy: This file is meant for local development environments and should never be included in a public app release because it contains sensitive credentials.\n8. The researcher identified the specific header used for authentication across the app's cloud services:\n`x-api-key`\nWhy: This header (a piece of data sent with an HTTP request to identify the sender) acted as the only gatekeeper for the backend APIs.\n\nIMPACT\n9. The researcher verified that these keys were 'live' by sending test payloads to the backend endpoints (the specific web addresses where the app sends data).\n10. Possession of these keys allowed the researcher to bypass several security layers, including account mutation (changing user data) and SMS toll fraud (sending unauthorized text messages).\n11. They confirmed the keys granted access to four distinct backend subsystems, effectively compromising the entire application's infrastructure.",
+      "example": "Imagine a fictional app for 'target.example' that lets users order pizza. To process payments, the app needs to talk to a service like Stripe. Instead of having a secure server handle the payment, the developers put the secret 'Master Key' inside a file called 'config.json' inside the app. \n\nAn attacker downloads the app, changes the file extension from .apk to .zip, and opens it. They find:\n{\n  \"payment_provider_key\": \"sk_live_51MzX...\"\n}\n\nThe attacker can now use this key to issue refunds to themselves or view other people's transaction history because they have the 'Master Key' that was supposed to stay secret.",
+      "takeaway": "Always inspect the 'assets' and 'res/raw' directories of a mobile application for configuration files like .env, settings.json, or credentials.xml. Developers using cross-platform frameworks like Flutter or React Native often forget to exclude environment files from the final build. A key signal is finding an 'x-api-key' or 'Authorization' header in your proxy logs (like Burp Suite) and then searching the app's source code for that specific string to see if it is hardcoded. A common beginner mistake is assuming that 'compiled' apps are encrypted; in reality, they are just compressed archives that are easily opened.",
+      "fix": "Production secrets must never be stored on the client side (the mobile app). Instead, the app should communicate with a backend server that the developer controls. That backend server should securely store the API keys and communicate with third-party services on the app's behalf. If a key must be used on the client, it should be a 'public' key with highly restricted permissions and rate-limiting. Developers should also add `.env` to their `.gitignore` and build-exclusion scripts to ensure these files are never packaged into the final APK.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_How I pulled every production API key out of_`com.tally.heytally`_(TallyIra.apk) in seconds — and why this single finding cascades into every other vulnerability in this series._ ## Disclaimer This is a responsible, coordinated disclosure write-up. All credentials are reproduced verbatim exactly as extracted from the shipped APK. Verification was limited to liveness checks and test/simulated payloads — no customer data was accessed or modified. ## TL;DR I reverse-engineered Tally Solutions’ new AI application Tally Ira (`com.tally.heytally`, v1.0.14 / build 140, package distributed as `TallyI",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "5798a586d5e2",
     "title": "How I Found a Pre-Authentication PII Leak Affecting Every User on a Major Indian Deals Platform",
     "url": "https://medium.com/@anshbohra10/how-i-found-a-pre-authentication-pii-leak-affecting-every-user-on-a-major-indian-deals-platform-d45d5aa24c12",
