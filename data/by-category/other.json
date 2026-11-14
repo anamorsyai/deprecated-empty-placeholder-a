@@ -1,5 +1,46 @@
 [
   {
+    "id": "1637618db515",
+    "title": "How a Cache Keys Mismatch Led to a Web Cache Deception Account Takeover",
+    "url": "https://medium.com/@t4nv1/how-a-cache-keys-mismatch-led-to-a-web-cache-deception-account-takeover-1b8e934e522a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-14T08:16:01.000Z",
+    "added_at": "2026-11-14T09:33:51.169Z",
+    "categories": [
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A URL normalization discrepancy between NGINX and a Node.js backend allowed attackers to trick the cache into storing sensitive API tokens by appending static file extensions to dynamic endpoints.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a mismatch in how two different servers interpret the same URL (web address). The NGINX reverse proxy (a middleman server) was configured to cache any response if the URL ended in static extensions like .css or .js. However, the Node.js origin server (the main application server) was configured to ignore these extensions or treat them as part of the path, still serving private user data. This discrepancy meant NGINX would see a 'static' file and save the private response in its public cache, making it accessible to anyone who visited that specific URL.",
+      "walkthrough": "RECONNAISSANCE\n1. Identify that the target uses NGINX as a reverse proxy (a server that sits in front of web servers and forwards client requests).\n2. Identify the backend as a Node.js server using Express.js (a framework for building web applications).\n\nDISCOVERY\n3. Observe that NGINX is configured to aggressively cache static assets (files that do not change, like images or scripts) to reduce server load.\n4. Note the specific file extensions NGINX is programmed to cache: .css, .js, .jpg, .png, and .svg.\n5. Identify a dynamic endpoint ( a URL that generates unique data for each user) that returns sensitive information, such as API tokens (secret keys used to prove a user's identity).\n\nEXPLOITATION\n6. Understand that a 'normalization discrepancy' exists, meaning the two servers clean up or read the URL differently.\n7. The attacker crafts a URL that points to a sensitive endpoint but ends with one of the cached extensions.\n8. The attacker tricks a logged-in victim into clicking this crafted link.\n9. The victim's browser sends an HTTP request (a message asking for data) to the proxy.\n10. NGINX receives the request and sees the static extension (e.g., .css) at the end of the URL.\n11. NGINX forwards the request to the Node.js origin server (the server where the application code actually runs).\n12. The Node.js server processes the request, ignores the fake extension, and returns the victim's private API tokens in the response.\n13. NGINX receives this response and, because the URL ends in .css, it saves (caches) the private data in its public storage.\n\nIMPACT\n14. The attacker now visits the exact same URL used by the victim.\n15. NGINX finds the 'cached' version of the page and serves the victim's private API tokens directly to the attacker.\n16. The attacker uses these tokens to achieve full Account Takeover (gaining complete control of the victim's account).",
+      "example": "Imagine a website where your profile is at 'target.example/api/me'. The site uses a proxy that caches anything ending in '.jpg'. \n\n1. An attacker sends a victim a link: 'https://target.example/api/me/avatar.jpg'.\n2. The victim, logged in, clicks the link. \n3. The backend server sees '/api/me' and ignores the '/avatar.jpg' part, returning the victim's private profile data (email, password hash).\n4. The proxy sees '.jpg' and thinks 'This is a public image!' and saves the profile data in its cache.\n5. The attacker visits 'https://target.example/api/me/avatar.jpg' and the proxy gives them the victim's private data from the cache. \n\nThis works because the proxy and the backend don't agree on what the URL actually means.",
+      "takeaway": "When hunting for Web Cache Deception, look for discrepancies in how proxies and origin servers handle path delimiters (like semicolons, dots, or slashes). Test if appending a fake extension like '/test.css' to a sensitive endpoint still returns the sensitive data while also triggering a cache header like 'X-Cache: HIT'. A common variant involves using encoded characters (like %23 for #) that the proxy ignores but the backend uses to truncate the path. Avoid the mistake of assuming that 'Cache-Control: public' is the only way things get cached; many proxies cache based on file extensions regardless of headers if misconfigured.",
+      "fix": "To fix this, ensure that the reverse proxy only caches files from specific, trusted static directories (like /static/ or /assets/) rather than relying on file extensions alone. Additionally, the application should explicitly send the 'Cache-Control: no-store' or 'Cache-Control: private' header on all responses containing sensitive data to prevent any intermediary from saving it. \n\nExample fix in Express.js:\napp.use('/api', (req, res, next) => {\n  res.set('Cache-Control', 'no-store, private, must-revalidate');\n  next();\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Web Cache Deception (WCD) occurs when an intermediary caching layer — such as a Content Delivery Network (CDN) or reverse proxy — stores a response containing sensitive user data because it misinterprets a dynamic request as static content. Unlike traditional Web Cache Poisoning, where an attacker injects malicious content into the cache to serve to other users, Web Cache Deception tricks the victim’s browser into making a request that causes the proxy to cache the victim’s private account data under a publicly accessible URL. In this write-up, we will analyze a scenario where a URL normalizat",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "a6cd16ba8344",
     "title": "From VDP to Bounty: How I Earned $250 by Finding an Open Redirect",
     "url": "https://levelup.gitconnected.com/from-vdp-to-bounty-how-i-earned-250-by-finding-an-open-redirect-5ce5c996460d",

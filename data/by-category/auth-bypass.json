@@ -1,5 +1,46 @@
 [
   {
+    "id": "fa4aaf1cb9b8",
+    "title": "When “Trust On First Use” Trusts the Second Key Too",
+    "url": "https://medium.com/@aleens09/cve-2026-126641-when-trust-on-first-use-trusts-the-second-key-too-a244cfb8e109",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Aleens-labs"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-14T07:40:54.000Z",
+    "added_at": "2026-11-14T09:34:07.535Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "Ansible's libssh transport incorrectly accepts changed SSH host keys when the 'host_key_auto_add' option is enabled, allowing Man-in-the-Middle attackers to intercept credentials.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a 'lossy' library binding in pylibssh where three distinct SSH states (Unknown, Changed, and Other) were collapsed into a single 'missing_host_key' function. While the original design this was based on (Paramiko) only called this function for truly new hosts, pylibssh triggered it for modified keys as well. Ansible's implementation then treated any call to this function as a signal to automatically trust and save the key, effectively disabling the security check meant to detect server impersonation.",
+      "walkthrough": "RECON\n1. The researcher monitors security mailing lists for 'variant hunting'—looking for similar mistakes in different software.\n2. They identify a pattern where language bindings (code that lets Python talk to C libraries) lose detail when reporting security errors.\n\nDISCOVERY\n3. The researcher examines the 'ansible-pylibssh' source code and finds a mapping dictionary:\nKNOW_HOST_MSG_MAP = { libssh.SSH_KNOWN_HOSTS_CHANGED: \"Host key for server has changed: \", ... }\nWhy: This shows the library treats a 'Changed' key (potential attack) the same way it treats an 'Unknown' key (new server).\n4. They find the 'verify_knownhost' function which passes these different states to a single hook called 'missing_host_key'.\n\nEXPLOITATION\n5. The researcher sets up a local SSH server (a program that allows secure remote login) on 127.0.0.1:2222.\n6. They perform 'Run 1' where the server presents 'Host Key A' (a unique digital fingerprint identifying the server).\n7. They perform 'Run 2' after replacing 'Host Key A' with 'Host Key B' to simulate an attacker intercepting the connection.\n8. They configure Ansible with the following environment variable:\nANSIBLE_LIBSSH_HOST_KEY_AUTO_ADD=true\nWhy: This setting tells Ansible to automatically accept and save new host keys without asking the user.\n9. They run an Ansible playbook (a script that automates tasks on remote servers) against the modified server.\n\nIMPACT\n10. Ansible connects to the server with 'Host Key B' without showing any warning to the user.\n11. The researcher checks the server logs and confirms the connection was successful:\nAccepted password for the controller's user\nWhy: This proves the 'interceptor' server successfully received the user's secret password because the host key check failed to stop the connection.",
+      "example": "Imagine a fictional tool called 'CloudSync' that manages remote servers. It has a feature 'TrustNewServers=True'. Internally, it uses a library that returns 'Error Code 1' for a brand new server and 'Error Code 2' for a server whose identity has changed. However, CloudSync's code looks like this: if (errorCode != 0) { saveKeyToDisk(); continueConnection(); }. An attacker sits between CloudSync and the real server, presenting a fake identity. Because CloudSync sees 'Error Code 2' as just 'not zero', it saves the attacker's fake identity as the 'new' truth and sends the login password directly to the attacker.",
+      "takeaway": "When hunting for bugs, look for 'wrapper' libraries that simplify complex security states into a single 'success/fail' or 'missing' category. This 'lossy' translation often hides critical security warnings like key mismatches. Always test 'Auto-Add' or 'Easy-Onboarding' features in automation tools, as they frequently prioritize convenience over the 'Trust On First Use' (TOFU) security model. A common mistake is assuming that 'Auto-Add' only applies to the very first connection; always verify if it also triggers when an existing key changes.",
+      "fix": "The fix requires modifying the library to distinguish between 'Unknown' and 'Changed' states. The 'Auto-Add' logic should only execute if the host is completely unknown. If a key exists but does not match, the connection must be hard-refused to prevent Man-in-the-Middle attacks. Users should mitigate this by disabling 'host_key_auto_add' and manually pre-populating their 'known_hosts' file with verified keys. \n\n# Example of a safer logic check:\nif state == libssh.SSH_KNOWN_HOSTS_UNKNOWN:\n    if auto_add:\n        save_key()\n    else:\n        prompt_user()\nelif state == libssh.SSH_KNOWN_HOSTS_CHANGED:\n    raise SecurityError('Host key mismatch! Possible interception.')",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Ansible’s libssh transport accepts a **changed** SSH host key when its trust-on-first-use option is enabled. The controller logs in to whoever answers, runs the playbook there, and saves the new key. No warning is shown. Red Hat Product Security confirmed the issue and assigned **CVE-2026–126641**. * **Affected:**`ansible-pylibssh` and the `ansible.netcommon` libssh connection plugin, including `network_cli` when it uses libssh * **Class:** CWE-322, Key Exchange without Entity Authentication * **Severity:** Moderate, CVSS 3.1 score 6.5 (`AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N`) * **Not affected:*",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "5798a586d5e2",
     "title": "How I Found a Pre-Authentication PII Leak Affecting Every User on a Major Indian Deals Platform",
     "url": "https://medium.com/@anshbohra10/how-i-found-a-pre-authentication-pii-leak-affecting-every-user-on-a-major-indian-deals-platform-d45d5aa24c12",

