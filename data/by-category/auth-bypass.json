@@ -1,5 +1,47 @@
 [
   {
+    "id": "e08cf16c1494",
+    "title": "Pre-Auth Account Takeover via Broken Password Reset in a Legacy Mobile API",
+    "url": "https://medium.com/@youssefezzat.pt/pre-auth-account-takeover-via-broken-password-reset-in-a-legacy-mobile-api-f1b0b63dc1a6",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Youssef Ezzat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-14T20:37:45.000Z",
+    "added_at": "2026-11-15T00:16:15.061Z",
+    "categories": [
+      "auth-bypass",
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A legacy SOAP API allowed full account takeover by exposing password reset tokens in responses and failing to validate those tokens during the password change process.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by two major security failures in a legacy SOAP API (a protocol for exchanging structured information in web services). First, the 'ForgotPassword' endpoint (a specific URL where an API receives requests) leaked the secret reset token directly in the API response body instead of only sending it to the user's email. Second, the 'ResetForgottenPassword' endpoint was programmed to accept a new password for any email address without requiring or verifying the reset token, allowing anyone to bypass the authentication (the process of verifying who a user is) entirely.",
+      "walkthrough": "RECON\n1. Locate the legacy SOAP endpoint. (SOAP: A protocol for exchanging structured information in web services).\n2. Access the WSDL file to map available operations. (WSDL: An XML file that describes what functions a web service offers).\nDISCOVERY\n3. Identify the 'ForgotPassword' and 'ResetForgottenPassword' operations in the WSDL.\nEXPLOITATION\n4. Create a test account to act as the victim.\nSOAPAction: CreateGenericAccount EmailAddress: victim@example.com Password: OldPass!111\nWhy: To establish a baseline for testing the attack using a specific payload (the actual data sent in a request).\n5. Log in to confirm the account is active.\nSOAPAction: LoginV3 EmailAddress: victim@example.com Password: OldPass!111\nWhy: To ensure the initial credentials work via an HTTP request (a message sent by a client to a server).\n6. Trigger a password reset for the victim's email.\nSOAPAction: ForgotPassword EmailAddress: victim@example.com\nWhy: The researcher observed that the server's response contained the secret reset token (Information Disclosure: when a system reveals sensitive data to unauthorized users).\n7. Attempt to change the password by providing only the email and a new password.\nSOAPAction: ResetForgottenPassword EmailAddress: victim@example.com NewPassword: NewPass!222\nWhy: To test if the server enforces the use of a reset token (a unique secret code used to prove identity). It did not, allowing an unauthenticated user to change any password.\nIMPACT\n8. Attempt to log in with the old password.\nSOAPAction: LoginV3 EmailAddress: victim@example.com Password: OldPass!111\nWhy: To confirm the original password has been invalidated.\n9. Log in with the new attacker-chosen password.\nSOAPAction: LoginV3 EmailAddress: victim@example.com Password: NewPass!222\nWhy: To prove full account takeover and access to PII (Personally Identifiable Information like names and phone numbers).",
+      "example": "Consider a fictional site 'target.example' with a hidden API at '/api/legacy/user'. An attacker finds an endpoint 'UpdatePassword' that takes two parameters (pieces of information passed to a program): 'user_email' and 'new_password'. The developer intended this to be used after a token check, but forgot to actually write the code that checks the token. The attacker sends a POST request (a type of message sent to a server to submit data): 'POST /api/legacy/user/UpdatePassword HTTP/1.1 Host: target.example Content-Type: application/json {\"user_email\": \"admin@target.example\", \"new_password\": \"hacked123\"}'. The server processes this and updates the admin's password because it only checks if the email exists, not if the requester is authorized.",
+      "takeaway": "Always hunt for legacy API versions (like SOAP or v1 endpoints) that may have been forgotten by developers, as they often lack modern security checks. Use WSDL files to discover hidden functionality that isn't visible in the main web interface. A key lesson is to never assume that because a security token is generated, the server is actually checking it; always try to perform the action while omitting the token or using an invalid one. Common variants include 'forgot password' flows that only require a user ID or 'email change' flows that don't require the current password.",
+      "fix": "To fix this, the 'ResetForgottenPassword' operation must be updated to require a valid, high-entropy (random and complex) reset token. The server must verify that the token is correct, belongs to the specified email, and has not expired before allowing the password change. Additionally, the 'ForgotPassword' operation must be modified to never return the reset token or URL in the API response; it should only be sent to the user's registered email address. Finally, all active sessions (a temporary connection between a user and a server) should be invalidated upon a successful password change to ensure any existing unauthorized access is cut off.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I was doing recon on a private bug bounty program when I noticed the target had a legacy mobile API still exposed to the internet. Most people would scroll past it. I didn’t. After mapping the WSDL and testing a few operations, I found something that stopped me: the password reset flow was completely broken. Not “missing rate limiting” broken. Not “weak token” broken. I mean the server would reset any account’s password with just an email address — no token, no old password, no inbox access required. This is the write-up for that finding: a pre-authentication account takeover that earned a **C",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "fa4aaf1cb9b8",
     "title": "When “Trust On First Use” Trusts the Second Key Too",
     "url": "https://medium.com/@aleens09/cve-2026-126641-when-trust-on-first-use-trusts-the-second-key-too-a244cfb8e109",
