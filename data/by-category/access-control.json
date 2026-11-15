@@ -1,5 +1,46 @@
 [
   {
+    "id": "80fd0cab8a65",
+    "title": "How I Found an Admin Session That Refused to Die — A Role-Based Access Control Horror Story",
+    "url": "https://medium.com/@muhameddkhalid/how-i-found-an-admin-session-that-refused-to-die-a-role-based-access-control-horror-story-f5673a2bb25d",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mohamed Khaled"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T13:26:00.000Z",
+    "added_at": "2026-11-15T14:19:55.959Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An administrative session persists indefinitely despite logout or role changes, allowing unauthorized long-term access to sensitive functions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website target.example where a user is granted temporary 'Admin' status to perform maintenance.\n\nDefinitions:\n1. Server: The computer hosting the website that responds to your requests.\n2. Session: A temporary record the server keeps to remember who you are as you click different pages.\n3. Cookie: A small digital ID card your browser shows the server so it knows which session belongs to you.\n4. RBAC (Role-Based Access Control): A security system that gives users different permissions based on their 'role' (like 'Admin' or 'Guest').\n\nVulnerable Code Snippet:\n`if (userSession.role === 'admin') { renderAdminPanel(); }` \n(This code checks the 'role' saved in the server's temporary memory rather than checking the live database for the user's current status).\n\nAttack Request:\n`GET /admin/settings HTTP/1.1` \n`Host: target.example` \n`Cookie: session_id=xyz123` \n\nWhy it works: If the user was an admin but then had their permissions revoked by a manager, the server might forget to update or delete the 'session' record. Even though the database now says they are a regular user, the 'session' (the server's memory) still has the 'admin' label attached to that specific session_id. The attacker simply keeps using their old session ID card (the cookie) to perform admin actions because the session 'refuses to die' until it naturally expires, which could take days or weeks.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "3ae611848ee5",
     "title": "Information Disclosure — Intercom Identity Verification secret (HMAC key) is hard-coded in…",
     "url": "https://medium.com/@jokodfir/information-disclosure-intercom-identity-verification-secret-hmac-key-is-hard-coded-in-59a6413bfd0d",
