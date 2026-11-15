@@ -1,5 +1,47 @@
 [
   {
+    "id": "3ae611848ee5",
+    "title": "Information Disclosure — Intercom Identity Verification secret (HMAC key) is hard-coded in…",
+    "url": "https://medium.com/@jokodfir/information-disclosure-intercom-identity-verification-secret-hmac-key-is-hard-coded-in-59a6413bfd0d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Joko Purwanto"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T02:21:00.000Z",
+    "added_at": "2026-11-15T06:39:11.056Z",
+    "categories": [
+      "info-disclosure",
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A web application exposed its Intercom HMAC secret key within a public JavaScript bundle, allowing attackers to forge identity hashes and impersonate any user to access private support conversations.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a fundamental architectural error where a cryptographic secret, intended only for server-side use, was included in the client-side JavaScript bundle. Specifically, the application used the CryptoJS library to calculate the Intercom 'user_hash' directly in the browser. This required the HMAC secret key to be present in the plaintext JavaScript code, making it accessible to any visitor who inspected the site's source files. Because the application used sequential integers for member IDs, an attacker could easily guess other users' IDs and use the exposed secret to generate valid authentication tokens for them.",
+      "walkthrough": "RECON\n1. Open the target website and access the browser's Developer Tools (usually F12).\n2. Navigate to the 'Sources' or 'Network' tab to view the JavaScript bundles (files containing the code that runs the website).\n\nDISCOVERY\n3. Search through the JavaScript files for keywords like 'Intercom', 'secret', or 'user_hash'.\n4. Locate the specific file (e.g., ***.js) where the Intercom Messenger is initialized.\n5. Identify the hard-coded HMAC secret key and the logic used to generate the user hash.\nCryptoJS.HmacSHA256(member_id, \"EXPOSED_SECRET_KEY\")\nWhy: The researcher found the actual secret key used for 'Identity Verification' (a security feature to prove who a user is) sitting in plain text (unencrypted, readable text) inside the code.\n\nEXPLOITATION\n6. Note your own member ID, which is a sequential integer (a whole number that follows a predictable order, like 101, 102, 103).\n7. Use a tool like an online HMAC generator or a local script to test if you can recreate the hash the browser is sending.\n8. Input your member ID and the discovered secret key into the HMAC-SHA256 function.\n9. Compare the output to the 'user_hash' sent in the network request to Intercom; the researcher confirmed they matched byte-for-byte.\n10. To impersonate another user, pick a different member ID (e.g., if yours is 1005, try 1004).\n11. Generate a new 'user_hash' using the target's ID and the stolen secret key.\n\nIMPACT\n12. Manually trigger the Intercom 'boot' function in the browser console using the victim's ID and the forged hash.\nIntercom('boot', { app_id: '***', user_id: 'VICTIM_ID', user_hash: 'FORGED_HASH' });\nWhy: This tells the Intercom chat widget to log in as the victim. Because the hash is valid (signed with the correct secret), Intercom trusts the identity.\n13. Observe that the chat widget now displays the victim's private support history, which may contain PII (Personally Identifiable Information, like names or account details).",
+      "example": "Imagine a site 'target.example' that uses a chat service. To keep chats private, the service requires a 'signature'. \n\nVulnerable Code (in the browser):\nconst secret = 'super-secret-123';\nconst userId = '55';\nconst signature = generateHMAC(userId, secret);\n\nAn attacker views the source code, sees 'super-secret-123', and realizes they can now create a signature for 'userId: 56'. \n\nAttack Request:\nhttps://chat-service.example/load?user=56&sig=calculated_hash_for_56\n\nBecause the attacker has the secret, they can generate the correct signature for any user ID, bypassing the security check that was supposed to happen on the server.",
+      "takeaway": "Always assume that any code or data sent to the browser is public knowledge. Cryptographic secrets used for signing (like HMAC keys) must never leave the server. When hunting, look for 'Identity Verification' features in third-party integrations like Intercom, Zendesk, or HelpScout, and check if the 'hash' or 'signature' is being calculated in the frontend. A common sign of this is seeing libraries like CryptoJS or Forge being used alongside hard-coded strings that look like API keys or secrets. Also, watch for sequential IDs (1, 2, 3...) which make it trivial to scale an attack once a secret is found.",
+      "fix": "The 'user_hash' must be calculated on the backend server where the secret key can be stored securely in environment variables. The server should generate the hash for the currently logged-in user and pass only the resulting hash to the frontend. \n\nFixed Backend Code (Node.js example):\nconst crypto = require('crypto');\nconst userHash = crypto.createHmac('sha256', process.env.INTERCOM_SECRET).update(user.id).digest('hex');\nres.render('index', { userHash });\n\nAdditionally, the compromised secret must be rotated (changed) immediately in the Intercom settings, as it is now known to the public.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "## Summary The web application target (***) integrates Intercom’s Messenger with **Identity Verification** (Intercom’s HMAC-based anti-impersonation feature). The whole point of Identity Verification is that the browser should only ever receive a pre-computed `user_hash`; the **secret key used to compute it must stay on the server**. The web application target (***) does the opposite: it computes the `user_hash` **in the browser**, which means the secret key is shipped to every visitor inside a JavaScript bundle. I found the key sitting in plaintext in `***.js`, and I confirmed it’s the real,",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "e08cf16c1494",
     "title": "Pre-Auth Account Takeover via Broken Password Reset in a Legacy Mobile API",
     "url": "https://medium.com/@youssefezzat.pt/pre-auth-account-takeover-via-broken-password-reset-in-a-legacy-mobile-api-f1b0b63dc1a6",

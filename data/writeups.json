@@ -1,5 +1,128 @@
 [
   {
+    "id": "8eba930dabfe",
+    "title": "P4 Anonymous S3 Bucket Object Listing Leading to Cloud Storage Information Disclosure",
+    "url": "https://medium.com/@akashmotkar001/p4anonymous-s3-bucket-object-listing-leading-to-cloud-storage-information-disclosure-555ee8a3e796",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T06:34:55.000Z",
+    "added_at": "2026-11-15T06:38:43.316Z",
+    "categories": [
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "An Amazon S3 bucket was misconfigured to allow unauthenticated users to list all stored files and directory structures via the ListBucket API. This exposure allows attackers to map out the cloud storage infrastructure and identify potentially sensitive files.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is an overly permissive Amazon S3 bucket policy that grants the 's3:ListBucket' permission to anonymous users. In cloud storage, permissions are often split between 'reading a file' and 'listing the contents of a folder'; here, the administrator mistakenly allowed anyone on the internet to perform the listing operation. This typically happens when 'Public Access' is enabled for the entire bucket instead of specific files.",
+      "walkthrough": "RECONNAISSANCE\n1. Identify the target's cloud storage endpoint, usually found by inspecting web traffic or source code for URLs ending in '.s3.amazonaws.com'.\n2. Define HTTP Request: A message sent from a client to a server to ask for data.\n3. Define Endpoint: A specific URL where a web service or resource can be accessed.\n\nDISCOVERY\n4. Test if the bucket allows anonymous listing by sending a request to the root URL with the 'list-type=2' parameter.\ncurl -sS -i \"https://<affected-storage-host>/?list-type=2\"\nWhy: The 'list-type=2' parameter is the standard way to ask an S3 bucket to show its contents using the modern API version. The '-i' flag shows the HTTP headers to see if the server says '200 OK' (success) or '403 Forbidden' (blocked).\n5. Define Parameter: A piece of information added to a URL (after the '?') to tell the server exactly what to do.\n\nEXPLOITATION\n6. Retrieve the full list of files and format it so it is readable.\ncurl -sS \"https://<affected-storage-host>/?list-type=2\" | xmllint --format -\nWhy: This command downloads the raw data and uses 'xmllint' to turn the messy XML code into a structured, readable list. (XML is a text format used to store and transport data).\n7. Define Payload: The specific part of an attack that performs the malicious action; here, it is the URL query.\n8. Examine the XML response for the '<Key>' tags, which contain the names of every file in the bucket.\n9. Look for the '<IsTruncated>' tag in the response.\n<IsTruncated>true</IsTruncated>\nWhy: If this is 'true', it means there are more than 1,000 files and you haven't seen them all yet.\n10. Retrieve the 'NextContinuationToken' from the XML to fetch the next batch of files.\ncurl -sS \"https://<affected-storage-host>/?list-type=2&continuation-token=<TOKEN>\"\nWhy: This tells the S3 API to start the list from where the last request left off, allowing you to see every single file stored.\n\nIMPACT\n11. Review the list of filenames (keys) to identify sensitive data like backups, configuration files, or private documents.\n12. In this specific case, the researcher found documentation, CSS, and PDFs, confirming the infrastructure was exposed even if high-value secrets were not present.",
+      "example": "Imagine a company called 'SecureCorp' uses an S3 bucket at 'https://securecorp-data.s3.amazonaws.com' to host their website images. An administrator wants the images to be public, so they accidentally click 'Allow Public Access' for the entire bucket. A researcher visits 'https://securecorp-data.s3.amazonaws.com/?list-type=2' and receives an XML file. Inside the XML, they see a file named '<Key>internal/salaries_2024.csv</Key>'. Even though the researcher didn't have a password, the bucket 'listed' the secret file's existence, allowing the researcher to then try to download that specific file directly.",
+      "takeaway": "Always check S3 buckets by appending '?list-type=2' to the base URL. If you get an XML response starting with '<ListBucketResult>', the bucket is misconfigured. Look for this pattern during recon by scanning for S3 URLs in JavaScript files or 'Content-Security-Policy' headers. A common mistake is assuming that because files are 'public', the 'list' must also be public; these are two separate permissions that must be hardened independently.",
+      "fix": "The fix involves two steps: First, modify the S3 Bucket Policy or Access Control List (ACL) to remove 'List' permissions for 'Everyone' or 'Any Authenticated AWS User'. Second, enable 'S3 Block Public Access' at the bucket or account level to prevent accidental exposure. If files must be public, use a Content Delivery Network (CDN) like CloudFront with 'Origin Access Control' (OAC) so users can only access specific files through the CDN, while the bucket itself remains completely private.\n\nExample Policy Snippet (Restricting to specific actions):\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": \"*\",\n      \"Action\": \"s3:GetObject\",\n      \"Resource\": \"arn:aws:s3:::my-bucket/public/*\"\n    }\n  ]\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During external security testing, an insecure cloud storage configuration was identified in an application-associated Amazon S3 storage environment. The storage bucket permits unauthenticated users to perform object-listing operations through the S3 ListBucket API. As a result, an external user can send a request to the bucket’s root endpoint and retrieve an XML response containing the names of stored objects, directory prefixes, object metadata, and the bucket owner’s canonical identifier. The listing operation is accessible without authentication or valid AWS credentials. Testing revealed th",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
+    "id": "acfecb7c4865",
+    "title": "From P4 to P1: Day 17 — Advanced SSRF Testing: URL Validation Bypasses, Redirects and DNS Rebinding",
+    "url": "https://medium.com/@cyb3rD1vvya/from-p4-to-p1-day-17-advanced-ssrf-testing-url-validation-bypasses-redirects-and-dns-rebinding-5f6d92dca0fa",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "cyb3rD1vvy@"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T05:04:24.000Z",
+    "added_at": "2026-11-15T06:38:58.425Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "Advanced SSRF exploits inconsistencies in how servers parse URLs, handle redirects, and resolve DNS to bypass security filters and access internal resources.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability occurs when an application uses different libraries or logic to validate a URL versus actually fetching it. This leads to 'parser differentials' where a validator sees a safe domain, but the HTTP client sees a malicious one, or when the app fails to re-validate a destination after following a 302 redirect.",
+      "walkthrough": "RECON\n1. Identify a feature that fetches external content, such as a profile picture uploader or a link preview generator.\n2. Locate the parameter used to provide the URL.\nGET /fetch?url=https://example.com/image.jpg\nWhy: This is the 'endpoint' (a specific web address for a function) where we will inject our 'payload' (malicious input).\n\nDISCOVERY\n3. Test if the server allows arbitrary domains by providing a URL to a server you control.\n4. If blocked, test for 'substring matching' by appending the allowed domain to your own.\nhttp://attacker.com?ignore=approved.com\nWhy: Some apps only check if the 'approved' string exists anywhere in the URL rather than checking the actual 'hostname' (the site name).\n\nEXPLOITATION: REDIRECTS\n5. Set up a server (Server A) that you control to respond with a '302 Redirect' (a command telling the requester to go elsewhere).\n6. Configure Server A to redirect to an internal IP address like 127.0.0.1 (the server's own internal 'loopback' address).\n7. Submit the URL of Server A to the vulnerable application.\nGET /fetch?url=http://your-server-a.com/redirect\nWhy: The application validates Server A as safe, but when it makes the 'HTTP request' (the message asking for data), it follows the redirect to the internal target without re-checking it.\n\nEXPLOITATION: DNS REBINDING\n8. Use a custom DNS server (DNS is the 'phonebook' of the internet that turns names into numbers).\n9. Configure the DNS server to have a very short 'TTL' (Time To Live, which tells the computer how long to remember the address).\n10. Set the DNS server to return a safe IP address (e.g., 1.1.1.1) on the first request and a malicious internal IP (e.g., 192.168.1.1) on the second request.\n11. Submit your custom domain to the application.\nGET /fetch?url=http://rebind.your-domain.com\nWhy: This exploits a 'TOCTOU' (Time-of-Check to Time-of-Use) flaw. The app checks the DNS, sees it is safe, then a split-second later, the 'HTTP client' (the software making the connection) asks DNS again and gets the internal IP.\n\nIMPACT\n12. Observe the response to see if internal data (like cloud metadata or local configuration files) is returned.\nGET http://169.254.169.254/latest/meta-data/\nWhy: This is a specific address used by cloud servers (like AWS) to store sensitive credentials. Accessing it via SSRF is a 'critical' impact.",
+      "example": "A fictional website 'target.example' has a feature to 'Import from URL'. It only allows URLs from 'trusted.example'. An attacker creates a subdomain 'trusted.example.attacker.com'. The server's simple check sees 'trusted.example' in the string and allows it. Alternatively, the attacker uses a URL like 'http://trusted.example@internal-admin-panel.local'. The validator thinks the host is 'trusted.example' (treating the rest as user info), but the fetching library ignores the first part and connects to the internal admin panel.",
+      "takeaway": "Always look for features that process URLs and test how they handle 'edge cases' like redirects and DNS changes. Use tools like Burp Collaborator to detect 'out-of-band' (OOB) interactions where the server reaches out to you. A common mistake is assuming that if 'http://127.0.0.1' is blocked, the feature is secure; advanced hunters will try IPv6, decimal IP representations, or redirect chains to find the bypass.",
+      "fix": "To fix this, implement a strict allowlist of hostnames and resolve the DNS name to an IP address exactly once. Validate that the resolved IP is not in a private or restricted range (like 10.0.0.0/8 or 127.0.0.1). Finally, ensure the HTTP client connects directly to that validated IP address rather than re-resolving the hostname, and disable automatic redirect following.\n\nExample (Pseudo-code):\n1. ip = resolve_dns(user_url.host)\n2. if is_private(ip): throw Error('Blocked')\n3. fetch_content(ip, headers={'Host': user_url.host}, allow_redirects=false)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "In Day 10, we explored the fundamentals of Server-Side Request Forgery (SSRF), including URL-handling functionality, controlled callbacks, and basic validation. But identifying a URL-fetching feature is only the beginning. Modern applications often implement destination validation to prevent SSRF. They may use hostname allowlists, IP address restrictions, URL parsers, redirect controls, and network-level security policies. However, these protections can fail when different components interpret the same URL differently. Imagine an application that accepts URLs only from approved domains. The ap",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "3ae611848ee5",
+    "title": "Information Disclosure — Intercom Identity Verification secret (HMAC key) is hard-coded in…",
+    "url": "https://medium.com/@jokodfir/information-disclosure-intercom-identity-verification-secret-hmac-key-is-hard-coded-in-59a6413bfd0d",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Joko Purwanto"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T02:21:00.000Z",
+    "added_at": "2026-11-15T06:39:11.056Z",
+    "categories": [
+      "info-disclosure",
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A web application exposed its Intercom HMAC secret key within a public JavaScript bundle, allowing attackers to forge identity hashes and impersonate any user to access private support conversations.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a fundamental architectural error where a cryptographic secret, intended only for server-side use, was included in the client-side JavaScript bundle. Specifically, the application used the CryptoJS library to calculate the Intercom 'user_hash' directly in the browser. This required the HMAC secret key to be present in the plaintext JavaScript code, making it accessible to any visitor who inspected the site's source files. Because the application used sequential integers for member IDs, an attacker could easily guess other users' IDs and use the exposed secret to generate valid authentication tokens for them.",
+      "walkthrough": "RECON\n1. Open the target website and access the browser's Developer Tools (usually F12).\n2. Navigate to the 'Sources' or 'Network' tab to view the JavaScript bundles (files containing the code that runs the website).\n\nDISCOVERY\n3. Search through the JavaScript files for keywords like 'Intercom', 'secret', or 'user_hash'.\n4. Locate the specific file (e.g., ***.js) where the Intercom Messenger is initialized.\n5. Identify the hard-coded HMAC secret key and the logic used to generate the user hash.\nCryptoJS.HmacSHA256(member_id, \"EXPOSED_SECRET_KEY\")\nWhy: The researcher found the actual secret key used for 'Identity Verification' (a security feature to prove who a user is) sitting in plain text (unencrypted, readable text) inside the code.\n\nEXPLOITATION\n6. Note your own member ID, which is a sequential integer (a whole number that follows a predictable order, like 101, 102, 103).\n7. Use a tool like an online HMAC generator or a local script to test if you can recreate the hash the browser is sending.\n8. Input your member ID and the discovered secret key into the HMAC-SHA256 function.\n9. Compare the output to the 'user_hash' sent in the network request to Intercom; the researcher confirmed they matched byte-for-byte.\n10. To impersonate another user, pick a different member ID (e.g., if yours is 1005, try 1004).\n11. Generate a new 'user_hash' using the target's ID and the stolen secret key.\n\nIMPACT\n12. Manually trigger the Intercom 'boot' function in the browser console using the victim's ID and the forged hash.\nIntercom('boot', { app_id: '***', user_id: 'VICTIM_ID', user_hash: 'FORGED_HASH' });\nWhy: This tells the Intercom chat widget to log in as the victim. Because the hash is valid (signed with the correct secret), Intercom trusts the identity.\n13. Observe that the chat widget now displays the victim's private support history, which may contain PII (Personally Identifiable Information, like names or account details).",
+      "example": "Imagine a site 'target.example' that uses a chat service. To keep chats private, the service requires a 'signature'. \n\nVulnerable Code (in the browser):\nconst secret = 'super-secret-123';\nconst userId = '55';\nconst signature = generateHMAC(userId, secret);\n\nAn attacker views the source code, sees 'super-secret-123', and realizes they can now create a signature for 'userId: 56'. \n\nAttack Request:\nhttps://chat-service.example/load?user=56&sig=calculated_hash_for_56\n\nBecause the attacker has the secret, they can generate the correct signature for any user ID, bypassing the security check that was supposed to happen on the server.",
+      "takeaway": "Always assume that any code or data sent to the browser is public knowledge. Cryptographic secrets used for signing (like HMAC keys) must never leave the server. When hunting, look for 'Identity Verification' features in third-party integrations like Intercom, Zendesk, or HelpScout, and check if the 'hash' or 'signature' is being calculated in the frontend. A common sign of this is seeing libraries like CryptoJS or Forge being used alongside hard-coded strings that look like API keys or secrets. Also, watch for sequential IDs (1, 2, 3...) which make it trivial to scale an attack once a secret is found.",
+      "fix": "The 'user_hash' must be calculated on the backend server where the secret key can be stored securely in environment variables. The server should generate the hash for the currently logged-in user and pass only the resulting hash to the frontend. \n\nFixed Backend Code (Node.js example):\nconst crypto = require('crypto');\nconst userHash = crypto.createHmac('sha256', process.env.INTERCOM_SECRET).update(user.id).digest('hex');\nres.render('index', { userHash });\n\nAdditionally, the compromised secret must be rotated (changed) immediately in the Intercom settings, as it is now known to the public.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "## Summary The web application target (***) integrates Intercom’s Messenger with **Identity Verification** (Intercom’s HMAC-based anti-impersonation feature). The whole point of Identity Verification is that the browser should only ever receive a pre-computed `user_hash`; the **secret key used to compute it must stay on the server**. The web application target (***) does the opposite: it computes the `user_hash` **in the browser**, which means the secret key is shipped to every visitor inside a JavaScript bundle. I found the key sitting in plaintext in `***.js`, and I confirmed it’s the real,",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "e08cf16c1494",
     "title": "Pre-Auth Account Takeover via Broken Password Reset in a Legacy Mobile API",
     "url": "https://medium.com/@youssefezzat.pt/pre-auth-account-takeover-via-broken-password-reset-in-a-legacy-mobile-api-f1b0b63dc1a6",

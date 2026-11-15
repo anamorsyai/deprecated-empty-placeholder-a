@@ -1,5 +1,46 @@
 [
   {
+    "id": "8eba930dabfe",
+    "title": "P4 Anonymous S3 Bucket Object Listing Leading to Cloud Storage Information Disclosure",
+    "url": "https://medium.com/@akashmotkar001/p4anonymous-s3-bucket-object-listing-leading-to-cloud-storage-information-disclosure-555ee8a3e796",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T06:34:55.000Z",
+    "added_at": "2026-11-15T06:38:43.316Z",
+    "categories": [
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "An Amazon S3 bucket was misconfigured to allow unauthenticated users to list all stored files and directory structures via the ListBucket API. This exposure allows attackers to map out the cloud storage infrastructure and identify potentially sensitive files.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is an overly permissive Amazon S3 bucket policy that grants the 's3:ListBucket' permission to anonymous users. In cloud storage, permissions are often split between 'reading a file' and 'listing the contents of a folder'; here, the administrator mistakenly allowed anyone on the internet to perform the listing operation. This typically happens when 'Public Access' is enabled for the entire bucket instead of specific files.",
+      "walkthrough": "RECONNAISSANCE\n1. Identify the target's cloud storage endpoint, usually found by inspecting web traffic or source code for URLs ending in '.s3.amazonaws.com'.\n2. Define HTTP Request: A message sent from a client to a server to ask for data.\n3. Define Endpoint: A specific URL where a web service or resource can be accessed.\n\nDISCOVERY\n4. Test if the bucket allows anonymous listing by sending a request to the root URL with the 'list-type=2' parameter.\ncurl -sS -i \"https://<affected-storage-host>/?list-type=2\"\nWhy: The 'list-type=2' parameter is the standard way to ask an S3 bucket to show its contents using the modern API version. The '-i' flag shows the HTTP headers to see if the server says '200 OK' (success) or '403 Forbidden' (blocked).\n5. Define Parameter: A piece of information added to a URL (after the '?') to tell the server exactly what to do.\n\nEXPLOITATION\n6. Retrieve the full list of files and format it so it is readable.\ncurl -sS \"https://<affected-storage-host>/?list-type=2\" | xmllint --format -\nWhy: This command downloads the raw data and uses 'xmllint' to turn the messy XML code into a structured, readable list. (XML is a text format used to store and transport data).\n7. Define Payload: The specific part of an attack that performs the malicious action; here, it is the URL query.\n8. Examine the XML response for the '<Key>' tags, which contain the names of every file in the bucket.\n9. Look for the '<IsTruncated>' tag in the response.\n<IsTruncated>true</IsTruncated>\nWhy: If this is 'true', it means there are more than 1,000 files and you haven't seen them all yet.\n10. Retrieve the 'NextContinuationToken' from the XML to fetch the next batch of files.\ncurl -sS \"https://<affected-storage-host>/?list-type=2&continuation-token=<TOKEN>\"\nWhy: This tells the S3 API to start the list from where the last request left off, allowing you to see every single file stored.\n\nIMPACT\n11. Review the list of filenames (keys) to identify sensitive data like backups, configuration files, or private documents.\n12. In this specific case, the researcher found documentation, CSS, and PDFs, confirming the infrastructure was exposed even if high-value secrets were not present.",
+      "example": "Imagine a company called 'SecureCorp' uses an S3 bucket at 'https://securecorp-data.s3.amazonaws.com' to host their website images. An administrator wants the images to be public, so they accidentally click 'Allow Public Access' for the entire bucket. A researcher visits 'https://securecorp-data.s3.amazonaws.com/?list-type=2' and receives an XML file. Inside the XML, they see a file named '<Key>internal/salaries_2024.csv</Key>'. Even though the researcher didn't have a password, the bucket 'listed' the secret file's existence, allowing the researcher to then try to download that specific file directly.",
+      "takeaway": "Always check S3 buckets by appending '?list-type=2' to the base URL. If you get an XML response starting with '<ListBucketResult>', the bucket is misconfigured. Look for this pattern during recon by scanning for S3 URLs in JavaScript files or 'Content-Security-Policy' headers. A common mistake is assuming that because files are 'public', the 'list' must also be public; these are two separate permissions that must be hardened independently.",
+      "fix": "The fix involves two steps: First, modify the S3 Bucket Policy or Access Control List (ACL) to remove 'List' permissions for 'Everyone' or 'Any Authenticated AWS User'. Second, enable 'S3 Block Public Access' at the bucket or account level to prevent accidental exposure. If files must be public, use a Content Delivery Network (CDN) like CloudFront with 'Origin Access Control' (OAC) so users can only access specific files through the CDN, while the bucket itself remains completely private.\n\nExample Policy Snippet (Restricting to specific actions):\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": \"*\",\n      \"Action\": \"s3:GetObject\",\n      \"Resource\": \"arn:aws:s3:::my-bucket/public/*\"\n    }\n  ]\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "During external security testing, an insecure cloud storage configuration was identified in an application-associated Amazon S3 storage environment. The storage bucket permits unauthenticated users to perform object-listing operations through the S3 ListBucket API. As a result, an external user can send a request to the bucket’s root endpoint and retrieve an XML response containing the names of stored objects, directory prefixes, object metadata, and the bucket owner’s canonical identifier. The listing operation is accessible without authentication or valid AWS credentials. Testing revealed th",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
     "id": "1637618db515",
     "title": "How a Cache Keys Mismatch Led to a Web Cache Deception Account Takeover",
     "url": "https://medium.com/@t4nv1/how-a-cache-keys-mismatch-led-to-a-web-cache-deception-account-takeover-1b8e934e522a",

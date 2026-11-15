@@ -1,5 +1,45 @@
 [
   {
+    "id": "acfecb7c4865",
+    "title": "From P4 to P1: Day 17 — Advanced SSRF Testing: URL Validation Bypasses, Redirects and DNS Rebinding",
+    "url": "https://medium.com/@cyb3rD1vvya/from-p4-to-p1-day-17-advanced-ssrf-testing-url-validation-bypasses-redirects-and-dns-rebinding-5f6d92dca0fa",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "cyb3rD1vvy@"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T05:04:24.000Z",
+    "added_at": "2026-11-15T06:38:58.425Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "Advanced SSRF exploits inconsistencies in how servers parse URLs, handle redirects, and resolve DNS to bypass security filters and access internal resources.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability occurs when an application uses different libraries or logic to validate a URL versus actually fetching it. This leads to 'parser differentials' where a validator sees a safe domain, but the HTTP client sees a malicious one, or when the app fails to re-validate a destination after following a 302 redirect.",
+      "walkthrough": "RECON\n1. Identify a feature that fetches external content, such as a profile picture uploader or a link preview generator.\n2. Locate the parameter used to provide the URL.\nGET /fetch?url=https://example.com/image.jpg\nWhy: This is the 'endpoint' (a specific web address for a function) where we will inject our 'payload' (malicious input).\n\nDISCOVERY\n3. Test if the server allows arbitrary domains by providing a URL to a server you control.\n4. If blocked, test for 'substring matching' by appending the allowed domain to your own.\nhttp://attacker.com?ignore=approved.com\nWhy: Some apps only check if the 'approved' string exists anywhere in the URL rather than checking the actual 'hostname' (the site name).\n\nEXPLOITATION: REDIRECTS\n5. Set up a server (Server A) that you control to respond with a '302 Redirect' (a command telling the requester to go elsewhere).\n6. Configure Server A to redirect to an internal IP address like 127.0.0.1 (the server's own internal 'loopback' address).\n7. Submit the URL of Server A to the vulnerable application.\nGET /fetch?url=http://your-server-a.com/redirect\nWhy: The application validates Server A as safe, but when it makes the 'HTTP request' (the message asking for data), it follows the redirect to the internal target without re-checking it.\n\nEXPLOITATION: DNS REBINDING\n8. Use a custom DNS server (DNS is the 'phonebook' of the internet that turns names into numbers).\n9. Configure the DNS server to have a very short 'TTL' (Time To Live, which tells the computer how long to remember the address).\n10. Set the DNS server to return a safe IP address (e.g., 1.1.1.1) on the first request and a malicious internal IP (e.g., 192.168.1.1) on the second request.\n11. Submit your custom domain to the application.\nGET /fetch?url=http://rebind.your-domain.com\nWhy: This exploits a 'TOCTOU' (Time-of-Check to Time-of-Use) flaw. The app checks the DNS, sees it is safe, then a split-second later, the 'HTTP client' (the software making the connection) asks DNS again and gets the internal IP.\n\nIMPACT\n12. Observe the response to see if internal data (like cloud metadata or local configuration files) is returned.\nGET http://169.254.169.254/latest/meta-data/\nWhy: This is a specific address used by cloud servers (like AWS) to store sensitive credentials. Accessing it via SSRF is a 'critical' impact.",
+      "example": "A fictional website 'target.example' has a feature to 'Import from URL'. It only allows URLs from 'trusted.example'. An attacker creates a subdomain 'trusted.example.attacker.com'. The server's simple check sees 'trusted.example' in the string and allows it. Alternatively, the attacker uses a URL like 'http://trusted.example@internal-admin-panel.local'. The validator thinks the host is 'trusted.example' (treating the rest as user info), but the fetching library ignores the first part and connects to the internal admin panel.",
+      "takeaway": "Always look for features that process URLs and test how they handle 'edge cases' like redirects and DNS changes. Use tools like Burp Collaborator to detect 'out-of-band' (OOB) interactions where the server reaches out to you. A common mistake is assuming that if 'http://127.0.0.1' is blocked, the feature is secure; advanced hunters will try IPv6, decimal IP representations, or redirect chains to find the bypass.",
+      "fix": "To fix this, implement a strict allowlist of hostnames and resolve the DNS name to an IP address exactly once. Validate that the resolved IP is not in a private or restricted range (like 10.0.0.0/8 or 127.0.0.1). Finally, ensure the HTTP client connects directly to that validated IP address rather than re-resolving the hostname, and disable automatic redirect following.\n\nExample (Pseudo-code):\n1. ip = resolve_dns(user_url.host)\n2. if is_private(ip): throw Error('Blocked')\n3. fetch_content(ip, headers={'Host': user_url.host}, allow_redirects=false)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "In Day 10, we explored the fundamentals of Server-Side Request Forgery (SSRF), including URL-handling functionality, controlled callbacks, and basic validation. But identifying a URL-fetching feature is only the beginning. Modern applications often implement destination validation to prevent SSRF. They may use hostname allowlists, IP address restrictions, URL parsers, redirect controls, and network-level security policies. However, these protections can fail when different components interpret the same URL differently. Imagine an application that accepts URLs only from approved domains. The ap",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "862816316cdf",
     "title": "The $8,000 Kubernetes SSRF Bug Bounty: How One Hidden HTTP Header Revealed an Entire Internal…",
     "url": "https://medium.com/@asadmohsin760/the-8-000-kubernetes-ssrf-bug-bounty-how-one-hidden-http-header-revealed-an-entire-internal-6de68593408a",
