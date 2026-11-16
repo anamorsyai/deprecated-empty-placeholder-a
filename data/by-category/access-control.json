@@ -1,5 +1,46 @@
 [
   {
+    "id": "f3613156e0ee",
+    "title": "How I Escalated from Operator to Admin on a Leading Travel Platform on Hackerone Via GraphQL…",
+    "url": "https://medium.com/@sebasvargas2/cross-supplier-privilege-escalation-how-i-escalated-from-operator-to-admin-on-a-leading-travel-614a67f459ab",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Sebastian Vargas"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": null,
+    "published_at": "2026-11-16T05:21:58.000Z",
+    "added_at": "2026-11-16T20:55:10.610Z",
+    "categories": [
+      "graphql",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher demonstrated a privilege escalation from 'Operator' to 'Admin' on a travel platform by exploiting vulnerabilities in its GraphQL API implementation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website called target.example that uses GraphQL, a special language for talking to databases. A user named 'Alex' has an 'Operator' account, which only lets them view bookings. Alex finds a 'mutation' (a command to change information) called 'editUser'. \n\nExample Vulnerable Request: \nPOST /graphql \n{ \"query\": \"mutation { editUser(userID: \\\"99\\\", role: \\\"ADMIN\\\") { id role } }\" } \n\nIn this request, 'POST' is a type of message sent to a server, '/graphql' is the 'endpoint' (the specific digital door we are knocking on), and 'role' is a 'parameter' (a specific detail we are providing). \n\nWhy it works: The server is 'vulnerable' (weak) because it sees the command to change the 'role' to 'ADMIN' and just does it. It fails to check if Alex actually has the power to change roles. By simply adding the word 'role' and 'ADMIN' to their request, Alex tricks the system into giving them full 'Admin' (administrator) powers. (An administrator is a user with the highest level of control over a system).",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "2982f7297d40",
     "title": "The Internal Tool T-Mobile Forgot Was Facing the Public Internet",
     "url": "https://medium.com/@l4zz3rj0d/the-internal-tool-t-mobile-forgot-was-facing-the-public-internet-010ce4ee0894",

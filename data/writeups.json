@@ -1,5 +1,45 @@
 [
   {
+    "id": "cb3225e02d36",
+    "title": "Stored HTML Injection in Munshi: A Profile Name Reached the Support Email as HTML",
+    "url": "https://medium.com/@TheWildEye/stored-html-injection-in-munshi-a-profile-name-reached-the-support-email-as-html-0fd4e946b6bf",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "TheWildEye"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-16T14:29:16.000Z",
+    "added_at": "2026-11-16T20:54:50.360Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An attacker could inject HTML tags into their profile name on Munshi, which were then executed as code within emails sent to the support team.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application allowed users to save profile names containing HTML characters without sanitization (the process of cleaning input to remove dangerous code). When the system generated a support email, it included the raw profile name directly in the email's body, causing the email client to render (display) the name as active HTML code instead of plain text.",
+      "walkthrough": "RECON\n1. Identify the profile settings area in the Munshi application where a user can change their display name.\n\nDISCOVERY\n2. Enter a simple HTML payload (a piece of code used to test a vulnerability) into the name field to see if the application accepts it.\n<u>Test</u>\nWhy: The <u> tag is used to underline text; if the name appears underlined later, the application is not filtering HTML.\n\nEXPLOITATION\n3. Save the profile name with a more noticeable HTML tag.\n<h1>Attacker</h1>\nWhy: The <h1> tag creates a large heading. This confirms the 'Stored' nature of the bug, meaning the code is saved in the database.\n4. Trigger a system action that results in an email being sent to the support team (such as submitting a support ticket or a contact form).\n\nIMPACT\n5. Observe the resulting email received by the support staff.\nWhy: The support staff sees a large heading saying 'Attacker' instead of a standard name, proving that the email client is executing the injected HTML. This could be used for phishing (tricking users into clicking fake links) by injecting <a> tags (links).",
+      "example": "On a fictional site target.example, a user changes their 'Company Name' to: <a href='http://evil.com'>Click to Verify Account</a>. When the user sends a message to the site administrator, the administrator's email client displays a clickable link instead of the company name. If the administrator clicks it, they could be directed to a fake login page designed to steal their credentials. This works because the email template uses a variable like {{user_company_name}} without first converting special characters like < and > into safe text equivalents.",
+      "takeaway": "Always test input fields that might be reflected in automated emails, such as names, addresses, or ticket subjects. Look for 'Stored' vulnerabilities where your input is saved and then displayed to a different user or administrator. A common variant is 'Email Header Injection,' but this specific case is 'Content Injection.' Beginners should remember that even if a website looks safe, the emails it sends might use a different, less secure way of handling your data.",
+      "fix": "The application should use HTML encoding (converting characters like < to &lt;) on all user-supplied data before including it in an email template. This ensures the email client treats the data as literal text rather than instructions. \n\nExample of fixed code (in Python):\nimport html\nuser_name = \"<h1>Attacker</h1>\"\nsafe_name = html.escape(user_name)\nemail_body = f\"Support request from: {safe_name}\"",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "e747c8c759c5",
     "title": "How an Unhandled Unicode Normalization Mismatch Led to a $5,000 Account Takeover",
     "url": "https://medium.com/@t4nv1/how-an-unhandled-unicode-normalization-mismatch-led-to-a-5-000-account-takeover-acb4869c225f",
@@ -38,6 +78,47 @@
     "ai_generated": true,
     "engagement": null,
     "score": 53
+  },
+  {
+    "id": "f3613156e0ee",
+    "title": "How I Escalated from Operator to Admin on a Leading Travel Platform on Hackerone Via GraphQL…",
+    "url": "https://medium.com/@sebasvargas2/cross-supplier-privilege-escalation-how-i-escalated-from-operator-to-admin-on-a-leading-travel-614a67f459ab",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Sebastian Vargas"
+    ],
+    "program": null,
+    "platform_slug": "hackerone",
+    "bounty_raw": null,
+    "published_at": "2026-11-16T05:21:58.000Z",
+    "added_at": "2026-11-16T20:55:10.610Z",
+    "categories": [
+      "graphql",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher demonstrated a privilege escalation from 'Operator' to 'Admin' on a travel platform by exploiting vulnerabilities in its GraphQL API implementation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website called target.example that uses GraphQL, a special language for talking to databases. A user named 'Alex' has an 'Operator' account, which only lets them view bookings. Alex finds a 'mutation' (a command to change information) called 'editUser'. \n\nExample Vulnerable Request: \nPOST /graphql \n{ \"query\": \"mutation { editUser(userID: \\\"99\\\", role: \\\"ADMIN\\\") { id role } }\" } \n\nIn this request, 'POST' is a type of message sent to a server, '/graphql' is the 'endpoint' (the specific digital door we are knocking on), and 'role' is a 'parameter' (a specific detail we are providing). \n\nWhy it works: The server is 'vulnerable' (weak) because it sees the command to change the 'role' to 'ADMIN' and just does it. It fails to check if Alex actually has the power to change roles. By simply adding the word 'role' and 'ADMIN' to their request, Alex tricks the system into giving them full 'Admin' (administrator) powers. (An administrator is a user with the highest level of control over a system).",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
   },
   {
     "id": "2982f7297d40",
