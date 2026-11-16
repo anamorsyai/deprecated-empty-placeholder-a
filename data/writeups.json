@@ -1,5 +1,87 @@
 [
   {
+    "id": "e747c8c759c5",
+    "title": "How an Unhandled Unicode Normalization Mismatch Led to a $5,000 Account Takeover",
+    "url": "https://medium.com/@t4nv1/how-an-unhandled-unicode-normalization-mismatch-led-to-a-5-000-account-takeover-acb4869c225f",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-16T08:21:01.000Z",
+    "added_at": "2026-11-16T11:02:31.822Z",
+    "categories": [
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "A Unicode normalization mismatch allowed an attacker to bypass authentication and take over a user’s $5,000 account.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "2982f7297d40",
+    "title": "The Internal Tool T-Mobile Forgot Was Facing the Public Internet",
+    "url": "https://medium.com/@l4zz3rj0d/the-internal-tool-t-mobile-forgot-was-facing-the-public-internet-010ce4ee0894",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-15T15:14:40.000Z",
+    "added_at": "2026-11-16T11:02:45.017Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "recon"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An internal T-Mobile tool was discovered to be accessible over the public internet, bypassing intended network restrictions and exposing internal functions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume the company 'target.example' uses an internal dashboard for managing servers. A Subdomain (a prefix like 'admin' added to a main domain name) called 'internal-panel.target.example' is created. The developer intends for this to be private, but forgets to set up an Access Control List (a set of rules that decides who can see a resource). A researcher uses a tool to guess common subdomains and finds it. \n\nAttack Request:\nGET /admin/users HTTP/1.1\nHost: internal-panel.target.example\n\nWhy: The Web Server (software that delivers web pages) is configured to listen to all incoming traffic from the public internet instead of being restricted to the company's VPN (a secure private tunnel for employees). Because there is no Authentication (a process to verify who a user is, like a login), the researcher can see all internal user data immediately.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "80fd0cab8a65",
     "title": "How I Found an Admin Session That Refused to Die — A Role-Based Access Control Horror Story",
     "url": "https://medium.com/@muhameddkhalid/how-i-found-an-admin-session-that-refused-to-die-a-role-based-access-control-horror-story-f5673a2bb25d",
