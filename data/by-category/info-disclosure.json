@@ -1,5 +1,46 @@
 [
   {
+    "id": "d34d33073380",
+    "title": "I Ignored a NEXT_PUBLIC_ Token for a Week. Then It Unlocked Blind SQLi and the Whole Database",
+    "url": "https://medium.com/@akash.sundaramoorthi1/i-ignored-a-next-public-token-for-a-week-then-it-unlocked-blind-sqli-and-the-whole-database-6b61f3c1e07d",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash Sundaramoorthi"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T05:48:03.000Z",
+    "added_at": "2026-11-17T20:46:57.008Z",
+    "categories": [
+      "sqli",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A leaked NEXT_PUBLIC_ environment variable provided access to a restricted interface, which was found to be vulnerable to Blind SQL Injection, allowing for full database extraction.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "In this scenario, we look at a fictional target 'target.example'.\n\n1. **The Leak**: A developer creates a file to store settings called an Environment Variable (a configuration value stored outside the application code). They name a sensitive key 'NEXT_PUBLIC_INTERNAL_API_KEY=7a8b9c'. Because it starts with 'NEXT_PUBLIC_', the Next.js framework automatically sends this key to every user's Browser (the software like Chrome used to view websites).\n\n2. **The Discovery**: An attacker opens the browser's developer tools, searches for 'NEXT_PUBLIC', and finds the key. They also find a hidden Endpoint (a specific web address used by computers to talk to each): 'https://api.target.example/v2/inventory'.\n\n3. **The Vulnerability**: The attacker tries to use the key to see the inventory by sending an HTTP Request (a message sent from a browser to a server):\n`GET /v2/inventory?item=laptop&token=7a8b9c HTTP/1.1` \nThe server responds with a list of laptops.\n\n4. **The SQL Injection**: The attacker tests if the 'item' Parameter (a piece of data sent in the URL) is handled safely. They send a single quote ('), which is a special character in SQL (the language used to talk to databases). \n`GET /v2/inventory?item=laptop'&token=7a8b9c HTTP/1.1` \nThe server returns an error, suggesting the quote broke the database command.\n\n5. **The Blind Exploit**: The attacker uses a 'Blind' technique, asking the database a True/False question. This is called Blind SQLi (a vulnerability where an attacker infers data by observing how the server responds to logic tests).\n`GET /v2/inventory?item=laptop' AND (SELECT 1)=1--&token=7a8b9c HTTP/1.1` \nBecause '1=1' is True, the page loads normally. If they change it to '1=2' (False), the page returns no results. The '--' tells the database to ignore the rest of the original command.\n\n6. **Data Theft**: The attacker can now ask: 'Is the first letter of the admin password A?'\n`GET /v2/inventory?item=laptop' AND (SELECT SUBSTR(password,1,1) FROM users WHERE role='admin')='A'--&token=7a8b9c HTTP/1.1` \nBy automating this for every letter, the attacker steals the entire database.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "2982f7297d40",
     "title": "The Internal Tool T-Mobile Forgot Was Facing the Public Internet",
     "url": "https://medium.com/@l4zz3rj0d/the-internal-tool-t-mobile-forgot-was-facing-the-public-internet-010ce4ee0894",

