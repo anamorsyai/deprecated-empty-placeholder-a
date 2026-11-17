@@ -1,5 +1,47 @@
 [
   {
+    "id": "b00084975190",
+    "title": "Soft-Deleted, Still Editable: BOLA in Munshi’s Invoice API",
+    "url": "https://medium.com/@TheWildEye/soft-deleted-still-editable-bola-in-munshis-invoice-api-93e82bfee165",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "TheWildEye"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-16T13:36:48.000Z",
+    "added_at": "2026-11-17T12:04:28.425Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An authenticated user could modify financial data in soft-deleted invoices by sending a PUT request to a specific API endpoint that lacked ownership and lifecycle state checks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from two primary failures: a lack of Broken Object Level Authorization (BOLA) and missing lifecycle state validation. The application uses 'soft deletion,' where a record is marked as deleted (is_deleted = 1) rather than being removed, but the update endpoint /api/invoice/{invoice_id}/extracted-data failed to check this flag before processing changes. Furthermore, the server did not verify if the authenticated user making the request actually owned the invoice or had the 'invoice_edit' permission. This allowed any logged-in user to overwrite critical financial data on any invoice ID they knew, even if that invoice was archived.",
+      "walkthrough": "RECON\n1. Identify the target application's invoice management system and how it handles record updates.\n2. Observe that deleting an invoice does not remove it from the database but sets a flag, a process called soft deletion (marking data as inactive instead of deleting it).\n\nDISCOVERY\n3. Locate the specific API endpoint used to update invoice details.\nPUT /api/invoice/{invoice_id}/extracted-data\nWhy: This is the endpoint (a specific web address for API tasks) that handles the 'extracted_data' parameter (a variable containing invoice details like totals and names).\n4. Capture a valid update request using a proxy tool to understand the required JSON (a text format for data) structure.\n\nEXPLOITATION\n5. Authenticate to the application as a standard user to obtain a valid session cookie (a small piece of data identifying your logged-in session).\n6. Identify the ID of an invoice that has already been soft-deleted by the owner.\n7. Construct a malicious PUT request targeting the deleted invoice ID.\nPUT /api/invoice/12345/extracted-data\nWhy: The researcher replaces the {invoice_id} in the URL with the ID of the target deleted record.\n8. Include a modified JSON payload in the request body to change financial values.\n{\n  \"extracted_data\": {\n    \"total_amount\": \"0.00\",\n    \"seller_name\": \"ATTACKER_CONTROLLED\"\n  }\n}\nWhy: The payload (the data sent in the request) contains the new values the attacker wants to force into the database.\n9. Send the request to the server.\n\nIMPACT\n10. Observe the server response to confirm the bypass.\nHTTP/1.1 200 OK\nWhy: A 200 OK response indicates the server accepted the update without checking if the invoice was deleted or if the user owned it.\n11. Verify the database state to confirm the data was overwritten.\nWhy: The researcher confirmed that while 'is_deleted' remained 1, the 'total_amount' and 'seller_name' were successfully changed.\n12. Note that this allows for the silent manipulation of historical financial records, destroying the integrity of the audit trail.",
+      "example": "Imagine a fictional site 'target.example' that lets users manage 'Project Proposals.' When a user cancels a proposal, the site marks it as 'status: cancelled' but keeps it in the database. A beginner researcher finds the update endpoint: PUT /api/v1/proposals/987/content. Even though proposal 987 is cancelled and belongs to a different user, the researcher sends a request: PUT /api/v1/proposals/987/content HTTP/1.1 with the body {\"budget\": \"$1,000,000\"}. Because the server only checks if the user is logged in, but not if they own proposal 987 or if proposal 987 is still 'active,' the budget is successfully changed. This works because the backend code likely looks like 'UPDATE proposals SET content = ? WHERE id = ?' without adding 'AND owner_id = ? AND status != \"cancelled\"'.",
+      "takeaway": "When hunting for BOLA, always test if 'finalized' or 'deleted' objects can still be modified. Developers often focus on hiding these records from the User Interface (UI) but forget to protect the backend API routes that handle updates. Look for endpoints that accept an ID in the URL and a large JSON object in the body, then try to swap the ID for one belonging to another user or an archived record. A common mistake is assuming that 'soft deletion' automatically makes a record read-only; it does not unless the developer explicitly adds a check for the deletion flag in every update function.",
+      "fix": "The backend must implement a multi-layered check before saving any updates. First, verify that the authenticated user's ID matches the 'owner_id' of the record in the database. Second, check the 'is_deleted' flag; if it is set to true, the API should return a 403 Forbidden or 400 Bad Request error. Third, use a strict schema to only allow updates to specific, non-sensitive fields. Example fix in pseudo-code: \n\nproposal = db.find(id)\nif (proposal.owner_id != current_user.id) { return Error(403) }\nif (proposal.is_deleted == true) { return Error(400, 'Cannot edit deleted records') }\nproposal.update(allowed_fields_only)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_Missing ownership and invoice-lifecycle checks allowed an authenticated user to overwrite financial data even after an invoice had been soft deleted._ > _“Deleting a record should stop it from being changed. In this case, the API never got that message.”_ While testing Munshi’s invoice functionality, I found that marking an invoice as deleted did not prevent its data from being modified through the backend API. The application uses soft deletion to archive invoices. Instead of permanently removing a record, it marks the invoice with `is_deleted = 1`. That state should prevent the invoice from",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "536b2a094cb3",
     "title": "How Peloton Confused Authentication with Authorization",
     "url": "https://medium.com/@l4zz3rj0d/how-peloton-confused-authentication-with-authorization-714b8b70116e",

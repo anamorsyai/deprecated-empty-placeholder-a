@@ -1,5 +1,46 @@
 [
   {
+    "id": "466dace8a94a",
+    "title": "How Trusting a Request Header Turned a Password Reset Into Account Takeover",
+    "url": "https://medium.com/@l4zz3rj0d/how-trusting-a-request-header-turned-a-password-reset-into-account-takeover-b95223be8c94",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T11:11:01.000Z",
+    "added_at": "2026-11-17T12:03:02.878Z",
+    "categories": [
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can hijack any user account by modifying the Host header in a password reset request, causing the site to send a legitimate reset email containing a link to the attacker's server.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application trusted the Host header—a piece of text sent by the user's browser—to construct the absolute URL for password reset links. Because the server used this untrusted input instead of a hardcoded domain, it allowed an attacker to 'poison' the link sent to victims, redirecting their secret reset tokens to a server controlled by the attacker.",
+      "walkthrough": "RECONNAISSANCE\n1. Locate the password reset page on the target website (Mavenlink).\n2. Enter a target email address to trigger a reset email.\n3. Observe that the legitimate email contains a link like https://mavenlink.com/users/password/edit?reset_password_token=xyz.\n\nDISCOVERY\n4. Open a proxy tool like Burp Suite (a program that lets you see and change data sent between your computer and a website).\n5. Trigger the password reset request again, but intercept it before it reaches the server.\n6. Identify the Host header in the HTTP request (a line of text telling the server which website you are visiting).\n\nEXPLOITATION\n7. Change the Host header from the real domain to a domain you control.\nPOST /users/password HTTP/1.1\nHost: attacker-controlled-server.com\n...\nWhy: The server uses this header to decide what domain name to put in the email it is about to send.\n8. Forward the modified request to the server.\n9. The server processes the request normally, generates a real security token (a unique secret code used to prove identity), and sends an email to the victim's actual inbox.\n10. The victim receives a perfectly branded, legitimate email from Mavenlink, but the link inside is now: https://attacker-controlled-server.com/users/password/edit?reset_password_token=xyz.\n\nIMPACT\n11. The victim, trusting the email, clicks the link.\n12. The victim's browser sends a request to the attacker's server, including the secret token in the URL.\n13. The attacker checks their server logs (a text file recording every visit to a website) to find the token.\n14. The attacker visits the real Mavenlink reset page and uses the stolen token to set a new password, successfully taking over the account.",
+      "example": "Imagine a site called target.example. The code to send a reset email looks like this:\n\nString domain = request.getHeader(\"Host\");\nString resetLink = \"https://\" + domain + \"/reset?token=\" + secretToken;\nemailService.send(userEmail, \"Reset your password\", \"Click here: \" + resetLink);\n\nAn attacker sends a request to target.example but changes the Host header to 'evil-site.com'. The server generates a real token (e.g., 'abc123') and sends an email to the victim: 'Click here: https://evil-site.com/reset?token=abc123'. When the victim clicks, the attacker sees 'abc123' in their web logs and uses it on target.example to change the victim's password.",
+      "takeaway": "Always test if the Host header or other headers like X-Forwarded-Host are reflected in emails, redirects, or scripts. This is especially dangerous in 'out-of-band' features like password resets or user invitations where the output is sent to a third party (the victim) who trusts the source. A common mistake is assuming headers are safe because browsers set them automatically; however, attackers can easily manipulate them using simple tools. Look for this pattern whenever a site generates a full URL (including the domain) dynamically.",
+      "fix": "Never use the Host header or any other client-provided input to generate sensitive URLs like password reset links. Instead, hardcode the application's domain in a secure configuration file on the server. \n\nFixed code example:\nconst BASE_URL = \"https://mavenlink.com\";\nconst resetLink = `${BASE_URL}/users/password/edit?token=${secretToken}`;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Real World Bug Hunting Bug Hunting # How Trusting a Request Header Turned a Password Reset Into Account Takeover Image 2: L4ZZ3RJ0D L4ZZ3RJ0D 5 min read · Just now [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fb95223be8c94&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40l4zz3rj0d%2Fhow-trusting-a-request-header-turned-a-password-reset-into-account-takeover-b95223be8c94&user=L4ZZ3RJ0D&userId=360d5b561ffc&source=---header_actions--b95223be8c94---------------------clap_footer---------------------) 1 [](https://medium.com/m/signin?actionUrl=https%3A%2",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "4bf739e04759",
     "title": "From AI Prompt Injection to Authenticated XSS in a CRM Platform",
     "url": "https://medium.com/@abdelrahmanzourob5/from-ai-prompt-injection-to-authenticated-xss-in-a-crm-platform-d9523095793a",
