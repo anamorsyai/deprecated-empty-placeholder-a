@@ -1,5 +1,47 @@
 [
   {
+    "id": "4ab89c28031a",
+    "title": "How I Found IDOR, SQLi and XSS on NASA",
+    "url": "https://infosecwriteups.com/how-i-found-idor-sqli-and-xss-on-nasa-ac75c9bd555e",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Aditya Nail Emery"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-18T18:34:20.000Z",
+    "added_at": "2026-11-18T19:07:51.651Z",
+    "categories": [
+      "idor-bola",
+      "sqli",
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher identified three distinct vulnerabilities on NASA subdomains: a GraphQL IDOR allowing unauthorized product manipulation, a SQL injection via unsafe string concatenation, and a reflected XSS through script tag breakout.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerabilities stemmed from three distinct failures: the GraphQL API lacked authorization checks to verify if a user owned the product ID they were modifying; the SQL injection occurred because user input was directly concatenated into a database query string without prepared statements; and the XSS was caused by echoing a URL parameter directly into a JavaScript block without sanitizing or encoding the output.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher used AI tools to map out high-value attack surfaces across NASA subdomains.\n2. Identified a subdomain with a login system and a GraphQL endpoint at `api/graphql` (a modern way for apps to request specific data from a server).\n\nPHASE 1: GRAPHQL IDOR\n3. Performed introspection (a feature that lets you ask the server for a map of all its data) to find the API schema.\n{\"query\":\"{__schema{queryType{fields{name description}} mutationType{fields{name description args{name type{name kind ofType{name kind}}}}}}}\"}\nWhy: This reveals every possible command (query) and data-changing action (mutation) the API supports.\n4. Discovered a mutation called `generateL2RasterProduct` and used it to find product IDs (UUIDs - long unique identification numbers) belonging to other users.\n{\"query\":\"mutation{generateL2RasterProduct(cycle:1,pass:1,scene:1,outputGranuleExtentFlag:false,outputSamplingGridType:UTM,rasterResolution:100,utmZoneAdjust:0,mgrsBandAdjust:0){id}}\"}\nWhy: By changing variables like `cycle` or `pass`, the researcher could find IDs they weren't supposed to see.\n5. Used the `invalidateProduct` mutation with a victim's ID to change its status.\n{\"query\":\"mutation{invalidateProduct(id:\\\"victim-uuid\\\"){id status{state}}}\"}\nWhy: The server failed to check if the current user actually owned the product ID, allowing them to disable other people's data (IDOR - a bug where you change someone else's data by guessing their ID).\n\nPHASE 2: SQL INJECTION\n6. Found a subdomain using Google Dorking (using advanced search filters to find specific files or parameters) that exposed parameters in the URL.\n7. Located the PHP source code for this page on GitHub and identified a vulnerable line: `$SearchQuery = \"'%\" . $SearchQuery . \"%'\";`.\n8. Crafted a payload to break out of the search query and run a database command.\ntypeOfRequest=MapData&Name=zzz' UNION SELECT sqlite_version(),'A','B','C','D','E','F','G'-- -\nWhy: The single quote (') closes the original search string, and UNION SELECT allows the attacker to append their own query results (like the database version) to the output.\n\nPHASE 3: REFLECTED XSS\n9. Found another endpoint in the GitHub source code where the `week` parameter was placed directly inside a `<script>` tag.\n10. Crafted a payload to break out of the existing script and start a new one.\nweek=</script><script>alert(1)</script>\nWhy: The `</script>` tag tells the browser to stop the current code block, and the next `<script>` tag forces it to run the attacker's code (XSS - injecting scripts into a website).",
+      "example": "Imagine a fictional site target.example that manages user profiles. \n\n1. IDOR: The site uses `https://target.example/api/delete_profile?id=100`. An attacker changes `id=100` to `id=101` and deletes another user's profile because the server doesn't check ownership.\n\n2. SQLi: The site has a search bar. The code is: `query = \"SELECT * FROM users WHERE name = '\" + user_input + \"'\";`. An attacker enters `' OR '1'='1` as the input. The final query becomes `SELECT * FROM users WHERE name = '' OR '1'='1'`, which returns every user in the database.\n\n3. XSS: The site has a greeting: `<script>var name = 'USER_INPUT';</script>`. An attacker provides `'; alert('Hacked'); //` as the input. The browser sees `<script>var name = ''; alert('Hacked'); //</script>`, executing the alert.",
+      "takeaway": "Always check for GraphQL introspection; if it's enabled, you can map the entire database structure. When you find parameters in a URL, search GitHub for the organization's public repositories to see if the source code is leaked, which makes finding SQLi and XSS much easier. A common mistake is assuming that UUIDs (long IDs) are 'secure by obscurity'—if there is a way to list them (like the cycle/pass variables here), the IDOR is still exploitable.",
+      "fix": "To fix IDOR, implement an authorization check on the server to ensure the requesting user owns the object ID. To fix SQLi, use Prepared Statements (parameterized queries) which treat input as data, not executable code. To fix XSS, use context-aware output encoding or a Content Security Policy (CSP) to prevent unauthorized scripts from running.\n\nExample Fix (SQLi):\n$stmt = $pdo->prepare('SELECT * FROM users WHERE Name LIKE ?');\n$stmt->execute([\"%$SearchQuery%\"]);",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Once I gathered all the subdomains and live hosts, I fed the data into an AI tool to help analyze and map out high-value attack surfaces. From there, I identified several subdomains that were worth exploring further. ## Part 1: Broken Access Control (IDOR) in GraphQL API During the reconnaissance process, I discovered an interesting subdomain featuring a login and register system, so I created two different accounts to test for IDOR. While exploring the functionality of the subdomain, I discovered an interesting endpoint: `api/graphql`, which allowed users to create products. Image 5 Press ent",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "4bf739e04759",
     "title": "From AI Prompt Injection to Authenticated XSS in a CRM Platform",
     "url": "https://medium.com/@abdelrahmanzourob5/from-ai-prompt-injection-to-authenticated-xss-in-a-crm-platform-d9523095793a",

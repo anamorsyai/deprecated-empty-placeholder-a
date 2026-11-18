@@ -1,5 +1,88 @@
 [
   {
+    "id": "4ab89c28031a",
+    "title": "How I Found IDOR, SQLi and XSS on NASA",
+    "url": "https://infosecwriteups.com/how-i-found-idor-sqli-and-xss-on-nasa-ac75c9bd555e",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "Aditya Nail Emery"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-18T18:34:20.000Z",
+    "added_at": "2026-11-18T19:07:51.651Z",
+    "categories": [
+      "idor-bola",
+      "sqli",
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher identified three distinct vulnerabilities on NASA subdomains: a GraphQL IDOR allowing unauthorized product manipulation, a SQL injection via unsafe string concatenation, and a reflected XSS through script tag breakout.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerabilities stemmed from three distinct failures: the GraphQL API lacked authorization checks to verify if a user owned the product ID they were modifying; the SQL injection occurred because user input was directly concatenated into a database query string without prepared statements; and the XSS was caused by echoing a URL parameter directly into a JavaScript block without sanitizing or encoding the output.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher used AI tools to map out high-value attack surfaces across NASA subdomains.\n2. Identified a subdomain with a login system and a GraphQL endpoint at `api/graphql` (a modern way for apps to request specific data from a server).\n\nPHASE 1: GRAPHQL IDOR\n3. Performed introspection (a feature that lets you ask the server for a map of all its data) to find the API schema.\n{\"query\":\"{__schema{queryType{fields{name description}} mutationType{fields{name description args{name type{name kind ofType{name kind}}}}}}}\"}\nWhy: This reveals every possible command (query) and data-changing action (mutation) the API supports.\n4. Discovered a mutation called `generateL2RasterProduct` and used it to find product IDs (UUIDs - long unique identification numbers) belonging to other users.\n{\"query\":\"mutation{generateL2RasterProduct(cycle:1,pass:1,scene:1,outputGranuleExtentFlag:false,outputSamplingGridType:UTM,rasterResolution:100,utmZoneAdjust:0,mgrsBandAdjust:0){id}}\"}\nWhy: By changing variables like `cycle` or `pass`, the researcher could find IDs they weren't supposed to see.\n5. Used the `invalidateProduct` mutation with a victim's ID to change its status.\n{\"query\":\"mutation{invalidateProduct(id:\\\"victim-uuid\\\"){id status{state}}}\"}\nWhy: The server failed to check if the current user actually owned the product ID, allowing them to disable other people's data (IDOR - a bug where you change someone else's data by guessing their ID).\n\nPHASE 2: SQL INJECTION\n6. Found a subdomain using Google Dorking (using advanced search filters to find specific files or parameters) that exposed parameters in the URL.\n7. Located the PHP source code for this page on GitHub and identified a vulnerable line: `$SearchQuery = \"'%\" . $SearchQuery . \"%'\";`.\n8. Crafted a payload to break out of the search query and run a database command.\ntypeOfRequest=MapData&Name=zzz' UNION SELECT sqlite_version(),'A','B','C','D','E','F','G'-- -\nWhy: The single quote (') closes the original search string, and UNION SELECT allows the attacker to append their own query results (like the database version) to the output.\n\nPHASE 3: REFLECTED XSS\n9. Found another endpoint in the GitHub source code where the `week` parameter was placed directly inside a `<script>` tag.\n10. Crafted a payload to break out of the existing script and start a new one.\nweek=</script><script>alert(1)</script>\nWhy: The `</script>` tag tells the browser to stop the current code block, and the next `<script>` tag forces it to run the attacker's code (XSS - injecting scripts into a website).",
+      "example": "Imagine a fictional site target.example that manages user profiles. \n\n1. IDOR: The site uses `https://target.example/api/delete_profile?id=100`. An attacker changes `id=100` to `id=101` and deletes another user's profile because the server doesn't check ownership.\n\n2. SQLi: The site has a search bar. The code is: `query = \"SELECT * FROM users WHERE name = '\" + user_input + \"'\";`. An attacker enters `' OR '1'='1` as the input. The final query becomes `SELECT * FROM users WHERE name = '' OR '1'='1'`, which returns every user in the database.\n\n3. XSS: The site has a greeting: `<script>var name = 'USER_INPUT';</script>`. An attacker provides `'; alert('Hacked'); //` as the input. The browser sees `<script>var name = ''; alert('Hacked'); //</script>`, executing the alert.",
+      "takeaway": "Always check for GraphQL introspection; if it's enabled, you can map the entire database structure. When you find parameters in a URL, search GitHub for the organization's public repositories to see if the source code is leaked, which makes finding SQLi and XSS much easier. A common mistake is assuming that UUIDs (long IDs) are 'secure by obscurity'—if there is a way to list them (like the cycle/pass variables here), the IDOR is still exploitable.",
+      "fix": "To fix IDOR, implement an authorization check on the server to ensure the requesting user owns the object ID. To fix SQLi, use Prepared Statements (parameterized queries) which treat input as data, not executable code. To fix XSS, use context-aware output encoding or a Content Security Policy (CSP) to prevent unauthorized scripts from running.\n\nExample Fix (SQLi):\n$stmt = $pdo->prepare('SELECT * FROM users WHERE Name LIKE ?');\n$stmt->execute([\"%$SearchQuery%\"]);",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Once I gathered all the subdomains and live hosts, I fed the data into an AI tool to help analyze and map out high-value attack surfaces. From there, I identified several subdomains that were worth exploring further. ## Part 1: Broken Access Control (IDOR) in GraphQL API During the reconnaissance process, I discovered an interesting subdomain featuring a login and register system, so I created two different accounts to test for IDOR. While exploring the functionality of the subdomain, I discovered an interesting endpoint: `api/graphql`, which allowed users to create products. Image 5 Press ent",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "98297cb88316",
+    "title": "The Metadata Nobody Reads: How a Government Portal Leaked Internal Usernames Across 15,000…",
+    "url": "https://infosecwriteups.com/the-metadata-nobody-reads-how-a-government-portal-leaked-internal-usernames-across-15-000-91194827019b",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "kjulius"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-18T18:30:07.000Z",
+    "added_at": "2026-11-18T19:08:13.833Z",
+    "categories": [
+      "info-disclosure",
+      "recon"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A government portal leaked internal infrastructure details including usernames, workstation IDs, and local filesystem paths embedded in the metadata of over 15,000 public documents.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a lack of metadata sanitization in the document publishing pipeline. Documents (PDFs and DOCX) were uploaded to the public portal exactly as they were saved by staff, meaning the authoring software (like Microsoft Word or Adobe Acrobat) automatically embedded internal system information. Because the site also published a comprehensive sitemap, an attacker could easily list and download thousands of files to harvest this data in bulk.",
+      "walkthrough": "RECON\n1. Visit the website's sitemap index to find the structure of the site.\nhttps://target.com/sitemap_index.xml\nWhy: A sitemap is a file that lists all the pages and files on a website so search engines can find them; it acts as a map for the attacker.\n2. Identify the sub-sitemaps containing document links.\ncurl https://target.com/sitemap_index.xml\nWhy: The researcher found 44 sub-sitemaps, which organized the site's 80,000+ URLs. (curl is a command-line tool used to download data from a URL).\n3. Extract all direct links to PDF and DOCX files from the sitemaps.\ngrep -oP 'https://target.com/.*\\.pdf' sitemap.xml\nWhy: This creates a target list of over 15,000 documents to analyze. (grep is a tool used to search for specific patterns in text).\n\nDISCOVERY\n4. Download a sample document to inspect its hidden properties.\ncurl -O https://target.com/documents/report_2023.pdf\nWhy: To check if the files contain metadata (hidden 'data about data' inside a file, like who created it).\n5. Use a metadata extraction tool to view the hidden fields.\nexiftool report_2023.pdf\nWhy: Exiftool is a program used to read and write metadata in files; it reveals fields that are not visible when simply opening the document.\n\nEXPLOITATION\n6. Analyze the 'Author' field for internal identifiers.\nAuthor: jsmith123\nWhy: The software automatically inserted the employee's internal login username into the document properties.\n7. Look for workstation naming patterns in the metadata.\nAuthor: jsmith123@W009821\nWhy: The '@W' suffix reveals the organization's internal naming convention for physical computers (workstations).\n8. Inspect XMP (Extensible Metadata Platform) data for local file paths.\nC:/Users/jsmith123/Desktop/Internal_Drafts/\nWhy: This reveals the exact folder structure on the employee's private computer, providing clues about internal projects.\n9. Check DOCX files for internal template GUIDs.\nunzip -p document.docx docProps/app.xml\nWhy: DOCX files are actually compressed folders; checking the 'docProps' file reveals unique ID numbers (GUIDs) for internal templates.\n\nIMPACT\n10. Automate the extraction across the entire corpus of 15,000+ files.\nWhy: By repeating these steps for every file in the sitemap, the researcher transformed a few 'nuisance' leaks into a massive directory of internal staff and machine names.",
+      "example": "Imagine a company 'target.example' that hosts a public 'Resources' folder. An employee creates a file called 'Policy.docx' on their work laptop. When they save it, Microsoft Word automatically adds their username ('admin_jane') and the path to their local folder ('C:\\Users\\admin_jane\\Documents\\Secret_Project\\') into the file's hidden properties. An attacker finds the file at 'http://target.example/resources/Policy.docx', downloads it, and runs 'exiftool Policy.docx'. The attacker now knows a valid internal username and the name of a secret project, which they can use for a targeted phishing attack.",
+      "takeaway": "Metadata is public content; if it stays in the file, it is published to the world. Security researchers should always check sitemaps first to understand the scale of an application's footprint. When hunting, look for 'Author', 'Creator', and 'Path' fields in PDFs, DOCX, and images (which may contain GPS coordinates). A single leak is low severity, but the ability to harvest thousands of usernames via a public sitemap elevates the risk to a significant reconnaissance surface.",
+      "fix": "The organization must implement a 'strip on ingest' policy where every file uploaded to the public portal is automatically cleaned of metadata. This can be done using a script that runs 'exiftool -all= [filename]' on every new file before it is moved to the public web server. Additionally, organizations should maintain two copies of documents: an original internal version with metadata for tracking, and a sanitized public version for the website.\n\n# Example fix using a shell command:\nexiftool -all= public_document.pdf",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A short writeup of a bulk-harvestable metadata leak, how I found it, and what it says about the way we publish documents._ A large public-sector document portal was serving every PDF and DOCX exactly as its authors had saved them — metadata intact. Buried in that metadata were internal staff account names, internal workstation identifiers, local filesystem paths containing usernames, and internal template GUIDs. The documents themselves are public by design. The bug was never about their content. It was about the _envelope_: the files carried internal infrastructure naming alongside them, in",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "7e2a7986d2b1",
     "title": "One API Request Exposed 14,000+ Email Addresses",
     "url": "https://medium.com/@hackwithabraham/one-api-request-exposed-14-000-email-addresses-182d3a560715",
