@@ -121,6 +121,47 @@
     "score": 60
   },
   {
+    "id": "eb3b52daa648",
+    "title": "I Started the Login. You Finished It. I Got Your Account.",
+    "url": "https://medium.com/@ali.zamini/i-started-the-login-you-finished-it-i-got-your-account-2c51f98f6ccb",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Ali Zamini"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T08:03:45.000Z",
+    "added_at": "2026-11-18T10:45:43.347Z",
+    "categories": [
+      "auth-bypass",
+      "oauth-jwt"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A flaw in the OAuth2 login flow let an attacker finish the authentication process for a victim, resulting in full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "55e7f29d25f5",
     "title": "P2 Broken Access Control Allowing Unauthorized Account Email Modification and Account Takeover",
     "url": "https://medium.com/@akashmotkar001/p2-broken-access-control-allowing-unauthorized-account-email-modification-and-account-takeover-dea75b86edf1",
