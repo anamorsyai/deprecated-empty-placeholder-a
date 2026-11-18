@@ -1,5 +1,45 @@
 [
   {
+    "id": "7e2a7986d2b1",
+    "title": "One API Request Exposed 14,000+ Email Addresses",
+    "url": "https://medium.com/@hackwithabraham/one-api-request-exposed-14-000-email-addresses-182d3a560715",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "xAbraham"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T22:09:27.000Z",
+    "added_at": "2026-11-18T02:40:35.807Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "A single API request allowed an attacker to retrieve over 14,000 user email addresses, leading to a significant information disclosure vulnerability.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website 'social.example' that has a feature to search for friends. When you search for a name, the website sends a request to an API (a system that allows two programs to talk to each other) at 'https://api.social.example/v1/search?name=john'. Instead of just returning the names and profile pictures, the server sends back a list of every user in the database, including their private email addresses. \n\nExample Request:\nGET /v1/users/all HTTP/1.1\nHost: api.social.example\n\nExample Response:\n[\n  {\n    \"id\": 1,\n    \"username\": \"john_doe\",\n    \"email\": \"john@private.com\"\n  },\n  {\n    \"id\": 2,\n    \"username\": \"jane_smith\",\n    \"email\": \"jane@secret.org\"\n  }\n]\n\nWhy it works: The developer forgot to filter the data. They used a 'SELECT *' query (a command to get every piece of information from a database table) and sent the entire result directly to the user's browser. A beginner might think this is fine because the email isn't shown on the screen, but anyone can open the 'Network' tab (a tool in the browser that shows all data coming in and out) to see the hidden data.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d34d33073380",
     "title": "I Ignored a NEXT_PUBLIC_ Token for a Week. Then It Unlocked Blind SQLi and the Whole Database",
     "url": "https://medium.com/@akash.sundaramoorthi1/i-ignored-a-next-public-token-for-a-week-then-it-unlocked-blind-sqli-and-the-whole-database-6b61f3c1e07d",

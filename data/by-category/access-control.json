@@ -81,6 +81,46 @@
     "score": 60
   },
   {
+    "id": "55e7f29d25f5",
+    "title": "P2 Broken Access Control Allowing Unauthorized Account Email Modification and Account Takeover",
+    "url": "https://medium.com/@akashmotkar001/p2-broken-access-control-allowing-unauthorized-account-email-modification-and-account-takeover-dea75b86edf1",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T06:46:13.000Z",
+    "added_at": "2026-11-18T02:40:59.307Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A broken access control vulnerability allowed an attacker to change any user's email address, leading to full account takeover.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Suppose a website 'target.example' allows users to change their email. \n\n Vulnerable Code: \n app.post('/change-email', (req, res) => { \n const { userId, email } = req.body; \n db.query('UPDATE users SET email = ? WHERE id = ?', [email, userId]); \n }); \n\n Attack Request: \n POST /change-email HTTP/1.1 \n Host: target.example \n Content-Type: application/json \n \n { \"userId\": \"501\", \"email\": \"attacker@example.com\" } \n\n Why it works: An HTTP request is a message your browser sends to a server (a computer hosting the site). A parameter is a specific piece of data in that message, like 'userId'. In this code, the server takes the 'userId' directly from the user's message and uses it to update the database (a digital filing system). It never checks the session (a temporary way a server remembers who you are) to see if the person sending the message is actually user 501. This is called Broken Access Control. By changing the 'userId' number, an attacker can change anyone's email. Once the email is changed, the attacker can use the 'Forgot Password' page to send a password reset link to their own email, effectively stealing the account.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b00084975190",
     "title": "Soft-Deleted, Still Editable: BOLA in Munshi’s Invoice API",
     "url": "https://medium.com/@TheWildEye/soft-deleted-still-editable-bola-in-munshis-invoice-api-93e82bfee165",
