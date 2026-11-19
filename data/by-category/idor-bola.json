@@ -1,5 +1,46 @@
 [
   {
+    "id": "7e38440cd104",
+    "title": "How an GraphQL IDOR leaked AI conversation History and Got me $500 bounty",
+    "url": "https://medium.com/@shouvik328/how-an-graphql-idor-leaked-ai-conversation-history-and-got-me-500-bounty-df75b24a08f7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Shouvik"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T07:08:37.000Z",
+    "added_at": "2026-11-19T08:45:43.022Z",
+    "categories": [
+      "idor-bola",
+      "graphql"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher discovered a GraphQL-based Insecure Direct Object Reference (IDOR) that allowed the retrieval of private AI conversation logs by manipulating chat identifiers.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website target.example where you can chat with an AI. To show you your previous chats, the website sends a 'GraphQL query'—which is just a structured way for the website to ask the server for specific information. A typical request might look like this: \n\nquery { getChat(id: \"123\") { messages } }\n\nAn attacker can change the 'id' number from '123' to '124'. If the server doesn't check if the attacker actually owns chat '124', it will reveal the private messages of another user. This is called an IDOR, and it happens because the server trusts the user's input without verifying their permissions.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "4ab89c28031a",
     "title": "How I Found IDOR, SQLi and XSS on NASA",
     "url": "https://infosecwriteups.com/how-i-found-idor-sqli-and-xss-on-nasa-ac75c9bd555e",

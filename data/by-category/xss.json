@@ -1,5 +1,45 @@
 [
   {
+    "id": "63d743cd0593",
+    "title": "From a Simple Username Field to XSS: How One Input Exposed a Security Flaw in a Government Portal",
+    "url": "https://medium.com/@adarshnair135/from-a-simple-username-field-to-xss-how-one-input-exposed-a-security-flaw-in-a-government-portal-c7183939ad60",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Adarsh S Nair"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T08:01:42.000Z",
+    "added_at": "2026-11-19T08:45:13.830Z",
+    "categories": [
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A cross-site scripting (XSS) vulnerability was discovered in a government portal's username field, allowing attackers to execute malicious scripts in the context of other users' sessions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a website 'target.example' that has a profile page. The page uses a 'name' parameter in the URL to greet the user. \n\nTechnical terms:\n1. URL Parameter: A piece of data sent to the website after the '?' in a web address (e.g., 'name=John').\n2. XSS (Cross-Site Scripting): A bug where a website accidentally runs a visitor's code as if it were its own.\n3. Script Tag: A piece of HTML code '<script>' that tells the browser 'everything inside here is a computer program, run it now'.\n\nVulnerable Code Snippet:\n'<div>Welcome, ' + urlParams.get('name') + '</div>'\n(This code takes the name from the URL and puts it directly onto the page without checking it.)\n\nAttack Request:\nhttps://target.example/profile?name=<script>alert('XSS')</script>\n\nWhy it works:\nThe browser receives the page and sees the '<script>' tag. Instead of displaying the text '<script>alert('XSS')</script>', the browser thinks the website owner wants it to run a program. It executes the 'alert' command, which pops up a box on the screen. In a real attack, this program could steal the user's login keys (cookies).",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "4ab89c28031a",
     "title": "How I Found IDOR, SQLi and XSS on NASA",
     "url": "https://infosecwriteups.com/how-i-found-idor-sqli-and-xss-on-nasa-ac75c9bd555e",
