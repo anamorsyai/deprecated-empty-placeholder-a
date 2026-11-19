@@ -1,5 +1,88 @@
 [
   {
+    "id": "b135086a7135",
+    "title": "How an Unverified Email Change Led to Full Account Takeover | $$$$ Bounty",
+    "url": "https://medium.com/@marwanmedhat0001/how-an-unverified-email-change-led-to-full-account-takeover-bounty-7a3f75aeb4b7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Marwanmedhat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T23:37:10.000Z",
+    "added_at": "2026-11-19T23:54:41.259Z",
+    "categories": [
+      "business-logic",
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An administrator could change any user's email address without verification, then use the password reset feature to receive a recovery link at the new email and take over the account.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's business logic failed to distinguish between a contact email and a trusted authentication identifier. Specifically, the 'Company Users' management tool allowed an administrator to update a user's email address (the identifier used for logins and recovery) without requiring any verification (a process to prove you own the email) or confirmation from the original account owner. This allowed the password reset mechanism to trust an unverified, attacker-controlled email as a valid destination for sensitive security tokens.",
+      "walkthrough": "RECON\n1. Log into the application using an account with 'Company Administrator' privileges (a user role that can manage other users).\n2. Navigate to the 'Company Users' management section to view a list of accounts within the organization.\n\nDISCOVERY\n3. Select a target user account to modify.\n4. Locate the email change field and enter an email address that you (the attacker) control.\n5. Click save and observe that the application updates the record immediately without asking for a verification code (a short-lived secret sent to an email to prove ownership).\n\nEXPLOITATION\n6. Log out of the administrator account to return to the public login screen.\n7. Navigate to the 'Forgot Password' endpoint (a specific web address used for a single function).\n8. Enter the username of the target account whose email you just changed.\n9. Submit the request to trigger a password reset email.\n10. Access your attacker-controlled inbox and wait for the reset link to arrive.\nWhy: The application looks up the email currently stored in the database for that username and sends the reset link there, even though that email was never verified.\n11. Click the password reset link provided in the email.\n12. Enter a new password of your choice and confirm the change.\n\nIMPACT\n13. Return to the login page and enter the target's username and your newly created password.\n14. Successfully authenticate (the process of proving identity to a system) as the target user.\nWhy: You have now fully bypassed the target's original credentials and gained access to their account and permissions.",
+      "example": "Imagine a site 'target.example' where admins can edit staff profiles. The admin panel sends a request like this:\nPOST /admin/update_user\nHost: target.example\nContent-Type: json\n\n{\"user_id\": \"55\", \"new_email\": \"attacker@evil.com\"}\n\nThe server code looks like this:\nfunction updateEmail(uid, mail) {\n  db.execute(\"UPDATE users SET email = ? WHERE id = ?\", [mail, uid]);\n}\n\nBecause the code immediately overwrites the 'email' column in the database without setting a 'verified' flag to 'false', the 'Forgot Password' system (which just reads the 'email' column) sends the secret reset token directly to the attacker.",
+      "takeaway": "Always test the 'trust chain' between different features; a low-impact bug in profile management (missing email verification) becomes high-impact when chained with a sensitive feature like password recovery. Look for administrative panels that allow editing user identities and check if those changes require the target user's consent or a verification step. A common variant is 'Email Aliasing' where adding a secondary email to an account allows you to reset the password using that unverified alias. Avoid the mistake of assuming that because a user is an 'Admin', their actions don't need to be verified for security-critical fields.",
+      "fix": "Implement a 'Pending Email' logic where an email change does not update the primary login/recovery email until a verification link sent to the NEW address is clicked. Additionally, for sensitive accounts, require a confirmation link to be clicked from the OLD email address as well. The password reset system should only ever send links to 'verified' email addresses. \n\nExample fix:\nfunction requestEmailChange(uid, newMail) {\n  const token = generateSecureToken();\n  db.execute(\"UPDATE users SET pending_email = ?, email_token = ? WHERE id = ?\", [newMail, token, uid]);\n  sendVerificationEmail(newMail, token);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "In this writeup, I’ll share an interesting **_Account Takeover (ATO)_** vulnerability I discovered during a **_private bug bounty program_**. The report was accepted, rewarded with a bounty, and later marked as resolved. For confidentiality reasons, the target’s identity and sensitive information have been omitted. — - ### Understanding the Application During my exploration of the application, I came across a **Company Users** feature that allowed users with administrative privileges to manage other accounts within their organization. A **_Company Administrator_**could modify another user’s in",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "a9067abf963e",
+    "title": "🎙️ Apple HOF (May 2026): Stopping Podcast Hijacking",
+    "url": "https://medium.com/@anas-nady/%EF%B8%8F-apple-hof-may-2026-stopping-podcast-hijacking-5baf19fae4f4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Anas NadY"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T23:26:31.000Z",
+    "added_at": "2026-11-19T23:55:16.361Z",
+    "categories": [
+      "business-logic",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A missing ownership verification flaw in Apple Podcasts Connect allowed attackers to hijack any public podcast by submitting its RSS feed URL, enabling unauthorized management and revenue theft.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure in the business logic of the show submission process. The platform performed technical validation (checking if the file was formatted correctly) but skipped identity validation (confirming the submitter owned the content). Specifically, the system trusted the email address found in the <itunes:owner> tag of the RSS feed— a public file— without requiring the submitter to prove they had access to that email.",
+      "walkthrough": "RECON\n1. The researcher identified a target podcast and located its public RSS feed URL (a web address pointing to a file that contains all the podcast's episodes and information).\nhttps://victim-podcast.example/feed.xml\nWhy: Every public podcast must have an RSS feed so that apps can find and play the episodes.\n\nDISCOVERY\n2. The researcher logged into Apple Podcasts Connect, which is the official dashboard (a control panel) used by creators to manage their shows on Apple's platform.\n3. They navigated to the option to \"Add a show with an RSS feed.\"\n4. They entered the victim's public RSS URL into the submission field.\nhttps://podcastsconnect.apple.com/my-shows/add\nWhy: This is the standard entry point for new content creators to link their shows to their Apple account.\n\nEXPLOITATION\n5. The system processed the URL and performed technical validation, checking the artwork and metadata (descriptive data like titles and descriptions) inside the file.\n6. The researcher observed that the system did not trigger a verification challenge (a security check like a code sent to an email) to the address listed in the <itunes:owner> tag.\n<itunes:owner><itunes:email>real-owner@example.com</itunes:email></itunes:owner>\nWhy: The system incorrectly assumed that anyone providing the URL must be the owner, failing to verify the identity of the submitter.\n\nIMPACT\n7. The show was successfully approved and permanently linked to the researcher's (attacker's) account.\n8. The researcher now had full management rights, including the ability to add paid subscriptions to the show.\nWhy: Because the link was established without verification, the platform granted the attacker administrative control over the victim's intellectual property.",
+      "example": "Imagine a website called 'BusinessClaimer.example' where users can claim ownership of local businesses by providing the business's public website URL. \n\n1. An attacker finds the website for 'Joe's Coffee' at http://joescoffee.example.\n2. The attacker goes to BusinessClaimer.example and enters Joe's URL.\n3. The system checks Joe's website, sees a contact email 'joe@joescoffee.example', but never actually sends Joe an email to ask if he knows the attacker.\n4. The system simply gives the attacker the 'Owner' badge for Joe's Coffee on the platform.\n5. The attacker can now change the business hours or delete the listing.\n\nThis works because the system trusted public information (the website URL) as proof of identity without a 'handshake' (a two-way confirmation) to prove the person claiming the site actually controls it.",
+      "takeaway": "When hunting for bugs, look for 'Claim' or 'Import' features where a platform pulls data from an external source. Always check if the platform requires a 'round-trip' verification, such as clicking a link in an email or adding a specific code to the external file. A common variant of this bug is 'Subdomain Takeover,' where a service points to a resource that hasn't been claimed yet. Avoid the mistake of assuming that because a process is 'official' or 'complex,' it must have a verification step; often, developers prioritize a smooth user experience over strict security checks.",
+      "fix": "The fix is to implement a mandatory verification loop. Before a show is linked to an account, the system must extract the email from the <itunes:owner> tag and send a unique, time-limited token (a secret code) to that address. The show should only be linked once the user provides that token back to the platform. \n\nExample logic:\n1. User submits RSS URL.\n2. System parses <itunes:email>.\n3. System generates 'verification_token_12345'.\n4. System emails token to owner.\n5. System waits for user to enter '12345' in the dashboard before finalizing the link.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "1. Find a public podcast RSS feed URL (e.g., from a directory or the creator’s site). 2. Log into Apple Podcasts Connect and select “Add a show with an RSS feed.” 3. Submit the target’s RSS URL. 4. The system validates the feed’s technical structure (artwork, tags) and passes it. 5. **The Flaw:** No verification email or token challenge is sent to the `<itunes:owner>` email. 6. The show is approved and permanently linked to the attacker’s account. 7. The attacker can now manage the show, including adding paid Apple Podcasts subscriptions. ## Get Anas NadY’s stories in your inbox Join Medium fo",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "574d53b74650",
     "title": "The Lock Icon That Lied: Bypassing an “Admins Only” Feature by Simply… Not Being One",
     "url": "https://medium.com/@arunkumarje/the-lock-icon-that-lied-bypassing-an-admins-only-feature-by-simply-not-being-one-b32ca1f1f91d",

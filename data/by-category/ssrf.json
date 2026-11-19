@@ -1,5 +1,45 @@
 [
   {
+    "id": "44fb57d4a79a",
+    "title": "Apple HOF (August 2026): Unmasking a Blind SSRF in Podcasts Connect",
+    "url": "https://medium.com/@anas-nady/apple-hof-august-2026-unmasking-a-blind-ssrf-in-podcasts-connect-e86689990bab",
+    "source": {
+      "slug": "medium-tag-bugbounty",
+      "name": "Medium — #bugbounty"
+    },
+    "authors": [
+      "Anas NadY"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T23:41:04.000Z",
+    "added_at": "2026-11-19T23:53:22.017Z",
+    "categories": [
+      "ssrf"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A Blind Server-Side Request Forgery (SSRF) in Apple Podcasts Connect allowed attackers to scan internal network ports by analyzing response time differences when submitting malicious RSS feed URLs.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by inconsistent security controls between two different user workflows. While the primary 'Add show with RSS' feature was protected, a secondary 'Add show without RSS' flow allowed users to later add a 'feedUrl' parameter that was not validated against internal IP addresses. This allowed the backend server to attempt connections to its own internal services (localhost), and because the server took longer to time out on certain ports than others, it leaked information about the internal network state.",
+      "walkthrough": "RECON\n1. Log in to the Apple Podcasts Connect platform, which is a dashboard for creators to manage their shows.\n2. Navigate to the section labeled 'Add a Show' to find ways the application handles external links.\nDISCOVERY\n3. Identify two paths: the primary 'Add show with RSS Feed' and the secondary 'Add new show without RSS Feed'.\n4. Select the secondary option 'Add new show without RSS Feed' to bypass the primary flow's known protections.\n5. Enter a placeholder name for the show and proceed to the 'More Options' section.\n6. Locate the 'Add RSS Feed' input field, which expects a URL (a web address).\nEXPLOITATION\n7. Open a proxy tool like Burp Suite (software that lets you see and change messages between your browser and the server).\n8. Intercept the HTTP request (a message sent to the server) when saving the show details.\n9. Identify the target endpoint (a specific server function) and the payload (malicious data) location:\nPUT /podcasts/pcc/v1/shows/{uuid}\nWhy: This is the command the browser sends to the server to update the show's information, including the feed URL.\n10. First, set the 'feedUrl' parameter (a specific piece of data in the request) to a normal public website:\n\"feedUrl\": \"https://example.com/rss.xml\"\nWhy: This establishes a 'baseline' response time (how long the server normally takes to respond) of about 300ms.\n11. Next, change the 'feedUrl' to an internal address with a port (a numbered 'door' on a computer) that is likely open or filtered:\n\"feedUrl\": \"http://127.0.0.1:80\"\nWhy: 127.0.0.1 is 'localhost' (the server itself). Port 80 is standard for web traffic. \n12. Observe the response time: it jumps to over 5,000ms.\nWhy: The server is trying to connect to itself and waiting for a response that never comes, causing a 'timeout' delay.\n13. Finally, change the 'feedUrl' to a port that is definitely closed:\n\"feedUrl\": \"http://127.0.0.1:65535\"\nWhy: Most computers do not have anything running on this high-numbered port.\n14. Observe the response time: it drops back to under 1,000ms.\nWhy: The server's operating system immediately tells the application 'Connection Refused,' so it doesn't have to wait.\nIMPACT\n15. Use these timing differences to create a map of which internal ports are active.\nWhy: This is a 'time-based side-channel' (learning secrets by measuring how long a computer takes to do something).",
+      "example": "Imagine a website 'target.example' that lets you import a profile picture from a URL. If you provide 'http://target.example/my-pic.jpg', the server fetches it. An attacker could instead provide 'http://127.0.0.1:22'. If the server responds in 10 seconds, the attacker knows port 22 (used for remote login) is likely protected by a firewall. If it responds in 0.1 seconds with an error, the attacker knows the port is closed. By trying every number from 1 to 65535, the attacker maps the server's private internal network without ever having direct access to it.",
+      "takeaway": "Always test 'alternative' or 'secondary' paths for the same features; developers often secure the main entrance but forget the side door. Look for 'Blind' vulnerabilities where the server doesn't show you the data, but its behavior (like response time or error codes) changes based on your input. A common mistake is assuming that because a server doesn't return the body of a request, the SSRF is harmless; however, internal port scanning is a high-impact discovery tool for attackers.",
+      "fix": "To fix this, implement strict URL validation using an allowlist of approved protocols (like https) and a blocklist of internal IP ranges (like 127.0.0.0/8, 10.0.0.0/8, and 172.16.0.0/12). Additionally, the application should use a fixed timeout and return a uniform error message and response time regardless of whether the internal port was open or closed to prevent timing attacks.\n\nExample fix in pseudo-code:\nif (is_internal_ip(request.feedUrl)) {\n  return response(403, \"Access Denied\").delay_to_standard_time(400ms);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Press enter or click to view image in full sizeImage 4 Press enter or click to view image in full sizeImage 5 APPLE HOF ## 📝 Summary of Finding During a routine security assessment of the **Apple Podcasts Connect** platform, a **Blind Server-Side Request Forgery (SSRF)** vulnerability was discovered. While the platform properly protected the primary “Add show with RSS Feed” endpoint, the alternative flow — “Add new show without RSS Feed” — contained a hidden weakness. By manipulating the `feedUrl` parameter, it was possible to trick the server into making outbound HTTP requests to internal IP",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "acfecb7c4865",
     "title": "From P4 to P1: Day 17 — Advanced SSRF Testing: URL Validation Bypasses, Redirects and DNS Rebinding",
     "url": "https://medium.com/@cyb3rD1vvya/from-p4-to-p1-day-17-advanced-ssrf-testing-url-validation-bypasses-redirects-and-dns-rebinding-5f6d92dca0fa",

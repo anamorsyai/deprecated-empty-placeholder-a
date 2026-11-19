@@ -1,5 +1,47 @@
 [
   {
+    "id": "b135086a7135",
+    "title": "How an Unverified Email Change Led to Full Account Takeover | $$$$ Bounty",
+    "url": "https://medium.com/@marwanmedhat0001/how-an-unverified-email-change-led-to-full-account-takeover-bounty-7a3f75aeb4b7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Marwanmedhat"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T23:37:10.000Z",
+    "added_at": "2026-11-19T23:54:41.259Z",
+    "categories": [
+      "business-logic",
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An administrator could change any user's email address without verification, then use the password reset feature to receive a recovery link at the new email and take over the account.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's business logic failed to distinguish between a contact email and a trusted authentication identifier. Specifically, the 'Company Users' management tool allowed an administrator to update a user's email address (the identifier used for logins and recovery) without requiring any verification (a process to prove you own the email) or confirmation from the original account owner. This allowed the password reset mechanism to trust an unverified, attacker-controlled email as a valid destination for sensitive security tokens.",
+      "walkthrough": "RECON\n1. Log into the application using an account with 'Company Administrator' privileges (a user role that can manage other users).\n2. Navigate to the 'Company Users' management section to view a list of accounts within the organization.\n\nDISCOVERY\n3. Select a target user account to modify.\n4. Locate the email change field and enter an email address that you (the attacker) control.\n5. Click save and observe that the application updates the record immediately without asking for a verification code (a short-lived secret sent to an email to prove ownership).\n\nEXPLOITATION\n6. Log out of the administrator account to return to the public login screen.\n7. Navigate to the 'Forgot Password' endpoint (a specific web address used for a single function).\n8. Enter the username of the target account whose email you just changed.\n9. Submit the request to trigger a password reset email.\n10. Access your attacker-controlled inbox and wait for the reset link to arrive.\nWhy: The application looks up the email currently stored in the database for that username and sends the reset link there, even though that email was never verified.\n11. Click the password reset link provided in the email.\n12. Enter a new password of your choice and confirm the change.\n\nIMPACT\n13. Return to the login page and enter the target's username and your newly created password.\n14. Successfully authenticate (the process of proving identity to a system) as the target user.\nWhy: You have now fully bypassed the target's original credentials and gained access to their account and permissions.",
+      "example": "Imagine a site 'target.example' where admins can edit staff profiles. The admin panel sends a request like this:\nPOST /admin/update_user\nHost: target.example\nContent-Type: json\n\n{\"user_id\": \"55\", \"new_email\": \"attacker@evil.com\"}\n\nThe server code looks like this:\nfunction updateEmail(uid, mail) {\n  db.execute(\"UPDATE users SET email = ? WHERE id = ?\", [mail, uid]);\n}\n\nBecause the code immediately overwrites the 'email' column in the database without setting a 'verified' flag to 'false', the 'Forgot Password' system (which just reads the 'email' column) sends the secret reset token directly to the attacker.",
+      "takeaway": "Always test the 'trust chain' between different features; a low-impact bug in profile management (missing email verification) becomes high-impact when chained with a sensitive feature like password recovery. Look for administrative panels that allow editing user identities and check if those changes require the target user's consent or a verification step. A common variant is 'Email Aliasing' where adding a secondary email to an account allows you to reset the password using that unverified alias. Avoid the mistake of assuming that because a user is an 'Admin', their actions don't need to be verified for security-critical fields.",
+      "fix": "Implement a 'Pending Email' logic where an email change does not update the primary login/recovery email until a verification link sent to the NEW address is clicked. Additionally, for sensitive accounts, require a confirmation link to be clicked from the OLD email address as well. The password reset system should only ever send links to 'verified' email addresses. \n\nExample fix:\nfunction requestEmailChange(uid, newMail) {\n  const token = generateSecureToken();\n  db.execute(\"UPDATE users SET pending_email = ?, email_token = ? WHERE id = ?\", [newMail, token, uid]);\n  sendVerificationEmail(newMail, token);\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "In this writeup, I’ll share an interesting **_Account Takeover (ATO)_** vulnerability I discovered during a **_private bug bounty program_**. The report was accepted, rewarded with a bounty, and later marked as resolved. For confidentiality reasons, the target’s identity and sensitive information have been omitted. — - ### Understanding the Application During my exploration of the application, I came across a **Company Users** feature that allowed users with administrative privileges to manage other accounts within their organization. A **_Company Administrator_**could modify another user’s in",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "802c8940da5a",
     "title": "Your API Key Is Not a Secret: How I Turn Leaked Google Keys Into Bug Bounty Payouts",
     "url": "https://medium.com/@Realrio/your-api-key-is-not-a-secret-how-i-turn-leaked-google-keys-into-bug-bounty-payouts-ac65c375e3af",
