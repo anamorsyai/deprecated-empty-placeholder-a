@@ -1,5 +1,46 @@
 [
   {
+    "id": "574d53b74650",
+    "title": "The Lock Icon That Lied: Bypassing an “Admins Only” Feature by Simply… Not Being One",
+    "url": "https://medium.com/@arunkumarje/the-lock-icon-that-lied-bypassing-an-admins-only-feature-by-simply-not-being-one-b32ca1f1f91d",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Arunkumarje"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-18T23:55:30.000Z",
+    "added_at": "2026-11-19T01:09:31.877Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A non-admin user could toggle the 'Locked' status of layout elements despite the feature being explicitly documented as 'Admins Only,' due to missing checks in both the UI and the backend API.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a dual failure in authorization logic. First, the User Interface (UI)—the visual part of the app—failed to hide or disable the 'Lock' control for users without admin roles. Second, the backend API (Application Programming Interface)—the server-side system that processes data—did not verify the user's role (a label defining permissions) when receiving a request to update the 'lock' field. This allowed lower-privileged roles, such as 'Content & Device Manager,' to perform actions explicitly reserved for administrators. The application relied on the UI to gate access rather than enforcing security at the server level.",
+      "walkthrough": "PHASE 1: RECONNAISSANCE\n1. Identify the target platform's Layout Editor, which allows users to arrange widgets on a screen.\n2. Locate the 'Lock' feature, which is intended to prevent accidental changes to layout elements.\n3. Observe the tooltip on the lock icon: 'Only for admins. Lock items to prevent accidental changes.'\n\nPHASE 2: DISCOVERY\n4. Log in with a 'Content & Device Manager' account, which is a non-admin role (a user with limited permissions).\n5. Open the Layout Editor and select any element, such as a text box or image.\n6. Check if the 'Lock' icon is visible in the element's toolbar.\n7. Confirm the icon is fully interactive and not grayed out, despite the user not being an admin.\n\nPHASE 3: EXPLOITATION\n8. Click the 'Lock' icon to attempt to lock the element.\n9. Use a proxy tool or browser developer tools to capture the outgoing HTTP request (a message sent to the server).\n10. Identify the PUT request (a type of request used to update data) sent to the API endpoint (a specific web address for data tasks).\nPUT /api/v1/show/show/<show_id>/\n11. Examine the payload (the data sent inside the request) to see the 'lock' field being changed.\n{\"lock\": \"sizepos\"}\n12. Observe the server's response to the request.\nHTTP/1.1 200 OK\nWhy: The server returned a 200 OK status, meaning it successfully processed the change for a non-admin user.\n\nPHASE 4: TESTING VARIANTS\n13. Log in with an even more restricted role, the 'Restricted Content Manager.'\n14. Repeat the process of clicking the lock icon and observing the network traffic.\n15. Confirm that this role can also successfully toggle the lock, proving the vulnerability affects multiple roles.\n\nPHASE 5: IMPACT VERIFICATION\n16. Refresh the page to ensure the 'Locked' state persists in the database.\n17. Verify that the element is now locked for all users, effectively allowing a low-privilege user to control admin-only settings.",
+      "example": "Imagine a fictional website 'target.example' that has a 'Maintenance Mode' button. The documentation says only 'SuperAdmins' can turn it on. However, a regular 'Moderator' logs in and sees the button is not hidden. When the Moderator clicks it, the browser sends a request: 'POST /api/site/maintenance {\"enabled\": true}'. The server, which is the backend computer handling the request, simply checks if the user is logged in, but fails to check if they are a 'SuperAdmin.' It processes the request and shuts down the site for everyone. This is the same bug: the UI (the button) and the API (the server logic) both failed to verify the user's specific role before allowing a sensitive action.",
+      "takeaway": "Always test 'Admins Only' features from the perspective of the lowest-privileged user role available. Do not assume that because a feature is intended for admins, the developers actually implemented the code to check for that role. Look for tooltips or documentation that explicitly state a restriction, then try to break that restriction. A common beginner mistake is assuming that if a button is visible, you must have permission to use it; in bug hunting, a visible button for a restricted feature is often the first sign of a vulnerability. This pattern is a variant of Broken Access Control where the 'fail-open' design allows any authenticated user to perform privileged tasks.",
+      "fix": "To fix this, the application must implement authorization checks at both the UI and API layers. In the UI, the code should check the user's role before rendering the 'Lock' button; if the user is not an admin, the button should be hidden or disabled. More importantly, the backend API must validate the user's permissions for every request. The server-side code should look like this:\n\n```javascript\n// Secure API Handler\napp.put('/api/v1/show/show/:id', (req, res) => {\n  const user = req.user;\n  // Check if the user is trying to change the 'lock' field\n  if (req.body.lock !== undefined && user.role !== 'admin') {\n    // Return 403 Forbidden if a non-admin tries to lock/unlock\n    return res.status(403).json({ error: 'Admin privileges required to change lock status.' });\n  }\n  // Proceed with update if check passes\n  updateLayout(req.params.id, req.body);\n  res.status(200).send('Updated');\n});\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Most access-control bugs I’d found on this platform lived purely at the API layer — a role’s UI hid a feature cleanly, but the server behind it didn’t check who was asking. Annoying, but a familiar shape of bug: “the frontend gates it, the backend forgot to.” This one was different. This time, the bug wasn’t hidden behind the UI. It was sitting in plain sight, inside the UI itself — because the UI never actually gated it in the first place. ### The feature: Lock In the platform’s Layout Editor, every element on a screen layout — a text box, a clock widget, an image — has a small toolbar with a",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "4ab89c28031a",
     "title": "How I Found IDOR, SQLi and XSS on NASA",
     "url": "https://infosecwriteups.com/how-i-found-idor-sqli-and-xss-on-nasa-ac75c9bd555e",
