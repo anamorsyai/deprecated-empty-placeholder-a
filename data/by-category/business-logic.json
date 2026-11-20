@@ -1,5 +1,47 @@
 [
   {
+    "id": "d11e8ee7e9ce",
+    "title": "P2 Password Reset Token Not Invalidated After Successful Password Change",
+    "url": "https://medium.com/@akashmotkar001/p2-password-reset-token-not-invalidated-after-successful-password-change-ad251de19a39",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-20T06:20:16.000Z",
+    "added_at": "2026-11-20T13:27:57.497Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "The application fails to invalidate password reset tokens after they are used, allowing an attacker to reuse the same token to change a user's password multiple times.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a failure in the lifecycle management of security tokens. The server-side logic checks if a token is cryptographically valid and not expired, but it does not track whether the token has already been 'consumed' (used). This happens because the database or session store is not updated to mark the token as 'used' or deleted immediately after the first successful password update at the /api/v1/auth/reset-password endpoint.",
+      "walkthrough": "RECON\n1. The researcher identifies the password recovery page on the target application.\nGET /forgot-password\nWhy: To find the starting point for the password reset workflow (the sequence of steps to change a password).\n2. The researcher enters a controlled email address to receive a reset link.\nPOST /api/v1/auth/forgot-password {\"email\": \"test@example.com\"}\nWhy: To trigger the server to generate a reset token (a temporary secret key used to prove permission).\n\nDISCOVERY\n3. The researcher opens the email and copies the reset token provided in the URL.\nhttps://application-host/reset?token=ABC123XYZ\nWhy: This token is the credential required to authorize a password change without knowing the old password.\n4. The researcher opens Burp Suite, a tool used to intercept (catch and view) web traffic between the browser and the server.\n(No code for opening software)\nWhy: To see the raw data being sent to the server during the reset process.\n5. The researcher clicks the link and enters a new password, 'TestPassword@123', into the form.\n(No code for browser interaction)\nWhy: To prepare the first legitimate password change request.\n\nEXPLOITATION\n6. The researcher intercepts the outgoing POST request in Burp Suite.\nPOST /api/v1/auth/reset-password HTTP/1.1\nWhy: To capture the exact format of the request (a message sent to the server) before it is processed.\n7. The researcher examines the JSON (a data format using labels and values) payload in the request body.\n{\n \"token\": \"<RESET_TOKEN>\",\n \"new_password\": \"TestPassword@123\"\n}\nWhy: To identify the parameters (data inputs) being sent, specifically the token and the new password.\n8. The researcher forwards the request to the server.\n(No code for forwarding)\nWhy: To complete the first password change successfully.\n9. The researcher verifies the password was changed by logging in with 'TestPassword@123'.\nPOST /api/v1/auth/login {\"username\":\"test\", \"password\":\"TestPassword@123\"}\nWhy: To confirm the token worked correctly the first time.\n10. The researcher returns to Burp Suite and sends the original reset request to the 'Repeater' tool.\n(No code for tool selection)\nWhy: Repeater allows the researcher to send the exact same request multiple times manually.\n11. The researcher modifies the 'new_password' value in the payload to 'AnotherTestPassword@456'.\n{\n \"token\": \"<PREVIOUSLY_USED_RESET_TOKEN>\",\n \"new_password\": \"AnotherTestPassword@456\"\n}\nWhy: To test if the server will accept the same token (the temporary key) a second time for a different password.\n12. The researcher sends the modified request.\nPOST /api/v1/auth/reset-password HTTP/1.1\nWhy: To attempt the unauthorized second password change.\n\nIMPACT\n13. The researcher observes the server's response.\nHTTP/1.1 200 OK\nWhy: A '200 OK' response indicates the server processed the request successfully instead of rejecting it.\n14. The researcher attempts to log in using the second password, 'AnotherTestPassword@456'.\nPOST /api/v1/auth/login {\"username\":\"test\", \"password\":\"AnotherTestPassword@456\"}\nWhy: To prove that the second password change actually took effect, confirming the vulnerability.",
+      "example": "Imagine a fictional site 'target.example' that uses tokens for email verification. A user receives a link: 'target.example/verify?token=999'. The user clicks it, and their account is verified. An attacker who saw that link in the user's browser history later sends a request: 'POST /api/v1/change-email' with the payload '{\"token\": \"999\", \"new_email\": \"attacker@evil.com\"}'. If the server only checks if token '999' exists and hasn't expired, but doesn't check if it was already used for verification, the attacker can hijack the account email using a 'spent' token.",
+      "takeaway": "Always test for 'token replay' on any sensitive action that uses a one-time code or link, such as password resets, email changes, or MFA (Multi-Factor Authentication) setups. Look for tokens that remain valid even after the intended action is finished. A common mistake for beginners is assuming a token is 'one-time' just because the UI says so; you must manually replay the request in a tool like Burp Suite to be sure. This bug often appears when developers use JWTs (JSON Web Tokens) without a server-side blacklist or when they forget to update a 'is_used' column in their database.",
+      "fix": "The application must implement a 'single-use' policy for all sensitive tokens. When a password reset request is processed, the server should immediately mark the token as used or delete it from the database before sending the success response. This should be done in an 'atomic' operation (all at once) to prevent race conditions. Additionally, all other active sessions or reset tokens for that user should be invalidated when a password change occurs.\n\nExample fix in pseudo-code:\n```python\ndef reset_password(token, new_password):\n    token_record = db.query(\"SELECT * FROM tokens WHERE value = ? AND used = false\", token)\n    if token_record:\n        update_user_password(token_record.user_id, new_password)\n        db.execute(\"UPDATE tokens SET used = true WHERE value = ?\", token)\n        return \"Success\"\n    return \"Invalid Token\"\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* CWE-613 — Insufficient Session Expiration * CWE-640 — Weak Password Recovery Mechanism for Forgotten Password * CWE-287 — Improper Authentication **OWASP:** A07:2025 — Authentication Failures ## 1. Description The password recovery functionality may fail to invalidate a password-reset token after it has been successfully used to change an account password. A password-reset token is intended to be a temporary, single-use credential that authorizes one password-reset operation. Once the password has been changed, the token should immediately become invalid. If the application continues accepti",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b135086a7135",
     "title": "How an Unverified Email Change Led to Full Account Takeover | $$$$ Bounty",
     "url": "https://medium.com/@marwanmedhat0001/how-an-unverified-email-change-led-to-full-account-takeover-bounty-7a3f75aeb4b7",
