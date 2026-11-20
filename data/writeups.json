@@ -1,5 +1,45 @@
 [
   {
+    "id": "cffd9a3e323a",
+    "title": "How a 1 MB Image Caused a Denial of Service",
+    "url": "https://medium.com/@clocktower011/how-a-1-mb-image-caused-a-denial-of-service-dce8641fed79",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Eduardo Nascimento (retr0)"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-20T21:12:05.000Z",
+    "added_at": "2026-11-20T21:25:31.362Z",
+    "categories": [
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A ticketing application was vulnerable to a Denial of Service (DoS) attack where a 1 MB image expanded to 1 GB in memory during thumbnail generation, crashing the server for all users.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's backend failed to validate the actual dimensions and memory requirements of an image before processing it. It only checked the compressed file size (1 MB) rather than the decompressed size (1 GB). When the server attempted to generate a thumbnail, it exhausted its RAM and CPU, blocking the application workers from handling other legitimate user requests.",
+      "walkthrough": "RECON\n1. Identify the image upload workflow which uses a three-step process: requesting a pre-signed URL (a temporary link for direct uploads), uploading to Amazon S3 (a cloud storage service), and then notifying the API.\n2. Locate the final API endpoint that triggers backend processing of the image.\nPOST /api/v1/tickets/comment\nWhy: This endpoint is where the application links the uploaded file to a ticket and starts generating thumbnails (small preview versions of images).\n\nDISCOVERY\n3. Observe the structure of the JSON payload (the data sent to the server) used to submit a comment with an attachment.\n{\n \"id\": \"[TICKET_ID]\",\n \"body\": \"<p>Example comment</p>\",\n \"attachments\": [\n {\n \"key\": \"tmp/FILE_ID/IMAGE_ID\",\n \"filename\": \"compressed.png\"\n }\n ]\n}\nWhy: The 'key' tells the server exactly which file in storage it needs to open and process.\n\nEXPLOITATION\n4. Create a 'Decompression Bomb' image: a file that is small on disk (1 MB) but has massive dimensions (e.g., 30,000 x 30,000 pixels) that require 1 GB of RAM to open.\n5. Upload this malicious image to the storage provider using the pre-signed URL.\n6. Submit the comment request to the API referencing the malicious image key.\n7. Observe the server response time and status code.\nHTTP/2 503 Service Unavailable\nWhy: A 503 error means the server is overloaded or down because it ran out of memory trying to decompress the 1 GB image.\n\nIMPACT\n8. Test for 'Denial of Service' (making the site unusable for others) by using a second, legitimate account to send a normal comment while the first account is attacking.\n9. Note the increasing response times for the legitimate user: 2 seconds, then 14 seconds, then 60 seconds (timeout).\nWhy: Because the server's processing power (CPU) and memory (RAM) are fully occupied by the malicious image, it cannot answer other users, effectively taking the site offline.",
+      "example": "Imagine a website 'target.example' that allows users to upload profile pictures. The server uses a library like ImageMagick to resize uploads. An attacker creates a PNG file that is mostly empty space; because it is empty, it compresses very well into a 500KB file, but its actual size is 50,000 by 50,000 pixels. When the attacker sends a POST request to /update-profile with this image, the server tries to allocate roughly 7.5GB of RAM (50,000 * 50,000 * 3 bytes for RGB) to 'see' the image. The server's memory fills up instantly, the operating system kills the web server process to save itself, and target.example goes offline for every visitor until it is manually restarted.",
+      "takeaway": "Always test image upload features for 'Image Bombs' or 'Pixel Floods.' Look for endpoints that perform image manipulation like resizing, cropping, or filtering. A key signal is if the server response takes a long time (latency) after you upload a large-dimension image. A common variant is the 'Zip Bomb,' where a tiny .zip file expands into petabytes of data. Avoid the mistake of only checking the 'Content-Length' header or file size on disk; you must check the metadata (width/height) before the server attempts to decode the pixels.",
+      "fix": "The backend should use a library to read only the image headers (metadata) to determine dimensions before full decompression. If the width or height exceeds a safe limit (e.g., 4000px), the request should be rejected immediately. Additionally, image processing should be moved to an isolated background worker with strict memory limits (cgroups/Docker limits) and a timeout, ensuring that if one process crashes, it does not take down the entire web server. \n\nExample fix in Python/Pillow:\nfrom PIL import Image\nwith Image.open(uploaded_file_path) as img:\n    width, height = img.size\n    if width > 4000 or height > 4000:\n        raise ValueError('Image dimensions too large')",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A technical breakdown of image decompression, resource exhaustion, and an availability vulnerability in a ticketing application._ ## Introduction During a security assessment of a ticketing application, I discovered that a relatively small image could trigger excessive resource consumption on the backend. The interesting part? An image of approximately **1 MB could expand to nearly 1 GB when decompressed.** When the application attempted to generate a thumbnail, image processing became extremely expensive, eventually affecting the availability of the service. ## Understanding the Attack Surfa",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d1b36f66e475",
     "title": "How an Email No One Opened Still Leaked Someone’s Gmail Through ChatGPT",
     "url": "https://medium.com/@l4zz3rj0d/how-an-email-no-one-opened-still-leaked-someones-gmail-through-chatgpt-786596a06ccb",
