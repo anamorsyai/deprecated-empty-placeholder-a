@@ -123,6 +123,47 @@
     "score": 53
   },
   {
+    "id": "6cd686a194e5",
+    "title": "I Wasn’t Supposed to Be Here, But Nobody Stopped Me",
+    "url": "https://medium.com/@silent_hunter_/i-wasnt-supposed-to-be-here-but-nobody-stopped-me-61fd518e869d",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mahmoud_Elkholy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-19T18:34:44.000Z",
+    "added_at": "2026-11-20T04:29:06.905Z",
+    "categories": [
+      "access-control",
+      "business-logic"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can forcibly add any user to their team without consent, resulting in the automatic transfer of the victim's workspaces and data to the attacker's control. This allows for permanent data destruction and bypasses subscription payment requirements for new accounts.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's backend (the server-side logic) processed 'add member' requests as immediate commands rather than invitation requests. It failed to verify if the target user consented to the move and automatically updated the ownership of the victim's existing workspaces to the attacker's team ID. This logic flaw assumed that any user added to a team should have their assets merged into that team's administrative umbrella.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher identified a team management feature that allows administrators to add members via email.\n2. Technical term: Endpoint (a specific web address where an application receives requests to perform a task).\n\nEXPLOITATION: DATA TAKEOVER\n3. The attacker navigates to the team settings page and enters the victim's email address.\n4. The attacker clicks 'Add', triggering an HTTP request (a message sent by your browser to a server asking for an action).\n5. Payload (the actual data sent in a request):\nPOST /api/team/members/add\n{\n  \"email\": \"victim@example.com\",\n  \"role\": \"member\"\n}\n6. Why: The application immediately updates the victim's account record in the database without sending an invitation link first.\n7. The victim logs in and finds they are no longer in their own team but are now a member of the attacker's team.\n8. The victim's existing workspace is now visible to the attacker in the attacker's dashboard.\n9. Why: The system logic automatically re-parents all of a user's workspaces to their current team ID.\n10. The victim sees an error message: 'Editing has been restricted by the admin <attacker-email>'.\n11. Technical term: Administrative Privileges (special 'boss' powers that let a user delete data or change settings for others).\n12. The attacker selects the victim's workspace and clicks 'Delete'.\n13. Why: Because the attacker is the admin of the team, they have full control over all workspaces within that team, even those they didn't create.\n\nEXPLOITATION: PAYMENT BYPASS\n14. The researcher creates a new account in an Incognito Window (a private browser mode that doesn't save login history).\n15. The application blocks the new user, demanding a credit card to start a trial.\n16. From the attacker's account, the researcher adds the new user's email to the team using the same vulnerability.\n17. The new user logs in and finds the credit card requirement is gone.\n18. Why: The application assumes that if a user is part of an existing team, the team's billing status covers them, bypassing individual payment checks.\n\nIMPACT\n19. The attacker successfully deleted the victim's data permanently.\n20. The attacker successfully bypassed the platform's revenue model by creating 'free' accounts via forced team addition.",
+      "example": "Imagine a cloud storage site called 'BoxShare.example'. When an admin adds a user to a 'Business Group', the site's code simply runs: UPDATE users SET group_id = 101 WHERE email = 'target@email.com'. An attacker creates Group 101 and 'adds' a victim. Because the site is programmed to show all files belonging to members of Group 101 to the Group Admin, the attacker instantly sees the victim's private files. The attacker then sends a DELETE request to /api/files/victim_file_id, which the server allows because the attacker is now the victim's 'manager'.",
+      "takeaway": "Always test 'Add User' or 'Invite' functions to see if the target user is added immediately or if they must click a confirmation link. If the addition is immediate, check if the victim's existing data (profiles, files, workspaces) is 'dragged' into the attacker's view. This is a common flaw in SaaS (Software as a Service) platforms that prioritize 'seamless' onboarding over security boundaries. Look for parameters like 'email' or 'user_id' in membership endpoints and try targeting accounts you do not own.",
+      "fix": "The application must implement an invitation workflow. Instead of immediately changing a user's team ID, the server should create a 'pending_invite' record and send an email to the victim. The victim's team and workspace ownership should only change if they explicitly call an '/accept-invite' endpoint. Additionally, workspace ownership should be independent of team membership to prevent automatic data transfer.\n\nFixed logic example:\n1. Attacker sends invite -> Server creates invite token.\n2. Victim receives email -> Clicks 'Accept'.\n3. Server checks: POST /api/invites/accept?token=XYZ\n4. Server updates: IF user_confirmed THEN move_user_to_team;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "silent_hunter_ Bug Bounty Researcher | Web & API Security Every request leaves a clue. Every vulnerability tells a story. writer Bug Bounty Bug Bounty Writeup Bug Bounty Tips Bugbounty Writeup Hackerone Image 3: Mahmoud_Elkholy Mahmoud_Elkholy 6 min read · 9 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F61fd518e869d&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40silent_hunter_%2Fi-wasnt-supposed-to-be-here-but-nobody-stopped-me-61fd518e869d&user=Mahmoud_Elkholy&userId=c8d206bcfd66&source=---header_actions--61fd518e869d------------------",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "802c8940da5a",
     "title": "Your API Key Is Not a Secret: How I Turn Leaked Google Keys Into Bug Bounty Payouts",
     "url": "https://medium.com/@Realrio/your-api-key-is-not-a-secret-how-i-turn-leaked-google-keys-into-bug-bounty-payouts-ac65c375e3af",
