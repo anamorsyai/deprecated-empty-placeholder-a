@@ -16,29 +16,30 @@
     "published_at": "2026-11-17T08:03:45.000Z",
     "added_at": "2026-11-18T10:45:43.347Z",
     "categories": [
+      "oauth-jwt",
       "auth-bypass",
-      "oauth-jwt"
+      "access-control"
     ],
-    "severity": "high",
+    "severity": "critical",
     "difficulty": "intermediate",
-    "summary_en": "A flaw in the OAuth2 login flow let an attacker finish the authentication process for a victim, resulting in full account takeover.",
+    "summary_en": "An attacker can take over any user account by starting a Google login flow and tricking the victim into completing it via a manipulated callback URL that prevents the victim's browser from consuming the authentication token.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The vulnerability stems from three critical design flaws. First, the application generates a login identifier (Id) at the very start of the process and uses that same identifier as the final authentication token (t). Second, the backend does not bind this identifier to the specific browser session or device that started the request, allowing anyone with the ID to use it. Third, the backend's validation of the 'callbackUrl' (the address where the user is sent after logging in) was too loose, allowing the attacker to append extra path segments like '/x/y'. This caused the website's front-end code to fail to recognize the page as a login completion, leaving the authentication token unused and available for the attacker to redeem.",
+      "walkthrough": "RECON\n1. The researcher analyzes the 'Continue with Google' button on 'shop.example'.\n2. They observe that the login process is managed via a GraphQL API (a language used by apps to request specific data from a server).\n3. They use a proxy (a tool that lets you see and change data moving between your browser and a server) to watch the HTTP requests (messages sent from your computer to a website's server).\n\nDISCOVERY\n4. The researcher clicks the login button and sees a GraphQL request sent to start the process.\nPOST /graphql\n{\"operationName\":\"startGoogleLogin\",\"variables\":{\"callbackUrl\":\"https://shop.example/account/auth/login\"}}\nWhy: This tells the server to prepare a login attempt and where to send the user afterward.\n5. The server responds with an 'Id' and a Google URL.\n{\"data\":{\"startGoogleLogin\":{\"Id\":\"abc-123-xyz\",\"googleUrl\":\"https://accounts.google.com/o/oauth2/auth?state=...\"}}}\nWhy: The 'Id' is a unique string for this attempt, and the 'googleUrl' is the real Google login page.\n6. After logging in, the researcher sees the browser redirect to the callback URL with a token 't'.\nhttps://shop.example/account/auth/login?t=abc-123-xyz\nWhy: The researcher notices that 't' is identical to the 'Id' generated at the very beginning.\n\nEXPLOITATION\n7. The attacker starts a new login flow but intercepts the request to modify the 'callbackUrl'.\nPOST /graphql\n{\"operationName\":\"startGoogleLogin\",\"variables\":{\"callbackUrl\":\"https://shop.example/account/auth/login/x/y\"}}\nWhy: By adding '/x/y', the attacker creates an 'unhappy path' that the website's code won't know how to handle.\n8. The attacker receives a valid Google URL from the server and sends it to the victim.\n9. The victim clicks the link and signs into their real Google account.\n10. Google redirects the victim to the attacker's modified URL.\nhttps://shop.example/account/auth/login/x/y?t=abc-123-xyz\nWhy: Because the URL ends in '/x/y', the website's code doesn't trigger the 'redeem token' step, so the token 't' remains valid and unused.\n\nIMPACT\n11. The attacker now uses the 'Id' they already knew to finish the login in their own browser.\nPOST /graphql\n{\"operationName\":\"redeemToken\",\"variables\":{\"token\":\"abc-123-xyz\"}}\nWhy: The server sees a valid, unused token that was just authorized by the victim and grants the attacker the victim's session cookies.\n12. The attacker is now logged in as the victim.",
+      "example": "Imagine a site 'target.example' that uses a 'flow_id' for logins. When you click 'Login', the site generates 'flow_id=999'. It then sends you to a login provider. If you successfully log in, the provider sends you back to 'target.example/done?id=999'. An attacker could start a login, get 'flow_id=888', and change the return address to 'target.example/error?id=888'. They send the login link to a victim. The victim logs in, gets redirected to the '/error' page, and their browser does nothing. The attacker then manually visits 'target.example/done?id=888'. Because the server sees that '888' was successfully authorized by the victim and never 'spent', it logs the attacker in as the victim.",
+      "takeaway": "When hunting OAuth bugs, always compare the identifiers used at the start of the flow with the tokens used at the end; if they are the same, the flow might be vulnerable to 'pre-authentication' hijacking. Test the flexibility of the callback URL by adding path segments or parameters to see if you can break the client-side logic while keeping the server-side token valid. This is a 'one-click' attack because it requires the victim to click a legitimate link. A common mistake for beginners is assuming that because a link points to 'google.com', it must be safe; always check what happens after the redirect.",
+      "fix": "To fix this, the application must bind the login flow to the user's specific session using a secure, HTTP-only cookie. The 'state' parameter in OAuth should be used as a cryptographically strong, non-guessable value that is verified upon return. Additionally, the backend must strictly validate the 'callbackUrl' against an exact whitelist, allowing no modifications or appended paths. Finally, the initial 'Id' should never be the same as the final session token.\n\n// Example of strict URL validation in Node.js\nconst allowedCallbacks = ['https://shop.example/account/auth/login'];\nif (!allowedCallbacks.includes(requestedCallback)) {\n  throw new Error('Invalid Callback URL');\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "## A one-click account takeover through a genuine Google link, built from a popup that never talked, a token handed out too early, and two extra path segments. Image 2: Ali Zamini Ali Zamini 6 min read · 3 days ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F2c51f98f6ccb&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40ali.zamini%2Fi-started-the-login-you-finished-it-i-got-your-account-2c51f98f6ccb&user=Ali+Zamini&userId=fcf5114770dd&source=---header_actions--2c51f98f6ccb---------------------clap_footer---------------------) 1 [](https://medium.c",
     "ai_generated": true,
     "engagement": null,
-    "score": 53
+    "score": 60
   },
   {
     "id": "6b4b11d8fa03",

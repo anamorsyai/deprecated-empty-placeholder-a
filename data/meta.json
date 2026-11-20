@@ -15,14 +15,14 @@
     "pentesterland": 48
   },
   "byCategory": {
-    "other": 53,
-    "info-disclosure": 71,
-    "access-control": 137,
+    "other": 55,
+    "info-disclosure": 72,
+    "access-control": 140,
     "auth-bypass": 75,
     "business-logic": 58,
     "ssrf": 11,
     "xss": 34,
-    "idor-bola": 29,
+    "idor-bola": 30,
     "graphql": 13,
     "sqli": 9,
     "recon": 10,
@@ -38,5 +38,6 @@
     "ssti": 2,
     "mass-assignment": 1,
     "subdomain-takeover": 1
-  }
+  },
+  "backfilledThisRun": 9
 }

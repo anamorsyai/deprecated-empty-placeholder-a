@@ -21,21 +21,21 @@
     ],
     "severity": "high",
     "difficulty": "beginner",
-    "summary_en": "A researcher discovered a GraphQL-based Insecure Direct Object Reference (IDOR) that allowed the retrieval of private AI conversation logs by manipulating chat identifiers.",
+    "summary_en": "An IDOR vulnerability in a GraphQL endpoint allowed unauthenticated attackers to access private AI conversation histories by manipulating the conversationID parameter.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": "Imagine a website target.example where you can chat with an AI. To show you your previous chats, the website sends a 'GraphQL query'—which is just a structured way for the website to ask the server for specific information. A typical request might look like this: \n\nquery { getChat(id: \"123\") { messages } }\n\nAn attacker can change the 'id' number from '123' to '124'. If the server doesn't check if the attacker actually owns chat '124', it will reveal the private messages of another user. This is called an IDOR, and it happens because the server trusts the user's input without verifying their permissions.",
-      "takeaway": null,
-      "fix": null,
+      "cause": "The root cause is a lack of object-level authorization within the GraphQL resolver for the conversation history field. The application relied solely on the knowledge of a conversationID, which is a UUID (a long, unique string of characters used as an ID), to grant access to data. Because the backend did not verify if the requesting user was the actual owner of that specific conversation, any valid ID could be used to fetch private data. This is a classic Insecure Direct Object Reference (IDOR) where internal identifiers are exposed and trusted without secondary validation.",
+      "walkthrough": "RECON\n1. The researcher starts by exploring an AI travel assistant designed to help users plan vacations.\n\"\"\nWhy: This provides the initial context of the application's functionality.\n2. They observe the application's behavior by looking at the network traffic.\n\"\"\nWhy: This is the first step in identifying how the front-end communicates with the back-end.\n3. They discover the application uses a GraphQL endpoint (a language used to request specific data from a database).\n\"https://api.example.com/umbrella/v2/graphql?featureName=PapayaItinerariesQuery\"\nWhy: An endpoint is a specific web address where an application receives requests (messages sent by a computer to a server).\nDISCOVERY\n4. The researcher notices a specific field in the GraphQL schema used for fetching chat data.\n\"papayaConversationHistory\"\nWhy: This field is the target for retrieving sensitive user information.\n5. They initiate a conversation and observe the URL generated for the session.\n\"https://www.example.com/en/search/results?conversation=594b89bb-2c6d-4ac3-a67e-35b61fd0a5a6\"\nWhy: This reveals the use of a UUID as a parameter (a specific piece of information passed to a web address).\n6. They realize that this UUID is the key \"conversationID\" needed to fetch history.\n\"\"\nWhy: Identifying the unique identifier is crucial for testing authorization.\nEXPLOITATION\n7. The researcher uses Burp Suite to intercept (catch a message while it is traveling) a POST request (a type of web message used to send data to a server).\n\"\"\nWhy: Intercepting allows the researcher to modify the data before it reaches the server.\n8. They prepare a malicious GraphQL query using a victim's conversation ID.\n\"query { papayaConversationHistory( conversationID: \\\"<victim's-ID>\\\" ) { conversation { prompt promptID } } }\"\nWhy: This payload (the part of the transmitted data that is the actual message) attempts to request data belonging to another user.\n9. They replace the placeholder with a real UUID from another session.\n\"\"\nWhy: This tests for IDOR (a bug where a user can access someone else's data by changing an ID).\n10. They send the modified request to the server.\n\"\"\nWhy: This executes the attack to see if the server validates the user's permission.\nIMPACT\n11. The server responds with the full conversation history of the other user.\n\"\"\nWhy: The server failed to check if the requester was authorized to see that specific conversation.\n12. The researcher confirms they can view prompts and responses without being authenticated as that user.\n\"\"\nWhy: This proves a critical failure in access control (rules that decide who can see what data).",
+      "example": "Imagine a fictional medical portal at target.example that uses GraphQL to show test results. A user sees their results by sending a query with a resultID. \n\nVulnerable Code (Node.js/GraphQL):\nconst resolvers = {\n  Query: {\n    getMedicalResult: (parent, { resultId }) => {\n      return db.Results.find(resultId); // Vulnerable: No ownership check\n    }\n  }\n};\n\nAttack Request:\nPOST /graphql\nContent-Type: application/json\n\n{\n  \"query\": \"query { getMedicalResult(resultId: \\\"998877\\\") { patientName diagnosis } }\"\n}\n\nWhy it works: The server takes the resultId and fetches the data directly from the database. It does not check if the person asking for result 998877 is the patient who owns that result. An attacker can simply change the ID number to see any patient's diagnosis.",
+      "takeaway": "Always look for UUIDs or numeric IDs in URLs and GraphQL queries and try swapping them with IDs from other accounts. In GraphQL, pay close attention to queries that take an 'ID' as an argument, as these are prime candidates for IDOR. Use tools like Burp Suite to intercept and modify these IDs manually or use extensions like 'Autorize' to automate the process. A common variant is BOLA (Broken Object Level Authorization), which is the same concept applied to modern APIs. A common beginner mistake is assuming UUIDs are 'unguessable' and therefore secure; security must never rely on the secrecy of an ID alone.",
+      "fix": "The fix requires implementing an authorization check in the backend code to ensure the requesting user owns the resource. In the GraphQL resolver, the code should retrieve the user's identity from the authentication token and use it in the database query. Instead of searching only by the object ID, the query should search by both the object ID and the owner's user ID. If no record is found matching both, the server should return an error.\n\nFixed Code Example:\nconst resolvers = {\n  Query: {\n    papayaConversationHistory: async (parent, { conversationID }, context) => {\n      const userId = context.user.id; // Get user from secure session\n      const conversation = await db.Conversations.findOne({\n        where: { id: conversationID, ownerId: userId }\n      });\n      if (!conversation) {\n        throw new Error('Unauthorized access');\n      }\n      return conversation;\n    }\n  }\n};",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "Hi I'm Shouvik a CyberSecurity researcher and a aspiring Bug bounty Hunter. Become a part of my journey in learning and growing into the Cyber Sec community writer Bug Bounty Bugbounty Writeup Idor AI Hackerone # How an GraphQL IDOR leaked AI conversation History and Got me $500 bounty Image 3: Shouvik Shouvik 3 min read · 1 day ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fdf75b24a08f7&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40shouvik328%2Fhow-an-graphql-idor-leaked-ai-conversation-history-and-got-me-500-bounty-df75b24a08f7&user=Shouvik",
     "ai_generated": true,
     "engagement": null,
     "score": 53
@@ -78,6 +78,48 @@
       "fix_ar": null
     },
     "excerpt": "Once I gathered all the subdomains and live hosts, I fed the data into an AI tool to help analyze and map out high-value attack surfaces. From there, I identified several subdomains that were worth exploring further. ## Part 1: Broken Access Control (IDOR) in GraphQL API During the reconnaissance process, I discovered an interesting subdomain featuring a login and register system, so I created two different accounts to test for IDOR. While exploring the functionality of the subdomain, I discovered an interesting endpoint: `api/graphql`, which allowed users to create products. Image 5 Press ent",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "55e7f29d25f5",
+    "title": "P2 Broken Access Control Allowing Unauthorized Account Email Modification and Account Takeover",
+    "url": "https://medium.com/@akashmotkar001/p2-broken-access-control-allowing-unauthorized-account-email-modification-and-account-takeover-dea75b86edf1",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-17T06:46:13.000Z",
+    "added_at": "2026-11-18T02:40:59.307Z",
+    "categories": [
+      "access-control",
+      "idor-bola",
+      "other"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can modify any user's registered email address by changing a user ID parameter in an account update request, enabling full account takeover via password reset.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application suffers from Broken Access Control because the backend server trusts the user-provided 'user_id' parameter without verifying if it matches the currently authenticated user. In a secure system, the server should ignore the ID sent in the request body and instead use the ID stored in the secure session or token. Because it fails to perform this check, any logged-in user can act as any other user by simply knowing or guessing their numeric ID.",
+      "walkthrough": "RECON\n1. Identify the target application's account management page where users can update their profile details.\n2. Create two separate test accounts: Account A (Attacker) and Account B (Victim).\n3. Log in to Account A to obtain a valid session token (a secret code that proves you are logged in).\nDISCOVERY\n4. Navigate to the 'Edit Profile' section of Account A.\n5. Open a web proxy tool like Burp Suite to intercept the HTTP request (a message sent from your browser to the server).\n6. Enter a new email address for Account A and click 'Save'.\n7. Capture the resulting POST request (an HTTP method used to send data to a server).\n8. Analyze the request body, which is formatted in JSON (a standard way to organize data using names and values).\n9. Observe the following request structure:\nPOST /api/v1/account/update HTTP/1.1\nHost: <application-host>\nAuthorization: Bearer <ACCOUNT_A_TOKEN>\nContent-Type: application/json\n{\n \"user_id\": \"1001\",\n \"email\": \"attacker@example.com\"\n}\n10. Identify the 'user_id' parameter (a specific piece of data) as the key identifier for which account is being updated.\nEXPLOITATION\n11. Determine the 'user_id' for Account B (the victim), which is '1002'.\n12. In the intercepted request, change the 'user_id' value from '1001' to '1002'.\n13. Keep the 'Authorization' header (the part of the request containing the login token) as Account A's token.\n14. Change the 'email' value to an email address you control.\n15. The modified payload now looks like this:\n{\n \"user_id\": \"1002\",\n \"email\": \"hacker-controlled@example.com\"\n}\n16. Forward the modified request to the server.\n17. Observe the server's response to see if it returns a '200 OK' or 'Success' message.\nIMPACT\n18. Log out of Account A.\n19. Attempt to log in or view the profile of Account B.\n20. Confirm that Account B's email has been successfully changed to the attacker's email.\n21. Go to the 'Forgot Password' page of the application.\n22. Enter the victim's username or the new attacker-controlled email.\n23. Receive the password reset link at the attacker-controlled email address.\n24. Use the link to set a new password for Account B, completing the account takeover.",
+      "example": "Imagine a fictional site 'social.target.example' where users update their bio. The update request looks like this: \nPATCH /api/profile/edit \n{\"profile_id\": \"99\", \"bio\": \"Hello world\"}\n\nAn attacker logs in as profile '100'. They change the request to:\nPATCH /api/profile/edit \n{\"profile_id\": \"99\", \"bio\": \"This account is hacked\"}\n\nBecause the server only checks if the attacker is logged in (Authentication) but doesn't check if profile '99' belongs to them (Authorization), the server updates the victim's bio. This is the same logic used to change the email in the original report.",
+      "takeaway": "Always look for numeric or UUID parameters in the body of POST, PUT, or PATCH requests that seem to identify 'who' the action is for. If you can change a 'user_id', 'account_id', or 'owner_id' to another user's ID and the server accepts it while you are logged in as yourself, you have found an IDOR (Insecure Direct Object Reference). A common variant is finding these IDs in the URL path, such as /api/users/1001/update. A beginner mistake is assuming that because a request requires a login token, it is automatically secure; remember that authentication (who you are) is not the same as authorization (what you are allowed to do).",
+      "fix": "The backend must never trust the 'user_id' provided in the request body for sensitive operations. Instead, it should extract the user's identity directly from the secure session or JWT (JSON Web Token) managed by the server. \n\nCorrected Code Logic:\n// WRONG: trusts the ID from the user input\n// app.post('/update', (req, res) => { updateUser(req.body.user_id, req.body.email); });\n\n// RIGHT: uses the ID from the authenticated session\napp.post('/update', (req, res) => {\n  const authenticatedUserId = req.user.id; // Extracted from secure session/token\n  const newEmail = req.body.email;\n  db.users.update({ id: authenticatedUserId }, { email: newEmail });\n  res.send('Email updated successfully');\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "**Severity:** P2 — High **Vulnerability Type:** Broken Access Control / Account Takeover **Bugcrowd VRT:** Broken Access Control → Privilege Escalation / Account Takeover **CWE:** * CWE-639 — Authorization Bypass Through User-Controlled Key * CWE-862 — Missing Authorization * CWE-284 — Improper Access Control **OWASP:** A01:2025 — Broken Access Control **Suggested CVSS v3.1:** 8.1 (High), subject to the actual attack prerequisites and impact. ## 1. Description During security testing, a potential broken access control vulnerability was identified in an application’s account management function",
     "ai_generated": true,
     "engagement": null,
     "score": 53
