@@ -1,5 +1,46 @@
 [
   {
+    "id": "9efb9d9a64e1",
+    "title": "Account Enumeration via Password-Reset and Registration Verification-Code Endpoints",
+    "url": "https://zyt00nax0x.medium.com/%D8%A8%D8%B3%D9%85-%D8%A7%D9%84%D9%84%D9%87-%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D9%86-%D8%A7%D9%84%D8%B1%D8%AD%D9%8A%D9%85-1a99dc7b59b7",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "zyt00nax0x"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T20:15:16.000Z",
+    "added_at": "2026-11-21T22:20:55.183Z",
+    "categories": [
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An attacker can identify valid user accounts by observing different HTTP status codes and error messages on the password reset and registration endpoints.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's API endpoints for password resets and registration provide distinct responses based on whether an email address is already in the database. Specifically, the password reset endpoint returns a 200 OK status for existing users but a 400 Bad Request for non-existent ones, while the registration endpoint does the opposite. This 'observable discrepancy' acts as an oracle, allowing automated scripts to test thousands of emails to see which ones belong to real users.",
+      "walkthrough": "PHASE 1: TESTING THE PASSWORD RESET ORACLE\n1. The researcher identified the password reset verification endpoint which sends a code to a user's email.\n2. They sent a POST request (an HTTP method used to send data to a server) to the endpoint with a known registered email.\nPOST https://example.com/api/forgot-password/verification-code/send\n3. The server responded with a 200 OK status code (a standard response for successful HTTP requests) and a specific JSON body.\n{\"result\": true}\nWhy: The server confirms the user exists and a code was sent (A 'JSON body' is a structured text format for data exchange).\n4. The researcher then sent the same request but with a random, non-existent email address.\nPOST https://example.com/api/forgot-password/verification-code/send\n5. The server responded with a 400 Bad Request status code (an error indicating the server cannot process the request) and a detailed error message.\n{\"error\": true, \"data\": {\"i18nMessageKey\": \"FORGOT_PASSWORD_USER_NOT_FOUND\"}}\nWhy: The server explicitly leaks that the user was not found in the database.\n\nPHASE 2: TESTING THE REGISTRATION ORACLE\n6. The researcher moved to the registration verification endpoint to see if it behaved similarly.\n7. They sent a POST request with an email address that was NOT yet registered.\nPOST https://example.com/mainsite/api/v1/register/verification-code/send\n8. The server responded with a 200 OK status and an empty response body.\nHTTP/2 200 OK\nWhy: The server indicates the email is available for a new account.\n9. They then sent a POST request with an email address that was ALREADY registered.\nPOST https://example.com/mainsite/api/v1/register/verification-code/send\n10. The server responded with a 400 Bad Request and a specific error message.\n{\"error\": true, \"data\": {\"i18nMessageKey\": \"REGISTER_ACCOUNT_EXISTS_EMAIL\"}}\nWhy: The server leaks that the account already exists, confirming the email is valid.\n\nPHASE 3: AUTOMATION AND IMPACT\n11. Because there was no CAPTCHA (a test to tell humans and computers apart) or rate-limiting (a limit on how many requests one user can make), the researcher could automate this.\n12. By cycling through a list of common emails, an attacker can build a database of confirmed platform users for phishing or credential stuffing (trying stolen passwords on known accounts).",
+      "example": "Imagine a site called target.example with a newsletter signup. If you try to sign up with 'admin@target.example', the server returns: HTTP 409 Conflict {\"msg\": \"Email taken\"}. If you try 'fakeuser123@target.example', it returns: HTTP 200 OK {\"msg\": \"Check your inbox\"}. An attacker uses a tool like 'ffuf' to send 10,000 common names to this endpoint. Every time they see a '409 Conflict', they save that email to a 'valid_users.txt' file. They now have a list of real people to target with fake login emails.",
+      "takeaway": "Always look for 'Forgot Password', 'Login', and 'Registration' forms as they are the most common places for account enumeration. Look for differences in HTTP status codes (200 vs 400/404/409) or even subtle differences in response times (timing attacks). A common variant is when the UI message is the same, but the underlying API response contains different 'success' or 'error' flags. Avoid the mistake of only checking the visible text on the screen; always inspect the raw HTTP response in a proxy tool like Burp Suite.",
+      "fix": "The application should return a generic, uniform response regardless of whether the email exists. For both password reset and registration, the server should return a 200 OK status and a message like 'If an account is associated with this email, a code has been sent.' This prevents attackers from distinguishing between valid and invalid accounts. Additionally, implement rate-limiting and CAPTCHAs to prevent automated bulk querying.\n\nExample of a secure response:\nHTTP/2 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"A verification code has been dispatched to the provided email address if it exists in our system.\"\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Two separate endpoints on the target application leak whether a given email address is a registered account, based solely on the HTTP status code and response body returned. No authentication, CAPTCHA, or meaningful rate-limiting prevents an attacker from querying either endpoint repeatedly, making it possible to build a list of valid, registered email addresses on the platform. ## Get zyt00nax0x’s stories in your inbox Join Medium for free to get updates from this writer. Subscribe Subscribe - [x] Remember me for faster sign in This is a classic Account Enumeration vulnerability (CWE-203: Obs",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "d11e8ee7e9ce",
     "title": "P2 Password Reset Token Not Invalidated After Successful Password Change",
     "url": "https://medium.com/@akashmotkar001/p2-password-reset-token-not-invalidated-after-successful-password-change-ad251de19a39",

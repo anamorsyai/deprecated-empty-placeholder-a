@@ -1,5 +1,46 @@
 [
   {
+    "id": "7ce4476055ab",
+    "title": "IDOR in /app-api/enduserapp/profile/{userId} — Cross-Account PII Disclosure",
+    "url": "https://zyt00nax0x.medium.com/%D8%A8%D8%B3%D9%85-%D8%A7%D9%84%D9%84%D9%87-%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D9%86-%D8%A7%D9%84%D8%B1%D8%AD%D9%8A%D9%85-2c5cf55d1c86",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "zyt00nax0x"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T19:58:34.000Z",
+    "added_at": "2026-11-21T22:21:26.187Z",
+    "categories": [
+      "idor-bola",
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An Insecure Direct Object Reference (IDOR) in the profile endpoint allowed any authenticated user to access the full personal details of any other user by simply changing a numeric ID in the URL.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's server-side logic performed authentication (checking if a user is logged in) but failed to perform authorization (checking if the logged-in user has permission to view the specific data requested). Specifically, the endpoint /app-api/enduserapp/profile/{userId} trusted the userId provided in the URL path parameter without verifying if it belonged to the requester or if a sharing relationship existed. This design flaw allowed any valid session to query any numeric ID in the database.",
+      "walkthrough": "RECON\n1. Identify the target endpoint used for viewing user profiles within the application.\nGET /app-api/enduserapp/profile/{userId}\nWhy: This is the endpoint (a specific web address where an application receives requests) that handles profile data retrieval.\n\nDISCOVERY\n2. Create two separate, unrelated test accounts: Account A and Account B.\nAccount A (ID: 101) and Account B (ID: 102)\nWhy: To test if one user can access another's data, you need two distinct identities (authentication sessions).\n3. Log in as Account A and attempt to access Account B's private folders to confirm no existing relationship or permissions exist.\nGET /app-api/enduserapp/folders/102\nWhy: This establishes a baseline that the accounts are not linked, as the server returns an empty list: {\"items\":[]}.\n\nEXPLOITATION\n4. While still logged in as Account A, manually change the userId in the profile URL to Account B's ID.\nGET /app-api/enduserapp/profile/102 HTTP/2\nWhy: This is the core attack step for IDOR (Insecure Direct Object Reference), where a user modifies a parameter (a piece of information like an ID) to point to another user's data.\n5. Observe the server response for Account B's profile.\nHTTP/2 200 OK\nWhy: The server returns a 200 OK (a success message) containing Account B's full name, email, phone number, and address because it only checked if Account A was logged in, not if Account A was allowed to see Account B.\n6. Perform a 'reverse test' by logging in as Account B and requesting Account A's profile ID.\nGET /app-api/enduserapp/profile/101 HTTP/2\nWhy: This confirms the vulnerability is systemic and works for any user ID, not just a specific account configuration.\n\nIMPACT\n7. Test for user enumeration by requesting a non-existent numeric ID.\nGET /app-api/enduserapp/profile/999999\nWhy: The server returns a 404 Not Found (a message saying the item doesn't exist), which allows an attacker to distinguish between valid and invalid IDs, enabling them to systematically harvest all user data on the platform.",
+      "example": "Imagine a fictional website called 'pet-track.example.com' that lets you view your pet's medical history. When you log in, your browser goes to 'pet-track.example.com/api/pet/55'. If you change the '55' to '56', and the site shows you a stranger's dog's medical records instead of an error, that is an IDOR. The server saw you were logged in as 'User A', but it didn't check if 'Pet 56' actually belongs to 'User A' before sending the data. An attacker could write a simple script to try every number from 1 to 10,000 and download every pet record in the system.",
+      "takeaway": "Always look for numeric or predictable IDs in URL paths or JSON bodies. If you find one, try replacing it with the ID of a different user or resource you don't own. A key signal is when an application uses sequential integers (1, 2, 3...) for IDs, as these are easy to guess. A common beginner mistake is assuming that because a request requires a 'Cookie' or 'Authorization' header, it is secure; remember that authentication is not the same as authorization. Variants of this bug include 'Insecure Direct Object Reference' in POST or DELETE requests, which could allow you to modify or delete someone else's data.",
+      "fix": "The server must implement an authorization check for every request that accesses a resource by ID. Instead of just checking if the user is logged in, the code should verify that the 'userId' extracted from the session token matches the 'userId' requested in the URL. If the application allows sharing, it must check a permissions table (Access Control List) to see if the requester has a valid relationship with the target ID. Additionally, using non-predictable UUIDs (Universally Unique Identifiers) instead of sequential integers makes it much harder for attackers to guess valid IDs.\n\nExample Fix (Pseudo-code):\n```python\n@app.route('/profile/<requested_id>')\ndef get_profile(requested_id):\n    current_user = get_session_user()\n    # AUTHORIZATION CHECK\n    if current_user.id != requested_id and not current_user.is_admin:\n        return abort(403) # Forbidden\n    return database.query_profile(requested_id)\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The endpoint GET /app-api/enduserapp/profile/{userId} allows any authenticated user to retrieve another user’s full profile — including name, email/login, job title, company, address, phone number, website, and avatar URL — simply by supplying that user’s numeric userId. No ownership, sharing relationship, or enterprise membership is enforced before returning the data The vulnerability was independently confirmed in both directions using two unrelated test accounts. ### `Technical Details` * The endpoint accepts a numeric userId as a path parameter and returns the corresponding profile object",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "9bd8d3ed8cd9",
     "title": "The $1000 IDOR Hiding Behind a Shared AI Chat",
     "url": "https://medium.com/@kianoosh.9944/the-1000-idor-hiding-behind-a-shared-ai-chat-158bf4bd0a93",
