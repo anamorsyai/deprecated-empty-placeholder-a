@@ -20,7 +20,7 @@
     "info-disclosure": 74,
     "other": 56,
     "auth-bypass": 75,
-    "business-logic": 58,
+    "business-logic": 57,
     "ssrf": 11,
     "xss": 34,
     "graphql": 13,
@@ -29,7 +29,7 @@
     "oauth-jwt": 13,
     "race-condition": 7,
     "cors": 3,
-    "rce": 36,
+    "rce": 37,
     "csrf": 4,
     "supply-chain": 5,
     "file-upload": 7,
@@ -38,5 +38,6 @@
     "ssti": 2,
     "mass-assignment": 1,
     "subdomain-takeover": 1
-  }
+  },
+  "backfilledThisRun": 6
 }

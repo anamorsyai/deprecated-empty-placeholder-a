@@ -40,6 +40,47 @@
     "score": 60
   },
   {
+    "id": "1a730fcf12d3",
+    "title": "I Found a 9.8 Critical RCE in Google’s TensorFlow. Google Refused to Pay Me.",
+    "url": "https://medium.com/@0xanubiis/i-found-a-9-8-critical-integer-overflow-in-googles-tensorflow-google-refused-to-pay-me-9d8b52bbc5c1",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Aser Ahmed"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-08T12:46:09.000Z",
+    "added_at": "2026-11-08T16:01:42.913Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "An integer overflow in Google's TensorFlow Lite Micro allowed attackers to trigger a heap buffer overflow by providing a malicious model with oversized dimensions, potentially leading to remote code execution on IoT devices.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from the ElementCount function in micro_utils.cc, which calculates the total number of elements in a tensor (a multi-dimensional data array). It uses a 32-bit signed integer to store the result of multiplying all dimensions together. Because there are no checks to see if the result exceeds the maximum value of a 32-bit integer (2,147,483,647), large dimensions like 65536 * 65536 cause the number to 'wrap around' to zero. This zero value is then passed to memory allocation functions, which create a tiny buffer that is immediately overwhelmed when the actual data is written into it.",
+      "walkthrough": "RECON\n1. Identify the target: TensorFlow Lite Micro (tflite-micro), a framework for running machine learning models on small devices like smart sensors.\n2. Locate the source code for utility functions in the file micro_utils.cc.\nDISCOVERY\n3. Analyze the ElementCount function, which takes a list of dimensions (dims) and calculates the total size.\nint ElementCount(const TfLiteIntArray& dims) { int result = 1; for (int i = 0; i < dims.size; ++i) { result *= dims.data[i]; } return result; }\nWhy: This function uses a standard 'int' (a 32-bit container for numbers) to store the product of dimensions without checking if the math exceeds the container's limit.\n4. Identify the consumer of this function: EvalTensorBytes.\nsize_t EvalTensorBytes(const TfLiteEvalTensor* tensor) { return ElementCount(*tensor->dims) * bytes_per_element; }\nWhy: This function uses the result of ElementCount to determine how much memory (RAM) to set aside for the tensor's data.\nEXPLOITATION\n5. Define a malicious tensor shape with two dimensions: 65536 and 65536.\n6. Calculate the mathematical product: 65536 multiplied by 65536 equals 4,294,967,296.\n7. Observe the integer overflow: Since a 32-bit signed integer maxes out at 2,147,483,647, the value 4,294,967,296 wraps around to 0 in the computer's memory.\n8. Trigger the allocation: The system calls EvalTensorBytes, which receives the 0 from ElementCount and tells the system to allocate 0 bytes of memory.\n9. Attempt to write the actual model data (which is large) into this 0-byte buffer.\n10. Use UBSan (Undefined Behavior Sanitizer, a tool that catches math errors) to confirm the overflow.\narith_overflow.cc:7:16: runtime error: signed integer overflow: 65536 * 65536 cannot be represented in type 'int'\nWhy: This confirms that the computer is performing 'illegal' math that results in an incorrect value.\n11. Use ASan (AddressSanitizer, a tool that catches memory crashes) to confirm the buffer overflow.\nERROR: AddressSanitizer: SEGV on unknown address 0x000000000004\nWhy: This shows the program crashed because it tried to write data into a memory location that wasn't properly prepared (the zero-page).\nIMPACT\n12. Realize that by controlling the data written into the overflowed buffer, an attacker could overwrite critical program instructions, leading to RCE (Remote Code Execution, where an attacker runs their own code on the device).",
+      "example": "Imagine a fictional image processing library on target.example that calculates the size of a photo buffer. The code takes the width and height from the user: 'int total_pixels = width * height;'. If an attacker provides a width of 50,000 and a height of 50,000, the product (2,500,000,000) exceeds the limit of a 32-bit signed integer. The 'total_pixels' variable wraps around to a negative number or a small positive number like 352,516,352. The application then allocates a buffer that is too small for the actual 2.5 billion pixels. When the app tries to copy the image data into this small buffer, it spills over into other parts of the memory, allowing the attacker to hijack the program's execution flow.",
+      "takeaway": "When hunting for bugs in C or C++ code, always look for multiplication or addition involving user-controlled inputs that are later used for memory allocation (like malloc or new). These are prime targets for integer overflows. Use tools like Grep or Semgrep to find patterns where 'int' or 'size_t' variables are multiplied. A common beginner mistake is assuming that 'size_t' (an unsigned integer) is safe; while it can hold larger numbers, it can still overflow and wrap back to zero. Always check if the result of a calculation is smaller than the inputs, which is a clear sign an overflow occurred.",
+      "fix": "The fix involves two steps: changing the variable type to 'size_t' (which is larger and unsigned) and implementing a pre-multiplication check. Before multiplying the current result by the next dimension, check if the multiplication would exceed the maximum possible value (SIZE_MAX). If 'result > SIZE_MAX / next_value', an overflow is imminent, and the function should return an error or a safe value. \n\nsize_t ElementCount(const TfLiteIntArray& dims) {\n  size_t result = 1;\n  for (int i = 0; i < dims.size; ++i) {\n    if (dims.data[i] > 0 && result > SIZE_MAX / dims.data[i]) return 0; // Overflow check\n    result *= dims.data[i];\n  }\n  return result;\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Ex.Web Developer | Security Researcher | OSINT | Content Writer | Digital Forensics | CTF Player | Penetration Tester | Bug Bounty Hunter Press enter or click to view image in full size Image 3 Cybersecurity Bug Bounty TensorFlow Infosec Security Research # I Found a 9.8 Critical RCE in Google’s TensorFlow. Google Refused to Pay Me. ## A story about finding a real vulnerability, fixing it, and discovering that the hardest part isn’t the bug — it’s the process. Image 4: Aser Ahmed Aser Ahmed 8 min read · Nov 8, 2026 [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2F",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "353349ce95d5",
     "title": "Dependency Confusion Explained: How a Missing NPM Package Becomes Remote Code Execution",
     "url": "https://medium.com/@vigneshkumaroffsec/dependency-confusion-explained-how-a-missing-npm-package-becomes-remote-code-execution-bba0fa514e49",
