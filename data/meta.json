@@ -18,7 +18,7 @@
     "info-disclosure": 75,
     "recon": 11,
     "csrf": 5,
-    "access-control": 142,
+    "access-control": 143,
     "auth-bypass": 76,
     "idor-bola": 31,
     "other": 56,
@@ -38,5 +38,6 @@
     "ssti": 2,
     "mass-assignment": 1,
     "subdomain-takeover": 1
-  }
+  },
+  "backfilledThisRun": 1
 }

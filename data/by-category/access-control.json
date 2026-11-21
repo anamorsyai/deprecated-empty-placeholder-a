@@ -1,5 +1,46 @@
 [
   {
+    "id": "3260286c4575",
+    "title": "How Cross-Site WebSocket Hijacking (CSWSH) Leads to Unauthenticated State Modification",
+    "url": "https://medium.com/@t4nv1/how-cross-site-websocket-hijacking-cswsh-leads-to-unauthenticated-state-modification-d0deff2286b4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T09:01:02.000Z",
+    "added_at": "2026-11-21T10:13:53.603Z",
+    "categories": [
+      "csrf",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An enterprise communication platform's WebSocket implementation failed to validate the Origin header, allowing malicious sites to hijack authenticated sessions and perform actions as the user.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application relied on ambient credentials (cookies) for WebSocket authentication without verifying the Origin header during the handshake. Ambient credentials are login keys that your browser carries and shows automatically to servers. Because the browser automatically attaches these cookies to any request made to the target domain—even if that request is triggered by a different, malicious website—the server treated the hijacked connection as a legitimate, logged-in session. The lack of an Origin check (a tag that tells the server which website the request started from) meant the server could not distinguish between the real application and an attacker's site.",
+      "walkthrough": "RECON\n1. The researcher identifies that the enterprise messaging dashboard uses WebSockets for real-time communication.\nWebSocket: A technology that keeps a persistent 'phone line' open between the browser and server for instant data exchange.\n2. They monitor the network traffic to find the initial connection request.\nHTTP Request: A message sent by your browser to a server asking for data or an action.\n\nDISCOVERY\n3. The researcher locates the 'Upgrade' request used to start the WebSocket session.\nUpgrade Request: A special HTTP message that asks the server to switch from a standard web page connection to a WebSocket connection.\n4. They observe that the request includes session cookies for authentication.\nCookie: A small piece of data stored by your browser to prove you are logged in.\n5. The researcher checks if the server validates the 'Origin' header.\nOrigin Header: A security label sent by the browser that tells the server exactly which website (e.g., evil.com vs target.com) initiated the request.\n6. They notice the server accepts the connection regardless of what the Origin header says.\n\nEXPLOITATION\n7. The researcher creates a malicious HTML page hosted on a different domain (e.g., attacker.com).\n8. They add JavaScript to the page to initiate a connection to the target's WebSocket endpoint.\nnew WebSocket('wss://enterprise-app.example/ws')\nWhy: This command tells the victim's browser to open a WebSocket connection to the target app from the attacker's site.\n9. When a logged-in victim visits the attacker's page, the browser automatically attaches the victim's session cookies to this request.\n10. The server receives the request, sees the valid cookies, and ignores the 'Origin: attacker.com' header, successfully establishing the connection.\n\nIMPACT\n11. Once the connection is open, the researcher uses the hijacked socket to send a command.\nws.send(JSON.stringify({action: 'update_status', text: 'Hacked'}))\nWhy: This sends a data packet through the established 'phone line' to change the user's account state.\n12. The server processes the command as if the real user had typed it, leading to unauthenticated state modification.",
+      "example": "Imagine a fictional site 'bank.example.com' that uses WebSockets to send money. When you log in, the bank gives your browser a cookie. If you visit 'evil-site.example', it can run a script: 'var socket = new WebSocket(\"wss://bank.example.com/transfer\");'. Because your browser is helpful, it sends your bank cookie along with this request. If the bank's server only checks the cookie and doesn't check if the request actually came from 'bank.example.com', it will open the connection. The evil site can then send a message through that connection like '{\"amount\": 1000, \"to\": \"attacker\"}' and the bank will process it because the connection appears to be yours.",
+      "takeaway": "Always check the Origin header during the WebSocket handshake to ensure it matches your trusted domain. This is a classic 'Cross-Site' attack where the trust a server has in a user's browser is exploited. Look for WebSocket endpoints that rely solely on cookies for authentication and lack CSRF (Cross-Site Request Forgery) tokens. A common variant is when developers try to use a regex to check the Origin but fail (e.g., allowing 'target.com.attacker.com'). Avoid the mistake of assuming WebSockets are immune to CSRF just because they aren't standard GET/POST requests.",
+      "fix": "To fix this, the server must strictly validate the 'Origin' header against a whitelist of allowed domains during the HTTP Upgrade request. Additionally, implement a one-time CSRF token that must be passed as a query parameter or a sub-protocol during the handshake. \n\nExample fix in Node.js:\nif (request.headers.origin !== 'https://trusted-app.com') {\n  socket.destroy();\n  return;\n}",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While HTTP APIs rely heavily on headers like `Authorization` or custom headers (`X-Requested-With`) to protect against Cross-Site Request Forgery (CSRF), WebSocket upgrades depend on standard HTTP requests during the initial handshake. When an application relies exclusively on ambient credentials — such as HTTP-only session cookies — to authenticate a WebSocket upgrade request without validating the `Origin` header, it opens the door to Cross-Site WebSocket Hijacking (CSWSH). In this write-up, we examine how an unvalidated WebSocket handshake in an enterprise communication application allowed",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "5fee820a7a70",
     "title": "How I Discovered a Session Management Vulnerability That Could Lead to Account Takeover | By…",
     "url": "https://samadhanshimple.medium.com/how-i-discovered-a-session-management-vulnerability-that-could-lead-to-account-takeover-by-887ba9f199de",
