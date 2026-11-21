@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-11-21T02:39:32.744Z",
-  "totalItems": 315,
+  "lastRun": "2026-11-21T10:14:38.252Z",
+  "totalItems": 317,
   "newItemsThisRun": 2,
   "aiProvider": "custom",
   "aiOkThisRun": 2,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 269,
+  "aiGeneratedTotal": 271,
   "bySource": {
-    "medium-tag-bug-bounty": 183,
+    "medium-tag-bug-bounty": 185,
     "medium-tag-writeup": 64,
     "medium-tag-bugbounty": 4,
     "infosec-writeups": 3,
@@ -15,11 +15,12 @@
     "pentesterland": 48
   },
   "byCategory": {
+    "csrf": 5,
+    "access-control": 142,
+    "auth-bypass": 76,
     "idor-bola": 31,
-    "access-control": 141,
     "info-disclosure": 74,
     "other": 56,
-    "auth-bypass": 75,
     "business-logic": 57,
     "ssrf": 11,
     "xss": 34,
@@ -30,7 +31,6 @@
     "race-condition": 7,
     "cors": 3,
     "rce": 37,
-    "csrf": 4,
     "supply-chain": 5,
     "file-upload": 7,
     "xxe": 2,
@@ -38,6 +38,5 @@
     "ssti": 2,
     "mass-assignment": 1,
     "subdomain-takeover": 1
-  },
-  "backfilledThisRun": 6
+  }
 }

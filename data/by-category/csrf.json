@@ -1,5 +1,45 @@
 [
   {
+    "id": "3260286c4575",
+    "title": "How Cross-Site WebSocket Hijacking (CSWSH) Leads to Unauthenticated State Modification",
+    "url": "https://medium.com/@t4nv1/how-cross-site-websocket-hijacking-cswsh-leads-to-unauthenticated-state-modification-d0deff2286b4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T09:01:02.000Z",
+    "added_at": "2026-11-21T10:13:53.603Z",
+    "categories": [
+      "csrf"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "The application accepted WebSocket upgrades authenticated only by HTTP‑only session cookies and never validated the Origin header, letting a malicious site open an authenticated WebSocket channel and change state on behalf of the victim.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server relied exclusively on ambient credentials – the browser’s HTTP‑only session cookie – to authenticate the WebSocket upgrade request. During the handshake the server did not inspect the Origin header, which tells the server which site initiated the request. Because the Origin header was ignored, any site could craft a JavaScript WebSocket() call that the victim’s browser would send with the victim’s cookies. The combination of cookie‑based auth and missing Origin validation created a cross‑site request forgery style vector for WebSockets. This design flaw allowed an attacker to hijack the authenticated channel and issue privileged commands without the user’s knowledge.",
+      "walkthrough": null,
+      "example": "**Fictional vulnerable code (Node.js/Express)**\n```js\napp.get('/ws', (req, res) => {\n  // Upgrade to WebSocket if request includes Upgrade header\n  if (req.headers.upgrade !== 'websocket') return res.sendStatus(400);\n  // No Origin check – any site can connect\n  const ws = new WebSocketServer({ noServer: true });\n  ws.handleUpgrade(req, req.socket, Buffer.alloc(0), client => {\n    // Authentication relies on session cookie automatically sent by browser\n    client.on('message', msg => {\n      // Assume msg is JSON like {action:'deleteUser', id:123}\n      handleAction(JSON.parse(msg), req.session.user);\n    });\n  });\n});\n```\n**Attack page (hosted on attacker.com)**\n```html\n<script>\n  // The victim is logged into target.example, so their cookie is sent automatically\n  const ws = new WebSocket('wss://target.example/ws');\n  ws.onopen = () => {\n    // Send a privileged command as the victim\n    ws.send(JSON.stringify({action:'deleteUser', id:1}));\n  };\n</script>\n```\n**Why it works**: The browser includes the victim’s session cookie when connecting to `wss://target.example/ws`. Because the server never checks `Origin`, the malicious page is allowed to open the connection and send a JSON command that the server treats as coming from the authenticated user, resulting in unauthorized state change.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While HTTP APIs rely heavily on headers like `Authorization` or custom headers (`X-Requested-With`) to protect against Cross-Site Request Forgery (CSRF), WebSocket upgrades depend on standard HTTP requests during the initial handshake. When an application relies exclusively on ambient credentials — such as HTTP-only session cookies — to authenticate a WebSocket upgrade request without validating the `Origin` header, it opens the door to Cross-Site WebSocket Hijacking (CSWSH). In this write-up, we examine how an unvalidated WebSocket handshake in an enterprise communication application allowed",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "88b09cc9da6a",
     "title": "When OAuth Works Correctly and Security Doesn’t: A Bug in OAuth Account Linking",
     "url": "https://medium.com/@0xnexus0xfault0x/when-oauth-works-correctly-and-security-doesnt-a-bug-in-oauth-account-linking-7f24bfdf91f0",

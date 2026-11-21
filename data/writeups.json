@@ -1,5 +1,86 @@
 [
   {
+    "id": "3260286c4575",
+    "title": "How Cross-Site WebSocket Hijacking (CSWSH) Leads to Unauthenticated State Modification",
+    "url": "https://medium.com/@t4nv1/how-cross-site-websocket-hijacking-cswsh-leads-to-unauthenticated-state-modification-d0deff2286b4",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T09:01:02.000Z",
+    "added_at": "2026-11-21T10:13:53.603Z",
+    "categories": [
+      "csrf"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "The application accepted WebSocket upgrades authenticated only by HTTP‑only session cookies and never validated the Origin header, letting a malicious site open an authenticated WebSocket channel and change state on behalf of the victim.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The server relied exclusively on ambient credentials – the browser’s HTTP‑only session cookie – to authenticate the WebSocket upgrade request. During the handshake the server did not inspect the Origin header, which tells the server which site initiated the request. Because the Origin header was ignored, any site could craft a JavaScript WebSocket() call that the victim’s browser would send with the victim’s cookies. The combination of cookie‑based auth and missing Origin validation created a cross‑site request forgery style vector for WebSockets. This design flaw allowed an attacker to hijack the authenticated channel and issue privileged commands without the user’s knowledge.",
+      "walkthrough": null,
+      "example": "**Fictional vulnerable code (Node.js/Express)**\n```js\napp.get('/ws', (req, res) => {\n  // Upgrade to WebSocket if request includes Upgrade header\n  if (req.headers.upgrade !== 'websocket') return res.sendStatus(400);\n  // No Origin check – any site can connect\n  const ws = new WebSocketServer({ noServer: true });\n  ws.handleUpgrade(req, req.socket, Buffer.alloc(0), client => {\n    // Authentication relies on session cookie automatically sent by browser\n    client.on('message', msg => {\n      // Assume msg is JSON like {action:'deleteUser', id:123}\n      handleAction(JSON.parse(msg), req.session.user);\n    });\n  });\n});\n```\n**Attack page (hosted on attacker.com)**\n```html\n<script>\n  // The victim is logged into target.example, so their cookie is sent automatically\n  const ws = new WebSocket('wss://target.example/ws');\n  ws.onopen = () => {\n    // Send a privileged command as the victim\n    ws.send(JSON.stringify({action:'deleteUser', id:1}));\n  };\n</script>\n```\n**Why it works**: The browser includes the victim’s session cookie when connecting to `wss://target.example/ws`. Because the server never checks `Origin`, the malicious page is allowed to open the connection and send a JSON command that the server treats as coming from the authenticated user, resulting in unauthorized state change.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "While HTTP APIs rely heavily on headers like `Authorization` or custom headers (`X-Requested-With`) to protect against Cross-Site Request Forgery (CSRF), WebSocket upgrades depend on standard HTTP requests during the initial handshake. When an application relies exclusively on ambient credentials — such as HTTP-only session cookies — to authenticate a WebSocket upgrade request without validating the `Origin` header, it opens the door to Cross-Site WebSocket Hijacking (CSWSH). In this write-up, we examine how an unvalidated WebSocket handshake in an enterprise communication application allowed",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
+    "id": "5fee820a7a70",
+    "title": "How I Discovered a Session Management Vulnerability That Could Lead to Account Takeover | By…",
+    "url": "https://samadhanshimple.medium.com/how-i-discovered-a-session-management-vulnerability-that-could-lead-to-account-takeover-by-887ba9f199de",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Samadhan shimple"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T07:43:48.000Z",
+    "added_at": "2026-11-21T10:14:22.914Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "The application failed to regenerate session identifiers upon login, allowing an attacker to hijack user accounts by reusing or pre-setting the PHPSESSID cookie.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application used the PHPSESSID cookie (a standard identifier used by PHP to track users) but failed to implement session regeneration, which is the process of creating a new, unique ID when a user's status changes from logged-out to logged-in. Because the server continued to use the same session identifier (a unique string like a temporary ID card) across different privilege levels, it allowed an ID established before authentication to remain valid after authentication. The server trusted the client-supplied cookie without verifying if it was newly issued for that specific authenticated session. This design flaw opens the door to Session Fixation, where an attacker can 'fix' a user's ID to one they already know.",
+      "walkthrough": "PHASE: RECON\n1. Open the target website in a browser like Firefox.\n2. Log in to a test account (Account A).\n3. Open Burp Suite (a tool used to intercept and modify web traffic between your browser and the server).\n4. Capture an HTTP request (a message sent from your browser to a server) to the account profile page.\n`GET /profile HTTP/1.1` \n`Host: target.com` \n`Cookie: PHPSESSID=abc123456789` \nWhy: To identify the session identifier (PHPSESSID) used to track the logged-in user.\n\nPHASE: DISCOVERY\n5. Open a different browser, such as Microsoft Edge.\n6. Log in to a second test account (Account B).\n7. Capture the HTTP request for Account B's profile page.\n`GET /profile HTTP/1.1` \n`Host: target.com` \n`Cookie: PHPSESSID=xyz987654321` \nWhy: To obtain a second valid session identifier for a different user to test for isolation.\n\nPHASE: EXPLOITATION\n8. Return to the captured request for Account A in Burp Suite.\n9. Locate the Cookie header (the part of the request that holds user identity data).\n10. Delete the original ID `abc123456789` and replace it with Account B's ID `xyz987654321`.\n`Cookie: PHPSESSID=xyz987654321` \nWhy: To see if the server relies solely on the cookie value to determine which user is accessing the page.\n11. Send the modified request to the server.\n12. Observe the response from the server.\nWhy: The server returned the profile data for Account B instead of Account A, proving that possession of the session ID is the only requirement for account access.\n\nPHASE: IMPACT\n13. Confirm that the application does not change the PHPSESSID after a user logs in.\nWhy: If the ID remains the same before and after login, an attacker can provide a victim with a known ID, wait for them to log in, and then use that same ID to take over the account.",
+      "example": "Imagine a fictional site target.example that uses PHP. \n\nVulnerable Code:\n```php\n// login.php\nsession_start();\nif (validate_user($_POST['user'], $_POST['pass'])) {\n    $_SESSION['logged_in'] = true;\n    // The developer forgot to call session_regenerate_id(true);\n    header('Location: /dashboard.php');\n}\n```\n\nAttack Request:\n1. Attacker visits the site and gets a cookie: `PHPSESSID=attacker_set_id`.\n2. Attacker tricks a victim into clicking a link that sets their cookie to `attacker_set_id`.\n3. Victim logs in. The server marks `attacker_set_id` as 'logged_in' but doesn't change the ID.\n4. Attacker sends this request:\n`GET /dashboard.php HTTP/1.1` \n`Host: target.example` \n`Cookie: PHPSESSID=attacker_set_id` \n\nWhy it works: The server sees the cookie `attacker_set_id`, checks its database, sees it is now 'logged_in' (thanks to the victim), and gives the attacker access to the victim's dashboard.",
+      "takeaway": "Always test if a session cookie changes before and after login. If the PHPSESSID or JSESSIONID remains identical, the application is likely vulnerable to session fixation. Use two different browsers or 'Incognito' modes to verify if swapping cookies allows you to jump between accounts. Look for this in any application that uses standard session cookies for authentication. A common beginner mistake is assuming that long, random cookies are automatically secure; their randomness doesn't matter if they are predictable or reusable across privilege changes.",
+      "fix": "The correct fix is to regenerate the session identifier immediately after any change in authentication level (login or logout). In PHP, use the `session_regenerate_id(true);` function. The `true` parameter is critical as it deletes the old session file on the server, making the previous ID useless. Additionally, ensure cookies use the `HttpOnly` flag (to prevent theft via scripts) and the `Secure` flag (to ensure they are only sent over encrypted connections).\n\nFixed Code Snippet:\n```php\nif (validate_user($user, $pass)) {\n    // Delete old session and create a brand new ID\n    session_regenerate_id(true);\n    $_SESSION['logged_in'] = true;\n    $_SESSION['user_id'] = $user->id;\n}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "CyberSecurity Researcher | Penetration Tester | Cyber Security | CEH | Computer Science Engineer | Offensive Security | Digital Forensics Cybersecurity Penetration Testing Bug Bounty Session Management Vulnerability # How I Discovered a Session Management Vulnerability That Could Lead to Account Takeover | By Samadhan Shimple Image 3: Samadhan shimple Samadhan shimple 6 min read · 2 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F887ba9f199de&operation=register&redirect=https%3A%2F%2Fsamadhanshimple.medium.com%2Fhow-i-discovered-a-session-management",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "9bd8d3ed8cd9",
     "title": "The $1000 IDOR Hiding Behind a Shared AI Chat",
     "url": "https://medium.com/@kianoosh.9944/the-1000-idor-hiding-behind-a-shared-ai-chat-158bf4bd0a93",
