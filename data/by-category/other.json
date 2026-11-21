@@ -1,5 +1,46 @@
 [
   {
+    "id": "663a73514a9f",
+    "title": "Critical Linux KVM Vulnerability CVE-2026-99312 Exposes 127GB of Host Memory: Bug Bounty Researcher…",
+    "url": "https://medium.com/@asadmohsin760/critical-linux-kvm-vulnerability-cve-2026-99312-exposes-127gb-of-host-memory-bug-bounty-researcher-0929a4584860",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Asad Mohsin"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T02:05:53.000Z",
+    "added_at": "2026-11-21T02:39:15.966Z",
+    "categories": [
+      "info-disclosure",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A critical vulnerability in Linux KVM (CVE-2026-99312) allowed virtual machines on AMD processors to access 127GB of host memory when nested virtualization was enabled.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability is rooted in a memory isolation failure within the Linux Kernel-based Virtual Machine (KVM) hypervisor. A hypervisor is a layer of software that allows one physical computer to run multiple virtual machines (VMs). The flaw specifically affects AMD processors when nested virtualization—a feature allowing a VM to run its own VMs—is active. In this configuration, the security boundaries intended to keep a guest VM's data separate from the host server's data failed, allowing the guest to read physical memory addresses belonging to the host.",
+      "walkthrough": "RECON\n1. The researcher identified a cloud environment using Linux KVM (a tool that turns Linux into a host for virtual machines) running on AMD hardware.\n2. The researcher verified that 'nested virtualization' was enabled, which is a feature where a virtual machine can host its own virtual machines.\nDISCOVERY\n3. Researcher Oren Yomtov investigated the memory management boundaries between the guest VM and the host server.\n4. The researcher looked for weaknesses in how the hypervisor maps memory for nested guests (VMs inside VMs).\nEXPLOITATION\n5. The researcher executed a method to bypass the isolation between the guest and the host.\nNot provided in the source article\nWhy: The researcher exploited a flaw in the KVM module's handling of AMD-specific virtualization instructions to point the guest's memory access toward host memory (the physical RAM of the main server).\nIMPACT\n6. The researcher successfully demonstrated access to a massive amount of host data.\nNot provided in the source article\nWhy: The vulnerability allowed the guest to read approximately 127GB of host memory, potentially exposing sensitive data from other users or the host system itself.",
+      "example": "Imagine a fictional cloud provider, 'CloudSafe.example', that uses AMD servers. A researcher rents a small virtual machine for $5/month. They enable nested virtualization within their VM. By using a specialized script that interacts with the CPU's virtualization flags, they find that they can 'see' memory addresses that don't belong to their VM. They send a request to read memory at a specific physical address: 'READ_PHYS_MEM 0x7FFF0000'. Because of the bug in the hypervisor's memory map, the system returns data from the host's actual RAM instead of an error. This data could contain passwords or private keys from other customers on the same physical server.",
+      "takeaway": "When hunting for high-impact bugs in cloud infrastructure, focus on complex features like nested virtualization or hardware-specific optimizations (like AMD SVM). These features significantly increase the attack surface of the hypervisor. Use system tools like 'lscpu' to check for virtualization flags (such as 'svm' for AMD) to identify potential targets. A common mistake for beginners is assuming that the 'cloud' provides perfect isolation; in reality, the software managing that isolation (the hypervisor) is code that can have bugs just like any other application.",
+      "fix": "The primary fix is to apply the Linux kernel security updates that address CVE-2026-99312. Cloud providers should ensure their host kernels are patched and, if nested virtualization is not required for their service, it should be disabled to minimize risk. To disable it on AMD systems, administrators can modify the KVM module configuration:\n\noptions kvm-amd nested=0\n\nThis command ensures the vulnerable nested virtualization feature cannot be activated, closing the primary attack vector.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Critical Linux KVM Vulnerability CVE-2026-99312 Exposes 127GB of Host Memory: Bug Bounty Researcher Discovers Cloud Security Flaw Published: November 21, 2026 Category: Cybersecurity | CVE | Bug Bounty | Vulnerability Research Introduction A serious cybersecurity vulnerability in the Linux Kernel-based Virtual Machine (KVM) has raised concerns about cloud infrastructure security after a security researcher demonstrated that a virtual machine could access approximately 127GB of host memory. The vulnerability, tracked as CVE-2026-99312, affects certain Linux KVM environments running on AMD proce",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "cffd9a3e323a",
     "title": "How a 1 MB Image Caused a Denial of Service",
     "url": "https://medium.com/@clocktower011/how-a-1-mb-image-caused-a-denial-of-service-dce8641fed79",

@@ -1,5 +1,47 @@
 [
   {
+    "id": "9bd8d3ed8cd9",
+    "title": "The $1000 IDOR Hiding Behind a Shared AI Chat",
+    "url": "https://medium.com/@kianoosh.9944/the-1000-idor-hiding-behind-a-shared-ai-chat-158bf4bd0a93",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Kianoush"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T02:13:41.000Z",
+    "added_at": "2026-11-21T02:38:57.498Z",
+    "categories": [
+      "idor-bola",
+      "access-control",
+      "info-disclosure"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An IDOR vulnerability in an AI platform allowed users to access private skill instructions of colleagues by using a UUID leaked in shared chat sessions. While most endpoints correctly blocked access, a specific diagram endpoint lacked authorization checks, exposing confidential prompt logic.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a failure to implement Object-Level Access Control (OLAC) on a specific 'derived view' endpoint. While the application correctly protected the primary skill management endpoints, it leaked the private skill's UUID (a unique identifier) in a shared chat feed. The developer then failed to verify if the requesting user had permission to view that specific skill when they called the /diagram endpoint, assuming that possession of the UUID was sufficient proof of access.",
+      "walkthrough": "RECON\n1. The researcher identified that the AI platform allows users to create 'skills' (private instructions for the AI) and share 'chats' (conversations) with colleagues.\n2. The researcher used two accounts: Account A (Attacker) and Account B (Victim), both within the same organization.\n3. Account B created a private skill and used it in a chat, then shared that chat with the organization.\n\nDISCOVERY\n4. As Account A, the researcher viewed the shared chat and intercepted the HTTP request (a message sent from a browser to a server) for the user feed.\n5. The researcher observed the following request:\nGET /api/backend/v1/sessions/{shared_chat_uuid}/user_feed HTTP/1.1\nHost: [REDACTED-HOST]\nCookie: <ACCOUNT_A_SESSION>\n6. The server responded with a JSON (a data format for computers) object containing a UUID (a long unique string used as an ID) for the victim's private skill:\n{\n \"manually_selected_skill_ids\": [\n \"VICTIM_PRIVATE_SKILL_UUID\"\n ]\n}\nWhy: The application leaked the identifier of a private resource within a public context (the shared chat feed).\n\nTESTING ACCESS\n7. The researcher tried to access the skill directly using standard endpoints to see if security was in place.\n8. Request to view versions:\nGET /skills/{victim_skill_uuid}/versions HTTP/1.1\n9. The server returned a 403 Forbidden (an error meaning the user is not allowed to see this). This confirmed that basic security was working on some endpoints.\n\nEXPLOITATION\n10. The researcher then tested a less common endpoint used for generating diagrams of skills.\n11. The researcher sent a POST request (a type of request used to send data to a server) to the diagram endpoint using the leaked UUID:\nPOST /api/backend/v1/skills/{victim_skill_uuid}/diagram HTTP/1.1\nHost: [REDACTED-HOST]\nCookie: <ACCOUNT_A_SESSION>\nContent-Type: application/json\n{}\n12. The server responded with a 200 OK (success) and returned the private instructions and metadata of the skill.\nWhy: The /diagram endpoint lacked an authorization check (a process to verify if a user has permission). It simply looked up the ID and returned the data, leading to an IDOR (Insecure Direct Object Reference, where a user accesses data by guessing or finding an ID).",
+      "example": "Imagine a medical portal where doctors can share 'Patient Summary' notes with other staff. When a doctor shares a summary, the API response includes a 'patient_internal_id'. While the staff cannot access the full patient record at /api/patients/ID (which returns 403), the developer added a feature to generate a 'Patient ID Card' at /api/patients/ID/print_card. If the developer forgot to check permissions on the /print_card endpoint, any staff member with the internal ID could view the patient's private details. \n\nAttack Request:\nPOST /api/patients/99821/print_card HTTP/1.1\nHost: medical-portal.example\nCookie: staff_session_token\n\nThis works because the server checks if the user is a logged-in staff member, but fails to check if that specific staff member is assigned to patient 99821.",
+      "takeaway": "Always look for 'secondary' or 'utility' endpoints like /diagram, /export, /preview, or /print. Developers often secure the main 'View' or 'Edit' pages but forget that these helper endpoints also return sensitive data. Never assume that a UUID (Unique Universal Identifier) is a secret; if it appears in any API response, it must be treated as public knowledge, and the server must still verify permissions every time that ID is used. A common mistake is 'security by obscurity,' where developers think an ID is too long to guess, so they don't bother checking if the user should actually see it.",
+      "fix": "The fix requires implementing a strict authorization check at the database or service layer for every endpoint. Before returning any data, the application must verify that the user associated with the session cookie has a relationship (like ownership or shared access) with the requested object ID. \n\nExample Fix (Pseudo-code):\n```python\n@app.route('/skills/<skill_id>/diagram', methods=['POST'])\ndef get_skill_diagram(skill_id):\n    user = get_current_user()\n    skill = db.query(Skill).filter_by(id=skill_id).first()\n    # Check if the skill exists AND if the user has permission\n    if not skill or not user.has_access_to(skill):\n        return abort(403) # Return Forbidden\n    return generate_diagram(skill)\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "## _How a shared conversation exposed a private skill identifier, and an overlooked endpoint turned that identifier into confidential instructions._ > **_Disclosure note:_**_The target hostname, authentication material, real UUIDs, and private contents are redacted. API paths and response field names are preserved for educational purposes. All testing described here used accounts under the researcher’s control._ ## A shared conversation should not mean shared secrets In July 2026, I reported an authorization flaw in an AI workflow platform that allowed one regular user to retrieve another user",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "7e38440cd104",
     "title": "How an GraphQL IDOR leaked AI conversation History and Got me $500 bounty",
     "url": "https://medium.com/@shouvik328/how-an-graphql-idor-leaked-ai-conversation-history-and-got-me-500-bounty-df75b24a08f7",
