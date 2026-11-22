@@ -1,5 +1,47 @@
 [
   {
+    "id": "87513146f7a1",
+    "title": "Encrypted ID’s ? No Problem.",
+    "url": "https://d0loreh4z3.medium.com/encrypted-ids-no-problem-329e2160b193",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "D0loresH4ze"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-22T16:19:38.000Z",
+    "added_at": "2026-11-22T17:41:29.663Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "An attacker could bypass security by using a public encryption utility to generate valid identifiers for any user, then using those identifiers to download sensitive account data including PINs and security answers.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application relied on 'security through obscurity' by encrypting user IDs, but it mistakenly provided a public API endpoint that performed this encryption for anyone. Furthermore, the data-retrieval endpoint trusted the encrypted ID as proof of permission, failing to verify if the logged-in user actually had the right to access the account associated with that ID.",
+      "walkthrough": "RECON\n1. The researcher identified a utility endpoint that appeared to encrypt any text provided to it.\nPOST /random/path/EncodeString\nWhy: An endpoint is a specific web address where a program receives data. This one was designed to take a 'Value' and return a secret code.\n\n2. They tested the endpoint by sending a common username, 'admin', as the input parameter.\n{'Value': 'admin'}\nWhy: A parameter is a piece of data sent to the server. Here, the researcher is asking the server to encrypt the word 'admin'.\n\n3. The server responded with a scrambled string, which is the encrypted version of 'admin'.\n{\"d\":\"Kx9mP2vQaL7nRt5bYw8eFg==\"}\nWhy: The server performed the encryption using its own secret keys and gave the result back. This allows an attacker to generate valid encrypted IDs without knowing the secret key.\n\nDISCOVERY\n4. The researcher looked for other parts of the application that used these encrypted strings and found a user information endpoint.\nGET /api/v1/application/EncUserID?UserName=[ENCRYPTED_STRING]\nWhy: A GET request is a digital letter asking the server to retrieve information. The 'UserName' part is a query parameter, which is data added to the end of a URL.\n\nEXPLOITATION\n5. The researcher took the encrypted string for 'admin' from Step 3 and placed it into the URL found in Step 4.\nGET /api/v1/application/EncUserID?UserName=Kx9mP2vQaL7nRt5bYw8eFg==\nWhy: They are testing if the server will give them the admin's data just because they provided the 'correct' encrypted ID.\n\nIMPACT\n6. The server returned a JSON object containing the full private profile of the user, including sensitive fields.\n{ \"userid\": \"...\", \"FIRSTNAME\": \"...\", \"PASSWORD\": \"...\", \"Answer1\": \"...\", \"Pin\": \"...\" }\nWhy: JSON is a standard format for sharing data using labels and values. The server failed to perform authorization (the check to see if you are allowed to see data), assuming that anyone with the encrypted ID must be the owner.",
+      "example": "Imagine a fictional site 'target.example' that protects user profiles by using encrypted IDs in the URL like 'target.example/profile?id=SECRET_CODE'. \n\n1. The developer creates a 'helper' tool at 'target.example/api/utils/encrypt?text=123' so their own mobile app can easily generate these codes. \n2. An attacker uses this tool to encrypt the ID of a victim (e.g., user '999') and gets the code 'XYZ789'. \n3. The attacker visits 'target.example/profile?id=XYZ789'. \n4. Because the server only checks if the ID is validly encrypted, but NOT if the attacker is logged in as user 999, it displays the victim's private address and credit card info. The encryption provided a false sense of security.",
+      "takeaway": "Never treat encryption or 'unpredictable' IDs as a substitute for authorization. If an attacker can find a way to generate those IDs—either through a helper endpoint, a predictable pattern, or another leak—your security model collapses. Always check on the server side: 'Is the person asking for this data actually the owner of this data?' regardless of how complex the ID looks. Look for 'utility' or 'helper' endpoints in APIs that might be doing the heavy lifting for you.",
+      "fix": "The fix requires two steps: First, remove or restrict access to the encryption utility so it cannot be used by unauthorized parties to generate IDs. Second, and most importantly, implement a strict authorization check on the data-retrieval endpoint. The server should identify the user from their session token (like a JWT) and compare it to the owner of the requested record. \n\nExample fix in code:\nuser_to_fetch = decrypt(request.params.UserName)\nif (current_logged_in_user.id != user_to_fetch.id):\n    return Error('Unauthorized', 403)\nreturn database.get_user_details(user_to_fetch.id)",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Encryption is often used by applications to protect sensitive identifiers and prevent users from directly interacting with internal account references. But what happens when an application provides its own public encryption service while failing to properly enforce authorization on the endpoints that consume those encrypted values? During my investigation, I discovered a chain of API endpoints that allowed me to generate encrypted identifiers for arbitrary usernames and use them to retrieve associated user account information. What initially appeared to be an ordinary encoding utility turned o",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "9efb9d9a64e1",
     "title": "Account Enumeration via Password-Reset and Registration Verification-Code Endpoints",
     "url": "https://zyt00nax0x.medium.com/%D8%A8%D8%B3%D9%85-%D8%A7%D9%84%D9%84%D9%87-%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D9%86-%D8%A7%D9%84%D8%B1%D8%AD%D9%8A%D9%85-1a99dc7b59b7",
