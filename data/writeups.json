@@ -1,5 +1,45 @@
 [
   {
+    "id": "1bbb6471ab21",
+    "title": "Changing “false” to “true”: How I Discovered an Email Verification Bypass Through Mass Assignment",
+    "url": "https://medium.com/@anujrawal/changing-false-to-true-how-i-discovered-an-email-verification-bypass-through-mass-assignment-12233efb1f00",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Anuj rawal"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-22T18:34:14.000Z",
+    "added_at": "2026-11-22T22:50:34.021Z",
+    "categories": [
+      "mass-assignment"
+    ],
+    "severity": null,
+    "difficulty": null,
+    "summary_en": "A mass‑assignment flaw lets an attacker change the email‑verified flag from false to true, bypassing email verification.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "a41649e6d7e0",
     "title": "Anatomy of an HTTP Request (Part 4): Rate Limiters, Proxy Trust Boundaries, and Business Logic…",
     "url": "https://medium.com/@extraterrestrial2342/anatomy-of-an-http-request-part-4-rate-limiters-proxy-trust-boundaries-and-business-logic-2bf20c6974ea",
