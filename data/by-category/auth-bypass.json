@@ -1,5 +1,47 @@
 [
   {
+    "id": "b9cf7cc79179",
+    "title": "How a Next.js CDN Proxy Turned Into a One-Click Account Takeover",
+    "url": "https://medium.com/@r3dd404/how-a-next-js-cdn-proxy-turned-into-a-one-click-account-takeover-dd8bc8dd9fde",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "R3DD"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-21T18:12:52.000Z",
+    "added_at": "2026-11-22T10:00:57.605Z",
+    "categories": [
+      "cache-smuggling",
+      "auth-bypass",
+      "access-control"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A vulnerability in a Next.js CDN proxy configuration allowed for a one-click account takeover, likely through cache-related exploitation.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "5fee820a7a70",
     "title": "How I Discovered a Session Management Vulnerability That Could Lead to Account Takeover | By…",
     "url": "https://samadhanshimple.medium.com/how-i-discovered-a-session-management-vulnerability-that-could-lead-to-account-takeover-by-887ba9f199de",
