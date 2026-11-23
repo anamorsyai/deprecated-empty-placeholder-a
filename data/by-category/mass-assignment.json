@@ -18,26 +18,26 @@
     "categories": [
       "mass-assignment"
     ],
-    "severity": null,
-    "difficulty": null,
-    "summary_en": "A mass‑assignment flaw lets an attacker change the email‑verified flag from false to true, bypassing email verification.",
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An attacker bypassed the mandatory email verification process by sending a PATCH request that manually updated their account's verification status flag to 'true'.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The root cause was a Mass Assignment vulnerability in the profile update API. Mass Assignment occurs when an application takes user-provided data and automatically saves it to a database record without filtering which fields are allowed to be changed. In this case, the endpoint at /mobify/proxy/api/customer/.../customers/{customerId} accepted the 'c_isCustomerVerified' field from the user's request. Because the server did not use an allowlist (a list of safe fields like 'name' or 'address'), it allowed the user to overwrite a sensitive internal status flag that should only be controlled by the system.",
+      "walkthrough": "RECON\n1. The researcher created a new account on redacted.com using a temporary email address.\n2. Upon logging in, the site displayed a verification wall, blocking access to profile editing and order tracking until the email link was clicked.\n\nDISCOVERY\n3. The researcher used Burp Suite (a tool that intercepts and inspects web traffic) to monitor the background communication between the browser and the server.\n4. They identified a GET request (a request to fetch data) used to load the user's profile details.\nGET /mobify/proxy/api/customer/.../customers/{customerId}?siteId=redacted HTTP/1.1\nWhy: This endpoint (a specific web address for an API) returns the current state of the user's account in the database.\n5. The researcher examined the JSON response (a text-based data format used by APIs) and found a specific flag (a true/false indicator).\n{\n \"customerId\": \"12345\",\n \"email\": \"testuser@example.com\",\n \"c_isCustomerVerified\": \"false\"\n}\nWhy: The 'c_isCustomerVerified' label with the value 'false' tells the website that this user has not yet clicked the email link.\n\nEXPLOITATION\n6. The researcher sent the request to Burp Repeater (a tool for modifying and re-sending requests) and changed the method from GET to PATCH.\nPATCH /mobify/proxy/api/customer/shopper-customers/v1/organizations/redacted_org/customers/{customerId}?siteId=redacted\nWhy: A PATCH request is used to update existing information on a server.\n7. The researcher added a JSON payload (the data sent in the body of the request) to the PATCH request, manually setting the verification flag to true.\n{\n \"c_isCustomerVerified\": \"true\"\n}\nWhy: The researcher is testing if the server blindly accepts this instruction to change its internal record of the user's status.\n8. The server responded with a '200 OK' status code, indicating the update was successful.\n\nIMPACT\n9. To confirm the exploit, the researcher sent the original GET request again.\nGET /mobify/proxy/api/customer/.../customers/{customerId}?siteId=redacted\nWhy: To see if the server now reports the user as verified.\n10. The response confirmed the change: '\"c_isCustomerVerified\": \"true\"'.\n11. The researcher refreshed the browser, and the verification wall disappeared, granting full access to the account without ever opening an email inbox.",
+      "example": "Imagine a fictional site called 'target.example' where users can sign up for a free trial. When you view your profile, the site sends a request to 'GET /api/v1/me' and receives this JSON: {'username': 'newbie', 'is_premium_subscriber': false}. To test for Mass Assignment, an attacker would try to send a 'PUT' or 'PATCH' request to the same endpoint with a modified payload: {'is_premium_subscriber': true}. If the server is vulnerable, it will update the user's database record, granting them paid features for free because the developer forgot to tell the code: 'Only allow users to change their username, never their subscription status.'",
+      "takeaway": "When hunting for bugs, always inspect the JSON responses of profile or settings pages for interesting boolean (true/false) flags like 'isVerified', 'isAdmin', or 'can_access_beta'. If you find one, try to send that same flag back to the server using a PUT or PATCH request. A common beginner mistake is assuming that because a field isn't visible in a web form, it can't be changed; however, APIs often listen for more fields than the UI shows. Look for 'hidden' parameters in the documentation or by observing the traffic of different user roles.",
+      "fix": "The fix is to implement a strict allowlist for all user-facing update endpoints. Instead of mapping the entire incoming JSON object to the database, the code should explicitly extract only the fields the user is permitted to change. For example, in a Node.js/Express app, instead of 'User.update(req.body)', use 'User.update({ firstName: req.body.firstName, lastName: req.body.lastName })'. Sensitive fields like 'c_isCustomerVerified' should only be modified by internal logic triggered by a valid verification token link.\n\n```javascript\n// FIXED CODE EXAMPLE\napp.patch('/api/profile', (req, res) => {\n  const allowedUpdates = ['firstName', 'lastName', 'phoneNumber'];\n  const updates = {};\n  \n  // Only copy fields that are in the allowlist\n  allowedUpdates.forEach(field => {\n    if (req.body[field] !== undefined) {\n      updates[field] = req.body[field];\n    }\n  });\n\n  // This prevents 'c_isCustomerVerified' from being updated by the user\n  db.users.update({ id: req.user.id }, { $set: updates });\n  res.status(200).send('Profile updated');\n});\n```",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "When you sign up on most shopping websites, they ask you to click a link in your email before you can edit your profile or track orders. It’s a basic security check to prove the email actually belongs to you. Recently, while testing a bug bounty target (let’s call it **redacted.com**), I found a simple Mass Assignment bug that let me skip this check completely — without ever opening my inbox. Here is how I found it. ## Step 1: Getting Stuck on the Verification Screen > I started by creating a brand-new account on `redacted.com` using a temporary email address. As soon as I signed up, the site",
     "ai_generated": true,
     "engagement": null,
-    "score": 40
+    "score": 47
   },
   {
     "id": "ae5262552484",

@@ -59,16 +59,16 @@
     "categories": [
       "other"
     ],
-    "severity": null,
+    "severity": "high",
     "difficulty": null,
-    "summary_en": "A public bug bounty program for VIDRAFT's ViKernel AI security kernel resulted in 148 vulnerabilities discovered across four seasons of testing.",
+    "summary_en": "VIDRAFT's ViKernel AI security kernel concluded a four-season bug bounty program, resulting in 148 vulnerabilities discovered through 298 attack attempts.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The specific technical root causes are not detailed in the source due to corrupted data, but the vulnerabilities exist within ViKernel, an AI-based security kernel (the core part of an operating system that manages hardware and software). The high volume of findings (148 vulnerabilities) across 298 attacks suggests that the kernel's logic for handling adversarial inputs or system calls contained significant flaws. These flaws were identified during a structured 'open-attack' program designed to stress-test the AI's security boundaries.",
+      "walkthrough": "The source material does not provide specific technical steps or exploit code for the 148 vulnerabilities found. It only reports the high-level results of the bug bounty program.\n\nPROGRAM OVERVIEW\n1. A public bug bounty program (a contest where hackers are paid to find flaws) was launched for ViKernel.\n2. The program was organized into four distinct 'seasons' to allow for iterative testing and patching.\n3. Security researchers performed 298 total attacks (attempts to bypass security or crash the system) against the AI kernel.\n4. These efforts successfully identified 148 unique vulnerabilities (weaknesses in the software).\n5. The program concluded with a total prize distribution of $4,500 to the participating researchers.",
+      "example": "Since no specific bug was detailed, we can imagine a common vulnerability in an AI security kernel. Suppose the kernel uses an AI model to decide if a file is malicious. A researcher finds that by adding a specific sequence of 'junk' data to the end of a virus, the AI is tricked into thinking the file is safe. \n\nAttack Request:\n[Malicious File Content] + [0x00 * 1024] \n\nWhy it works: The kernel's AI model has a 'blind spot' for files of a certain size or padding. By appending 1024 null bytes (empty data), the researcher bypasses the security check, allowing the virus to run. This is a logic flaw in the AI's decision-making process.",
+      "takeaway": "When a program has multiple 'seasons,' it is a signal to researchers that the attack surface is evolving and that the developers are actively fixing previous bugs. In AI security kernels, look for 'adversarial examples'—inputs specifically designed to confuse machine learning models. A common mistake is assuming that AI-driven security is inherently more robust than traditional rule-based security; often, the AI introduces new, complex failure modes. Researchers should focus on the interface where the AI kernel receives data from the rest of the operating system.",
+      "fix": "Without specific vulnerability details, general fixes for a security kernel include implementing strict input validation (checking that data follows expected rules) and memory protection. Developers should use 'fuzzing' (sending massive amounts of random data) to find crash points before attackers do. Additionally, the AI models should be trained on adversarial datasets to recognize attempts to bypass their logic.\n\nExample of a generic input check:\nif (input_size > MAX_LIMIT || contains_illegal_chars(input)) {\n    reject_request();\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
@@ -78,7 +78,7 @@
     "excerpt": "The Korean body text of the source you provided appears to be **garbled/corrupted encoding** (`����-404 ��ҳ�ܶ���`), which typically indicates a 404-not-found page rendered in a broken character set — meaning the actual article body **did not load or does not exist** at that URL. The only usable content I have is the **headline**, which contains these verifiable claims: * 298 attacks, 148 vulnerabilities * A product called **ViKernel** (an AI security kernel by VIDRAFT) * A public bug-bounty / open-attack program across **4 seasons** * Total prize pool of **$4,500** **I cannot write a 600–900 w",
     "ai_generated": true,
     "engagement": null,
-    "score": 40
+    "score": 53
   },
   {
     "id": "663a73514a9f",

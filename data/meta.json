@@ -23,11 +23,10 @@
     "business-logic": 61,
     "mass-assignment": 2,
     "idor-bola": 32,
-    "cache-smuggling": 3,
+    "xss": 35,
     "recon": 11,
     "csrf": 5,
     "ssrf": 11,
-    "xss": 34,
     "graphql": 13,
     "sqli": 9,
     "oauth-jwt": 13,
@@ -36,7 +35,9 @@
     "supply-chain": 5,
     "file-upload": 7,
     "xxe": 2,
+    "cache-smuggling": 2,
     "ssti": 2,
     "subdomain-takeover": 1
-  }
+  },
+  "backfilledThisRun": 3
 }

