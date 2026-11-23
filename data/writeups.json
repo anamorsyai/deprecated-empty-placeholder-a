@@ -1,5 +1,87 @@
 [
   {
+    "id": "f6c103d6e017",
+    "title": "One Delimiter Too Many: The $100,000 GitHub Bug Hiding in git push",
+    "url": "https://medium.com/@t4nv1/one-delimiter-too-many-the-100-000-github-bug-hiding-in-git-push-41546fa5fe9a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-23T11:41:01.000Z",
+    "added_at": "2026-11-23T12:49:14.904Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "Researchers exploited unsanitized git push options to inject malicious metadata into internal GitHub headers, leading to remote code execution (RCE) and a $100,000 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stemmed from GitHub's backend trusting internal metadata headers that were partially constructed from user-supplied push options. When a user performs a git push (sending code updates to a server), they can include push options (custom text strings). GitHub's infrastructure took these strings and placed them into an internal HTTP header (a piece of hidden information sent between servers). Because the system did not properly sanitize or escape delimiters (special characters used to separate data) within these options, an attacker could inject new, unauthorized header fields that the backend services treated as legitimate instructions.",
+      "walkthrough": "RECON\n1. The researchers investigated the git push command, which is used to upload local repository changes to a remote server like GitHub.\n2. They focused on push options, which are extra parameters a user can send during the push process.\n`git push --push-option=\"user_data\"` (Why: This sends a custom string to the server alongside the code. A parameter is a piece of information passed to a program.)\nDISCOVERY\n3. The team discovered that GitHub's frontend servers take these push options and forward them to internal backend services.\n4. They observed that these options were bundled into an internal header (a metadata field used for communication between servers).\n5. They hypothesized that if they could include a delimiter (a character like a newline that signals the end of one piece of data and the start of another), they could trick the backend.\nEXPLOITATION\n6. The researchers crafted a push option containing a hidden delimiter and a new header name.\n`git push --push-option=\"valid_data\\nInjected-Header: malicious_value\"` (Why: The \\n represents a newline character, which often tells a server that the current line of information has ended. A payload is the part of the data that performs the malicious action.)\n7. When GitHub's internal system processed this, it saw valid_data as the intended value, but then interpreted Injected-Header as a completely separate, trusted instruction from the frontend.\n8. By injecting specific internal headers, the researchers were able to influence how the backend processed the git command.\nIMPACT\n9. The researchers successfully chained this header injection to trigger Remote Code Execution (RCE), which is the ability to run any command on the target server.\n10. This allowed them to demonstrate full control over the underlying GitHub infrastructure, resulting in a $100,000 bug bounty reward.",
+      "example": "Imagine a website target.example that tracks which user is uploading a file using an internal header. When you upload, the server sends this to its storage backend: X-Uploader: [Your-Username]. If your username is alice, the backend sees X-Uploader: alice. However, if you change your username to alice\\nAdmin-Access: true, the backend might see two separate lines: X-Uploader: alice and Admin-Access: true. Because the backend trusts the frontend, it sees the second line and grants you administrative privileges over the file storage system.",
+      "takeaway": "Always look for pass-through features where user input is used to build internal requests or metadata. If an application takes a string you provide and sends it to another internal service, test if you can break the format using characters like newlines (\\n), carriage returns (\\r), or semicolons (;). This is common in microservice architectures where trusted communication happens behind a firewall. A key signal is any feature that allows custom options or metadata to be attached to a request. Avoid the mistake of assuming that internal traffic is safe just because it isn't directly accessible from the internet.",
+      "fix": "To fix this, developers must strictly validate and sanitize all user-provided data before including it in headers or metadata. Instead of simple string concatenation, use structured data formats like JSON or use specialized libraries that automatically escape control characters. In this case, GitHub patched the issue by ensuring that push options cannot contain characters that would allow for header injection. A fixed implementation would look like this: \n\n```python\n# Sanitize input by removing newline characters\nclean_option = user_input.replace('\\n', '').replace('\\r', '')\nheaders = {'X-Internal-Metadata': clean_option}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_How unsanitised push options turned into trusted internal metadata, and why “the header said so” is a dangerous security model_ > **_Credit and scope:_**_The vulnerability, tracked as_**_CVE-2026–3854_**_, was found and reported by researchers at_**_Wiz Research_**_(Sagi Tzadik, Nir Ohfeld, Ronen Shustin, Hillai Ben-Sasson, Yuval Avrahami and Noam Malron, per Wiz’s write-up). This post is my own explanation, built from Wiz’s and GitHub’s public disclosures. I did not test GitHub. I’m deliberately leaving out exact strings, header names and exploit construction. This is a design-failure case s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "77ed2b0ea754",
+    "title": "An educational bug bounty case study in client flow analysis and downstream authorization testing",
+    "url": "https://medium.com/@redhunter01/an-educational-bug-bounty-case-study-in-client-flow-analysis-and-downstream-authorization-testing-aabf0c9daddc",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "redhunter01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-23T11:19:11.000Z",
+    "added_at": "2026-11-23T12:49:44.453Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An attacker could bypass subscription checks by directly requesting a security token from an endpoint that failed to verify upstream authentication proofs, granting unauthorized access to premium video rights.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure in the 'trust boundary' where the Security Token Service (STS) endpoint `/S1/sts/v1/oauth/tvesignin` accepted user-provided claims (like TV provider and package IDs) without requiring a signed proof of authorization from the upstream provider (Adobe Pass). The server assumed that if a request reached this endpoint, the user must have already passed the previous login steps, but it did not actually verify the 'Adobe media token' or any session cookies. This allowed any unauthenticated user to claim they had a valid subscription simply by naming a provider like 'Comcast_SSO' in the request body.",
+      "walkthrough": "RECON\n1. Analyze the client-side JavaScript code in the browser to understand how the application handles logins and video access.\n`_app-02633232f250f4b3.js`\nWhy: To find the logic that tells the browser where to send requests and what data is required (Client-side code is the set of instructions running in your browser).\n2. Identify the backend host used for media operations by looking for specific variables in the code.\n`MEDIA_KIND_HOST = 'ottapp-appgw-client.nba.com'`\nWhy: This identifies the 'endpoint' (a specific web address where a server receives requests) responsible for issuing security tokens.\n\nDISCOVERY\n3. Trace the 'TV Everywhere' (TVE) flow to see how the app exchanges provider info for a session token.\n`POST /S1/sts/v1/oauth/tvesignin`\nWhy: This is the 'Token Exchange' point where the app turns a TV provider login into a site-specific 'AccessToken' (a digital key used to prove you are allowed to see content).\n4. Observe that the client code reads subscription details from a local profile and sends them to the server.\n`profile.provider.mvpd` and `ResourceIds`\nWhy: The researcher noticed the server was asking the client to provide its own 'entitlements' (a list of what the user is allowed to watch) instead of the server checking a database.\n\nEXPLOITATION\n5. Craft a manual HTTP request (a message sent to a server) to the token endpoint without any login cookies or authorization headers.\n`POST /S1/sts/v1/oauth/tvesignin HTTP/1.1`\nWhy: To test if the server requires 'Authentication' (proof of who you are) before giving out a token.\n6. Include a JSON 'payload' (the data sent in a request) that claims a specific TV provider and user ID.\n`{\"TveProvider\": \"adobe\", \"Mvpd\": \"Comcast_SSO\", \"RequestorId\": \"NBADE\", \"UserId\": \"unauth-hunter-poc\"}`\nWhy: This attempts to trick the server into thinking the user has already logged in via Comcast.\n7. Submit the request and receive a valid 'AccessToken' in the response.\n`tveStsToken`\nWhy: The server failed to check for a 'Media Token' (a cryptographically signed proof from the TV provider) and issued the key anyway.\n\nIMPACT\n8. Use the improperly issued token to call the 'Rights API'.\n`GET /api/v1/rights` with the `tveStsToken` header\nWhy: To see if this fake token actually grants permissions on the server.\n9. Compare the results to a guest account.\n`{\"q\":\"ReachHD\"}`\nWhy: The guest account saw 0 rights, but the fake token returned 3 rights, proving the 'Authorization' (the process of checking permissions) was successfully bypassed.",
+      "example": "Imagine a movie theater where a machine prints tickets. Normally, you show a receipt to a human, and they press a button on the machine to print your ticket. However, you discover that if you just walk up to the back of the machine and send a digital message saying 'I paid for a VIP ticket,' the machine prints it without asking for the receipt. In this scenario, the machine is the STS endpoint, the receipt is the Adobe Pass token, and the VIP ticket is the AccessToken. A vulnerable code snippet on the server might look like this: `app.post('/get-token', (req, res) => { const userClaims = req.body; const token = signToken(userClaims); res.json({token}); });` -- This is vulnerable because it takes `req.body` (user input) and trusts it immediately without verifying a signature or session.",
+      "takeaway": "Always test 'Token Exchange' endpoints for missing upstream verification. Just because a client flow *usually* follows a specific order (Step A then Step B) doesn't mean the server enforces it. Look for endpoints that accept 'claims' (like user roles, subscription levels, or provider IDs) and check if they require a signed 'assertion' or 'token' from the source of truth. A common beginner mistake is assuming that if an endpoint is 'internal' or part of a complex flow, it is automatically secure.",
+      "fix": "The server must require and validate a signed 'Authorization Token' from the upstream provider (e.g., Adobe Pass) before issuing its own internal token. The code should verify the signature of the upstream token to ensure it hasn't been tampered with and that it was actually issued to the requesting user. \n\n```javascript\n// FIXED CODE EXAMPLE\napp.post('/S1/sts/v1/oauth/tvesignin', async (req, res) => {\n  const { adobeMediaToken, mvpd, userId } = req.body;\n  // 1. Verify the proof from the upstream provider\n  const isValid = await verifyAdobeToken(adobeMediaToken);\n  if (!isValid) {\n    return res.status(401).send('Invalid authorization proof');\n  }\n  // 2. Only issue the internal token after verification\n  const internalToken = generateInternalToken(userId, mvpd);\n  res.json({ AccessToken: internalToken });\n});\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m Arshia, founder of RedHunter, Software developer and a full-time bug bounty hunter. https://arshiaheravi.com writer Bug Bounty Web Hacking Cybersecurity Hackerone Ethical Hacking Image 3: redhunter01 redhunter01 12 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Faabf0c9daddc&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40redhunter01%2Fan-educational-bug-bounty-case-study-in-client-flow-analysis-and-downstream-authorization-testing-aabf0c9daddc&user=redhunter01&userId=1a8706ec0593&source=---header_actions--aabf0c9daddc-----",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b4046482a1b9",
     "title": "I need to flag a problem before writing this article.",
     "url": "https://arxivgpt.medium.com/i-need-to-flag-a-problem-before-writing-this-article-b0e41a325934",
@@ -38,6 +120,48 @@
     "ai_generated": true,
     "engagement": null,
     "score": 40
+  },
+  {
+    "id": "d848812a224c",
+    "title": "The Wildcard Parameter That Exposed 60 Million USPS Accounts",
+    "url": "https://medium.com/@l4zz3rj0d/the-wildcard-parameter-that-exposed-60-million-usps-accounts-50b372babfb6",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "L4ZZ3RJ0D"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-23T00:01:01.000Z",
+    "added_at": "2026-11-23T12:50:19.439Z",
+    "categories": [
+      "access-control",
+      "info-disclosure",
+      "business-logic"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A wildcard search vulnerability in the USPS Informed Visibility API allowed any logged-in user to access and modify PII for 60 million accounts by replacing search parameters with a wildcard character.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability was caused by a complete absence of server-side authorization (the process of checking if a user has permission to see specific data). The API (a system that lets software programs talk to each other) accepted search parameters (pieces of information sent to a server) but failed to verify that the requesting user owned the records being returned. Because the backend database interpreted wildcard characters (symbols like '*' or '%' that mean 'everything') as valid search terms, it returned the entire user database to any authenticated user who asked.",
+      "walkthrough": "RECON\n1. Identify the USPS 'Informed Visibility' program, a service designed for businesses to track bulk mail campaigns.\n2. Log in to a standard USPS.com user account to access the dashboard.\nDISCOVERY\n3. Open the browser's Developer Console (a built-in tool for inspecting web traffic and code).\n4. Navigate to the 'Network' tab to monitor HTTP requests (messages sent from your browser to a server).\n5. Perform a search for your own account details using the search feature.\n6. Locate the specific API request triggered by the search.\n7. Identify the search parameter (a data piece in the request) such as an email address or account number.\n8. Example request: `GET /api/v1/search?email=user@example.com`.\nEXPLOITATION\n9. Use a tool or the browser console to 'Edit and Resend' the request.\n10. Replace the specific email address with a wildcard character (a symbol representing 'any value').\n11. `GET /api/v1/search?email=*` \n12. Why: The '*' tells the server to find every record where the email field is not empty (a wildcard search).\n13. Send the modified request to the server.\n14. Observe the response payload (the data sent back by the server).\n15. Why: The server returns a massive list of user accounts because it lacks a check to ensure the data belongs to the requester.\nIMPACT\n16. Confirm the response contains PII (Personally Identifiable Information like names, addresses, and phone numbers) for millions of users.\n17. Test the 'write' capabilities by identifying an update endpoint (a specific web address for changing data).\n18. `POST /api/v1/updateAccount` \n19. Why: A POST request is used to send new data to be saved on the server.\n20. Attempt to change account details for a different user ID found in the previous search.\n21. Observe that the server processes the change without requiring proof of ownership.\n22. Note that 60 million accounts were exposed due to this missing authorization check.",
+      "example": "Imagine a fictional site 'target.example' that lets users search for their invoices. When you search for invoice #123, the browser sends: `GET /api/invoices?id=123`. A beginner attacker changes the 'id' parameter to '%', which is a wildcard in many database systems. The request becomes `GET /api/invoices?id=%`. If the server-side code simply takes that input and runs a database query like 'SELECT * FROM invoices WHERE id LIKE %' without checking if the invoice belongs to the logged-in user, the server will return every invoice in the entire database to the attacker.",
+      "takeaway": "Always test search and filter parameters with wildcard characters like '*', '%', or even empty strings. If the server returns data that does not belong to your account, you have found a scoping failure. This is a common variant of IDOR (Insecure Direct Object Reference) where a single request can dump an entire database instead of just one record. A key signal is any API that allows you to search for other users by common identifiers (email, phone) without strictly limiting the results to your own organizational boundary.",
+      "fix": "The fix requires implementing strict server-side authorization scoping. Every database query must be hard-coded to include the current user's ID from their secure session. Instead of relying on the user-provided search term alone, the backend should automatically append a filter. For example, in Node.js: `db.query('SELECT * FROM accounts WHERE accountID = ? AND ownerID = ?', [req.query.id, req.session.userId])`. This ensures that even if a wildcard is used in the 'id' parameter, the database will only return records that match the 'ownerID' of the person currently logged in.\n\n```javascript\n// FIXED CODE EXAMPLE\napp.get('/api/search', (req, res) => {\n  const searchInput = req.query.email;\n  const authenticatedUserId = req.session.userId;\n  // The query is forced to filter by the logged-in user's ID\n  const sql = 'SELECT * FROM users WHERE email LIKE ? AND id = ?';\n  db.execute(sql, [searchInput, authenticatedUserId], (err, results) => {\n    res.json(results);\n  });\n});\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Real World Bug Hunting # The Wildcard Parameter That Exposed 60 Million USPS Accounts Image 3: L4ZZ3RJ0D L4ZZ3RJ0D 5 min read · 7 hours ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2F50b372babfb6&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40l4zz3rj0d%2Fthe-wildcard-parameter-that-exposed-60-million-usps-accounts-50b372babfb6&user=L4ZZ3RJ0D&userId=360d5b561ffc&source=---header_actions--50b372babfb6---------------------clap_footer---------------------) -- [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2F50b3",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
   },
   {
     "id": "1bbb6471ab21",

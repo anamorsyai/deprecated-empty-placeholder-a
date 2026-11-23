@@ -1,5 +1,46 @@
 [
   {
+    "id": "f6c103d6e017",
+    "title": "One Delimiter Too Many: The $100,000 GitHub Bug Hiding in git push",
+    "url": "https://medium.com/@t4nv1/one-delimiter-too-many-the-100-000-github-bug-hiding-in-git-push-41546fa5fe9a",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-23T11:41:01.000Z",
+    "added_at": "2026-11-23T12:49:14.904Z",
+    "categories": [
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "Researchers exploited unsanitized git push options to inject malicious metadata into internal GitHub headers, leading to remote code execution (RCE) and a $100,000 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stemmed from GitHub's backend trusting internal metadata headers that were partially constructed from user-supplied push options. When a user performs a git push (sending code updates to a server), they can include push options (custom text strings). GitHub's infrastructure took these strings and placed them into an internal HTTP header (a piece of hidden information sent between servers). Because the system did not properly sanitize or escape delimiters (special characters used to separate data) within these options, an attacker could inject new, unauthorized header fields that the backend services treated as legitimate instructions.",
+      "walkthrough": "RECON\n1. The researchers investigated the git push command, which is used to upload local repository changes to a remote server like GitHub.\n2. They focused on push options, which are extra parameters a user can send during the push process.\n`git push --push-option=\"user_data\"` (Why: This sends a custom string to the server alongside the code. A parameter is a piece of information passed to a program.)\nDISCOVERY\n3. The team discovered that GitHub's frontend servers take these push options and forward them to internal backend services.\n4. They observed that these options were bundled into an internal header (a metadata field used for communication between servers).\n5. They hypothesized that if they could include a delimiter (a character like a newline that signals the end of one piece of data and the start of another), they could trick the backend.\nEXPLOITATION\n6. The researchers crafted a push option containing a hidden delimiter and a new header name.\n`git push --push-option=\"valid_data\\nInjected-Header: malicious_value\"` (Why: The \\n represents a newline character, which often tells a server that the current line of information has ended. A payload is the part of the data that performs the malicious action.)\n7. When GitHub's internal system processed this, it saw valid_data as the intended value, but then interpreted Injected-Header as a completely separate, trusted instruction from the frontend.\n8. By injecting specific internal headers, the researchers were able to influence how the backend processed the git command.\nIMPACT\n9. The researchers successfully chained this header injection to trigger Remote Code Execution (RCE), which is the ability to run any command on the target server.\n10. This allowed them to demonstrate full control over the underlying GitHub infrastructure, resulting in a $100,000 bug bounty reward.",
+      "example": "Imagine a website target.example that tracks which user is uploading a file using an internal header. When you upload, the server sends this to its storage backend: X-Uploader: [Your-Username]. If your username is alice, the backend sees X-Uploader: alice. However, if you change your username to alice\\nAdmin-Access: true, the backend might see two separate lines: X-Uploader: alice and Admin-Access: true. Because the backend trusts the frontend, it sees the second line and grants you administrative privileges over the file storage system.",
+      "takeaway": "Always look for pass-through features where user input is used to build internal requests or metadata. If an application takes a string you provide and sends it to another internal service, test if you can break the format using characters like newlines (\\n), carriage returns (\\r), or semicolons (;). This is common in microservice architectures where trusted communication happens behind a firewall. A key signal is any feature that allows custom options or metadata to be attached to a request. Avoid the mistake of assuming that internal traffic is safe just because it isn't directly accessible from the internet.",
+      "fix": "To fix this, developers must strictly validate and sanitize all user-provided data before including it in headers or metadata. Instead of simple string concatenation, use structured data formats like JSON or use specialized libraries that automatically escape control characters. In this case, GitHub patched the issue by ensuring that push options cannot contain characters that would allow for header injection. A fixed implementation would look like this: \n\n```python\n# Sanitize input by removing newline characters\nclean_option = user_input.replace('\\n', '').replace('\\r', '')\nheaders = {'X-Internal-Metadata': clean_option}\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_How unsanitised push options turned into trusted internal metadata, and why “the header said so” is a dangerous security model_ > **_Credit and scope:_**_The vulnerability, tracked as_**_CVE-2026–3854_**_, was found and reported by researchers at_**_Wiz Research_**_(Sagi Tzadik, Nir Ohfeld, Ronen Shustin, Hillai Ben-Sasson, Yuval Avrahami and Noam Malron, per Wiz’s write-up). This post is my own explanation, built from Wiz’s and GitHub’s public disclosures. I did not test GitHub. I’m deliberately leaving out exact strings, header names and exploit construction. This is a design-failure case s",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "b4046482a1b9",
     "title": "I need to flag a problem before writing this article.",
     "url": "https://arxivgpt.medium.com/i-need-to-flag-a-problem-before-writing-this-article-b0e41a325934",

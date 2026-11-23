@@ -1,5 +1,46 @@
 [
   {
+    "id": "77ed2b0ea754",
+    "title": "An educational bug bounty case study in client flow analysis and downstream authorization testing",
+    "url": "https://medium.com/@redhunter01/an-educational-bug-bounty-case-study-in-client-flow-analysis-and-downstream-authorization-testing-aabf0c9daddc",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "redhunter01"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-23T11:19:11.000Z",
+    "added_at": "2026-11-23T12:49:44.453Z",
+    "categories": [
+      "access-control",
+      "auth-bypass"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "An attacker could bypass subscription checks by directly requesting a security token from an endpoint that failed to verify upstream authentication proofs, granting unauthorized access to premium video rights.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause was a failure in the 'trust boundary' where the Security Token Service (STS) endpoint `/S1/sts/v1/oauth/tvesignin` accepted user-provided claims (like TV provider and package IDs) without requiring a signed proof of authorization from the upstream provider (Adobe Pass). The server assumed that if a request reached this endpoint, the user must have already passed the previous login steps, but it did not actually verify the 'Adobe media token' or any session cookies. This allowed any unauthenticated user to claim they had a valid subscription simply by naming a provider like 'Comcast_SSO' in the request body.",
+      "walkthrough": "RECON\n1. Analyze the client-side JavaScript code in the browser to understand how the application handles logins and video access.\n`_app-02633232f250f4b3.js`\nWhy: To find the logic that tells the browser where to send requests and what data is required (Client-side code is the set of instructions running in your browser).\n2. Identify the backend host used for media operations by looking for specific variables in the code.\n`MEDIA_KIND_HOST = 'ottapp-appgw-client.nba.com'`\nWhy: This identifies the 'endpoint' (a specific web address where a server receives requests) responsible for issuing security tokens.\n\nDISCOVERY\n3. Trace the 'TV Everywhere' (TVE) flow to see how the app exchanges provider info for a session token.\n`POST /S1/sts/v1/oauth/tvesignin`\nWhy: This is the 'Token Exchange' point where the app turns a TV provider login into a site-specific 'AccessToken' (a digital key used to prove you are allowed to see content).\n4. Observe that the client code reads subscription details from a local profile and sends them to the server.\n`profile.provider.mvpd` and `ResourceIds`\nWhy: The researcher noticed the server was asking the client to provide its own 'entitlements' (a list of what the user is allowed to watch) instead of the server checking a database.\n\nEXPLOITATION\n5. Craft a manual HTTP request (a message sent to a server) to the token endpoint without any login cookies or authorization headers.\n`POST /S1/sts/v1/oauth/tvesignin HTTP/1.1`\nWhy: To test if the server requires 'Authentication' (proof of who you are) before giving out a token.\n6. Include a JSON 'payload' (the data sent in a request) that claims a specific TV provider and user ID.\n`{\"TveProvider\": \"adobe\", \"Mvpd\": \"Comcast_SSO\", \"RequestorId\": \"NBADE\", \"UserId\": \"unauth-hunter-poc\"}`\nWhy: This attempts to trick the server into thinking the user has already logged in via Comcast.\n7. Submit the request and receive a valid 'AccessToken' in the response.\n`tveStsToken`\nWhy: The server failed to check for a 'Media Token' (a cryptographically signed proof from the TV provider) and issued the key anyway.\n\nIMPACT\n8. Use the improperly issued token to call the 'Rights API'.\n`GET /api/v1/rights` with the `tveStsToken` header\nWhy: To see if this fake token actually grants permissions on the server.\n9. Compare the results to a guest account.\n`{\"q\":\"ReachHD\"}`\nWhy: The guest account saw 0 rights, but the fake token returned 3 rights, proving the 'Authorization' (the process of checking permissions) was successfully bypassed.",
+      "example": "Imagine a movie theater where a machine prints tickets. Normally, you show a receipt to a human, and they press a button on the machine to print your ticket. However, you discover that if you just walk up to the back of the machine and send a digital message saying 'I paid for a VIP ticket,' the machine prints it without asking for the receipt. In this scenario, the machine is the STS endpoint, the receipt is the Adobe Pass token, and the VIP ticket is the AccessToken. A vulnerable code snippet on the server might look like this: `app.post('/get-token', (req, res) => { const userClaims = req.body; const token = signToken(userClaims); res.json({token}); });` -- This is vulnerable because it takes `req.body` (user input) and trusts it immediately without verifying a signature or session.",
+      "takeaway": "Always test 'Token Exchange' endpoints for missing upstream verification. Just because a client flow *usually* follows a specific order (Step A then Step B) doesn't mean the server enforces it. Look for endpoints that accept 'claims' (like user roles, subscription levels, or provider IDs) and check if they require a signed 'assertion' or 'token' from the source of truth. A common beginner mistake is assuming that if an endpoint is 'internal' or part of a complex flow, it is automatically secure.",
+      "fix": "The server must require and validate a signed 'Authorization Token' from the upstream provider (e.g., Adobe Pass) before issuing its own internal token. The code should verify the signature of the upstream token to ensure it hasn't been tampered with and that it was actually issued to the requesting user. \n\n```javascript\n// FIXED CODE EXAMPLE\napp.post('/S1/sts/v1/oauth/tvesignin', async (req, res) => {\n  const { adobeMediaToken, mvpd, userId } = req.body;\n  // 1. Verify the proof from the upstream provider\n  const isValid = await verifyAdobeToken(adobeMediaToken);\n  if (!isValid) {\n    return res.status(401).send('Invalid authorization proof');\n  }\n  // 2. Only issue the internal token after verification\n  const internalToken = generateInternalToken(userId, mvpd);\n  res.json({ AccessToken: internalToken });\n});\n```",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "I’m Arshia, founder of RedHunter, Software developer and a full-time bug bounty hunter. https://arshiaheravi.com writer Bug Bounty Web Hacking Cybersecurity Hackerone Ethical Hacking Image 3: redhunter01 redhunter01 12 min read · 1 hour ago [](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Faabf0c9daddc&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40redhunter01%2Fan-educational-bug-bounty-case-study-in-client-flow-analysis-and-downstream-authorization-testing-aabf0c9daddc&user=redhunter01&userId=1a8706ec0593&source=---header_actions--aabf0c9daddc-----",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "b9cf7cc79179",
     "title": "How a Next.js CDN Proxy Turned Into a One-Click Account Takeover",
     "url": "https://medium.com/@r3dd404/how-a-next-js-cdn-proxy-turned-into-a-one-click-account-takeover-dd8bc8dd9fde",
