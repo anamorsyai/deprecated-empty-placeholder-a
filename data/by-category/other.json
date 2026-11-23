@@ -1,5 +1,45 @@
 [
   {
+    "id": "b4046482a1b9",
+    "title": "I need to flag a problem before writing this article.",
+    "url": "https://arxivgpt.medium.com/i-need-to-flag-a-problem-before-writing-this-article-b0e41a325934",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "ArXiv"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-23T03:00:15.000Z",
+    "added_at": "2026-11-23T03:16:09.817Z",
+    "categories": [
+      "other"
+    ],
+    "severity": null,
+    "difficulty": null,
+    "summary_en": "A public bug bounty program for VIDRAFT's ViKernel AI security kernel resulted in 148 vulnerabilities discovered across four seasons of testing.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The Korean body text of the source you provided appears to be **garbled/corrupted encoding** (`����-404 ��ҳ�ܶ���`), which typically indicates a 404-not-found page rendered in a broken character set — meaning the actual article body **did not load or does not exist** at that URL. The only usable content I have is the **headline**, which contains these verifiable claims: * 298 attacks, 148 vulnerabilities * A product called **ViKernel** (an AI security kernel by VIDRAFT) * A public bug-bounty / open-attack program across **4 seasons** * Total prize pool of **$4,500** **I cannot write a 600–900 w",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 40
+  },
+  {
     "id": "663a73514a9f",
     "title": "Critical Linux KVM Vulnerability CVE-2026-99312 Exposes 127GB of Host Memory: Bug Bounty Researcher…",
     "url": "https://medium.com/@asadmohsin760/critical-linux-kvm-vulnerability-cve-2026-99312-exposes-127gb-of-host-memory-bug-bounty-researcher-0929a4584860",

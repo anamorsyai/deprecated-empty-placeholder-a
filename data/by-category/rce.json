@@ -1,5 +1,45 @@
 [
   {
+    "id": "a124a414d00a",
+    "title": "From Recon to Remote Code Execution: My Encounter with React2Shell (CVE-2025–55182)",
+    "url": "https://ryh04x.medium.com/from-recon-to-remote-code-execution-my-encounter-with-react2shell-cve-2025-55182-6b4efca990c5",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Rhythm"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-22T12:54:22.000Z",
+    "added_at": "2026-11-23T03:16:52.113Z",
+    "categories": [
+      "rce"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A critical Remote Code Execution (RCE) vulnerability was discovered in React Server Components (CVE-2025-55182), allowing attackers to execute commands on the server by sending specially crafted RPC data.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from how React Server Components (RSC) and Next.js process Remote Procedure Call (RPC) data on the server side. In vulnerable versions (React 19.0.0 and Next.js 15.1.6), the server fails to properly validate or isolate the data sent to server-side components. This allows an attacker to inject malicious instructions into the data stream. When the server attempts to process this 'specially crafted data,' it mistakenly executes it as system-level code. This flaw effectively turns a data-processing feature into a command-execution gateway.",
+      "walkthrough": "RECON\n1. The researcher began by using Nmap to scan the target server for open services.\n`nmap -sV redacted.com`\nWhy: Nmap is a tool used to scan a website to see which 'doors' (ports) are open and what software is running on them (service versioning).\n2. Initial findings showed minor issues like debug mode being active and missing security flags on cookies.\nWhy: Debug mode is a setting that reveals internal technical details to help developers, but it can help hackers understand how the site works.\nDISCOVERY\n3. The researcher used Burp Suite and Nuclei to perform an active scan of the web application.\nWhy: Burp Suite is a tool that lets you see and change the data (HTTP requests) sent between your browser and the server. Nuclei is an automated scanner that looks for specific, known security holes.\n4. Both tools identified a potential match for CVE-2025-55182, also known as 'React2Shell'.\nWhy: A CVE is a unique ID given to a known security bug so researchers can track it.\n5. The researcher checked the site's 'fingerprint' to confirm the software versions.\n`React: 19.0.0, Next.js: 15.1.6`\nWhy: A fingerprint is a way to identify the specific version of software a website is using by looking at its unique behavior or headers.\n6. The versions were confirmed as React 19.0.0 and Next.js 15.1.6, which are known to be vulnerable.\nWhy: Knowing the exact version allows the researcher to match it against a database of known bugs.\nEXPLOITATION\n7. The researcher analyzed the RPC (Remote Procedure Call) traffic in Burp Suite.\n`POST /_next/data/rpc-endpoint HTTP/1.1`\nWhy: RPC is a way for the browser to ask the server to run a specific function. The researcher looked for how the browser and server 'talk' to each other.\n8. Using research from the ThemeHackers repository, the researcher prepared a 'payload'.\n`https://github.com/ThemeHackers/CVE-2025-55182`\nWhy: A payload is the 'cargo' or malicious data sent in a request to trigger a bug. The researcher used a publicly known method (PoC) to test the vulnerability.\n9. The researcher sent a specially crafted request to the server-side components.\nWhy: The goal was to see if the server would execute the data as a command instead of just reading it.\nIMPACT\n10. The server executed the command, confirming Remote Code Execution (RCE).\nWhy: RCE is a bug that lets an attacker run their own commands on the target's computer, giving them full control.\n11. The researcher accessed the server environment and found sensitive password-related data.\nWhy: Once you can run commands, you can look at any file on the server, including secret configuration files.\n12. The findings were documented and reported to the client for immediate fixing.\nWhy: Responsible disclosure ensures the company can fix the bug before bad actors find it.",
+      "example": "Imagine a website at target.example that uses React Server Components to process user profiles. The server has a function that takes a 'component name' from the user and runs it. A normal request looks like this: `POST /api/rpc {\"component\": \"UserProfile\"}`. An attacker changes this to: `POST /api/rpc {\"component\": \"process.mainModule.require('child_process').execSync('cat /etc/passwd')\"}`. Because the server doesn't check if 'component' is a valid name or a dangerous command, it executes the code. The `execSync` part tells the server to run a system command, and `cat /etc/passwd` tells it to read the file containing user account information. The server then sends the contents of that secret file back to the attacker.",
+      "takeaway": "When hunting for bugs, always check the versions of popular frameworks like React and Next.js, as new '1-day' vulnerabilities (bugs recently discovered but not yet patched everywhere) are common. Look for 'RPC' or 'Server Action' traffic in your proxy, as these endpoints often handle complex data that the server might process unsafely. Use automated scanners like Nuclei to quickly find known CVEs, but always manually verify the versions and behavior to avoid false positives. A common mistake is assuming that modern frameworks are automatically secure; even the most popular libraries can have critical flaws in how they handle server-side data.",
+      "fix": "To fix this vulnerability, you must update the React and Next.js libraries to versions where the flaw has been patched (e.g., React 19.0.1+ and Next.js 15.1.7+). You can do this by running `npm update react next` in your project folder. Additionally, developers should implement strict input validation for all server-side components and ensure that no user-controlled data is ever passed to functions that can execute code or access the file system directly. Using a 'Content Security Policy' (CSP) can also help limit the damage an attacker can do if they manage to execute code.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "_Sometimes you start looking for low-hanging fruits and end up finding a tree you probably shouldn’t have been climbing._ While working on an independent web application security project against `redacted.com`, I started with my usual approach: recon first, understand the attack surface, and see what the application was exposing before getting into anything deeper. Nothing particularly exciting at first. ## The usual suspects 👀 I kicked things off with reconnaissance, including Nmap scans, to get a better picture of the exposed services and the overall attack surface. As expected, a few low-h",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "7f377be1e660",
     "title": "Pwning Home Assistant Green: Pre-Auth RCE in Eclipse Mosquitto",
     "url": "https://www.reddit.com/r/netsec/comments/1xr33yo/pwning_home_assistant_green_preauth_rce_in",
