@@ -1,5 +1,46 @@
 [
   {
+    "id": "9b05cfe39ffb",
+    "title": "Base64-encoded Reflected XSS in Indeed’s Email Marketing | Bug Bounty WriteUp",
+    "url": "https://medium.com/@zwet2022/base64-encoded-reflected-xss-in-indeeds-email-marketing-bug-bounty-writeup-f7718294636f",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Tim Zweers"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-24T12:21:14.000Z",
+    "added_at": "2026-11-24T20:46:01.993Z",
+    "categories": [
+      "xss",
+      "recon"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A reflected XSS vulnerability was discovered in an Indeed subdomain where a Base64-encoded URL parameter was unsafely rendered into the page using an innerHTML sink. This allowed an attacker to execute arbitrary JavaScript by bypassing simple filters through encoding and HTML tag breakout.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from the application's use of the innerHTML property—a JavaScript command used to change the HTML content inside a specific element—to display the decoded value of the 'ence' parameter. Because innerHTML treats strings as live code rather than plain text, and the application failed to sanitize (clean) the input, an attacker could inject their own HTML tags. Furthermore, the input was placed inside an existing <b> (bold) tag, meaning the payload needed to include a closing </b> tag to 'break out' and execute successfully.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher began by searching for all subdomains (secondary addresses like blog.example.com) belonging to Indeed using an online enumeration tool.\nhttps://subdomainfinder.c99.nl/\nWhy: To find less-protected parts of the company's infrastructure (the digital footprint).\n\n2. They filtered the results to find IP addresses (unique numbers identifying a computer on the internet) that hosted only a few subdomains, suggesting smaller, potentially less-audited services.\nWhy: Smaller services often have more unique code and fewer security eyes on them.\n\n3. The researcher identified a specific subdomain used for managing user preferences.\npreferences.jm.indeed.com\nWhy: This acts as the target endpoint (a specific web address where a service is accessed).\n\n4. They used the Wayback Machine—a digital archive of the internet—to find historical URLs and parameters (pieces of information added to a URL after a question mark).\nweb.archive.org\nWhy: To find hidden inputs that automated scanners might miss.\n\nDISCOVERY\n5. A specific URL was found containing a parameter named 'ence' which appeared to hold a Base64-encoded string—a way to turn special characters into plain letters and numbers.\nhttps://preferences.jm.indeed.com/unsubscribe-page?&ence=Ym9iQGV4YW1wbGUuY29t\nWhy: The researcher recognized that 'ence' likely stood for 'encoded' and might be reflected (shown back) on the page.\n\nEXPLOITATION\n6. The researcher first tried a standard XSS (Cross-Site Scripting) payload—a bug where an attacker injects code into a website—by encoding it in Base64.\n<script>alert();</script>\nWhy: To see if the browser would execute the script tag (a command that tells the browser to run code).\n\n7. The initial attempt failed, so the researcher analyzed the page's source code and found the input was being placed inside a <b> (bold) tag using innerHTML.\nWhy: If the payload is stuck inside a bold tag, the browser treats it as text to be made bold, not as a command to run.\n\n8. The researcher crafted a 'breakout' payload that first closes the bold tag using </b> and then uses an <img> tag with an 'onerror' attribute.\n</b><img src=x onerror=\"alert(document.cookie);\"><b>\nWhy: The 'onerror' attribute runs JavaScript if the image fails to load (which it will, because 'x' is not a real image), allowing the researcher to bypass script filters.\n\n9. The researcher converted this new payload into a Base64 string.\nPC9iPjxpbWcgc3JjPXggb25lcnJvcj0iYWxlcnQoZG9jdW1lbnQuY29va2llKTsiPjxiPg==\nWhy: The application expects the 'ence' parameter to be Base64 encoded before it tries to decode and display it.\n\n10. The researcher loaded the final URL in the browser.\nhttps://preferences.jm.indeed.com/unsubscribe-page?&ence=PC9iPjxpbWcgc3JjPXggb25lcnJvcj0iYWxlcnQoZG9jdW1lbnQuY29va2llKTsiPjxiPg==\nWhy: To trigger the vulnerability and prove that arbitrary code can run.\n\nIMPACT\n11. The browser executed the code and displayed an alert box containing the user's cookies—small pieces of data used to remember a user's session.\nWhy: This proves that an attacker could steal a user's login session or sensitive data.",
+      "example": "Imagine a site at 'target.example/profile?bio=[BASE64_DATA]'. The site takes the bio parameter, decodes it, and puts it into the page like this: document.getElementById('user-bio').innerHTML = decodedBio;. \n\nAn attacker creates a payload: </u><svg onload=alert('Hacked')><u>. \n\nThey encode it to Base64: PC91Pjxzdmcgb25sb2FkPWFsZXJ0KCdIYWNrZWQnKT48dT4=. \n\nWhen a victim visits 'target.example/profile?bio=PC91Pjxzdmcgb25sb2FkPWFsZXJ0KCdIYWNrZWQnKT48dT4=', the browser closes the underline tag (</u>), sees the SVG image tag, and immediately runs the 'onload' code, popping up an alert box. This works because innerHTML was used instead of a safe method like textContent.",
+      "takeaway": "When hunting for bugs, always look for parameters that look like random gibberish (ending in '=' or '=='), as these are often Base64 encoded. If you find one, decode it to see if it's reflected on the page. If a simple script doesn't work, inspect the page source to see if your input is 'trapped' inside an existing HTML tag; if it is, you must 'break out' by closing that tag first. A common variant is 'Double Encoding,' where you might need to encode your payload twice if the server decodes it once before passing it to a vulnerable JavaScript function. Avoid the mistake of giving up if <script> is blocked; use event handlers like 'onerror' or 'onload' instead.",
+      "fix": "The best way to fix this is to avoid using 'innerHTML' entirely when handling user-provided data. Instead, use 'textContent' or 'innerText', which tell the browser to treat the input strictly as text, preventing any HTML or scripts from running. If you must use HTML, use a sanitization library like DOMPurify to strip out dangerous tags and attributes before the data reaches the page. \n\nExample of fixed code:\nconst userParam = new URLSearchParams(window.location.search).get('ence');\nconst decoded = atob(userParam);\n// SAFE: This will display the payload as literal text\ndocument.getElementById('display-area').textContent = decoded;",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "When doing bug bounty, you come across a lot of false positives. I like to focus on XSS vulnerability’s, because these almost (always) can be escalated to high-servity chained attacks in web-application. In this write up, i will show how i exploited a base64-encoded reflected XSS vulnerability in indeed’s bug bounty program. ## The target and how i found it When doing recon for an wildcard domain (e.g. `*.indeed.com` ), i like to filter out all non-protected subdomains. I almost always use https://subdomainfinder.c99.nl/ to enumerate the subdomains. The nice thing about this online enumerator",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "b9cf7cc79179",
     "title": "How a Next.js CDN Proxy Turned Into a One-Click Account Takeover",
     "url": "https://medium.com/@r3dd404/how-a-next-js-cdn-proxy-turned-into-a-one-click-account-takeover-dd8bc8dd9fde",
