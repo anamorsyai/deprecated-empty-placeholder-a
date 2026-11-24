@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-11-24T20:46:02.738Z",
-  "totalItems": 330,
+  "lastRun": "2026-11-24T21:01:17.996Z",
+  "totalItems": 331,
   "newItemsThisRun": 1,
   "aiProvider": "custom",
   "aiOkThisRun": 1,
   "aiFallbackThisRun": 0,
-  "aiGeneratedTotal": 284,
+  "aiGeneratedTotal": 285,
   "bySource": {
-    "medium-tag-writeup": 71,
+    "medium-tag-writeup": 72,
     "medium-tag-bug-bounty": 190,
     "infosec-writeups": 4,
     "medium-tag-bugbounty": 4,
@@ -15,8 +15,9 @@
     "pentesterland": 48
   },
   "byCategory": {
-    "xss": 36,
+    "xss": 37,
     "recon": 12,
+    "file-upload": 8,
     "rce": 39,
     "other": 58,
     "access-control": 148,
@@ -33,11 +34,9 @@
     "race-condition": 7,
     "cors": 3,
     "supply-chain": 5,
-    "file-upload": 7,
     "xxe": 2,
     "cache-smuggling": 2,
     "ssti": 2,
     "subdomain-takeover": 1
-  },
-  "backfilledThisRun": 1
+  }
 }
