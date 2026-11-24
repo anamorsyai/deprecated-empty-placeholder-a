@@ -1,9 +1,9 @@
 {
-  "lastRun": "2026-11-23T12:50:20.174Z",
+  "lastRun": "2026-11-24T00:28:17.172Z",
   "totalItems": 329,
-  "newItemsThisRun": 3,
+  "newItemsThisRun": 0,
   "aiProvider": "custom",
-  "aiOkThisRun": 3,
+  "aiOkThisRun": 0,
   "aiFallbackThisRun": 0,
   "aiGeneratedTotal": 283,
   "bySource": {
@@ -38,6 +38,5 @@
     "cache-smuggling": 2,
     "ssti": 2,
     "subdomain-takeover": 1
-  },
-  "backfilledThisRun": 3
+  }
 }
