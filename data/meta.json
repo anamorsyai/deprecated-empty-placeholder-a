@@ -38,5 +38,6 @@
     "cache-smuggling": 2,
     "ssti": 2,
     "subdomain-takeover": 1
-  }
+  },
+  "backfilledThisRun": 1
 }
