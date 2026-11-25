@@ -1,5 +1,47 @@
 [
   {
+    "id": "908b5a2d1a0a",
+    "title": "Breach US Government site by only changing “false” to “true” state?",
+    "url": "https://mxyuyu.medium.com/breach-us-government-site-by-only-changing-false-to-true-state-67d2662ab2a5",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Mxyuyu"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-24T15:56:37.000Z",
+    "added_at": "2026-11-25T03:48:48.184Z",
+    "categories": [
+      "access-control",
+      "auth-bypass",
+      "info-disclosure"
+    ],
+    "severity": "critical",
+    "difficulty": "beginner",
+    "summary_en": "A US Government subdomain was breached by intercepting a failed login response and changing a 'false' status to 'true', granting full administrative access.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application's security model was fundamentally flawed because it relied on client-side logic to determine authentication success. Instead of the server validating a secure session, the web browser (the client) was programmed to look at a simple data field in the server's response to decide whether to show the admin dashboard. This 'fail-open' design allowed the researcher to bypass the login check by simply lying to the browser about what the server said.",
+      "walkthrough": "RECON\n1. The researcher identified a login panel on a US Government subdomain and attempted to log in using common default credentials.\nUsername: admin\nPassword: admin\nWhy: Default credentials (standard usernames and passwords like admin/admin) are often left unchanged by administrators, providing an easy entry point.\n\nDISCOVERY\n2. The login failed, but the researcher used a proxy (a tool that sits between your browser and the server to let you see and change traffic) to inspect the HTTP response (the message the server sends back to your browser).\nHTTP/1.1 200 OK\n...\n{\n \"fullName\": \"Thomas, ADMIN\",\n \"status\": false,\n \"errorType\": \"No Roles on this application\",\n \"errorMessage\": \"You do not have access to this application.\",\n \"userId\": \"ADMIN\",\n \"roles\": \"\"\n}\nWhy: Even though the login failed, the server leaked sensitive information (Info-Disclosure) about the 'ADMIN' user, including their full name and the fact that the account exists.\n\nEXPLOITATION\n3. The researcher used Burp Suite (a professional security tool for intercepting web traffic) to 'Intercept Response' for the next login attempt.\n4. They manually edited the server's response before it reached the browser, changing the 'status' from 'false' to 'true' and setting the 'roles' to 'ADMIN'.\n{\n \"fullName\": \"Thomas, ADMIN\",\n \"status\": true,\n \"userId\": \"ADMIN\",\n \"roles\": \"ADMIN\"\n}\nWhy: By changing these values, the researcher tricked the browser's code into believing the server had successfully authenticated the user.\n\nIMPACT\n5. The browser, seeing the 'true' status, automatically redirected the researcher to the internal administration dashboard.\n6. Once inside, the researcher had full access to read and delete user data, discovering that other researchers had already left test data (payloads) in the system.\n[{ \"id\": 194860, \"name\": \"test';declare @q...\" }]\nWhy: This confirms a total breakdown of Access Control (rules that determine who can see or do what), as the server did not verify the user's identity for subsequent requests to the dashboard.",
+      "example": "Imagine a website 'target.example' with a login page. When you enter a wrong password, the server sends back: {\"login_success\": false, \"user_level\": \"guest\"}. A beginner uses a proxy tool to catch this message before the browser sees it. They change it to: {\"login_success\": true, \"user_level\": \"admin\"}. Because the website's code only checks if 'login_success' is true to show the 'Delete User' button, the attacker now sees the button and can click it, even though they never knew the real password.",
+      "takeaway": "Always look for 'Client-Side Authentication' where the browser makes the final decision on access. Use a proxy to intercept not just the requests you send, but the responses you receive. Look for JSON fields like 'isAdmin', 'authenticated', 'status', or 'role'. A common variant is 'Parameter Pollution' where you add these fields to your request to see if the server accepts them. A beginner mistake is assuming that because a login failed, the 'conversation' is over; always check the data the server sends back during that failure.",
+      "fix": "The server must never trust the client to manage authentication state. Instead, after a successful login, the server should issue a secure, HTTP-only, encrypted session cookie or token. Every subsequent request for sensitive data or the admin dashboard must be verified on the server-side by checking this token against a database. The server should also avoid sending sensitive user details (like full names or roles) in a failed login response.\n\n// FIXED SERVER-SIDE LOGIC (Node.js example)\napp.post('/login', (req, res) => {\n  const user = authenticate(req.body.user, req.body.pass);\n  if (user) {\n    // Create a secure session on the server, not just a 'true' flag\n    req.session.userId = user.id;\n    req.session.role = user.role;\n    res.json({ success: true });\n  } else {\n    // Send a generic error without leaking user data\n    res.status(401).json({ success: false, message: 'Invalid credentials' });\n  }\n});",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "This government subdomain appears to be vulnerable to **Broken Access Control**. Let’s take a closer look at how the issue was discovered and what happens behind the scenes. While reviewing the in-scope assets, I came across an interesting issue in the login process that could potentially lead to unauthorized access to user information. The problem appears to stem from how the application handles data returned during authentication. Whenever you encounter a login panel during security testing, it's worth checking whether default credentials such as `admin:admin` are accepted or reveal unexpect",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "9b05cfe39ffb",
     "title": "Base64-encoded Reflected XSS in Indeed’s Email Marketing | Bug Bounty WriteUp",
     "url": "https://medium.com/@zwet2022/base64-encoded-reflected-xss-in-indeeds-email-marketing-bug-bounty-writeup-f7718294636f",
