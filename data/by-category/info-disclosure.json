@@ -1,5 +1,45 @@
 [
   {
+    "id": "c5593d25289b",
+    "title": "P4 Information Disclosure Through HTTP Response Headers",
+    "url": "https://medium.com/@akashmotkar001/p4-information-disclosure-through-http-response-headers-7e58940d07ac",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Akash motkar"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-25T09:10:02.000Z",
+    "added_at": "2026-11-25T22:46:57.843Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "low",
+    "difficulty": "beginner",
+    "summary_en": "The application reveals specific software versions and technology stacks in its HTTP response headers, enabling attackers to identify outdated components and plan targeted attacks.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a security misconfiguration where the web server and application framework are left in their default state. These default settings often include 'Server' and 'X-Powered-By' headers that broadcast the exact version of the software (like Apache 2.4 or PHP 8) to any user who asks for a page.",
+      "walkthrough": "RECONNAISSANCE\n1. Open the target application in a web browser to establish a connection.\nhttps://<application-host>/\nWhy: This initiates a standard HTTP request (a message from your browser to the server asking for a page).\n2. Open Burp Suite, a professional tool used to capture and inspect web traffic.\nWhy: Burp Suite acts as a middleman, allowing us to see hidden data the browser usually hides from users.\n3. Navigate to the 'Proxy' tab and then the 'HTTP history' sub-tab within Burp Suite.\nWhy: This area logs every single message sent and received by the browser.\n4. Select a specific request from the list to view its details.\nWhy: We need to examine the 'Response' (the message the server sends back) to find hidden metadata.\n\nDISCOVERY\n5. Look at the top section of the Response, known as the 'Headers'.\nHTTP/1.1 200 OK\nServer: Apache/2.4.x\nX-Powered-By: PHP/8.x\nWhy: Headers (metadata about the message) like 'Server' and 'X-Powered-By' explicitly name the software and version numbers running on the server.\n6. Verify the finding using a command-line tool called 'curl'.\ncurl -I https://<application-host>/\nWhy: The '-I' flag tells curl to only fetch the headers, making it a quick way to confirm the information disclosure without a browser.\n\nIMPACT\n7. Document the specific versions found, such as 'Apache/2.4.x'.\nWhy: An attacker can now search public databases for 'Apache 2.4 vulnerabilities' to find a way to break into the system.",
+      "example": "Imagine a fictional website 'target.example'. When you visit the site, the server sends back a response. If you look at the headers using a tool like curl, you see:\n\nHTTP/1.1 200 OK\nServer: nginx/1.10.3 (Ubuntu)\nX-Powered-By: Express\n\nIn this example, the 'Server' header tells us the site uses a very old version of nginx (1.10.3) and is running on an Ubuntu operating system. The 'X-Powered-By' header tells us the application is built using the Express framework. An attacker now knows exactly which software manuals to read and which specific exploits to try, significantly narrowing down their work.",
+      "takeaway": "Always check the headers of every response for 'Server', 'X-Powered-By', 'X-AspNet-Version', or 'X-Runtime'. While this is a low-severity bug (P4), it is a 'finding' in almost every bug bounty program because it aids in reconnaissance. A common beginner mistake is ignoring these because they don't 'break' anything immediately, but they are the first step in a more complex attack chain. Look for variants where error pages (like 404 or 500 errors) reveal even more detailed stack traces or internal file paths.",
+      "fix": "To fix this, you must configure your web server to hide its identity. In Apache, set 'ServerTokens Prod' and 'ServerSignature Off' in the configuration file. In Nginx, use 'server_tokens off;'. For application frameworks, you should manually remove the 'X-Powered-By' header in your code or middleware. For example, in a Node.js Express app, you would use: app.disable('x-powered-by');",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "* CWE-200 — Exposure of Sensitive Information to an Unauthorized Actor * CWE-497 — Exposure of Sensitive System Information to an Unauthorized Control Sphere **OWASP:** A05 — Security Misconfiguration ## 1. Description The application exposes unnecessary infrastructure and technology-related information through HTTP response headers. During security testing, server responses may reveal implementation details such as the web server software, framework, programming language, or application technology through headers such as: * `Server` * `X-Powered-By` * `X-AspNet-Version` * `X-Runtime` Although",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 43
+  },
+  {
     "id": "908b5a2d1a0a",
     "title": "Breach US Government site by only changing “false” to “true” state?",
     "url": "https://mxyuyu.medium.com/breach-us-government-site-by-only-changing-false-to-true-state-67d2662ab2a5",

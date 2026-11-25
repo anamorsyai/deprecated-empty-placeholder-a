@@ -1,5 +1,47 @@
 [
   {
+    "id": "4b280679282e",
+    "title": "Bug bounty: o que é e como funcionam os programas de recompensa | System Frame",
+    "url": "https://medium.com/@systemframe/bug-bounty-o-que-%C3%A9-e-como-funcionam-os-programas-de-recompensa-system-frame-a17c95792f69",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "System Frame"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-25T22:01:01.000Z",
+    "added_at": "2026-11-25T22:45:54.790Z",
+    "categories": [
+      "business-logic",
+      "rce",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "Security researchers earn massive rewards by identifying and chaining logical vulnerabilities in major software like Microsoft Edge and OpenAI through authorized bug bounty programs.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause of high-impact vulnerabilities often lies in logical flaws—errors in the system's reasoning or workflow rather than simple coding mistakes. In the Microsoft Edge example, the researcher exploited four distinct logic errors that, when combined (chained), allowed for unauthorized actions. These flaws occur when developers fail to anticipate how different components of a complex system interact, allowing a researcher to bypass security controls by following a path the designers never intended.",
+      "walkthrough": "RECONNAISSANCE\n1. The researcher identifies a target within the authorized scope (the specific systems allowed for testing).\nScope: A list of approved websites, APIs, or applications provided by the company.\nWhy: To ensure the testing is legal and eligible for a reward (bounty).\n2. The researcher looks for a security.txt file to find contact information.\nFile: /.well-known/security.txt\nWhy: This is a standardized text file that tells researchers how to report bugs responsibly.\n\nDISCOVERY\n3. The researcher analyzes the application's logic to find unexpected behaviors.\nLogic: The set of rules that determine how an application processes data.\n4. The researcher identifies the first logical flaw, which might be a minor bypass.\n5. The researcher continues searching for additional flaws that can be linked together.\n\nEXPLOITATION\n6. The researcher begins 'chaining' the vulnerabilities.\nChaining: The process of using one bug to trigger another, increasing the total impact.\n7. In the Microsoft Edge case, the researcher combined four separate logical flaws.\nPayload: [The specific technical payload for the Edge chain was not disclosed in the source text, but it resulted in a $175,000 reward].\nWhy: By linking four small errors, the researcher created a path to execute code on the victim's machine.\n8. The researcher documents the 'Proof of Concept' (PoC).\nPoC: A demonstration or set of steps that proves a vulnerability exists.\n\nREPORTING AND IMPACT\n9. The researcher submits a detailed report to the company via a platform like HackerOne or Bugcrowd.\n10. The report includes the impact, which is the potential damage the bug could cause.\nImpact: The real-world consequence, such as stealing data or taking over a computer.\n11. The company's security team performs 'triage' to verify the bug.\nTriage: The process of reviewing and prioritizing a bug report based on its severity.\n12. Once verified and fixed, the company pays a reward based on the severity level.\nReward: A monetary payment, such as the $172,000 maximum offered by OpenAI.",
+      "example": "Imagine a fictional website 'target.example' that sells digital gift cards. \n\n1. The researcher notices the checkout process has two steps: 'Apply Discount' and 'Confirm Payment'.\n2. The researcher sends a request to apply a discount code: \nPOST /api/discount HTTP/1.1\nHost: target.example\n{\"code\": \"SAVE50\", \"cart_id\": \"12345\"}\n3. The system responds with a success message and updates the price.\n4. The researcher then sends a second request to the same endpoint, but with a negative value or a different cart ID, to see if the system forgets the previous state.\n5. By manipulating the sequence of requests, the researcher finds they can apply the same discount multiple times because the system doesn't check if a discount was already applied.\n6. This is a logical flaw: the code correctly applies a discount, but the business logic fails to prevent abuse of the sequence.",
+      "takeaway": "Bug hunting is not just about finding broken code; it is about finding broken logic. Look for 'logical flaws' where the application does exactly what it was programmed to do, but the programmer's reasoning was incomplete. Always check for a 'security.txt' file or a VDP (Vulnerability Disclosure Policy) before testing to ensure you have 'Safe Harbor' (a promise not to be sued). A common beginner mistake is reporting 'low-impact' bugs like missing security headers without showing how they can be used in a real attack. To earn high rewards, focus on 'chaining' multiple small issues to create a high-impact exploit.",
+      "fix": "To fix logical flaws, developers must implement strict state management and server-side validation at every step of a process. Never trust that a previous step in a workflow was completed correctly without re-verifying the current state. For companies, the best defense is a combination of regular 'Pentests' (scheduled security audits) and a 'Bug Bounty' program to provide continuous coverage. Additionally, publishing a 'security.txt' file ensures that researchers have a clear, legal path to report vulnerabilities before they are exploited by criminals.\n\nExample of a security.txt file:\nContact: mailto:security@example.com\nExpires: 2025-12-31T12:00:00.000Z\nPolicy: https://example.com/security-policy",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Bug bounty é um programa em que uma empresa paga recompensas a pesquisadores de segurança que encontram e relatam vulnerabilidades em seus sistemas, seguindo regras definidas com antecedência. Em vez de esperar que a falha seja descoberta por um criminoso, a empresa convida especialistas a procurá-la de forma autorizada. O pesquisador relata o problema em sigilo, a empresa corrige e, depois, paga um valor proporcional à gravidade. É uma forma de ampliar os testes de segurança com gente de fora, que pensa diferente da equipe interna. O tema voltou ao noticiário no fim de outubro. Segundo o TecM",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "f6c103d6e017",
     "title": "One Delimiter Too Many: The $100,000 GitHub Bug Hiding in git push",
     "url": "https://medium.com/@t4nv1/one-delimiter-too-many-the-100-000-github-bug-hiding-in-git-push-41546fa5fe9a",
