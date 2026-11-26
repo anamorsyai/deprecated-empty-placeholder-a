@@ -165,6 +165,46 @@
     "score": 47
   },
   {
+    "id": "48192462c109",
+    "title": "Time-Based Business Logic Bypass via API",
+    "url": "https://scriptjacker.medium.com/time-based-business-logic-bypass-via-api-04bb08fed6aa",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "Parth Narula"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-25T13:37:42.000Z",
+    "added_at": "2026-11-26T23:04:54.441Z",
+    "categories": [
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A booking platform failed to enforce its 24-hour cancellation/change policy on the server, allowing users to modify appointments via direct API requests even after the UI had locked the options.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerability stems from a 'client-side only' enforcement of business rules. The developers programmed the frontend (the website you see) to hide the 'Change time' button when an appointment was less than 24 hours away, but they forgot to add the same check to the backend API (the server that processes the data). Because the server at the /api/change-booking-time endpoint only checked if the user was logged in and not whether the time limit had passed, it blindly accepted modification requests for 'locked' bookings.",
+      "walkthrough": "RECON\n1. Observe the website's behavior for a booking scheduled far in the future (more than 24 hours away).\n2. Note that the user interface (UI) shows a menu with options like 'Change time' and 'Cancel'.\n3. Observe a booking scheduled for the next day (less than 24 hours away) and see that the UI hides these buttons, showing only a notice that changes are no longer allowed.\n\nDISCOVERY\n4. Select the booking that is still 'unlocked' (more than 24 hours away) to see how the change process works.\n5. Open the browser's Network Tab (a tool that shows every message sent between your computer and the server) and click 'Change time'.\n6. Capture the specific HTTP request (a message sent to a server) triggered when confirming a new time.\n7. Send this request to Burp Repeater (a tool used to capture, modify, and resend web messages) to analyze its structure.\n8. Identify the endpoint (the specific URL address for a function) and the JSON payload (the data being sent).\nPOST /api/change-booking-time HTTP/2\nHost: redacted\nContent-Type: application/json\n{ \"id\":94170395, \"time\":1732371300 }\nWhy: This reveals that the server only requires a booking ID and a new timestamp (a number representing a date/time) to make a change.\n\nEXPLOITATION\n9. Identify the ID of the 'locked' booking (the one less than 24 hours away) from the website's source code or previous network traffic.\n10. In Burp Repeater, replace the 'id' value in the captured request with the ID of the locked booking.\n11. Change the 'time' value to a new desired appointment time.\n12. Send the modified request directly to the server, bypassing the website's buttons entirely.\nPOST /api/change-booking-time HTTP/2\nHost: redacted\n{ \"id\":[LOCKED_BOOKING_ID], \"time\":[NEW_TIMESTAMP] }\nWhy: By sending the request manually, the researcher bypasses the frontend logic that was hiding the 'Change' button.\n\nIMPACT\n13. Observe the server's response code: 201 Created.\nHTTP/2 201 Created\n{ \"id\":94170395 }\nWhy: A 201 status code means the server successfully created or updated the resource.\n14. Refresh the booking page in the browser and confirm that the appointment time has updated to the new value, even though the 'locked' notice is still visible.",
+      "example": "Imagine a fictional website 'movie-tickets.example' that allows you to refund tickets up to 1 hour before the show. When the show is 30 minutes away, the 'Refund' button disappears from your screen. However, a hacker notices that the refund button used to send a message to 'movie-tickets.example/api/refund' with the data '{\"ticket_id\": 555}'. The hacker uses a tool to send that exact message manually for a ticket they bought for a movie starting in 5 minutes. Because the server only checks if the ticket exists and belongs to the user, but doesn't check the current time, it processes the refund. The hacker gets their money back for a movie that has already started.",
+      "takeaway": "The most important lesson is that the frontend is a suggestion, not a security boundary. If a button disappears or a field is grayed out based on a rule (like time, price, or status), you must find the API request that the button would have sent and try to send it manually. Look for 'ID-only' endpoints where the server assumes the request is valid just because it arrived. A common mistake is assuming that because a user 'can't' click a button, they 'can't' trigger the action. Always test if business logic rules are enforced on the server side by manipulating timestamps or status flags in the request body.",
+      "fix": "The backend API must be updated to validate the business logic independently of the frontend. Before updating the database, the server should: 1. Fetch the current booking details using the provided ID. 2. Compare the current system time against the booking's start time. 3. If the difference is less than 24 hours, reject the request with a 403 Forbidden or 400 Bad Request error. \n\nExample Fix (Pseudocode):\nbooking = database.getBooking(request.id);\nif (booking.startTime - currentTime < 24_HOURS) {\n  return error(\"Changes not allowed within 24 hours\");\n}\nbooking.time = request.newTime;\nbooking.save();",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Hey Hackers, I am Parth Narula. A penetration tester, bug hunter, red teamer and overall a security researcher. I live for those moments where a bit of out of the box thinking cracks open a critical vulnerability. This is the story of a booking platform that told me, in plain English, that I could not touch my own booking anymore, and an API that never got the memo. Lets assume the target as REDACTED, just like any other booking platform where a business lists its services and a customer books a slot against them. It started with something every one of us has seen on a booking site. I had a fr",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c5593d25289b",
     "title": "P4 Information Disclosure Through HTTP Response Headers",
     "url": "https://medium.com/@akashmotkar001/p4-information-disclosure-through-http-response-headers-7e58940d07ac",
