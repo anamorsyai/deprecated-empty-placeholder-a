@@ -83,6 +83,47 @@
     "score": 47
   },
   {
+    "id": "b1e67c60340b",
+    "title": "Race Condition Leading to Bypass of Free Plan Limits",
+    "url": "https://medium.com/@mo.muwafak2001/race-condition-leading-to-bypass-of-free-plan-limits-5e4d70f41684",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "MUWAFAK HELAL"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-25T15:45:10.000Z",
+    "added_at": "2026-11-26T14:15:50.346Z",
+    "categories": [
+      "race-condition",
+      "business-logic"
+    ],
+    "severity": "medium",
+    "difficulty": "beginner",
+    "summary_en": "A race condition in a freelance marketplace allowed users to bypass free plan restrictions, enabling unlimited service creation and media uploads.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application fails to use atomic operations or database locks when checking user limits. When a user uploads media or publishes a service, the server first checks the current count (e.g., 'Does this user have fewer than 10 services?') and then proceeds to save the new data. Because these steps are not synchronized, multiple requests arriving at the exact same millisecond can all pass the check simultaneously before the database has a chance to update the count, allowing the user to exceed their plan's restrictions.",
+      "walkthrough": "RECON\n1. Identify the target's limitations for free users: a maximum of 10 services, 5 images per service, and 1 video per service.\n2. Locate the API endpoints responsible for these actions: POST /api/v/services/ServiceNo/media for uploads and POST /api/v/services/ServiceNo for service creation.\n\nPHASE 1: BYPASSING MEDIA LIMITS\n3. Start the process of uploading an image to a service.\n4. Intercept the HTTP request (a message sent from your browser to a server asking to perform an action) using a proxy tool like Burp Suite.\n5. Send this request to a tool called 'Repeater' which allows you to resend the same request multiple times.\n6. Prepare 10 identical upload requests for the same service.\nPOST /api/v/services/123/media\nWhy: By sending these requests concurrently (happening at the exact same time), the server checks the image count for all 10 requests before any of them finish saving, allowing 10 images instead of the limit of 5.\n\nPHASE 2: BYPASSING SERVICE LIMITS\n7. Observe that creating a service is a multi-step process (Create -> Price -> Media -> Publish).\n8. Create multiple 'Draft' services. A draft is a saved but unpublished version of a service.\n9. Create more than 10 drafts (e.g., 15 drafts) and note their unique Service IDs.\n10. Intercept the 'Publish' request for one draft.\nPOST /api/v/services/456\nWhy: This endpoint (a specific web address where a server receives requests) finalizes the service creation.\n11. Collect the Publish requests for all 15 drafts into a single group.\n12. Use a 'Parallel' sending feature to release all 15 requests at the exact same moment.\n13. Observe the impact: The server processes all requests, resulting in 15 published services on a free account that should only allow 10.",
+      "example": "Imagine a fictional website 'target.example' that gives new users a $10 'Welcome' credit, but you are only allowed to claim it once. The server code looks like this: \n1. Check if user_claimed_credit is false.\n2. If false, add $10 to balance.\n3. Set user_claimed_credit to true.\n\nAn attacker sends 20 requests to 'POST /api/claim-credit' at the exact same millisecond. Because the server is busy processing all 20, they all reach Step 1 before any of them reach Step 3. The server sees 'false' for all of them and adds $10 twenty times, giving the attacker $200 instead of $10.",
+      "takeaway": "Always look for 'limit' features in an application, such as maximum uploads, voting counts, or financial balances. To test for race conditions, use tools like Burp Suite's 'Turbo Intruder' or the 'Send group in parallel' feature in Repeater. A key signal is any multi-step process (like Draft -> Publish) where the final validation might be weak. A common mistake is assuming that because a limit is enforced in the UI (the visual part of the site), it is safely enforced on the server.",
+      "fix": "To fix this, the developer must use database transactions with proper isolation levels or 'atomic' increments. Instead of 'Check then Update', use a single SQL query that updates the count and fails if the limit is already reached. For example: 'UPDATE users SET service_count = service_count + 1 WHERE user_id = 123 AND service_count < 10;'. If the count is already 10, the database will return 0 rows affected, and the application can then reject the request safely.",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Today I am going to write about a specific vulnerability that i found in some of the web applications I came across . The vulnerability is **_race condition_** . So what does it mean — race condition? It’s very common bug for websites with balances, vouchers or other limited resources (mostly money). A race condition occurs when multiple threads simultaneously access the same shared code, variables, files, etc. without locking or synchronization, resulting in inconsistency of the output. **Summary :** A Race Condition vulnerability was discovered in a freelance marketplace platform that allows",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 47
+  },
+  {
     "id": "c6079d2fbce8",
     "title": "Exploiting Unauthorized Tool Invocation in the MegaCorp Office Assistant (Part 4)",
     "url": "https://infosecwriteups.com/inside-agentic-ai-exploiting-unauthorized-tool-invocation-in-the-megacorp-office-assistant-08b1f39a7582",

