@@ -42,6 +42,48 @@
     "score": 60
   },
   {
+    "id": "dcebb9b6208c",
+    "title": "The Devil Went Down to Georgia: How I Made $60k Hacking the DHS",
+    "url": "https://infosecwriteups.com/the-devil-went-down-to-georgia-how-i-made-60k-hacking-the-dhs-5401fe833c58",
+    "source": {
+      "slug": "infosec-writeups",
+      "name": "InfoSec Write-ups (Medium)"
+    },
+    "authors": [
+      "SirLeeroyJenkins"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-24T05:07:30.000Z",
+    "added_at": "2026-11-27T04:57:35.492Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "sqli"
+    ],
+    "severity": "critical",
+    "difficulty": "intermediate",
+    "summary_en": "A researcher earned $60,000 by compromising two Georgia state portals through OTP brute-forcing, a filter-bypass for Local File Inclusion (LFI), and time-based Blind SQL Injection. These vulnerabilities allowed for full account takeover and the potential theft of sensitive records for millions of residents.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The vulnerabilities stemmed from three distinct failures: a lack of rate-limiting on the 'verifyEmail' endpoint allowed for automated guessing of 6-digit codes; a path traversal filter was bypassed because it failed to account for how the JSON parser handles escaped slashes ('\\/'); and the 'ssn' parameter in a member lookup API was directly concatenated into a database query without sanitization.",
+      "walkthrough": "PHASE 1: OTP BRUTE FORCE\n1. The researcher identified a password reset flow on the mobile benefits portal that sent a 6-digit OTP (One-Time Password, a temporary security code) to the user's email.\n2. They triggered a reset for a target account and intercepted the verification request.\nPOST /api/verifyEmail\nWhy: Intercepting means stopping the HTTP request (a message from browser to server) to modify it before it reaches the destination.\n3. They loaded the request into Burp Intruder (a tool for automating web requests) to brute-force the OTP parameter with every number from 000000 to 999999.\nWhy: Because the site lacked rate-limiting (a rule that stops too many attempts), the researcher could try all 1 million combinations within the 10-minute expiration window.\n4. The server eventually accepted a correct code, providing a token to complete the account takeover.\n\nPHASE 2: LOCAL FILE INCLUSION (LFI)\n5. The researcher found a document download feature that used a filename parameter in a JSON (a text-based data format) request.\nPOST /api/documentscan/fetchDocByLocalName\n{\"filename\": \"user_file.pdf\"}\nWhy: This endpoint (a specific web address for a function) tells the server which file to retrieve from its storage.\n6. They attempted a Path Traversal (using '../' to move out of the intended folder) to read the system's password file.\n{\"filename\": \"../../../etc/passwd\"}\nWhy: The server returned a 403 Forbidden error, indicating a security filter was blocking the '../' string.\n7. The researcher bypassed the filter by adding a backslash to the dots.\n{\"filename\": \"..\\/..\\/..\\/..\\/..\\/..\\/..\\/..\\/..\\/..\\/etc/passwd\"}\nWhy: The filter did not recognize '..\\/' as dangerous, but the JSON parser (the code that reads the data) converted '\\/' back into '/', resulting in a valid path that the server executed.\n8. The server returned the file contents encoded in Base64 (a way to represent binary data as text).\n\nPHASE 3: BLIND SQL INJECTION\n9. On the child support portal, the researcher found a member lookup API that required a Social Security Number (SSN).\nPOST /api/public/member\n{\"firstname\": \"john\", \"lastname\": \"doe\", \"ssn\": \"123456789\"}\n10. They tested for SQL Injection (tricking a database into running commands) by sending a logic test.\n{\"ssn\": \"1 OR 1=1--\"}\nWhy: This payload (malicious data) asks the database if '1 equals 1'. The server took 10 seconds to respond, compared to 0.1 seconds for a false statement ('1=2').\n11. This confirmed a Blind SQL Injection, where the attacker learns data by observing the server's reaction (time delays) rather than seeing direct errors.\n12. The researcher used sqlmap (an automated exploitation tool) with high-intensity flags to confirm the backend was IBM DB2.\nsqlmap -r member.req -p ssn -level 5 -risk 3\nWhy: '-level 5' and '-risk 3' force the tool to try 'heavy queries' that make the database work harder to prove the vulnerability.\n13. They used a 'heavy query' that joined system tables together to create a massive calculation, causing a 30-second delay.\n\"ssn\": \"(SELECT COUNT(*) FROM (SELECT COUNT(*) FROM SYSIBM.SYSTABLES AS T1, SYSIBM.SYSTABLES AS T2, SYSIBM.SYSTABLES AS T3) AS TEMP)\"\nWhy: This proved the ability to execute complex commands and extract data character-by-character based on response times.",
+      "example": "Imagine a fictional site 'target.example' that allows users to view their profile settings via a JSON request: POST /api/v1/getSetting {\"config_file\": \"user_pref.json\"}. A researcher suspects LFI and tries to access the server's environment variables. They find that '..//' is blocked by a Web Application Firewall. However, they discover the backend uses a parser that treats '\\/' as a directory separator. They send: {\"config_file\": \"..\\/..\\/..\\/..\\/proc/self/environ\"}. The filter ignores the backslash, but the operating system reads it as a valid path, allowing the researcher to see sensitive server credentials.",
+      "takeaway": "Always test for rate-limiting on any endpoint that handles short codes or passwords; if you can send 1,000 requests per second, a 6-digit code is not secure. When testing for file inclusion, remember that security filters and data parsers often see characters differently; try escaping slashes ('\\/') or using URL encoding ('%2f') to bypass simple string checks. For SQL injection, if a page doesn't show errors, use time-based logic tests ('OR 1=1') to see if the server's response speed changes. A common mistake is giving up when a default tool scan fails; manually increasing the 'risk' and 'level' in tools like sqlmap is often necessary for complex database environments like IBM DB2.",
+      "fix": "To fix these issues: 1) Implement strict rate-limiting on all authentication endpoints to block IPs after a few failed attempts. 2) Use parameterized queries (prepared statements) for all database interactions so that user input is never interpreted as code. 3) For file downloads, use a database-generated ID to reference files instead of allowing users to specify filenames or paths. 4) If filenames must be used, normalize the path and validate it against a strict allow-list of characters before processing. Example of a safe parameterized query in Java: PreparedStatement pstmt = connection.prepareStatement(\"SELECT * FROM members WHERE ssn = ?\"); pstmt.setString(1, ssn); ResultSet rs = pstmt.executeQuery();",
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Sometime near the end of 2023 I was invited to The Georgia Department of Human Services private bug bounty program on Hackerone through an IRL connection. Sadly their private bug bounty program is now shut down, but while it existed it was one of the best programs I’ve ever participated in. Very few hackers were invited to this private program, so competition was low, but bounties were very high and response times were fast. Basically a bug bounty hunter’s dream. This writeup is going to detail how I found 3 critical issues that earned me $60,000 in bug bounties from them and could’ve let me d",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "77ed2b0ea754",
     "title": "An educational bug bounty case study in client flow analysis and downstream authorization testing",
     "url": "https://medium.com/@redhunter01/an-educational-bug-bounty-case-study-in-client-flow-analysis-and-downstream-authorization-testing-aabf0c9daddc",
