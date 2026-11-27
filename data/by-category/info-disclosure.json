@@ -1,5 +1,45 @@
 [
   {
+    "id": "373aee56b3f6",
+    "title": "A Blocklist, a Voice Recorder and a Very Long Title: The $10,633 Google Bug That Could Reveal Any…",
+    "url": "https://medium.com/@t4nv1/a-blocklist-a-voice-recorder-and-a-very-long-title-the-10-633-google-bug-that-could-reveal-any-18e10615028b",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-27T11:51:01.000Z",
+    "added_at": "2026-11-27T14:33:45.472Z",
+    "categories": [
+      "info-disclosure"
+    ],
+    "severity": "high",
+    "difficulty": null,
+    "summary_en": "A vulnerability in a Google service involving a blocklist and a voice recorder allowed for unauthorized information disclosure, earning a $10,633 bounty.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Imagine a web application at target.example that allows users to name their voice recordings. The application uses a blocklist (a security list of forbidden words) to prevent users from naming files after sensitive system paths like '/etc/passwd'. However, the application only checks the first 100 characters of the title for these forbidden words. \n\nVulnerable Code Snippet:\n```python\ndef validate_title(user_input):\n    # Only checks the start of the string\n    if user_input[:100] in blocklist:\n        return False\n    return True\n```\n\nAttack Request:\n`POST /rename_recording HTTP/1.1` \n`Host: target.example` \n`title=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/etc/passwd` \n\nWhy it works: The researcher provides a 'Very Long Title' starting with 100 'A' characters. The security check (the blocklist) only looks at those first 100 characters and sees nothing wrong. When the system actually saves the file, it uses the full string, allowing the user to interact with or reveal a sensitive file path that should have been blocked. This is a 'buffer' or 'length-based' bypass where the security logic doesn't cover the entire input.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "c5593d25289b",
     "title": "P4 Information Disclosure Through HTTP Response Headers",
     "url": "https://medium.com/@akashmotkar001/p4-information-disclosure-through-http-response-headers-7e58940d07ac",
