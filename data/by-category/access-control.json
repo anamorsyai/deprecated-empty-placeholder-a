@@ -1,5 +1,45 @@
 [
   {
+    "id": "8c3cd52a424b",
+    "title": "One Parameter, One Request: How I Bypassed Access Controls and Unlocked a Restricted AI Feature",
+    "url": "https://infosecwriteups.com/one-parameter-one-request-how-i-bypassed-access-controls-and-unlocked-a-restricted-ai-feature-67bee6ef87d3",
+    "source": {
+      "slug": "medium-tag-writeup",
+      "name": "Medium — #bug-bounty-writeup"
+    },
+    "authors": [
+      "JEETPAL"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-27T05:23:27.000Z",
+    "added_at": "2026-11-28T04:29:33.517Z",
+    "categories": [
+      "access-control"
+    ],
+    "severity": "high",
+    "difficulty": "beginner",
+    "summary_en": "A researcher bypassed access controls to unlock a restricted AI feature by manipulating a single parameter in a single request.",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": "Suppose a website called target.example offers an AI chat service. Free users can only use a basic model, while 'Pro' users get a more advanced model. When you send a message, your browser sends an HTTP request (a digital message sent to a server) that looks like this:\n\nPOST /api/chat HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"message\": \"Hello AI\", \"tier\": \"free\"}\n\nIn this request, 'tier' is a parameter (a specific piece of data that tells the server how to behave). A beginner can use a tool called a Proxy (software that lets you see and change web traffic before it leaves your computer) to catch this request and change the word \"free\" to \"pro\".\n\nModified Request:\nPOST /api/chat HTTP/1.1\nHost: target.example\nContent-Type: application/json\n\n{\"message\": \"Hello AI\", \"tier\": \"pro\"}\n\nIf the server is poorly designed, it will see the word \"pro\" and give you the advanced AI features immediately. This works because the server 'trusts' the information coming from your computer instead of checking its own database to see if you actually paid for a Pro account.",
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 53
+  },
+  {
     "id": "f4777b2c81b7",
     "title": "When a ‘sandboxed’ result is painted back into the app origin",
     "url": "https://medium.com/@adilburaksen/when-a-sandboxed-result-is-painted-back-into-the-app-origin-08866de6b3f7",
