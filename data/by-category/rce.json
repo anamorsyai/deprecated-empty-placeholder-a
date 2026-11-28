@@ -1,5 +1,46 @@
 [
   {
+    "id": "9145633546b8",
+    "title": "WP2Shell: How Two Medium WordPress Bugs Became A Pre-Auth RCE",
+    "url": "https://kd-200.medium.com/wp2shell-how-two-medium-wordpress-bugs-became-a-pre-auth-rce-bbee608c8897",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-28T11:31:01.000Z",
+    "added_at": "2026-11-28T13:29:42.813Z",
+    "categories": [
+      "rce",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A technical analysis of how two medium-severity vulnerabilities in WordPress were chained to achieve unauthenticated Remote Code Execution (RCE).",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "4b280679282e",
     "title": "Bug bounty: o que é e como funcionam os programas de recompensa | System Frame",
     "url": "https://medium.com/@systemframe/bug-bounty-o-que-%C3%A9-e-como-funcionam-os-programas-de-recompensa-system-frame-a17c95792f69",

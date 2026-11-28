@@ -1,5 +1,88 @@
 [
   {
+    "id": "05fb83b82b08",
+    "title": "How a SAML Signature Wrapping (XSW) Flaw Enabled a $7,000 Enterprise SSO Bypass",
+    "url": "https://medium.com/@t4nv1/how-a-saml-signature-wrapping-xsw-flaw-enabled-a-7-000-enterprise-sso-bypass-06a74cebe625",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "T4nv1"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-28T11:56:01.000Z",
+    "added_at": "2026-11-28T13:28:23.169Z",
+    "categories": [
+      "auth-bypass",
+      "access-control",
+      "other"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A structural discrepancy in an enterprise SaaS platform's SAML implementation allowed attackers to bypass SSO and forge administrative sessions via XML Signature Wrapping (XSW).",
+    "summary_ar": null,
+    "lesson": {
+      "cause": "The root cause is a structural discrepancy between the XML signature validation layer and the application logic parsing layer. The signature verifier—a security tool that checks digital seals to ensure data hasn't been changed—validates a signed element anywhere in the document tree. However, the application logic—the code that decides which user is logging in—extracts the identity from a different, unsigned XML node (a specific piece of data). This happens because the system does not strictly enforce that the element being signed is the exact same element being used for the login decision, allowing an attacker to 'wrap' a legitimate signed message inside a malicious one.",
+      "walkthrough": null,
+      "example": "We assume the application target.example uses SAML for login and only checks if a valid signature exists anywhere in the XML. A legitimate login XML looks like this: <Response><Assertion ID='user123'>User: Alice</Assertion><Signature Reference='user123'/></Response>. An attacker intercepts this and creates a 'wrapped' version: <Response><Assertion ID='attacker'>User: Admin</Assertion><Wrapper><Assertion ID='user123'>User: Alice</Assertion><Signature Reference='user123'/></Wrapper></Response>. The attacker sends this via a POST request (a way to send data to a server): POST /saml/login HTTP/1.1 Host: target.example Content-Type: application/x-www-form-urlencoded SAMLResponse=[Base64_Encoded_XML]. Why: The signature verifier sees the valid signature for 'user123' and tells the system the document is safe. However, the application logic looks for the first <Assertion> tag it finds, which is the 'attacker' tag claiming to be Admin, granting the attacker full access.",
+      "takeaway": "When hunting for SSO (Single Sign-On) flaws, look for structural discrepancies where the data being verified is not the same data being used by the application. This pattern is common in XML-based systems like SAML where multiple layers of code handle the same document. A key signal is the presence of 'SAMLResponse' parameters in your browser's network traffic. A common variant is XSW-3, where attackers move the legitimate assertion into a non-standard location to hide it from the validator but keep it visible to the logic. Avoid the mistake of assuming that a valid digital signature protects the entire document; it often only protects a specific ID.",
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": "Enterprise Single Sign-On (SSO) integrations frequently rely on Security Assertion Markup Language (SAML) 2.0 to authenticate users across corporate Identity Providers (IdPs) and Service Providers (SPs). Because SAML assertions are transmitted via the user’s browser inside base64-encoded XML payloads, the Service Provider depends entirely on cryptographic XML Digital Signatures (`xmldsig`) to verify that an assertion was genuinely issued by the trusted IdP and has not been modified in transit. However, XML signature validation and XML business-logic parsing are often handled by two separate la",
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
+    "id": "9145633546b8",
+    "title": "WP2Shell: How Two Medium WordPress Bugs Became A Pre-Auth RCE",
+    "url": "https://kd-200.medium.com/wp2shell-how-two-medium-wordpress-bugs-became-a-pre-auth-rce-bbee608c8897",
+    "source": {
+      "slug": "medium-tag-bug-bounty",
+      "name": "Medium — #bug-bounty"
+    },
+    "authors": [
+      "Nitin yadav"
+    ],
+    "program": null,
+    "platform_slug": "self-disclosed",
+    "bounty_raw": null,
+    "published_at": "2026-11-28T11:31:01.000Z",
+    "added_at": "2026-11-28T13:29:42.813Z",
+    "categories": [
+      "rce",
+      "auth-bypass"
+    ],
+    "severity": "critical",
+    "difficulty": "advanced",
+    "summary_en": "A technical analysis of how two medium-severity vulnerabilities in WordPress were chained to achieve unauthenticated Remote Code Execution (RCE).",
+    "summary_ar": null,
+    "lesson": {
+      "cause": null,
+      "walkthrough": null,
+      "example": null,
+      "takeaway": null,
+      "fix": null,
+      "cause_ar": null,
+      "walkthrough_ar": null,
+      "example_ar": null,
+      "takeaway_ar": null,
+      "fix_ar": null
+    },
+    "excerpt": null,
+    "ai_generated": true,
+    "engagement": null,
+    "score": 60
+  },
+  {
     "id": "373aee56b3f6",
     "title": "A Blocklist, a Voice Recorder and a Very Long Title: The $10,633 Google Bug That Could Reveal Any…",
     "url": "https://medium.com/@t4nv1/a-blocklist-a-voice-recorder-and-a-very-long-title-the-10-633-google-bug-that-could-reveal-any-18e10615028b",
